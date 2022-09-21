@@ -1,0 +1,59 @@
+.footer {
+  position: relative;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer .otherLink {
+  background-color: #00a19b;
+}
+
+.footer .otherLink a {
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.footer .otherLink a:hover {
+  color: inherit;
+}
+
+.footer .otherLink ul {
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding: 4px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.footer .otherLink ul li {
+  padding: 8px;
+  position: relative;
+  color: #FFFFFF;
+}
+
+.footer .otherLink ul li:after {
+  content: "";
+  position: absolute;
+  border-right: solid 1px #FFFFFF;
+  width: 1px;
+  height: 14px;
+  right: 0;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.footer .otherLink ul li:last-child::after {
+  display: none;
+}

@@ -1,0 +1,80 @@
+.l-lineTabs {
+  position: relative;
+}
+.l-lineTabs::after, .l-lineTabs::before {
+  content: "";
+  width: 20px;
+  height: 60px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 52%, white 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 52%, white 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, white 52%, white 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00ffffff", endColorstr="#ffffff", GradientType=1);
+  /* IE6-9 */
+  background-size: 100% auto;
+}
+.l-lineTabs::after {
+  right: 140px;
+}
+@media (max-width: 576px) {
+  .l-lineTabs::after {
+    right: 110px;
+  }
+}
+.l-lineTabs::before {
+  left: 0;
+  transform: rotate(180deg);
+}
+.l-lineTabs > ul {
+  display: flex;
+  overflow: scroll;
+  align-items: flex-end;
+  text-align: center;
+  font-size: 0px;
+  white-space: nowrap;
+  margin-right: 140px;
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  justify-content: left;
+}
+@media (max-width: 576px) {
+  .l-lineTabs > ul {
+    margin-right: 110px;
+  }
+}
+.l-lineTabs > ul::-webkit-scrollbar {
+  display: none;
+}
+.l-lineTabs > ul > li > a {
+  border-bottom: 3px solid #E1EFEF;
+  display: block;
+  text-align: center;
+  padding: 5px 20px;
+  min-width: 166px;
+}
+@media (max-width: 1200px) {
+  .l-lineTabs > ul > li > a {
+    padding: 5px 10px;
+    min-width: 146px;
+  }
+}
+@media (max-width: 576px) {
+  .l-lineTabs > ul > li > a {
+    font-size: 16px;
+    min-width: auto;
+    padding: 5px 14px;
+  }
+}
+.l-lineTabs > ul > li > a.router-link-active {
+  border-bottom: 3px solid #00a19b;
+  color: #00a19b;
+}
+.l-lineTabs > ul > li > a.router-link-active h2 {
+  color: #00a19b;
+}
