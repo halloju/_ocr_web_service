@@ -6,7 +6,7 @@
 | ------------- | ------------- |
 | PM  | 李立晟 |
 | PG (Frontend)  |  何信賢、林莞筑 |
-| PG (Backend)   |  王逸庭、張晏誠 ｜
+| PG (Backend)   |  王逸庭、張晏誠 |
 | TL  | 蔡根元 |
 
 ## 安裝 Docker Engine
