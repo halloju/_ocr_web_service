@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+    minio:
+        container_name: minio
+        image: minio/minio
+        hostname: "minio"
+        ports:
+          - 9000:9000 # API 端口
+          - 9001:9001 # 控制台端口
+        environment:
+          MINIO_ACCESS_KEY: admin
+          MINIO_SECRET_KEY: admin123
+        command: server --console-address ':9001' /data
+        restart: always
     frontend:
         container_name: frontend
         build: "frontend/."
