@@ -34,4 +34,7 @@ docker ps -a
 ![image](https://user-images.githubusercontent.com/40282726/189018899-cec8398f-1762-4421-9de9-e39d564d0ac1.png)
 
 ## Minio
-http://localhost:9001/
+URL:http://localhost:9001/
+
+![image](https://user-images.githubusercontent.com/40282726/193745456-221492ef-7a20-4276-8697-39e7c284485a.png)
+
