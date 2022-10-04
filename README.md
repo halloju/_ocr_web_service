@@ -32,3 +32,6 @@ docker ps -a
 
 ## Backend
 ![image](https://user-images.githubusercontent.com/40282726/189018899-cec8398f-1762-4421-9de9-e39d564d0ac1.png)
+
+## Minio
+http://localhost:9001/
