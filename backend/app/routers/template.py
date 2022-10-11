@@ -10,6 +10,10 @@ from app.forms.template.create import CreateTemplateForm
 from app.services.template import create as service_create
 from app.schema.template import CreateTemplateResponse
 
+from app.services.template import read as service_read
+from app.schema.template import GetAvailableTemplatesResponse
+from app.schema.template import GetTemplateDetailResponse
+
 from app.schema.template import UpdateTemplateRequest
 from app.forms.template.update import UpdateTemplateForm
 from app.services.template import update as service_update
@@ -21,7 +25,7 @@ from app.services.template import delete as service_delete
 router = APIRouter()
 
 
-@router.post("/create")
+@router.post("/create", response_model=CreateTemplateResponse)  # responses={},
 async def create_template(request: CreateTemplateRequest, db: Session = Depends(get_db)):
     '''
     將 template 影像上傳至 MinIO, 並將其餘資訊存入 Feature DB
@@ -38,26 +42,31 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
         return CreateTemplateResponse(
             template_id=template_id
         )
-        # return Response(data={"status": 200, "template_id": template_id})
     raise CustomException(status_code=400, message=form.errors)
 
 
-@router.get("/get_available_templates/{user_id}")
+@router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
 def get_available_templates(user_id: str, db: Session = Depends(get_db)):
     '''
     取得該 user_id 可用的 template 清單
     '''
     available_templates = service_read.get_available_templates(db, user_id)
-    return Response(data={"status": 200, "available_templates": available_templates})
+    return GetAvailableTemplatesResponse(
+        available_templates=available_templates
+    )
 
 
-@router.get("/get_template_detail/{template_id}")
+@router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
 def get_template_detail(template_id: str, db: Session = Depends(get_db)):
     '''
     取得該 template 的細節
     '''
     template_detail = service_read.get_template_detail(db, template_id)
-    return Response(data={"status": 200, "template_detail": template_detail})
+    return GetTemplateDetailResponse(
+        image='',
+        template_name=template_detail['template_name'],
+        bbox=template_detail['bbox']
+    )
 
 
 @router.post("/update")
@@ -69,8 +78,9 @@ async def update_template(request: UpdateTemplateRequest, db: Session = Depends(
     await form.load_data()
     if await form.is_valid():
         template = UpdateTemplateRequest(
-            user_id=form.user_id,
-            bbox=form.bbox
+            template_id=form.template_id,
+            bbox=form.bbox,
+            template_name=form.template_name
             )
         template_id = service_update.update_template(template=template, db=db)
         return Response(data={"status": 200})
@@ -86,8 +96,8 @@ async def delete_template(request: DeleteTemplateRequest, db: Session = Depends(
     await form.load_data()
     if await form.is_valid():
         template = DeleteTemplateRequest(
-            user_id=form.user_id
+            template_id=form.template_id
             )
-        template_id = delete_template.delete_template(template=template, db=db)
+        template_id = service_delete.delete_template(template=template, db=db)
         return Response(data={"status": 200})
     raise CustomException(status_code=400, message=form.errors)
