@@ -12,6 +12,7 @@ class UpdateTemplateForm:
     async def load_data(self):
         self.template_id = self.request.template_id
         self.bbox = self.request.bbox
+        self.template_name = self.request.template_name
 
     async def is_valid(self):
         if not self.template_id or not len(self.template_id) == 17:
