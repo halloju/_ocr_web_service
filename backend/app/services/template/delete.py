@@ -1,5 +1,6 @@
 from app.models.template_info import TemplateInfo
 from app.exceptions import CustomException
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 import logging
 
