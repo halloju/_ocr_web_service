@@ -1,5 +1,7 @@
 from app.models.template_info import TemplateInfo
 from app.exceptions import CustomException
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import Session
 import logging
 
 
@@ -17,7 +19,7 @@ def get_available_templates(db: Session, user_id: str):
             TemplateInfo.updated_at).filter(TemplateInfo.user_id == user_id)
         if not available_templates.first():
             raise CustomException(status_code=400, message="available_templates are not found")
-        return available_templates
+        return available_templates.all()
     except OperationalError as e:
         logger.error("db error:{}".format(e))
         raise CustomException(status_code=424, message="[DB Error] 請聯絡管理者")
@@ -34,10 +36,10 @@ def get_template_detail(db: Session, template_id: str):
         # Step 2. 從 DB 拉座標點等資訊
         template_detail = db.query(
             TemplateInfo.template_name,
-            TemplateInfo.template_bbox).filter(TemplateInfo.template_id == template_id)
+            TemplateInfo.bbox).filter(TemplateInfo.template_id == template_id)
         if not template_detail.first():
             raise CustomException(status_code=400, message="template_detail is not found")
-        return template_detail
+        return template_detail.first()
     except OperationalError as e:
         logger.error("db error:{}".format(e))
         raise CustomException(status_code=424, message="[DB Error] 請聯絡管理者")
