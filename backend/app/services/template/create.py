@@ -1,5 +1,6 @@
 from app.models.template_info import TemplateInfo
 from app.exceptions import CustomException
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 from datetime import datetime
 import logging
@@ -18,7 +19,7 @@ def create_template(template, db: Session):
 
         # Step 2. 將 template 其餘資訊寫入 DB
         today = datetime.today()
-        template_id=template.user_id+today.strftime('%y%m%d%H%M%S'),
+        template_id=template.user_id+today.strftime('%y%m%d%H%M%S')
         template_info = TemplateInfo(
             template_id=template_id,
             user_id=template.user_id,
