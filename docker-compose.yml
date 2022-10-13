@@ -44,10 +44,16 @@ services:
           - frontend
     db:
         container_name: postgres
-        image: postgres
+        image: postgres:14
         restart: always
         environment:
+          - POSTGRES_DATABASE=postgres
+          - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=postgres
+        volumes:
+          - ./postgres/create_fixtures.sql:/docker-entrypoint-initdb.d/create_fixtures.sql
+        ports:
+          - 5432:5432
     redis:
         container_name: redis
         image: "redis:alpine"
