@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS if_gp_ocr.template_info(
     user_id VARCHAR(5) NOT NULL,
     template_name VARCHAR,
     bbox JSON[],
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp,
     updated_at TIMESTAMP WITH TIME ZONE
 );
 
