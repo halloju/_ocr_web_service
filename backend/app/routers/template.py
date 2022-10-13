@@ -61,9 +61,9 @@ def get_template_detail(template_id: str, db: Session = Depends(get_db)):
     '''
     取得該 template 的細節
     '''
-    template_detail = service_read.get_template_detail(db, template_id)
+    image, template_detail = service_read.get_template_detail(db, template_id)
     return GetTemplateDetailResponse(
-        image='',
+        image=image,
         template_name=template_detail['template_name'],
         bbox=template_detail['bbox']
     )
