@@ -51,7 +51,7 @@ services:
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=postgres
         volumes:
-          - ./postgres/create_fixtures.sql:/docker-entrypoint-initdb.d/create_fixtures.sql
+          - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
         ports:
           - 5432:5432
     redis:
