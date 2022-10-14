@@ -9,5 +9,4 @@ class TemplateInfo(Base):
     user_id = Column(String, nullable=False)
     template_name = Column(String, nullable=False)
     bbox = Column(ARRAY(JSON(String)), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

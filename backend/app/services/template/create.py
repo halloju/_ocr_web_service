@@ -40,7 +40,6 @@ def create_template(template, db: Session):
             user_id=template.user_id,
             template_name=template.template_name,
             bbox=template.bbox,
-            created_at=today,
             updated_at=today
         )
         db.add(template_info)
