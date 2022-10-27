@@ -5,9 +5,9 @@
     <span>Esun.OCR</span>
   </a>
   <div class="navbar">
-    <Dropdown :img_src="img_src1" title="通用文件識別功能" :items="services" class="navbar-links"/>
-    <Dropdown :img_src="img_src2" title="自定義模板" :items="services" class="navbar-links"/>
-    <Dropdown :img_src="img_src3" title="特殊文件識別功能" :items="services" class="navbar-links"/>
+    <Dropdown :img_src="img_src1" title="通用文件識別功能" class="navbar-links"/>
+    <Dropdown :img_src="img_src2" title="自定義模板" :items="services2" class="navbar-links"/>
+    <Dropdown :img_src="img_src3" title="特殊文件識別功能" :items="services3" class="navbar-links"/>
   </div>
   <div class="user">
     <div class="group-circle">
@@ -36,18 +36,33 @@ data () {
     img_src1: 'https://static.overlay-tech.com/assets/0c80f190-377f-45a2-a5ce-e120498cbfad.svg',
     img_src2: 'https://static.overlay-tech.com/assets/57ef4a3c-d5fc-4a5f-888d-01e66bce4afb.svg',
     img_src3: 'https://static.overlay-tech.com/assets/687cd02f-3a17-4439-8274-a745fff98f94.svg',
-    services: [
+    services2: [
       {
-        title: 'Web',
+        title: '新增自定義模板',
         link: '#',
         img_src: '',
       },
       {
-        title: 'Design',
+        title: '模板列表',
         link:'#'
       },
       {
-        title: 'Videos',
+        title: '模板辨識',
+        link: '#'
+      }
+    ],
+    services3: [
+      {
+        title: '身份證辨識',
+        link: '#',
+        img_src: '',
+      },
+      {
+        title: '第二證件辨識',
+        link:'#'
+      },
+      {
+        title: '存摺辨識',
         link: '#'
       }
     ]
@@ -99,7 +114,7 @@ data () {
   justify-content: center;
   height: 48px;
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -153,7 +168,7 @@ nav .menu-item a {
   color: inherit;
   text-decoration: none;
 }
-@media (max-width: 1200px) {
+@media (max-width: 1080px) {
   .navbar img {
     max-width: 20px;
   }
@@ -165,7 +180,7 @@ nav .menu-item a {
     margin-right: 3px;
   }
 }
-@media (max-width: 1080px) {
+@media (max-width: 980px) {
   .navbar {
     position: absolute;
     top: 48px;

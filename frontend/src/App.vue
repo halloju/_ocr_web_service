@@ -16,14 +16,13 @@
 .dashboard {
     display: grid;
     grid-template-columns: 1fr 5fr;
-    background-color: teal;
-    height: 100vh;
+    background-color: #10A0A7;
+    height: 95vh;
     width: 100vw;
 }
 .content {
-    background-color: white;
-    border-radius: 10px;
-    margin: 6px 6px 6px 0px;
+    background-color: #09747A;
+    border-radius: 0px;
 }
 </style>
 

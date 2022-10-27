@@ -1,32 +1,15 @@
 <template>
     <div class="sidebar">
+        <div class="sidebarImg">
+            <img :src="img_src"/>
+        </div> 
         <div class="title">
-            新增自定義模板
+            {{model}}
         </div>
         <div class="menu-items">
-            <router-link to="/" active-class="active" tag="button" exact class="side-btn">
+            <router-link :to="item.path" active-class="active" tag="button" exact class="side-btn" v-for="(item, i) in model_bar[model]">
                 <div class="link-container">
-                    1. 範例圖檔上傳
-                </div>
-            </router-link>
-            <router-link to="/messages" active-class="active" tag="button" exact class="side-btn">
-                <div class="link-container">
-                    2. 文字位置標註
-                </div>
-            </router-link>
-            <router-link to="/profile" active-class="active" tag="button" exact class="side-btn">
-                <div class="link-container">
-                    3. 方塊位置標註
-                </div>
-            </router-link>
-            <router-link to="/settings" active-class="active" tag="button" exact class="side-btn">
-                <div class="link-container">
-                    4. Mask 位置標註
-                </div>
-            </router-link>
-            <router-link to="/settings" active-class="active" tag="button" exact class="side-btn">
-                <div class="link-container">
-                    5. 資訊確認
+                    {{item.title}}
                 </div>
             </router-link>
         </div>
@@ -35,45 +18,70 @@
 
 <script>
 export default {
-    
+name: 'sidebar',
+data() {
+    return {
+        model: "新增自定義模板",
+        img_src: "https://static.overlay-tech.com/assets/57ef4a3c-d5fc-4a5f-888d-01e66bce4afb.svg",
+        model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/"},
+                                    {title: "2. 文字位置標註", path: "/2"},
+                                    {title: "3. 方塊位置標註", path: "/3"},
+                                    {title: "4. Mask 位置標註", path: "/4"},
+                                    {title: "5. 資訊確認", path: "/5"},
+                                    ]},
+    }
+} 
+
 }
 </script>
 
 <style scoped>
+.sidebarImg img{
+    margin-top: 50px;
+    margin-left: 100px;
+    width: 100px;
+}
 .title {
     color: white;
     font-size: 24px;
-    margin-top: 10px;
+    margin-top: 50px;
+    margin-left: 65px;
 }
 .menu-items {
     display: flex;
     flex-direction: column;
-    margin-top: 40px;
-    margin-left: 6px;
+    margin-top: 30px;
+    margin-left: 10px;
 }
 .menu-items > * {
-    margin-top: 60px;
-    color: #fff;
+    margin-top: 30px;
+    color: #fff
 }
 .side-btn {
     border: none;
-    padding: 16px 0px;
+    height: 80px;
+    width: 270px;
+    padding: 25px 50px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 21px;
     font-weight: 500;
     color: white;
     background-color: transparent;
 }
 .side-btn:focus {
     outline: none;
+    color: white;
+}
+.side-btn .link-container {
+    color: white;
 }
 .side-btn.active {
     position: relative;
-    background-color: white;
-    color: teal;
-    font-weight: 600;
+    background-color: #09747A;
+    color: #10A0A7;
+    font-weight: bold;
     margin-left: 10px;
-    border-radius: 30px 0 0 30px;
+    border-radius: 50px 0 0 50px;
 }
 .side-btn.active::before {
     top: -30px;
@@ -87,7 +95,7 @@ export default {
     right: 0;
     height: 30px;
     width: 30px;
-    background-color: white;
+    background-color: #09747A;
 }
 .side-btn.active .link-container::before {
     top: -60px;
@@ -103,6 +111,6 @@ export default {
     height: 60px;
     width: 60px;
     border-radius: 50%;
-    background-color: teal;
+    background-color: #10A0A7;
 }
 </style>
