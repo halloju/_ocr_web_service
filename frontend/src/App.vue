@@ -4,7 +4,7 @@
     <div class="dashboard">
         <Sidebar/>
         <div class="content">
-            <router-view/>
+            <router-view></router-view>
         </div>
     </div>
   </div>
@@ -17,7 +17,7 @@
     display: grid;
     grid-template-columns: 1fr 5fr;
     background-color: #10A0A7;
-    height: 90vh;
+    height: 100vh;
     width: 100vw;
 }
 .content {

@@ -13,9 +13,6 @@ export default {
     };
   },
   methods: {
-      home() {
-          this.$store.commit('back');
-      }
     }
 
 };
