@@ -50,18 +50,14 @@ data() {
 .menu-items {
     display: flex;
     flex-direction: column;
-    margin-top: 30px;
+    margin-top: 50px;
     margin-left: 10px;
-}
-.menu-items > * {
-    margin-top: 30px;
-    color: #fff
 }
 .side-btn {
     border: none;
     height: 80px;
-    width: 270px;
-    padding: 25px 50px;
+    width: 300px;
+    padding: 15px 50px;
     cursor: pointer;
     font-size: 21px;
     font-weight: 500;
@@ -73,6 +69,7 @@ data() {
     color: white;
 }
 .side-btn .link-container {
+    margin-top: 10px;
     color: white;
 }
 .side-btn.active {
