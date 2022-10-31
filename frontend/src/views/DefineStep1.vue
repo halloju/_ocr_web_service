@@ -15,8 +15,8 @@
 
 <style scoped>
 .step {
-  margin-top: 50px;
-  margin-left: 50px;
+  margin-top: 3vh;
+  margin-left: 3vw;
   color: white;
   font-size: 21px;
   font-weight: bold;
@@ -25,29 +25,28 @@
   display: block;
   background-color: rgba(0, 0, 0, 0.1);
   max-width: 95%;
-  height: 600px;
-  margin-top: 100px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-  border-radius: 30px 30px 30px 30px;
-  padding: 0 0 0 0;
+  height: 80vh;
+  margin-top: 3vh;
+  margin-bottom: 10%;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
-  margin-left: 40%;
-  margin-bottom: 20px;
-  text-align: center;
+  margin-left: 25vw;
+  margin-bottom: 2vh;
 }
 .bar button {
   background-color: black;
-  border-radius: 30px 30px 30px 30px;
+  border-radius: 3vw 3vw 3vw 3vw;
   border: 5px solid white;
   font-weight: bold;
+  text-align: center;
 
 }
 .my-content {
   width: 100%;
-  height: 450px;
+  height: 60vh;
   background-color: rgba(16,160,167, 0.5);
   padding: 0 0 0 0;
   color: #E2E6EA;

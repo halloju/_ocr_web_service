@@ -18,28 +18,20 @@
 
 <style scoped>
 .step {
-  margin-top: 50px;
-  margin-left: 50px;
+  margin-top: 3vh;
+  margin-left: 3vw;
   color: white;
   font-size: 21px;
   font-weight: bold;
 }
 .buttons {
   text-align: right;
-  margin-right: 50px;
-}
-.buttons .config-button{
-  background-color: #10A0A7;
-  padding: 5px 20px;
-  border-radius: 10px 10px 10px 10px;
-  text-align: right;
-  margin-right: 30px;
-  color: white;
+  margin-right: 1vw;
 }
 .buttons .complete-button{
   background-color: #FF9B26;
   padding: 5px 25px;
-  border-radius: 10px 10px 10px 10px;
+  border-radius: 1vw 1vw 1vw 1vw;
   text-align: right;
   color: white;
   font-size: 15px;
@@ -52,19 +44,18 @@
 }
 .contentWrapper {
   display: flex;
+  height: 80vh;
   justify-content: flex-start;
 }
 .contentWrapper1{
   flex:auto;
   background-color: white;
-  max-width: 70%;
-  height: 750px;
-  margin-top: 25px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-  border-radius: 30px 30px 30px 30px;
-  padding: 0 0 0 0;
+  height: 80vh;
+  margin-top: 1.5vh;
+  margin-bottom: 1.5vh;
+  margin-left: 2vw;
+  margin-right: 1vw;
+  border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
   background-color: white;
@@ -83,13 +74,13 @@
 }
 .my-content {
   width: 100%;
-  height: 600px;
+  height: 50vh;
   background-color: black;
   color: #008b8b;
 }
 .my-content2 {
   width: 100%;
-  height: 600px;
+  height: 50vh;
   color: #E2E6EA;
 }
 </style>

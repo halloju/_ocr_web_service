@@ -4,6 +4,7 @@ import DefineStep1 from '@/views/DefineStep1.vue'
 import DefineStep2 from '@/views/DefineStep2.vue'
 import DefineStep3 from '@/views/DefineStep3.vue'
 import DefineStep4 from '@/views/DefineStep4.vue'
+import DefineStep5 from '@/views/DefineStep5.vue'
 
 const routes = [
 //   {
@@ -42,6 +43,11 @@ const routes = [
         path: 'step4',
         name: 'DefineStep4',
         component: DefineStep4,
+      },
+      {
+        path: 'step5',
+        name: 'DefineStep5',
+        component: DefineStep5,
       }
     ]
   },

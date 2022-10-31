@@ -26,7 +26,7 @@
     background-position: bottom;
     background-color: #09747A;
     border-radius: 0px;
-    height: 100%;
+    height: 100vh;
 }
 </style>
 

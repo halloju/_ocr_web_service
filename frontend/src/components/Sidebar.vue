@@ -38,26 +38,26 @@ data() {
 <style scoped>
 .sidebarImg img{
     margin-top: 50px;
-    margin-left: 100px;
+    margin-left: 80px;
     width: 100px;
 }
 .title {
     color: white;
     font-size: 24px;
     margin-top: 50px;
-    margin-left: 65px;
+    margin-left: 45px;
 }
 .menu-items {
     display: flex;
     flex-direction: column;
     margin-top: 50px;
-    margin-left: 10px;
+    margin-left: 1px;
 }
 .side-btn {
     border: none;
     height: 80px;
-    width: 300px;
-    padding: 15px 50px;
+    width: 23vw;
+    padding: 15px 30px;
     cursor: pointer;
     font-size: 21px;
     font-weight: 500;

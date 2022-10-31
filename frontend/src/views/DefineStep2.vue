@@ -26,30 +26,31 @@
 
 <style scoped>
 .step {
-  margin-top: 50px;
-  margin-left: 50px;
+  margin-top: 3vh;
+  margin-left: 3vw;
   color: white;
   font-size: 21px;
   font-weight: bold;
 }
 .buttons {
   text-align: right;
-  margin-right: 50px;
+  margin-right: 1vw;
 }
 .buttons .config-button{
   background-color: #10A0A7;
   padding: 5px 20px;
-  border-radius: 10px 10px 10px 10px;
+  border-radius: 1vw 1vw 1vw 1vw;
   text-align: right;
   margin-right: 30px;
   color: white;
   font-size: 15px;
   font-weight: bold;
+  height: 100%;
 }
 .buttons .next-button{
   background-color: #FF9B26;
   padding: 5px 20px;
-  border-radius: 10px 10px 10px 10px;
+  border-radius: 1vw 1vw 1vw 1vw;
   text-align: right;
   color: white;
   font-size: 15px;
@@ -57,32 +58,28 @@
 }
 .contentWrapper {
   display: flex;
-
   justify-content: center;
+  height: 80vh;
 }
 .contentWrapper1{
   flex-grow:4;
   background-color: white;
-  max-width: 100%;
-  height: 750px;
-  margin-top: 25px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-  border-radius: 30px 30px 30px 30px;
-  padding: 0 0 0 0;
+  height: 80vh;
+  margin-top: 1.5vh;
+  margin-bottom: 1.5vh;
+  margin-left: 2vw;
+  margin-right: 1vw;
+  border-radius: 3vw 3vw 3vw 3vw;
 }
 .contentWrapper2{
   flex-grow:1;
   background-color: white;
-  max-width: 100%;
-  height: 750px;
-  margin-top: 25px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-  border-radius: 30px 30px 30px 30px;
-  padding: 0 0 0 0;
+  height: 80vh;
+  margin-top: 1.5vh;
+  margin-bottom: 1.5vh;
+  margin-left: 1vw;
+  margin-right: 2vw;
+  border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
   background-color: white;
@@ -101,13 +98,13 @@
 }
 .my-content {
   width: 100%;
-  height: 600px;
+  height: 50vh;
   background-color: black;
   color: #008b8b;
 }
 .my-content2 {
   width: 100%;
-  height: 600px;
+  height: 50vh;
   color: #E2E6EA;
 }
 </style>
