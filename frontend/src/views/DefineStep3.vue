@@ -1,9 +1,8 @@
 <template>
   <div class="step">
-    Step.2 標註要向位置
+    Step.3 標註要向位置
   </div>
   <div class="buttons">
-    <button class="config-button">⬆ 上傳設定檔</button>
     <button class="next-button">➡ 下一步</button>
   </div>
   <div class="contentWrapper">
@@ -16,7 +15,7 @@
   </div>
   <div class="contentWrapper2 py-5">
     <div class="bar">
-      <span class="content-title">文字辨識位置</span>
+      <span class="content-title">核取方塊辨識位置</span>
     </div>
     <div class="my-content2">
     </div>
@@ -35,16 +34,6 @@
 .buttons {
   text-align: right;
   margin-right: 50px;
-}
-.buttons .config-button{
-  background-color: #10A0A7;
-  padding: 5px 20px;
-  border-radius: 10px 10px 10px 10px;
-  text-align: right;
-  margin-right: 30px;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
 }
 .buttons .next-button{
   background-color: #FF9B26;

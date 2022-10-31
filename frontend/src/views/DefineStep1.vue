@@ -1,6 +1,6 @@
 <template>
   <div class="step">
-    Step1. 上傳範例圖片
+    Step.1 上傳範例圖片
   </div>
   <div class="contentWrapper py-5 px-4">
     <div class="bar">
@@ -41,7 +41,8 @@
 .bar button {
   background-color: black;
   border-radius: 30px 30px 30px 30px;
-  border: 7px solid white;
+  border: 5px solid white;
+  font-weight: bold;
 
 }
 .my-content {
@@ -50,6 +51,7 @@
   background-color: rgba(16,160,167, 0.5);
   padding: 0 0 0 0;
   color: #E2E6EA;
+  font-size: 25px;
   display: flex;
   justify-content: center;
   align-items: center; 

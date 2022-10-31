@@ -25,7 +25,7 @@ data() {
         img_src: "https://static.overlay-tech.com/assets/57ef4a3c-d5fc-4a5f-888d-01e66bce4afb.svg",
         model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/define/step1"},
                                     {title: "2. 文字位置標註", path: "/define/step2"},
-                                    {title: "3. 方塊位置標註", path: "/define/ste3"},
+                                    {title: "3. 方塊位置標註", path: "/define/step3"},
                                     {title: "4. Mask 位置標註", path: "/define/step4"},
                                     {title: "5. 資訊確認", path: "/define/step5"},
                                     ]},

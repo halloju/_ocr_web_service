@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Define from '@/views/Define.vue'
 import DefineStep1 from '@/views/DefineStep1.vue'
 import DefineStep2 from '@/views/DefineStep2.vue'
+import DefineStep3 from '@/views/DefineStep3.vue'
+import DefineStep4 from '@/views/DefineStep4.vue'
 
 const routes = [
 //   {
@@ -30,6 +32,16 @@ const routes = [
         path: 'step2',
         name: 'DefineStep2',
         component: DefineStep2,
+      },
+      {
+        path: 'step3',
+        name: 'DefineStep3',
+        component: DefineStep3,
+      },
+      {
+        path: 'step4',
+        name: 'DefineStep4',
+        component: DefineStep4,
       }
     ]
   },

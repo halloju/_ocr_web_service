@@ -1,10 +1,9 @@
 <template>
   <div class="step">
-    Step.2 標註要向位置
+    Step.4 編輯遮罩：遮住會變動區域
   </div>
   <div class="buttons">
-    <button class="config-button">⬆ 上傳設定檔</button>
-    <button class="next-button">➡ 下一步</button>
+    <button class="complete-button"><i class="fa fa-save">&nbsp;&nbsp;</i>完成</button>
   </div>
   <div class="contentWrapper">
   <div class="contentWrapper1 py-5 ">
@@ -12,13 +11,6 @@
       <span class="content-title">上傳圖片</span> &nbsp; <span class="content-subtitle">a.jpg</span>
     </div>
     <div class="my-content">
-    </div>
-  </div>
-  <div class="contentWrapper2 py-5">
-    <div class="bar">
-      <span class="content-title">文字辨識位置</span>
-    </div>
-    <div class="my-content2">
     </div>
   </div>
   </div>
@@ -43,39 +35,29 @@
   text-align: right;
   margin-right: 30px;
   color: white;
-  font-size: 15px;
-  font-weight: bold;
 }
-.buttons .next-button{
+.buttons .complete-button{
   background-color: #FF9B26;
-  padding: 5px 20px;
+  padding: 5px 25px;
   border-radius: 10px 10px 10px 10px;
   text-align: right;
   color: white;
   font-size: 15px;
   font-weight: bold;
 }
+.buttons .fa {
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+}
 .contentWrapper {
   display: flex;
-
-  justify-content: center;
+  justify-content: flex-start;
 }
 .contentWrapper1{
-  flex-grow:4;
+  flex:auto;
   background-color: white;
-  max-width: 100%;
-  height: 750px;
-  margin-top: 25px;
-  margin-bottom: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-  border-radius: 30px 30px 30px 30px;
-  padding: 0 0 0 0;
-}
-.contentWrapper2{
-  flex-grow:1;
-  background-color: white;
-  max-width: 100%;
+  max-width: 70%;
   height: 750px;
   margin-top: 25px;
   margin-bottom: 30px;
