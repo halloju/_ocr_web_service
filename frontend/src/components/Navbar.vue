@@ -80,7 +80,7 @@ data () {
 }
 .menu {
   display: flex;
-  background-color: #008b8b;
+  background-color: #077C95;
   height: 48px;
   width: 100%;
   align-items: center;
@@ -157,7 +157,7 @@ nav .menu-item {
   border-bottom: 3px solid transparent;
   display: flex;
   transition: 0.4s;
-  background-color: #008b8b;
+  background-color: #077C95;
 }
 nav .menu-item.active,
 nav .menu-item:hover {
