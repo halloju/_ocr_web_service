@@ -1,22 +1,8 @@
 import axios from 'axios';
 import { createApp } from 'vue'
 import store from './store'
-import { createRouter, createWebHistory } from 'vue-router'
-import $ from "jquery"
+import router from './router'
 import App from './App.vue'
-import Home from '@/views/Home.vue'
-
-
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {path: '/', name: 'Home', component: Home},
-    ],
-    scrollBehavior(to, from, savedPosition) {
-        // always scroll to top
-        return { top: 0 }
-    },
-})
 
 axios.defaults.withCredentials = false;
 axios.defaults.crossDomain=true;
