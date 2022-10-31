@@ -1,5 +1,8 @@
 <template>
-  <div class="contentWrapper container py-5 px-4">
+  <div class="step">
+    Step1. 上傳範例圖片
+  </div>
+  <div class="contentWrapper py-5 px-4">
     <div class="bar">
       <button class="btn"> New Upload </button>
     </div>
@@ -11,6 +14,13 @@
 </template>
 
 <style scoped>
+.step {
+  margin-top: 50px;
+  margin-left: 50px;
+  color: white;
+  font-size: 21px;
+  font-weight: bold;
+}
 .contentWrapper{
   display: block;
   background-color: rgba(0, 0, 0, 0.1);
@@ -21,11 +31,12 @@
   margin-left: 30px;
   margin-right: 30px;
   border-radius: 30px 30px 30px 30px;
-  padding: 0 0 0 0 ;
+  padding: 0 0 0 0;
 }
 .bar {
   margin-left: 40%;
   margin-bottom: 20px;
+  text-align: center;
 }
 .bar button {
   background-color: black;
@@ -41,12 +52,13 @@
   color: #E2E6EA;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; 
 
 }
 </style>
 <script>
 export default {
+  name: 'DefineStep1',
   data() {
     return {
 
