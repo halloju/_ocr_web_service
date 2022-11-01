@@ -147,7 +147,7 @@
   font-size: 1.5rem;
 }
 .productWrapper .tick-icon {
-  margin-right: 2vw;
+  margin-right: 1vw;
 }
 .productWrapper span {
   font-weight: 500;
