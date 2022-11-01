@@ -1,7 +1,7 @@
 <template>
 <nav class="menu">
   <a href="#" class="logo">
-    <img src="https://static.overlay-tech.com/assets/a29acb82-a927-42fa-ba0a-59c8194dc5bb.svg" alt="logo">
+    <img src="@/assets/images/esun-ocr-logo.svg" alt="logo">
     <span>Esun.OCR</span>
   </a>
   <div class="navbar">
@@ -15,7 +15,6 @@
     </div>
     <div class="relative-wrapper-one">
       <p class="esb">ESB22005</p>
-      <p class="admin-account">Admin account</p>
     </div>
   </div>
   <div class="navbar-toggle">
@@ -26,6 +25,10 @@
 
 <script>
 import Dropdown from '../components/Dropdown.vue';
+import feature1 from '@/assets/images/feature1.svg'
+import feature2 from '@/assets/images/feature2.svg'
+import feature3 from '@/assets/images/feature3.svg'
+
 export default {
 name: 'navbar',
 components: {
@@ -33,9 +36,9 @@ components: {
 },
 data () {
   return {
-    img_src1: 'https://static.overlay-tech.com/assets/0c80f190-377f-45a2-a5ce-e120498cbfad.svg',
-    img_src2: 'https://static.overlay-tech.com/assets/57ef4a3c-d5fc-4a5f-888d-01e66bce4afb.svg',
-    img_src3: 'https://static.overlay-tech.com/assets/687cd02f-3a17-4439-8274-a745fff98f94.svg',
+    img_src1: feature1,
+    img_src2: feature2,
+    img_src3: feature3,
     services2: [
       {
         title: '新增自定義模板',

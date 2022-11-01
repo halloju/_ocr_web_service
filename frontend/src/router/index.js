@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '@/views/Home.vue'
 import Define from '@/views/Define.vue'
 import DefineStep1 from '@/views/DefineStep1.vue'
 import DefineStep2 from '@/views/DefineStep2.vue'
@@ -18,6 +19,12 @@ const routes = [
 //     component: MenuView,
 //     meta: { requiresAuth: true },
 //   },
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+    // meta: { requiresAuth: true },
+  },
   {
     path: '/define',
     name: 'Define',
