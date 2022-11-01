@@ -2,14 +2,14 @@
 <div class="menu-item" @click="isOpen = !isOpen">
     <img :src="img_src"/>
     <a href="#">
-    {{ title }}
+        {{ title }}
     </a>
     <transition name="fade" appear>
-    <div class="sub-menu" v-if="isOpen">
-        <div v-for="(item, i) in items" :key="i" class="menu-item">
-        <a :href="item.link">{{ item.title }}</a>
+        <div class="sub-menu" v-if="isOpen">
+            <div v-for="(item, i) in items" :key="i" class="menu-item">
+                <a :href="item.link">{{ item.title }}</a>
+            </div>
         </div>
-    </div>
     </transition>
 </div>
 </template>
@@ -20,7 +20,7 @@ name: 'dropdown',
 props: ['title', 'items', 'img_src'],
 data () {
     return {
-    isOpen: false
+        isOpen: false
     }
 }
 }

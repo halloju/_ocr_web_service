@@ -41,7 +41,7 @@ export default {
 }
 .sidebarImg img{
     margin-top: 3vh;
-    width: 10vw;
+    width: 30%;
 }
 .title {
     color: white;
@@ -57,13 +57,14 @@ export default {
 .side-btn {
     border: none;
     height: 80px;
-    width: 25vw;
-    padding: 10px 10px 70px 50px;
+    width: 250px;
+    padding: 10px 50px;
     cursor: pointer;
     font-size: 21px;
     font-weight: 500;
     color: white;
     background-color: transparent;
+    z-index: 100;
 }
 .side-btn:focus {
     outline: none;
@@ -72,6 +73,7 @@ export default {
 .side-btn .link-container {
     margin-top: 1vh;
     color: white;
+    width: 300px;
 }
 .side-btn.active {
     position: relative;

@@ -160,17 +160,14 @@ nav .menu-item a {
   .navbar {
     position: absolute;
     top: 6vh;
-    width: 30vw;
-    height: 6vh;
-    margin-left: 69%;
-    display: flex;
+    right:0;
+    width: 40vw;
     flex-direction: column;
     justify-content: flex-start;
   }
-  .navbar li {
-    display: flex;
-    margin: 30px 0;
-    padding: 0px 25px;
+  .navbar .menu-item {
+    justify-content: left;
+    font-size: 1.3rem;
   }
   .navbar-links {
     width: 100%;
@@ -179,13 +176,16 @@ nav .menu-item a {
   .navbar-links:hover {
     background-color: #578F8D;
   }
+  .menu {
+    justify-content: space-between;
+  }
   .navbar-toggle {
-    align-content: flex-end;
     font-size: 3rem;
+    display: block;
   }
   .fa {
     color: white;
-    margin-left: 100%;
+    margin-right: 20px;
   }
 }
 </style>

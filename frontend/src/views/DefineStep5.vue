@@ -60,8 +60,8 @@
   margin-bottom: 1.5vh;
   margin-left: 2vw;
   margin-right: 1vw;
-  border-radius: 3vw 3vw 3vw 3vw;
-  padding: 0 0 0 0;
+  border-radius: 3vw 3vw 0vw 0vw;
+  overflow: hidden;
 }
 .contentWrapperSub{
   flex-grow:1;
@@ -103,7 +103,7 @@
 }
 .my-content {
   width: 100%;
-  height: 30vh;
+  height: 75vh;
   background-color: black;
   color: #008b8b;
 }
