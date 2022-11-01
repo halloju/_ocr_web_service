@@ -2,20 +2,13 @@
 <nav class="menu">
   <a href="#" class="logo">
     <img src="@/assets/images/esun-ocr-logo.svg" alt="logo">
-    <span>Esun.OCR</span>
+    <span><a href="/">Esun.OCR</a></span>
   </a>
   <div class="navbar">
     <Dropdown :img_src="img_src1" title="通用文件識別功能" class="navbar-links"/>
     <Dropdown :img_src="img_src2" title="自定義模板" :items="services2" class="navbar-links"/>
     <Dropdown :img_src="img_src3" title="特殊文件識別功能" :items="services3" class="navbar-links"/>
-  </div>
-  <div class="user">
-    <div class="group-circle">
-      <div class="user-icon"></div>
-    </div>
-    <div class="relative-wrapper-one">
-      <p class="esb">ESB22005</p>
-    </div>
+    <Dropdown :img_src="img_src4" title="ESB18507" :items="user_info" class="navbar-links"/>
   </div>
   <div class="navbar-toggle">
       <i class="fa fas fa-bars"></i>
@@ -25,6 +18,7 @@
 
 <script>
 import Dropdown from '../components/Dropdown.vue';
+import user_icon from '@/assets/images/user-icon.svg'
 import feature1 from '@/assets/images/feature1.svg'
 import feature2 from '@/assets/images/feature2.svg'
 import feature3 from '@/assets/images/feature3.svg'
@@ -39,10 +33,11 @@ data () {
     img_src1: feature1,
     img_src2: feature2,
     img_src3: feature3,
+    img_src4: user_icon,
     services2: [
       {
         title: '新增自定義模板',
-        link: '#',
+        link: '/define',
         img_src: '',
       },
       {
@@ -68,6 +63,12 @@ data () {
         title: '存摺辨識',
         link: '#'
       }
+    ],
+    user_info: [
+      {
+        title: '登出',
+        link: '/login',
+      }
     ]
   }
 }
@@ -84,7 +85,7 @@ data () {
 .menu {
   display: flex;
   background-color: #077C95;
-  height: 48px;
+  height: 6vh;
   width: 100%;
   align-items: center;
   justify-content: flex-start;
@@ -121,37 +122,9 @@ data () {
   margin-left: 5px;
   margin-right: 5px;
 }
-.user {
-  width: 180px;
-  display: flex;
-  align-items: center;
-}
-.group-circle {
-  background-color: #FFC145;
-  margin-right: 10px;
-  border-radius: 50%;
-  padding: 3px 3px 3px 3px;
-  display: flex;
-  align-items: center;
-  width: 30px;
-  height: 30px;
-}
-.user-icon {
-  background-size: 100% 100%;
-  background-position: center;
-  background-image: url("https://static.overlay-tech.com/assets/cbffd0be-e5e1-4257-9b0c-93d9640e17bd.svg");
-  padding: 8px 11px;
-  display: flex;
-  justify-content: center;
-}
-.relative-wrapper-one p {
-  color: white;
-  font-weight: bold;
-}
 .navbar-toggle {
   display: none;
 }
-
 nav .menu-item {
   color: #FFF;
   padding: 10px 20px;
@@ -186,15 +159,13 @@ nav .menu-item a {
 @media (max-width: 980px) {
   .navbar {
     position: absolute;
-    top: 48px;
-    right: 0%;
-    width: 270px;
-    height: 30xvh;
-    background-color: #008b8b;
+    top: 6vh;
+    width: 30vw;
+    height: 6vh;
+    margin-left: 69%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    border-radius: 10px;
   }
   .navbar li {
     display: flex;
@@ -206,19 +177,15 @@ nav .menu-item a {
     text-align: center;
   }
   .navbar-links:hover {
-  background-color: #578F8D;
+    background-color: #578F8D;
+  }
+  .navbar-toggle {
+    align-content: flex-end;
+    font-size: 3rem;
   }
   .fa {
     color: white;
-  }
-  .navbar-toggle {
-    display: flex;
-    font-size: 35px;
-  }
-  .user {
-    width: 200px;
-    display: flex;
-    justify-content: center;
+    margin-left: 100%;
   }
 }
 </style>

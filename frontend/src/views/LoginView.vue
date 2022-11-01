@@ -13,7 +13,7 @@
                     <input placeholder="請輸入您的密碼" type="password" required>
                 </div>
                 <div class="buttons">
-                    <button type="submit" class="login-button" id="submit">登入</button>
+                    <button type="submit" class="login-button" id="submit" @click="login">登入</button>
                 </div>
                 <div class="others">
                     <span class="not-register-link">尚未註冊?&nbsp;</span>
@@ -105,6 +105,9 @@ export default {
         };
     },
     methods: {
+            login() {
+                this.$router.push({name:"Home"})
+            }
         }
 
     };

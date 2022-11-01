@@ -17,47 +17,48 @@
 </template>
 
 <script>
+import feature2 from '@/assets/images/feature2.svg'
 export default {
-name: 'sidebar',
-data() {
-    return {
-        model: "新增自定義模板",
-        img_src: "https://static.overlay-tech.com/assets/57ef4a3c-d5fc-4a5f-888d-01e66bce4afb.svg",
-        model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/define/step1"},
-                                    {title: "2. 文字位置標註", path: "/define/step2"},
-                                    {title: "3. 方塊位置標註", path: "/define/step3"},
-                                    {title: "4. Mask 位置標註", path: "/define/step4"},
-                                    {title: "5. 資訊確認", path: "/define/step5"},
-                                    ]},
-    }
-} 
-
+    name: 'sidebar',
+    data() {
+        return {
+            model: "新增自定義模板",
+            img_src: feature2,
+            model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/define/step1"},
+                                        {title: "2. 文字位置標註", path: "/define/step2"},
+                                        {title: "3. 方塊位置標註", path: "/define/step3"},
+                                        {title: "4. Mask 位置標註", path: "/define/step4"},
+                                        {title: "5. 資訊確認", path: "/define/step5"},
+                                        ]},
+        }
+    } 
 }
 </script>
 
 <style scoped>
+.sidebarImg{
+    text-align: center;
+}
 .sidebarImg img{
-    margin-top: 50px;
-    margin-left: 80px;
-    width: 100px;
+    margin-top: 3vh;
+    width: 10vw;
 }
 .title {
     color: white;
     font-size: 24px;
-    margin-top: 50px;
-    margin-left: 45px;
+    margin-top: 3vh;
+    text-align: center;
 }
 .menu-items {
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
-    margin-left: 1px;
+    margin-top: 5vh;
 }
 .side-btn {
     border: none;
     height: 80px;
-    width: 23vw;
-    padding: 15px 30px;
+    width: 25vw;
+    padding: 10px 10px 70px 50px;
     cursor: pointer;
     font-size: 21px;
     font-weight: 500;
@@ -69,7 +70,7 @@ data() {
     color: white;
 }
 .side-btn .link-container {
-    margin-top: 10px;
+    margin-top: 1vh;
     color: white;
 }
 .side-btn.active {
@@ -77,7 +78,7 @@ data() {
     background-color: #09747A;
     color: #10A0A7;
     font-weight: bold;
-    margin-left: 10px;
+    margin-left: 0.7vw;
     border-radius: 50px 0 0 50px;
 }
 .side-btn.active::before {

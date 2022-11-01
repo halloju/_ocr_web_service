@@ -1,4 +1,5 @@
 <template>
+  <Navbar />
   <div class="my-home">
     <div class="introductionWrapper">
       <div class="home-logo">
@@ -77,7 +78,7 @@
     background-position: bottom;
     background-color: #09747A;
     border-radius: 0px;
-    height: 100vh;
+    height: 94vh;
 }
 .home-logo {
   text-align: center;
@@ -128,7 +129,7 @@
 }
 .productWrapper .feature1,.feature2,.feature3{
   background-color: white;
-  height: 45vh;
+  height: 43vh;
   width: 25vw;
   max-width: 350px;
   border-radius: 2vw 2vw 2vw 2vw;
@@ -155,7 +156,11 @@
 }
 </style>
 <script>
+import Navbar from '../components/Navbar.vue'
 export default {
+  components: {
+    Navbar
+  },
   name: 'Home',
   data() {
     return {
