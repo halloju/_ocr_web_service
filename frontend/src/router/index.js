@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LoginView from "@/views/LoginView.vue"
 import Home from '@/views/Home.vue'
 import Define from '@/views/Define.vue'
 import DefineStep1 from '@/views/DefineStep1.vue'
@@ -8,11 +9,11 @@ import DefineStep4 from '@/views/DefineStep4.vue'
 import DefineStep5 from '@/views/DefineStep5.vue'
 
 const routes = [
-//   {
-//     path: '/login',
-//     name: 'LoginView',
-//     component: LoginView,
-//   },
+  {
+    path: '/login',
+    name: 'LoginView',
+    component: LoginView,
+  },
 //   {
 //     path: '/',
 //     name: 'MenuView',
