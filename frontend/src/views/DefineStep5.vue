@@ -1,4 +1,7 @@
 <template>
+  <div class="step">
+    Step.5 資訊確認
+  </div>
   <div class="contentWrapper">
   <div class="contentWrapper1 py-5 ">
     <div class="bar">
@@ -36,16 +39,23 @@
 </template>
 
 <style scoped>
+.step {
+  margin-top: 3vh;
+  margin-left: 3vw;
+  color: white;
+  font-size: 21px;
+  font-weight: bold;
+}
 .contentWrapper {
   display: flex;
-  height: 100vh;
+  height: 90vh;
   justify-content: center;
 }
 .contentWrapper1{
   flex-grow:4;
   background-color: white;
   max-width: 100%;
-  height: 90vh;
+  height: 82vh;
   margin-top: 1.5vh;
   margin-bottom: 1.5vh;
   margin-left: 2vw;

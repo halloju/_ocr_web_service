@@ -1,6 +1,6 @@
 <template>
   <div class="step">
-    Step.3 標註要向位置
+    Step.3 標註要項位置
   </div>
   <div class="buttons">
     <button class="next-button">➡ 下一步</button>

@@ -2,10 +2,10 @@
   <div class="step">
     Step.1 上傳範例圖片
   </div>
+  <div class="buttons">
+    <button class="next-button">➡ 下一步</button>
+  </div>
   <div class="contentWrapper py-5 px-4">
-    <div class="bar">
-      <button class="btn"> New Upload </button>
-    </div>
     <div class="my-content">
       Click your browser or <br>
       drag and drop your files
@@ -21,15 +21,28 @@
   font-size: 21px;
   font-weight: bold;
 }
+.buttons {
+  text-align: right;
+  margin-right: 1vw;
+}
+.buttons .next-button{
+  background-color: #FF9B26;
+  padding: 5px 20px;
+  border-radius: 1vw 1vw 1vw 1vw;
+  text-align: right;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+}
 .contentWrapper{
   display: block;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(226, 230, 234, 0.3);
   max-width: 95%;
   height: 80vh;
-  margin-top: 3vh;
-  margin-bottom: 10%;
-  margin-left: 3vw;
-  margin-right: 3vw;
+  margin-top: 1.5vh;
+  margin-bottom: 1.5vh;
+  margin-left: 2vw;
+  margin-right: 1vw;
   border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
@@ -46,8 +59,7 @@
 }
 .my-content {
   width: 100%;
-  height: 60vh;
-  background-color: rgba(16,160,167, 0.5);
+  height: 70vh;
   padding: 0 0 0 0;
   color: #E2E6EA;
   font-size: 25px;
