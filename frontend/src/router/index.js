@@ -7,6 +7,9 @@ import DefineStep2 from '@/views/DefineStep2.vue'
 import DefineStep3 from '@/views/DefineStep3.vue'
 import DefineStep4 from '@/views/DefineStep4.vue'
 import DefineStep5 from '@/views/DefineStep5.vue'
+import TemplateList from '@/views/TemplateList.vue'
+import TemplatePrivate from '@/views/TemplatePrivate.vue'
+import TemplatePublic from '@/views/TemplatePublic.vue'
 
 const routes = [
   {
@@ -59,6 +62,24 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/template-list',
+    name: 'TemplateList',
+    component: TemplateList,
+    // meta: { requiresAuth: true },
+    children:[
+      {
+        path: 'private',
+        name: 'TemplatePrivate',
+        component: TemplatePrivate,
+      },
+      {
+        path: 'public',
+        name: 'TemplatePublic',
+        component: TemplatePublic,
+      }
+    ]
+  }
 ]
 
 const router = createRouter({

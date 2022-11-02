@@ -42,7 +42,7 @@ data () {
       },
       {
         title: '模板列表',
-        link:'#'
+        link:'/template-list'
       },
       {
         title: '模板辨識',
