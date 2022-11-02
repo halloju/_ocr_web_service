@@ -7,7 +7,7 @@
             {{model}}
         </div>
         <div class="menu-items">
-            <router-link :to="item.path" active-class="active" tag="button" exact class="side-btn" v-for="(item, i) in model_bar[model]">
+            <router-link :to="item.path" active-class="active" tag="button" exact class="side-btn" v-for="(item, i) in model_bar">
                 <div class="link-container">
                     <p>{{item.title}}</p>
                 </div>
@@ -20,20 +20,20 @@
 </template>
 
 <script>
-import feature2 from '@/assets/images/feature2.svg'
 export default {
     name: 'sidebar',
+    props: {
+        model: {
+            type: String
+        },
+        img_src: {
+            type: String
+        },
+        model_bar: {
+            type: Object
+        },
+    },
     data() {
-        return {
-            model: "新增自定義模板",
-            img_src: feature2,
-            model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/define/step1", sub_title: "Step 1"},
-                                        {title: "2. 文字位置標註", path: "/define/step2", sub_title: "Step 2"},
-                                        {title: "3. 方塊位置標註", path: "/define/step3", sub_title: "Step 3"},
-                                        {title: "4. Mask 位置標註", path: "/define/step4", sub_title: "Step 4"},
-                                        {title: "5. 資訊確認", path: "/define/step5", sub_title: "Step 5"},
-                                        ]},
-        }
     } 
 }
 </script>
@@ -160,7 +160,7 @@ export default {
     z-index: 100;
     }
 }
-@media (max-width: 980px) {
+@media (max-width: 1060px) {
 .title {
     color: white;
     font-size: 1.2rem;
