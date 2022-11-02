@@ -9,7 +9,10 @@
         <div class="menu-items">
             <router-link :to="item.path" active-class="active" tag="button" exact class="side-btn" v-for="(item, i) in model_bar[model]">
                 <div class="link-container">
-                    {{item.title}}
+                    <p>{{item.title}}</p>
+                </div>
+                <div class="sub-container">
+                    <p>{{item.sub_title}}</p>
                 </div>
             </router-link>
         </div>
@@ -24,11 +27,11 @@ export default {
         return {
             model: "新增自定義模板",
             img_src: feature2,
-            model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/define/step1"},
-                                        {title: "2. 文字位置標註", path: "/define/step2"},
-                                        {title: "3. 方塊位置標註", path: "/define/step3"},
-                                        {title: "4. Mask 位置標註", path: "/define/step4"},
-                                        {title: "5. 資訊確認", path: "/define/step5"},
+            model_bar: {"新增自定義模板": [{title: "1. 範例圖檔上傳", path: "/define/step1", sub_title: "Step 1"},
+                                        {title: "2. 文字位置標註", path: "/define/step2", sub_title: "Step 2"},
+                                        {title: "3. 方塊位置標註", path: "/define/step3", sub_title: "Step 3"},
+                                        {title: "4. Mask 位置標註", path: "/define/step4", sub_title: "Step 4"},
+                                        {title: "5. 資訊確認", path: "/define/step5", sub_title: "Step 5"},
                                         ]},
         }
     } 
@@ -45,7 +48,7 @@ export default {
 }
 .title {
     color: white;
-    font-size: 24px;
+    font-size: 1.8rem;
     margin-top: 3vh;
     text-align: center;
 }
@@ -54,13 +57,20 @@ export default {
     flex-direction: column;
     margin-top: 5vh;
 }
+.menu-items .link-container p {
+    color: white;
+}
+.menu-items .sub-container {
+    display:none;
+}
 .side-btn {
+    text-align: left;
     border: none;
-    height: 80px;
-    max-width: 300px;
-    padding: 10px 70px;
+    height: 100px;
+    width: 20vw;
+    padding: 2.3vh 5vw;
     cursor: pointer;
-    font-size: 21px;
+    font-size: 24px;
     font-weight: 500;
     color: white;
     background-color: transparent;
@@ -119,5 +129,65 @@ export default {
     border-radius: 50%;
     background-color: #10A0A7;
     
+}
+@media (min-width: 2000px) {
+.side-btn {
+    text-align: left;
+    border: none;
+    height: 100px;
+    width: 17vw;
+    padding: 1.5vh 5vw;
+    cursor: pointer;
+    font-size: 25px;
+    font-weight: 500;
+    color: white;
+    background-color: transparent;
+    z-index: 100;
+    }
+}
+@media (max-width: 1480px) {
+.side-btn {
+    text-align: left;
+    border: none;
+    height: 100px;
+    width: 23vw;
+    padding: 20px 70px;
+    cursor: pointer;
+    font-size: 21px;
+    font-weight: 500;
+    color: white;
+    background-color: transparent;
+    z-index: 100;
+    }
+}
+@media (max-width: 980px) {
+.title {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 3vh;
+    text-align: center;
+}
+.side-btn {
+    text-align: left;
+    border: none;
+    height: 100px;
+    width: 20vw;
+    padding: 2vh 6vw;
+    cursor: pointer;
+    font-size: 21px;
+    font-weight: 500;
+    color: white;
+    background-color: transparent;
+    z-index: 100;
+    }
+.side-btn .link-container p {
+    display: none;
+}
+.menu-items .sub-container {
+    display: block;
+}
+.menu-items .sub-container p {
+    color: white;
+}
 }
 </style>
