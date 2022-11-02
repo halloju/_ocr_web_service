@@ -55,7 +55,6 @@
   border: 5px solid white;
   font-weight: bold;
   text-align: center;
-
 }
 .my-content {
   width: 100%;

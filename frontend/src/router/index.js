@@ -10,6 +10,8 @@ import DefineStep5 from '@/views/DefineStep5.vue'
 import TemplateList from '@/views/TemplateList.vue'
 import TemplatePrivate from '@/views/TemplatePrivate.vue'
 import TemplatePublic from '@/views/TemplatePublic.vue'
+import TemplateOcr from '@/views/TemplateOcr.vue'
+import TemplateOcrUpload from '@/views/TemplateOcrUpload.vue'
 
 const routes = [
   {
@@ -78,6 +80,19 @@ const routes = [
         name: 'TemplatePublic',
         component: TemplatePublic,
       }
+    ]
+  },
+  {
+    path: '/template-ocr',
+    name: 'TemplateOcr',
+    component: TemplateOcr,
+    // meta: { requiresAuth: true },
+    children:[
+      {
+        path: 'upload',
+        name: 'TemplateOcrUpload',
+        component: TemplateOcrUpload,
+      },
     ]
   }
 ]

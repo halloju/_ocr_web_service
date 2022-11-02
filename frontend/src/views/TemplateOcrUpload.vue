@@ -2,11 +2,12 @@
   <div class="contentWrapper">
   <div class="contentWrapper1 py-5 ">
     <div class="my-content">
+      Click your browser or <br>
+      drag and drop your files
     </div>
   </div>
   <div class="contentWrapper2 py-5">
     <div class="my-content2">
-      檢視模板訊息
     </div>
   </div>
   </div>
@@ -27,6 +28,15 @@
   margin-left: 2vw;
   margin-right: 1vw;
   border-radius: 3vw 3vw 3vw 3vw;
+}
+.my-content {
+  width: 100%;
+  height: 80vh;
+  color: #E2E6EA;
+  font-size: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
 }
 .contentWrapper2{
   flex-grow:1;
@@ -53,16 +63,9 @@
   color: grey;
   font-size: 17px;
 }
-.my-content {
-  width: 100%;
-  height: 75vh;
-  color: #008b8b;
-}
 .my-content2 {
-  display: flex;
-  justify-content: center;
-  align-items: center; 
-  font-size: 25px;
+  position: relative;
+  text-align: center;
   width: 100%;
   height: 80vh;
   color: #E2E6EA;

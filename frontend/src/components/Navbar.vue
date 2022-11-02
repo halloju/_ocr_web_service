@@ -46,7 +46,7 @@ data () {
       },
       {
         title: '模板辨識',
-        link: '#'
+        link: '/template-ocr'
       }
     ],
     services3: [
