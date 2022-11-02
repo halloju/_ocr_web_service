@@ -103,7 +103,7 @@
 }
 .my-content {
   width: 100%;
-  height: 75vh;
+  height: 80vh;
   background-color: black;
   color: #008b8b;
 }
