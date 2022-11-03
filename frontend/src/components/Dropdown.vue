@@ -1,7 +1,7 @@
 <template>
 <div class="menu-item" @click="isOpen = !isOpen">
     <img :src="img_src"/>
-    <a href="#">
+    <a href="#" class="menu-title">
         {{ title }}
     </a>
     <transition name="fade" appear>
@@ -16,13 +16,13 @@
 
 <script>
 export default {
-name: 'dropdown',
-props: ['title', 'items', 'img_src'],
-data () {
-    return {
-        isOpen: false
+    name: 'dropdown',
+    props: ['title', 'items', 'img_src'],
+    data () {
+        return {
+            isOpen: false
+        }
     }
-}
 }
 </script>
 
