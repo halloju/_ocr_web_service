@@ -7,7 +7,7 @@
             {{model}}
         </div>
         <div class="menu-items">
-            <router-link :to="item.path" active-class="active" tag="button" exact class="side-btn" v-for="(item, i) in model_bar">
+            <router-link :to="item.path" active-class="active" tag="button" exact :class="{disabled: !(item.order <= parseInt(this.$route.name.slice(-1)))}" class="side-btn" v-for="(item, i) in model_bar">
                 <div class="link-container">
                     <p>{{item.title}}</p>
                 </div>
@@ -45,6 +45,9 @@ export default {
 .sidebarImg img{
     margin-top: 3vh;
     width: 30%;
+}
+.disabled {
+  pointer-events: none;
 }
 .title {
     color: white;
