@@ -11,18 +11,26 @@
     </div>
   </div>
   <div class="contentWrapperSub">
-    <div class="contentWrapper3 py-5">
+    <div class="contentWrapperSub1 py-5">
       <div class="bar">
         <span class="content-title">文字辨識位置</span>
       </div>
       <div class="my-content2">
+        <div class="my-table">
+          <span class="no">No.</span>
+          <span class="ele-name">要項名稱</span>
+        </div>
       </div>
     </div>
-    <div class="contentWrapper4 py-5">
+    <div class="contentWrapperSub2 py-5">
       <div class="bar">
         <span class="content-title">核取方塊辨識位置</span>
       </div>
       <div class="my-content2">
+        <div class="my-table">
+          <span class="no">No.</span>
+          <span class="ele-name">要項名稱</span>
+        </div>
       </div>
     </div>
     <div class="template-description">
@@ -30,17 +38,17 @@
       <br>
       <input value="e.g. Happy 名片">
     </div>
-    <div class="buttons">
-      <button class="config-button"> Cancel </button>
-      <button class="next-button"> 上傳 </button>
-    </div>
   </div>
+  </div>
+  <div class="buttons">
+    <router-link to="" class="btn bg-primary">Cancel</router-link>
+    <router-link to="" class="btn bg-orange">上傳</router-link>
   </div>
 </template>
 
 <style scoped>
 .step {
-  margin-top: 3vh;
+  margin-top: 1.5vh;
   margin-left: 3vw;
   color: white;
   font-size: 21px;
@@ -48,41 +56,34 @@
 }
 .contentWrapper {
   display: flex;
-  height: 90vh;
-  justify-content: center;
+  height: 80vh;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  margin-left: 2vw;
+  margin-right: 1vw;
 }
 .contentWrapper1{
   flex-grow:4;
   background-color: white;
-  max-width: 100%;
-  height: 82vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
-  margin-left: 2vw;
-  margin-right: 1vw;
+  height: 100%;
   border-radius: 3vw 3vw 0vw 0vw;
   overflow: hidden;
 }
 .contentWrapperSub{
   flex-grow:1;
+  height: 100%;
+  margin-left: 1.5vw;
+  margin-right: 0.5vw;
 }
-.contentWrapper3{
+.contentWrapperSub1{
   background-color: white;
-  max-width: 100%;
-  height: 30vh;
-  margin-top: 1.5vh;
-  margin-left: 2vw;
-  margin-right: 1vw;
+  height: 32vh;
+  margin-bottom: 2vh;
   border-radius: 3vw 3vw 3vw 3vw;
 }
-.contentWrapper4{
+.contentWrapperSub2{
   background-color: white;
-  max-width: 100%;
-  height: 30vh;
-  margin-top: 2vh;
-  margin-bottom: 1.5vh;
-  margin-left: 2vw;
-  margin-right: 1vw;
+  height: 32vh;
   border-radius: 3vw 3vw 3vw 3vw;
   padding: 0 0;
 }
@@ -94,12 +95,12 @@
 .bar .content-title {
   margin-left: 30px;
   color: #008b8b;
-  font-size: 17px;
+  font-size: 1.3rem;
   font-weight: bold;
 }
 .bar .content-subtitle {
   color: grey;
-  font-size: 17px;
+  font-size: 1.1rem;
 }
 .my-content {
   width: 100%;
@@ -114,19 +115,23 @@
 }
 .template-description{
   color: white;
+  font-size: 1.3rem;
   font-weight: bold;
   margin-top: 3vh;
   margin-left: 3vw;
 }
 .template-description input{
-  width: 20vw;
+  width: 80%;
+  font-size: 1.3rem;
   margin-top: 3vh;
 }
 .buttons {
-  text-align: left;
-  margin-top: 3vh;
-  margin-left: 3vw;
-  max-width: 27vw;
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.buttons .bg-orange {
+  margin-left: 10%
 }
 .buttons .config-button{
   background-color: #10A0A7;
@@ -148,6 +153,22 @@
   color: white;
   font-size: 15px;
   font-weight: bold;
+}
+.my-content2 .my-table{
+  background-color: #09747A;
+  width: 80%;
+  border-radius: 3vw 3vw 3vw 3vw;
+  margin-left: 10%;
+}
+.my-content2 span {
+  color: white;
+  font-weight: bold;
+}
+.my-content2 .no {
+  margin-left: 10%;
+}
+.my-content2 .ele-name{
+  margin-left: 20%;
 }
 </style>
 <script>

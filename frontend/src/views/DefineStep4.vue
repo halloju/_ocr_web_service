@@ -1,9 +1,6 @@
 <template>
   <div class="step">
-    Step.4 編輯遮罩：遮住會變動區域
-  </div>
-  <div class="buttons">
-    <button class="complete-button"><i class="fa fa-save">&nbsp;&nbsp;</i>完成</button>
+    Step 4. 編輯遮罩：遮住會變動區域
   </div>
   <div class="contentWrapper">
   <div class="contentWrapper1 py-5 ">
@@ -14,49 +11,73 @@
     </div>
   </div>
   </div>
+  <div class="buttons">
+    <router-link to="/define/step5" class="btn bg-orange"><i class="fa fa-save">&nbsp;&nbsp;</i>完成</router-link>
+  </div>
 </template>
 
 <style scoped>
 .step {
-  margin-top: 3vh;
+  margin-top: 1.5vh;
   margin-left: 3vw;
+  margin-right: 3vw;
   color: white;
   font-size: 21px;
   font-weight: bold;
 }
 .buttons {
-  text-align: right;
-  margin-right: 1vw;
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
 }
-.buttons .complete-button{
+.buttons .fa {
+  color: white;
+  font-size: 27px;
+  font-weight: 600;
+}
+.buttons .config-button{
+  background-color: #10A0A7;
+  padding: 5px 20px;
+  border-radius: 1vw 1vw 1vw 1vw;
+  text-align: right;
+  margin-right: 30px;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  height: 100%;
+}
+.buttons .next-button{
   background-color: #FF9B26;
-  padding: 5px 25px;
+  padding: 5px 20px;
   border-radius: 1vw 1vw 1vw 1vw;
   text-align: right;
   color: white;
   font-size: 15px;
   font-weight: bold;
 }
-.buttons .fa {
-  color: white;
-  font-size: 17px;
-  font-weight: 600;
-}
 .contentWrapper {
   display: flex;
+  justify-content: center;
   height: 80vh;
-  justify-content: flex-start;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  margin-left: 2vw;
+  margin-right: 2vw;
 }
 .contentWrapper1{
-  flex:auto;
+  flex-grow:4;
   background-color: white;
-  height: 80vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
-  margin-left: 2vw;
-  margin-right: 1vw;
+  height: 100%;
   border-radius: 3vw 3vw 0vw 0vw;
   overflow: hidden;
+}
+.contentWrapper2{
+  flex-grow:1;
+  background-color: white;
+  height: 100%;
+  margin-left: 1.5vw;
+  margin-right: 0.5vw;
+  border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
   background-color: white;
@@ -66,16 +87,16 @@
 .bar .content-title {
   margin-left: 30px;
   color: #008b8b;
-  font-size: 17px;
+  font-size: 1.3rem;
   font-weight: bold;
 }
 .bar .content-subtitle {
   color: grey;
-  font-size: 17px;
+  font-size: 1.1rem;
 }
 .my-content {
   width: 100%;
-  height: 75vh;
+  height: 80vh;
   background-color: black;
   color: #008b8b;
 }
@@ -83,6 +104,22 @@
   width: 100%;
   height: 50vh;
   color: #E2E6EA;
+}
+.my-content2 .my-table{
+  background-color: #09747A;
+  width: 80%;
+  border-radius: 3vw 3vw 3vw 3vw;
+  margin-left: 10%;
+}
+.my-content2 span {
+  color: white;
+  font-weight: bold;
+}
+.my-content2 .no {
+  margin-left: 10%;
+}
+.my-content2 .ele-name{
+  margin-left: 20%;
 }
 </style>
 <script>

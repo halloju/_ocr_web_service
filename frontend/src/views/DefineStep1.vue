@@ -1,6 +1,6 @@
 <template>
   <div class="step">
-    Step.1 上傳範例圖片
+    Step 1. 上傳範例圖片
   </div>
   <div class="contentWrapper py-5 px-4">
     <div class="my-content">
@@ -9,29 +9,22 @@
     </div>
   </div>
   <div class="buttons">
-    <button class="next-button">➡ 下一步</button>
+    <router-link to="/define/step2" class="btn bg-orange">➡ 下一步</router-link>
   </div>
 </template>
 
 <style scoped>
 .step {
-  margin-top: 3vh;
+  margin-top: 1.5vh;
   margin-left: 3vw;
   color: white;
   font-size: 21px;
   font-weight: bold;
 }
 .buttons {
-  text-align: center;
-  margin-bottom: 3vh;
-}
-.buttons .next-button{
-  background-color: #FF9B26;
-  padding: 5px 20px;
-  border-radius: 1vw 1vw 1vw 1vw;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
 }
 .contentWrapper{
   display: block;
@@ -41,7 +34,7 @@
   margin-top: 1vh;
   margin-bottom: 1vh;
   margin-left: 2vw;
-  margin-right: 1vw;
+  margin-right: 2vw;
   border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
@@ -75,6 +68,7 @@ export default {
     };
   },
   methods: {
+      
     }
 
 };

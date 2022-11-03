@@ -1,10 +1,6 @@
 <template>
   <div class="step">
-    Step.2 標註要項位置
-  </div>
-  <div class="buttons">
-    <button class="config-button">⬆ 上傳設定檔</button>
-    <button class="next-button">➡ 下一步</button>
+    Step 2. 標註要項位置
   </div>
   <div class="contentWrapper">
   <div class="contentWrapper1 py-5 ">
@@ -26,19 +22,28 @@
     </div>
   </div>
   </div>
+  <div class="buttons">
+    <router-link to="/define/step3" class="btn bg-orange">➡ 下一步</router-link>
+    <router-link to="" class="btn bg-primary">⬆ 上傳設定檔</router-link>
+  </div>
 </template>
 
 <style scoped>
 .step {
-  margin-top: 3vh;
+  margin-top: 1.5vh;
   margin-left: 3vw;
+  margin-right: 3vw;
   color: white;
   font-size: 21px;
   font-weight: bold;
 }
 .buttons {
-  text-align: right;
-  margin-right: 1vw;
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.buttons .bg-primary {
+  margin-left: 10%
 }
 .buttons .config-button{
   background-color: #10A0A7;
@@ -62,19 +67,26 @@
 }
 .contentWrapper {
   display: flex;
-  justify-content: center;
   height: 80vh;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  margin-left: 2vw;
+  margin-right: 1vw;
 }
 .contentWrapper1{
   flex-grow:4;
   background-color: white;
-  height: 80vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
-  margin-left: 2vw;
-  margin-right: 1vw;
+  height: 100%;
   border-radius: 3vw 3vw 0vw 0vw;
   overflow: hidden;
+}
+.contentWrapper2{
+  flex-grow:1;
+  background-color: white;
+  height: 100%;
+  margin-left: 1.5vw;
+  margin-right: 0.5vw;
+  border-radius: 3vw 3vw 3vw 3vw;
 }
 .bar {
   background-color: white;
@@ -84,28 +96,18 @@
 .bar .content-title {
   margin-left: 30px;
   color: #008b8b;
-  font-size: 17px;
+  font-size: 1.3rem;
   font-weight: bold;
 }
 .bar .content-subtitle {
   color: grey;
-  font-size: 17px;
+  font-size: 1.1rem;
 }
 .my-content {
   width: 100%;
-  height: 75vh;
+  height: 80vh;
   background-color: black;
   color: #008b8b;
-}
-.contentWrapper2{
-  flex-grow:1;
-  background-color: white;
-  height: 80vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
-  margin-left: 1vw;
-  margin-right: 2vw;
-  border-radius: 3vw 3vw 3vw 3vw;
 }
 .my-content2 {
   width: 100%;
