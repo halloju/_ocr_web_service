@@ -35,6 +35,7 @@ const routes = [
     path: '/define',
     name: 'Define',
     component: Define,
+    redirect: '/define/step1',
     // meta: { requiresAuth: true },
     children:[
       {
@@ -68,6 +69,7 @@ const routes = [
     path: '/template-list',
     name: 'TemplateList',
     component: TemplateList,
+    redirect: '/template-list/private',
     // meta: { requiresAuth: true },
     children:[
       {
@@ -86,6 +88,7 @@ const routes = [
     path: '/template-ocr',
     name: 'TemplateOcr',
     component: TemplateOcr,
+    redirect: '/template-ocr/upload',
     // meta: { requiresAuth: true },
     children:[
       {

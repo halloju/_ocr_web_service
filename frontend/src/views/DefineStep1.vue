@@ -2,14 +2,14 @@
   <div class="step">
     Step.1 上傳範例圖片
   </div>
-  <div class="buttons">
-    <button class="next-button">➡ 下一步</button>
-  </div>
   <div class="contentWrapper py-5 px-4">
     <div class="my-content">
       Click your browser or <br>
       drag and drop your files
     </div>
+  </div>
+  <div class="buttons">
+    <button class="next-button">➡ 下一步</button>
   </div>
 </template>
 
@@ -22,14 +22,13 @@
   font-weight: bold;
 }
 .buttons {
-  text-align: right;
-  margin-right: 1vw;
+  text-align: center;
+  margin-bottom: 3vh;
 }
 .buttons .next-button{
   background-color: #FF9B26;
   padding: 5px 20px;
   border-radius: 1vw 1vw 1vw 1vw;
-  text-align: right;
   color: white;
   font-size: 15px;
   font-weight: bold;
@@ -39,8 +38,8 @@
   background-color: rgba(226, 230, 234, 0.3);
   max-width: 95%;
   height: 80vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
   margin-left: 2vw;
   margin-right: 1vw;
   border-radius: 3vw 3vw 3vw 3vw;

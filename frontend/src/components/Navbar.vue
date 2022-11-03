@@ -10,9 +10,6 @@
     <Dropdown :img_src="img_src3" title="特殊文件識別功能" :items="services3" class="navbar-links"/>
     <Dropdown :img_src="img_src4" title="ESB18507" :items="user_info" class="navbar-links"/>
   </div>
-  <div class="navbar-toggle">
-      <i class="fa fas fa-bars"></i>
-  </div>
 </nav>
 </template>
 
@@ -111,7 +108,7 @@ data () {
   justify-content: flex-end;
 }
 .navbar img {
-  max-width: 27px;
+  max-width: 30px;
 }
 .navbar-links  {
   display: flex;
@@ -121,9 +118,6 @@ data () {
   font-size: 1.2rem;
   margin-left: 5px;
   margin-right: 5px;
-}
-.navbar-toggle {
-  display: none;
 }
 nav .menu-item {
   color: #FFF;
@@ -145,9 +139,6 @@ nav .menu-item a {
   text-decoration: none;
 }
 @media (max-width: 1080px) {
-  .navbar img {
-    max-width: 20px;
-  }
   .navbar-links  {
     justify-content: flex-end;
     height: 48px;
@@ -157,35 +148,23 @@ nav .menu-item a {
   }
 }
 @media (max-width: 980px) {
-  .navbar {
-    position: absolute;
-    top: 6vh;
-    right:0;
-    width: 40vw;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
   .navbar .menu-item {
     justify-content: left;
     font-size: 1.3rem;
   }
   .navbar-links {
+    justify-content: flex-end;
     width: 100%;
     text-align: center;
+  }
+  .navbar-links .menu-title {
+    display: none;
   }
   .navbar-links:hover {
     background-color: #578F8D;
   }
   .menu {
     justify-content: space-between;
-  }
-  .navbar-toggle {
-    font-size: 3rem;
-    display: block;
-  }
-  .fa {
-    color: white;
-    margin-right: 20px;
   }
 }
 </style>
