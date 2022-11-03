@@ -79,12 +79,12 @@
 .bar .content-title {
     margin-left: 30px;
     color: #008b8b;
-    font-size: 17px;
+    font-size: 1.5rem;
     font-weight: bold;
   }
 .bar .content-subtitle {
     color: grey;
-    font-size: 17px;
+    font-size: 1.3rem;
 }
 .my-content0 {
     width: 100%;
