@@ -148,6 +148,9 @@ nav .menu-item a {
   }
 }
 @media (max-width: 980px) {
+  .menu {
+    min-width: 768px;
+  }
   .navbar .menu-item {
     justify-content: left;
     font-size: 1.3rem;

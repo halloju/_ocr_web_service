@@ -15,7 +15,7 @@
       <div class="bar">
         <span class="content-title">文字辨識位置</span>
       </div>
-      <div class="my-content2">
+      <div class="my-content2-small">
         <div class="my-table">
           <span class="no">No.</span>
           <span class="ele-name">要項名稱</span>
@@ -26,7 +26,7 @@
       <div class="bar">
         <span class="content-title">核取方塊辨識位置</span>
       </div>
-      <div class="my-content2">
+      <div class="my-content2-small">
         <div class="my-table">
           <span class="no">No.</span>
           <span class="ele-name">要項名稱</span>

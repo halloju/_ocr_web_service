@@ -11,9 +11,6 @@
                 <div class="link-container">
                     <p>{{item.title}}</p>
                 </div>
-                <div class="sub-container">
-                    <p>{{item.sub_title}}</p>
-                </div>
             </router-link>
         </div>
     </div>
@@ -62,9 +59,6 @@ export default {
 }
 .menu-items .link-container p {
     color: white;
-}
-.menu-items .sub-container {
-    display:none;
 }
 .side-btn {
     text-align: left;
@@ -174,7 +168,7 @@ export default {
     text-align: left;
     border: none;
     height: 100px;
-    width: 20vw;
+    min-width: 300px;
     padding: 2vh 6vw;
     cursor: pointer;
     font-size: 21px;
@@ -182,15 +176,6 @@ export default {
     color: white;
     background-color: transparent;
     z-index: 100;
-    }
-.side-btn .link-container p {
-    display: none;
-}
-.menu-items .sub-container {
-    display: block;
-}
-.menu-items .sub-container p {
-    color: white;
 }
 }
 </style>

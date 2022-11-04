@@ -2,8 +2,8 @@
     display: grid;
     grid-template-columns: 1fr 5fr;
     background-color: #10A0A7;
-    height: 94vh;
-    width: 100vw;
+    height: 95vh;
+    width: 100%;
 }
 .content {
     background: url('@/assets/images/dashborad-bg.svg') no-repeat;
@@ -11,5 +11,6 @@
     background-position: bottom;
     background-color: #09747A;
     border-radius: 0px;
-    height: 94vh;
+    height: 95vh;
+    min-width: 468px;
 }
