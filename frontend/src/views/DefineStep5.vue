@@ -15,7 +15,7 @@
       <div class="bar">
         <span class="content-title">文字辨識位置</span>
         <img :src="open_eye"/>
-        <img :src="open_eye"/>
+        <img :src="close_eye"/>
       </div>
       <div class="my-content2-small">
         <div class="my-table">
@@ -28,7 +28,7 @@
       <div class="bar">
         <span class="content-title">核取方塊辨識位置</span>
         <img :src="open_eye"/>
-        <img :src="open_eye"/>
+        <img :src="close_eye"/>
       </div>
       <div class="my-content2-small">
         <div class="my-table">
@@ -58,8 +58,7 @@
         </div>
         <div class="modal-body">請確認</div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
->
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             關閉
           </button>
           <button type="button" class="btn btn-primary">確定</button>

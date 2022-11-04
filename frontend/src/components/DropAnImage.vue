@@ -1,5 +1,5 @@
 <template>
-  <div class="contentWrapper py-5 "
+  <div class="contentWrapperBlock py-5 "
     :class="getClasses" 
     @dragover.prevent="dragOver" 
     @dragleave.prevent="dragLeave"

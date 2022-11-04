@@ -121,7 +121,7 @@ data () {
 }
 nav .menu-item {
   color: #FFF;
-  padding: 10px 20px;
+  padding: 7px 20px;
   position: relative;
   text-align: center;
   border-bottom: 3px solid transparent;
@@ -137,15 +137,6 @@ nav .menu-item:hover {
 nav .menu-item a {
   color: inherit;
   text-decoration: none;
-}
-@media (max-width: 1080px) {
-  .navbar-links  {
-    justify-content: flex-end;
-    height: 48px;
-    font-size: 1rem;
-    margin-left: 3px;
-    margin-right: 3px;
-  }
 }
 @media (max-width: 980px) {
   .menu {
