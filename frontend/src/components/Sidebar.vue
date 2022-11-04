@@ -36,6 +36,7 @@ export default {
 </script>
 
 <style scoped>
+
 .sidebarImg{
     text-align: center;
 }
@@ -60,14 +61,15 @@ export default {
 .menu-items .link-container p {
     color: white;
 }
-.side-btn {
+.menu-items .side-btn {
+    min-width: 300px;
     text-align: left;
     border: none;
     height: 100px;
     width: 20vw;
     padding: 2.3vh 5vw;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 1.4rem;
     font-weight: 500;
     color: white;
     background-color: transparent;
@@ -141,41 +143,5 @@ export default {
     background-color: transparent;
     z-index: 100;
     }
-}
-@media (max-width: 1480px) {
-.side-btn {
-    text-align: left;
-    border: none;
-    height: 100px;
-    width: 23vw;
-    padding: 20px 70px;
-    cursor: pointer;
-    font-size: 21px;
-    font-weight: 500;
-    color: white;
-    background-color: transparent;
-    z-index: 100;
-    }
-}
-@media (max-width: 1060px) {
-.title {
-    color: white;
-    font-size: 1.2rem;
-    margin-top: 3vh;
-    text-align: center;
-}
-.side-btn {
-    text-align: left;
-    border: none;
-    height: 100px;
-    min-width: 300px;
-    padding: 2vh 6vw;
-    cursor: pointer;
-    font-size: 21px;
-    font-weight: 500;
-    color: white;
-    background-color: transparent;
-    z-index: 100;
-}
 }
 </style>

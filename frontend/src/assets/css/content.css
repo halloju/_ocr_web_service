@@ -93,7 +93,7 @@
 }
 .bar {
     background-color: white;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     text-align: left;
 }
 .bar .content-title {
@@ -105,6 +105,9 @@
 .bar .content-subtitle {
     color: grey;
     font-size: 1.3rem;
+}
+.bar img {
+    margin-left: 8px;
 }
 .my-content0 {
     width: 100%;

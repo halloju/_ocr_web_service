@@ -14,6 +14,8 @@
     <div class="contentWrapperSub1 py-5">
       <div class="bar">
         <span class="content-title">文字辨識位置</span>
+        <img :src="open_eye"/>
+        <img :src="close_eye"/>
       </div>
       <div class="my-content2-small">
         <div class="my-table">
@@ -25,6 +27,8 @@
     <div class="contentWrapperSub2 py-5">
       <div class="bar">
         <span class="content-title">核取方塊辨識位置</span>
+        <img :src="open_eye"/>
+        <img :src="close_eye"/>
       </div>
       <div class="my-content2-small">
         <div class="my-table">
@@ -50,10 +54,15 @@
 @import '@/assets/css/content.css';
 </style>
 <script>
+import open_eye from '@/assets/images/open_eye.svg'
+import close_eye from '@/assets/images/close_eye.svg'
+
 export default {
   name: 'DefineStep1',
   data() {
     return {
+      open_eye: open_eye,
+      close_eye: close_eye,
 
     };
   },
