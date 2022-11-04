@@ -131,20 +131,20 @@
     height: 20vh;
     color: #E2E6EA;
 }
-.my-content2,.my-content2-small .my-table{
+.my-content2 .my-table, .my-content2-small .my-table{
     background-color: #09747A;
     width: 80%;
     border-radius: 3vw 3vw 3vw 3vw;
     margin-left: 10%;
 }
-.my-content2,.my-content2-small span {
+.my-content2 span, .my-content2-small span {
     color: white;
     font-weight: bold;
 }
-.my-content2,.my-content2-small .no {
+.my-content2 .no , .my-content2-small .no {
     margin-left: 10%;
 }
-.my-content2,.my-content2-small .ele-name{
+.my-content2 .ele-name, .my-content2-small .ele-name{
     margin-left: 20%;
 }
 
