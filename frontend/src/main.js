@@ -1,4 +1,6 @@
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css';
+import BootstrapVue3 from 'bootstrap-vue-3'
 import { createApp } from 'vue'
 import store from './store'
 import router from './router'
@@ -13,6 +15,7 @@ axios.defaults.baseURL="http://35.194.164.191:1313"
 createApp(App)
 .use(router, axios)
 .use(store)
+.use(BootstrapVue3)
 .mount('#app')
 
 

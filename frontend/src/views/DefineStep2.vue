@@ -23,8 +23,8 @@
   </div>
   </div>
   <div class="buttons">
-    <router-link to="/define/step3" class="btn bg-orange">➡ 下一步</router-link>
-    <router-link to="" class="btn bg-primary btn-right">⬆ 上傳設定檔</router-link>
+    <router-link to="/define/step3" class="btn bg-primary">➡ 下一步</router-link>
+    <router-link to="" class="btn bg-orange btn-right">⬆ 上傳設定檔</router-link>
   </div>
 </template>
 
