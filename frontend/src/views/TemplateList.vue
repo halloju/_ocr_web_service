@@ -8,21 +8,7 @@
   </div>
 </template>
 <style scoped>
-.dashboard {
-    display: grid;
-    grid-template-columns: 1fr 5fr;
-    background-color: #10A0A7;
-    height: 94vh;
-    width: 100vw;
-}
-.content {
-    background: url('@/assets/images/dashborad-bg.svg') no-repeat;
-    background-size: 130%;
-    background-position: bottom;
-    background-color: #09747A;
-    border-radius: 0px;
-    height: 94vh;
-}
+@import '@/assets/css/sidebar.css';
 </style>
 <script>
 import feature2 from '@/assets/images/feature2.svg'
