@@ -7,7 +7,11 @@
     <transition name="fade" appear>
         <div class="sub-menu" v-if="isOpen">
             <div v-for="(item, i) in items" :key="i" class="menu-item">
-                <a :href="item.link">{{ item.title }}</a>
+                <router-link :to="item.link">
+                    <div class="link-container">
+                        <p>{{item.title}}</p>
+                    </div>
+                </router-link>
             </div>
         </div>
     </transition>
@@ -42,6 +46,9 @@ export default {
     transform: translateX(-50%);
     width: max-content;
     border-radius: 0px 0px 16px 16px;
+}
+.navbar .menu-item .sub-menu .link-container p {
+    color: white;
 }
 .fade-enter-active,
 .fade-leave-active {
