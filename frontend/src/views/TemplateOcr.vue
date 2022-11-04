@@ -8,7 +8,7 @@
   </div>
 </template>
 <style scoped>
-@import '@/assets/css/sidebar.css';
+@import '@/assets/css/sidebar_frame.css';
 </style>
 <script>
 import feature2 from '@/assets/images/feature2.svg'
