@@ -2,12 +2,7 @@
   <div class="step">
     Step 1. 上傳範例圖片
   </div>
-  <div class="contentWrapperBlock">
-    <div class="my-content0">
-      Click your browser or <br>
-      drag and drop your files
-    </div>
-  </div>
+  <DropAnImage />
   <div class="buttons">
     <router-link to="/define/step2" class="btn bg-orange">➡ 下一步</router-link>
   </div>
@@ -17,8 +12,12 @@
 @import '@/assets/css/content.css';
 </style>
 <script>
+import DropAnImage from '@/components/DropAnImage.vue'
 export default {
   name: 'DefineStep1',
+  components: {
+    DropAnImage
+  },
   data() {
     return {
 
