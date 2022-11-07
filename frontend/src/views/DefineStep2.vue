@@ -53,8 +53,11 @@
           <div class="card-body">
             <h4 class="card-subtitle mb-2 text-muted">id: {{ index }}</h4>
             <h5 class="card-title">x: {{ rec.startPointX }}, y: {{ rec.startPointY }}</h5>
+            <h5 class="card-title">width: {{ rec.width }}, height: {{ rec.height }}</h5>
+            <button type="button" class="btn btn-primary btn-sm" @click="deleteRec(index)">刪除</button>
           </div>
         </div>
+        <button class="btn bg-primary btn-sm align-middle" @click="saveRects">儲存</button>
       </div>
     </div>
   </div>
@@ -85,6 +88,7 @@ export default {
         height: height,
       };
     };
+    this.recs = JSON.parse(sessionStorage.recs);
   },
   data() {
     return {
@@ -101,7 +105,6 @@ export default {
   },
   methods: {
     handleMouseDown(event) {
-      console.log("mouse down");
       this.isDrawing = true;
       const pos = this.$refs.stage.getNode().getPointerPosition();
       this.setRecs([
@@ -126,8 +129,13 @@ export default {
       let curRec = this.recs[this.recs.length - 1];
       curRec.width = point.x - curRec.startPointX;
       curRec.height = point.y - curRec.startPointY;
-    }
-  }
-
+    },
+    deleteRec(index) {
+      this.recs.splice(index, 1);
+    },
+    saveRects() {
+      sessionStorage.setItem('recs', JSON.stringify(this.recs));
+    },
+  },
 };
 </script>
