@@ -5,6 +5,7 @@ import { createApp } from 'vue'
 import store from './store'
 import router from './router'
 import App from './App.vue'
+import VueKonva from 'vue-konva';
 
 axios.defaults.withCredentials = false;
 axios.defaults.crossDomain=true;
@@ -16,6 +17,7 @@ createApp(App)
 .use(router, axios)
 .use(store)
 .use(BootstrapVue3)
+.use(VueKonva)
 .mount('#app')
 
 
