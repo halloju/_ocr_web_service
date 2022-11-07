@@ -41,12 +41,18 @@ export default {
   },
   methods:{
     dragOver(){
-      this.isDragging = true
+      if (this.isUploaded) {
+        this.isDragging = true;
+      }
     },
     dragLeave(){
       this.isDragging = false
     },
     drop(e){
+      if (!this.isUploaded) {
+        e.preventDefault()
+        return
+      }
       let files = e.dataTransfer.files
       this.wrongFile = false
       // allows only 1 file
@@ -71,6 +77,12 @@ export default {
     onRequestUploadFiles(){
       
     }
-  }
+  },
+  props: {
+    isUploaded: {
+      type: Boolean,
+      default: false
+    }
+  },
 }
 </script>

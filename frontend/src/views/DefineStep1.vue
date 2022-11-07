@@ -2,7 +2,9 @@
   <div class="step">
     Step 1. 上傳範例圖片
   </div>
-  <DropAnImage />
+  <DropAnImage 
+    :isUploaded="true" 
+  />
   <div class="buttons">
     <router-link to="/define/step2" class="btn bg-orange">➡ 下一步</router-link>
   </div>
