@@ -8,8 +8,7 @@
       <img :src="imageSource" v-if="imageSource" />
       <div class="my-content" v-if="wrongFile">Wrong file type</div>
       <div class="my-content" v-if="!imageSource && !isDragging && !wrongFile">Drop an image</div>
-
-</div>
+  </div>
 </template>
 
 <style scope>

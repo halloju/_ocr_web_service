@@ -55,6 +55,12 @@
     border-radius: 3vw 3vw 3vw 3vw;
     width: 300px;
 }
+.contentWrapperFlex .contentWrapper3{
+    flex-grow:1;
+    height: 100%;
+    margin-left: 1.5vw;
+    border-radius: 3vw 3vw 3vw 3vw;
+}
 .contentWrapperFlex .contentWrapperSub{
     flex-grow:1;
     height: 100%;
@@ -225,7 +231,12 @@
     border-color: #fff;
 }
 img{
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+width: 100%;
+height: 100%;
+object-fit: contain;
+}
+.card {
+    margin: 0 auto; /* Added */
+    float: none; /* Added */
+    margin-bottom: 10px; /* Added */
 }
