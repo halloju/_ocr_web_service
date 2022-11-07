@@ -24,8 +24,8 @@ export default {
     return {
             model: "模板列表",
             img_src: feature2,
-            model_bar: [{title: "個人上傳", path: "/template-list/private", sub_title: "個人"},
-                        {title: "公開", path: "/template-list/public", sub_title: "公開"},
+            model_bar: [{title: "個人上傳", path: "/template-list/private", sub_title: "個人", order: 1},
+                        {title: "公開", path: "/template-list/public", sub_title: "公開", order: 0},
                       ],
       };
   },

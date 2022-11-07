@@ -45,8 +45,26 @@
   </div>
   </div>
   <div class="buttons">
-    <router-link to="" class="btn bg-primary">Cancel</router-link>
-    <router-link to="" class="btn bg-orange btn-right">上傳</router-link>
+    <button type="button" class="btn bg-secondary btn-right" data-bs-toggle="modal" data-bs-target="#exampleModal">取消</button>
+    <button type="button" class="btn bg-primary btn-right" data-bs-toggle="modal" data-bs-target="#exampleModal">上傳</button>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">標題文字</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">請確認</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            關閉
+          </button>
+          <button type="button" class="btn btn-primary">確定</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

@@ -12,7 +12,7 @@
   </div>
   </div>
   <div class="buttons">
-    <router-link to="/define/step5" class="btn bg-orange"><i class="fa fa-save">&nbsp;&nbsp;</i>完成</router-link>
+    <router-link to="/define/step5" class="btn bg-primary"><i class="fa fa-save">&nbsp;&nbsp;</i>完成</router-link>
   </div>
 </template>
 

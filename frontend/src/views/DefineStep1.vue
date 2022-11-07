@@ -6,7 +6,7 @@
     :isUploaded="true" 
   />
   <div class="buttons">
-    <router-link to="/define/step2" class="btn bg-orange">➡ 下一步</router-link>
+    <router-link to="/define/step2" class="btn bg-primary">➡ 下一步</router-link>
   </div>
 </template>
 
