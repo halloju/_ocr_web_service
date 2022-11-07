@@ -66,9 +66,9 @@
     color: inherit;
     text-decoration: none;
   }
-  @media (max-width: 1110px) {
+  @media (max-width: 1260px) {
     .menu {
-      min-width: 1000px;
+      min-width: 1250px;
     }
     nav .menu-item .menu-title p {
       display: none;

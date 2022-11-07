@@ -1,0 +1,16 @@
+.content-item {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    margin-left: 30px;
+}
+.select-item {
+    width: 200px;
+    font-size: 1.2rem;
+    margin-top: 5px;
+    margin-left: 30px;
+    color: grey;
+}
+.sub-step {
+    color: #FFFFFF;
+    margin-left: 3vw;
+}

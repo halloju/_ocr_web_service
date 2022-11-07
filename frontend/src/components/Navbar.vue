@@ -1,11 +1,11 @@
 <template>
 <nav class="menu">
-  <a href="#" class="logo">
+  <a href="/" class="logo">
     <img src="@/assets/images/esun-ocr-logo.svg" alt="logo">
-    <span><a href="/">Esun.OCR</a></span>
+    <span>Esun.OCR</span>
   </a>
   <div class="navbar">
-    <Dropdown :img_src="img_src1" title="通用文件識別功能" class="navbar-links"/>
+    <Dropdown :img_src="img_src1" title="通用文件識別功能" :items="services1" class="navbar-links"/>
     <Dropdown :img_src="img_src2" title="自定義模板" :items="services2" class="navbar-links"/>
     <Dropdown :img_src="img_src3" title="特殊文件識別功能" :items="services3" class="navbar-links"/>
     <Dropdown :img_src="img_src4" title="ESB18507" :items="user_info" class="navbar-links"/>
@@ -31,6 +31,13 @@ data () {
     img_src2: feature2,
     img_src3: feature3,
     img_src4: user_icon,
+    services1: [
+      {
+        title: '通用辨識',
+        link: '/common-ocr',
+        img_src: '',
+      },
+    ],
     services2: [
       {
         title: '新增自定義模板',

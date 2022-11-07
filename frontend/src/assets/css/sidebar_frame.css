@@ -7,7 +7,7 @@
     
 }
 .sidebar {
-    min-width: 300px;
+    min-width: 250px;
 }
 .content {
     background: url('@/assets/images/dashborad-bg.svg') no-repeat;
@@ -16,6 +16,6 @@
     background-color: #09747A;
     border-radius: 0px;
     height: 95vh;
-    min-width: 700px;
-    overflow-y: scroll;
+    min-width: 1000px;
+    overflow: scroll;
 }

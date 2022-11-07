@@ -11,7 +11,11 @@ import TemplateList from '@/views/TemplateList.vue'
 import TemplateList1 from '@/views/TemplateList1.vue'
 import TemplateList2 from '@/views/TemplateList2.vue'
 import TemplateOcr from '@/views/TemplateOcr.vue'
-import TemplateOcrUpload from '@/views/TemplateOcrUpload.vue'
+import TemplateOcr1 from '@/views/TemplateOcr1.vue'
+import TemplateOcr2 from '@/views/TemplateOcr2.vue'
+import CommonOcr from '@/views/CommonOcr.vue'
+import CommonOcr1 from '@/views/CommonOcr1.vue'
+import CommonOcr2 from '@/views/CommonOcr2.vue'
 
 const routes = [
   {
@@ -93,8 +97,32 @@ const routes = [
     children:[
       {
         path: 'upload',
-        name: 'TemplateOcrUpload',
-        component: TemplateOcrUpload,
+        name: 'TemplateOcr1',
+        component: TemplateOcr1,
+      },
+      {
+        path: 'confirm',
+        name: 'TemplateOcr2',
+        component: TemplateOcr2,
+      },
+    ]
+  },
+  {
+    path: '/common-ocr',
+    name: 'CommonOcr',
+    component: CommonOcr,
+    redirect: '/common-ocr/upload',
+    // meta: { requiresAuth: true },
+    children:[
+      {
+        path: 'upload',
+        name: 'CommonOcr1',
+        component: CommonOcr1,
+      },
+      {
+        path: 'confirm',
+        name: 'CommonOcr2',
+        component: CommonOcr2,
       },
     ]
   }
