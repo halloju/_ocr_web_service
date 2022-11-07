@@ -3,13 +3,11 @@
     Step 2. 標註要項位置
   </div>
   <div class="contentWrapperFlex">
-  <div class="contentWrapper1 py-5">
-    <div class="bar">
-      <span class="content-title">上傳圖片</span> &nbsp; <span class="content-subtitle">a.jpg</span>
-    </div>
-    <div class="my-content1">
-    </div>
-  </div>
+
+    <DropAnImage
+      :isUploaded="false"
+    />
+
   <div class="contentWrapper2 py-5">
     <div class="bar">
       <span class="content-title">文字辨識位置</span>
@@ -32,15 +30,23 @@
 @import '@/assets/css/content.css';
 </style>
 <script>
+import DropAnImage from '@/components/DropAnImage.vue'
 export default {
-  name: 'DefineStep1',
+  name: 'DefineStep2',
+  components: {
+    DropAnImage
+  },
   data() {
     return {
-
+      imageSource:sessionStorage.imageSource
     };
   },
   methods: {
-    }
+    checkDrop(e){
+      e.preventDefault()
+    },
+    
+  }
 
 };
 </script>
