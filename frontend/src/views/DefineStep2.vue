@@ -57,6 +57,7 @@
             <button type="button" class="btn btn-primary btn-sm" @click="deleteRec(index)">刪除</button>
           </div>
         </div>
+        <button class="btn bg-primary btn-sm align-middle" @click="saveRects">儲存</button>
       </div>
     </div>
   </div>
@@ -87,6 +88,7 @@ export default {
         height: height,
       };
     };
+    this.recs = JSON.parse(sessionStorage.recs);
   },
   data() {
     return {
@@ -130,6 +132,9 @@ export default {
     },
     deleteRec(index) {
       this.recs.splice(index, 1);
+    },
+    saveRects() {
+      sessionStorage.setItem('recs', JSON.stringify(this.recs));
     },
   },
 };
