@@ -38,16 +38,15 @@
         <div class="bar">
           <span class="content-title">上傳資訊</span>
         </div>
+        <div class="content-item">上傳進度： 100 % </div>
         <div class="content-item">本次上傳總份數： 1 份 </div>
-        <div class="content-item">本次上傳大小： 50 MB </div>
-        <div class="content-item">已上傳總份數： 50 份 </div>
-        <div class="content-item">已上傳大小： 50 MB </div>
-        <div class="content-item">上傳剩餘容量： 450 MB </div>
+        <div class="content-item">本次上傳大小： 10 MB </div>
+        <div class="content-item">本日上傳剩餘容量： 40 MB </div>
       </div>
     </div>
   </div>
   <div class="buttons">
-      <router-link to="" class="btn bg-primary">辨識</router-link>
+      <router-link to="/template-ocr/confirm" class="btn bg-primary">辨識</router-link>
   </div>
 </template>
 
