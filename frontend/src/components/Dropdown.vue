@@ -2,7 +2,7 @@
 <div class="menu-item" @click="isOpen = !isOpen">
     <img :src="img_src"/>
     <a href="#" class="menu-title">
-        {{ title }}
+        <p>{{ title }}</p>
     </a>
     <transition name="fade" appear>
         <div class="sub-menu" v-if="isOpen">
