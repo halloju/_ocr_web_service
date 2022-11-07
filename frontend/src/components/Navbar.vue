@@ -1,8 +1,8 @@
 <template>
 <nav class="menu">
-  <a href="#" class="logo">
+  <a href="/" class="logo">
     <img src="@/assets/images/esun-ocr-logo.svg" alt="logo">
-    <span><a href="/">Esun.OCR</a></span>
+    <span>Esun.OCR</span>
   </a>
   <div class="navbar">
     <Dropdown :img_src="img_src1" title="通用文件識別功能" :items="services1" class="navbar-links"/>
