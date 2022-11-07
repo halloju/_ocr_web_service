@@ -1,75 +1,59 @@
 <template>
-  <div class="contentWrapper">
-  <div class="contentWrapper1 py-5 ">
-    <div class="my-content">
-      Click your browser or <br>
-      drag and drop your files
+  <div class="step">
+    單張或多張圖片上傳
+  </div>
+  <div class="contentWrapperFlex">
+    <div class="contentWrapper5 py-5 ">
+    </div>
+    <div class="contentWrapperSubFull">
+      <div class="contentWrapperSub1 py-5">
+        <div class="bar">
+          <span class="content-title">辨識設定</span>
+        </div>
+        <div class="my-content3-small">
+          <div class="content-item">
+            選擇語言
+          </div>
+          <select class="select-item">
+            <option>請選擇辨識語言</option>
+            <option>英語</option>
+            <option>繁體中文</option>
+            <option>日文</option>
+          </select>
+          <div class="content-item">
+            選擇模板
+          </div>
+          <select class="select-item">
+              <option>請選擇辨識模板</option>
+              <option>Template 1</option>
+              <option>Template 2</option>
+              <option>Template 3</option>
+          </select>
+          <div class="content-item">
+            <input type="checkbox"> 使用高精度模型(耗時較久)
+          </div>
+        </div>
+      </div>
+      <div class="contentWrapperSub2">
+        <div class="bar">
+          <span class="content-title">上傳資訊</span>
+        </div>
+        <div class="content-item">本次上傳總份數： 1 份 </div>
+        <div class="content-item">本次上傳大小： 50 MB </div>
+        <div class="content-item">已上傳總份數： 50 份 </div>
+        <div class="content-item">已上傳大小： 50 MB </div>
+        <div class="content-item">上傳剩餘容量： 450 MB </div>
+      </div>
     </div>
   </div>
-  <div class="contentWrapper2 py-5">
-    <div class="my-content2">
-    </div>
-  </div>
+  <div class="buttons">
+      <router-link to="" class="btn bg-primary">辨識</router-link>
   </div>
 </template>
 
 <style scoped>
-.contentWrapper {
-  display: flex;
-  height: 80vh;
-  justify-content: center;
-}
-.contentWrapper1{
-  flex-grow:4;
-  background-color: rgba(226, 230, 234, 0.3);
-  height: 90vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
-  margin-left: 2vw;
-  margin-right: 1vw;
-  border-radius: 3vw 3vw 3vw 3vw;
-}
-.my-content {
-  width: 100%;
-  height: 80vh;
-  color: #E2E6EA;
-  font-size: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center; 
-}
-.contentWrapper2{
-  flex-grow:1;
-  background-color: rgba(226, 230, 234, 0.3);
-  height: 90vh;
-  margin-top: 1.5vh;
-  margin-bottom: 1.5vh;
-  margin-left: 1vw;
-  margin-right: 2vw;
-  border-radius: 3vw 3vw 3vw 3vw;
-}
-.bar {
-  background-color: white;
-  margin-bottom: 20px;
-  text-align: left;
-}
-.bar .content-title {
-  margin-left: 30px;
-  color: #008b8b;
-  font-size: 17px;
-  font-weight: bold;
-}
-.bar .content-subtitle {
-  color: grey;
-  font-size: 17px;
-}
-.my-content2 {
-  position: relative;
-  text-align: center;
-  width: 100%;
-  height: 80vh;
-  color: #E2E6EA;
-}
+@import '@/assets/css/content.css';
+@import '@/assets/css/template.css';
 </style>
 <script>
 export default {

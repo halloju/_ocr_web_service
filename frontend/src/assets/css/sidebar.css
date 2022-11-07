@@ -23,10 +23,11 @@
 }
 .menu-items .link-container p {
     color: white;
+    width: 250px
 }
 .menu-items .side-btn {
     margin-left: 10px;
-    min-width: 290px;
+    min-width: 240px;
     text-align: center;
     padding-top: 25px;
     border: none;

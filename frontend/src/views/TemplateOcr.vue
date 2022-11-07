@@ -24,8 +24,8 @@ export default {
     return {
             model: "模板辨識",
             img_src: feature2,
-            model_bar: [{title: "1. 圖檔上傳", path: "/template-ocr/upload", sub_title: "1. 圖檔上傳"},
-                      ],
+            model_bar: [{title: "1. 圖片上傳", path: "/template-ocr/upload", sub_title: "圖檔上傳"},
+                       ],
       };
   },
   methods: {
