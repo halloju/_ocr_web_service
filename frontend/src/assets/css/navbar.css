@@ -68,7 +68,7 @@
   }
   @media (max-width: 1110px) {
     .menu {
-      min-width: 768px;
+      min-width: 1000px;
     }
     nav .menu-item .menu-title p {
       display: none;
