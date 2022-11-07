@@ -32,15 +32,6 @@ export default {
     },
     data() {
     },
-    computed: {
-        isDisabled() {
-            if (parseInt(this.$route.name.slice(-1))!=='NaN') {
-                return !(item.order <= parseInt(this.$route.name.slice(-1)))
-            } else {
-                return
-            }
-        }
-    }
 }
 </script>
 

@@ -8,8 +8,8 @@ import DefineStep3 from '@/views/DefineStep3.vue'
 import DefineStep4 from '@/views/DefineStep4.vue'
 import DefineStep5 from '@/views/DefineStep5.vue'
 import TemplateList from '@/views/TemplateList.vue'
-import TemplatePrivate from '@/views/TemplatePrivate.vue'
-import TemplatePublic from '@/views/TemplatePublic.vue'
+import TemplateList1 from '@/views/TemplateList1.vue'
+import TemplateList2 from '@/views/TemplateList2.vue'
 import TemplateOcr from '@/views/TemplateOcr.vue'
 import TemplateOcrUpload from '@/views/TemplateOcrUpload.vue'
 
@@ -74,13 +74,13 @@ const routes = [
     children:[
       {
         path: 'private',
-        name: 'TemplatePrivate',
-        component: TemplatePrivate,
+        name: 'TemplateList1',
+        component: TemplateList1,
       },
       {
         path: 'public',
-        name: 'TemplatePublic',
-        component: TemplatePublic,
+        name: 'TemplateList2',
+        component: TemplateList2,
       }
     ]
   },
