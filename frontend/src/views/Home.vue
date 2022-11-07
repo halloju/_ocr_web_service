@@ -127,7 +127,8 @@
   display: flex;
   justify-content: space-around;
 }
-.productWrapper .feature1,.feature2,.feature3{
+.productWrapper .feature1, .productWrapper .feature2, .productWrapper .feature3{
+  display: grid;
   background-color: white;
   height: 43vh;
   width: 25vw;
