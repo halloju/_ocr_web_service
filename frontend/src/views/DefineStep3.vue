@@ -62,7 +62,7 @@
     </div>
   </div>
   <div class="buttons">
-    <router-link to="/define/step3" class="btn bg-primary">➡ 下一步</router-link>
+    <router-link to="/define/step4" class="btn bg-primary">➡ 下一步</router-link>
     <router-link to="" class="btn bg-orange btn-right">⬆ 上傳設定檔</router-link>
   </div>
 </template>
@@ -89,6 +89,7 @@ export default {
       };
     };
     this.recs_block = JSON.parse(sessionStorage.getItem('recs_block'))? JSON.parse(sessionStorage.getItem('recs_block')): [];
+    this.recs = JSON.parse(sessionStorage.getItem('recs'))? JSON.parse(sessionStorage.getItem('recs')): [];
   },
   data() {
     return {
@@ -99,6 +100,7 @@ export default {
       image: null,
       isDrawing: false,
       recs_block: [],
+      recs: [],
     };
   },
   methods: {

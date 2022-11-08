@@ -3,13 +3,43 @@
     Step.5 資訊確認
   </div>
   <div class="contentWrapperFlex">
-    <div class="contentWrapper1 py-5 ">
-      <div class="bar">
-        <span class="content-title">上傳圖片</span> &nbsp; <span class="content-subtitle">a.jpg</span>
-      </div>
-      <div class="my-content1">
-      </div>
+    <div class="contentWrapperBlock py-5">
+      <v-stage
+      ref="stage"
+      :config="stageSize"
+      @mousemove="handleMouseMove"
+      @mouseDown="handleMouseDown"
+      @mouseUp="handleMouseUp"
+      >
+      <v-layer ref="dragLayer">
+        <v-image
+            :config="{
+              image: image,
+              x: 0,
+              y: 0,
+              width: stageSize.width,
+              height: stageSize.height,
+            }"
+        />
+      </v-layer>
+      <v-layer ref="layer">
+        <v-rect
+          v-for="(rec, index) in recs_block"
+          :key="index"
+          :config="{
+            x: Math.min(rec.startPointX, rec.startPointX + rec.width),
+            y: Math.min(rec.startPointY, rec.startPointY + rec.height),
+            width: Math.abs(rec.width),
+            height: Math.abs(rec.height),
+            fill: 'rgb(0,0,0,0)',
+            stroke: 'black',
+            strokeWidth: 3,
+          }"
+        />
+      </v-layer>
+    </v-stage>
     </div>
+    <div class="contentWrapper2 py-5">
     <div class="contentWrapperSub">
       <div class="contentWrapperSub1 py-5">
         <div class="bar">
@@ -21,6 +51,13 @@
           <div class="my-table">
             <span class="no">No.</span>
             <span class="ele-name">要項名稱</span>
+          </div>
+          <div v-for="(rec, index) in recs" class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h4 class="card-subtitle mb-2 text-muted">id: {{ index }}</h4>
+              <h5 class="card-title">x: {{ rec.startPointX }}, y: {{ rec.startPointY }}</h5>
+              <h5 class="card-title">width: {{ rec.width }}, height: {{ rec.height }}</h5>
+            </div>
           </div>
         </div>
       </div>
@@ -35,6 +72,13 @@
             <span class="no">No.</span>
             <span class="ele-name">要項名稱</span>
           </div>
+          <div v-for="(rec, index) in recs_block" class="card" style="width: 18rem;">
+            <div class="card-body">
+              <h4 class="card-subtitle mb-2 text-muted">id: {{ index }}</h4>
+              <h5 class="card-title">x: {{ rec.startPointX }}, y: {{ rec.startPointY }}</h5>
+              <h5 class="card-title">width: {{ rec.width }}, height: {{ rec.height }}</h5>
+            </div>
+          </div>
         </div>
       </div>
       <div class="template-description">
@@ -42,6 +86,7 @@
         <br>
         <input value="e.g. Happy 名片">
       </div>
+    </div>
     </div>
   </div>
   <div class="buttons">
@@ -72,20 +117,41 @@
 @import '@/assets/css/content.css';
 </style>
 <script>
+const width = window.innerWidth/2;
+const height = window.innerHeight/2;
 import open_eye from '@/assets/images/open_eye.svg'
 import close_eye from '@/assets/images/close_eye.svg'
 
 export default {
-  name: 'DefineStep1',
+  name: 'DefineStep5',
+  mounted() {
+    this.recs = JSON.parse(sessionStorage.getItem('recs'))? JSON.parse(sessionStorage.getItem('recs')): [];
+    this.recs_block = JSON.parse(sessionStorage.getItem('recs_block'))? JSON.parse(sessionStorage.getItem('recs_block')): [];
+    this.image = new window.Image();
+    this.image.src = sessionStorage.imageSource;
+    this.image.onload = () => {
+      this.stageSize = {
+        width: width,
+        height: height,
+      };
+    };
+  },
   data() {
     return {
       open_eye: open_eye,
       close_eye: close_eye,
-
+      recs: [],
+      recs_block: [],
+      stageSize: {
+        width: width,
+        height: height,
+      },
+      image: null,
     };
   },
   methods: {
-    }
+
+  }
 
 };
 </script>

@@ -7,7 +7,7 @@ import router from './router'
 import App from './App.vue'
 import VueKonva from 'vue-konva';
 
-axios.defaults.withCredentials = false;
+axios.defaults.withCredentials=false;
 axios.defaults.crossDomain=true;
 axios.defaults.baseURL="http://35.194.164.191:1313"
 // axios.defaults.baseURL="http://localhost:5000"
