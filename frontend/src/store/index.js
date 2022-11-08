@@ -17,8 +17,10 @@ const store = new Vuex.Store({
                 },
     event: "",
     response: {},
+    recs_text: [],
+    recs_block: [],
   },
- 
+
   mutations: {
     step1:function (state, payload) {
         state.cus_input = payload;
@@ -26,7 +28,7 @@ const store = new Vuex.Store({
     step3:function (state, payload) {
         state.event = payload
     },
-    sendAPI: function (state, payload) {
+    sendAPI:function (state, payload) {
         state.response = payload
     },
     back:function (state) {
