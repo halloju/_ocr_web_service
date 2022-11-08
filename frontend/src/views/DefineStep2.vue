@@ -88,7 +88,7 @@ export default {
         height: height,
       };
     };
-    this.recs = JSON.parse(sessionStorage.recs);
+    this.recs = JSON.parse(sessionStorage.getItem('recs'))? JSON.parse(sessionStorage.getItem('recs')): [];
   },
   data() {
     return {
@@ -97,8 +97,6 @@ export default {
         height: height,
       },
       image: null,
-      text: "Try to draw a rectangle",
-      lines: [],
       isDrawing: false,
       recs: [],
     };
