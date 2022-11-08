@@ -21,7 +21,7 @@
 </style>
 <script>
 export default {
-  name: 'DefineStep1',
+  name: 'DefineStep4',
   data() {
     return {
 
