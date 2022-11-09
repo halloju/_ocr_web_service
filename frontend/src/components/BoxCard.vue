@@ -11,8 +11,7 @@
         <div v-for="(rec, index) in recs" class="card" style="width: 18rem;">
           <div class="card-body">
             <h4 class="card-subtitle mb-2 text-muted">id: {{ index }}</h4>
-            <h5 class="card-title">x: {{ rec.startPointX }}, y: {{ rec.startPointY }}</h5>
-            <h5 class="card-title">width: {{ rec.width }}, height: {{ rec.height }}</h5>
+            <h5 class="card-title">name: {{ rec.name }}</h5>
             <button type="button" class="btn btn-primary btn-sm" @click="deleteRec(index)">刪除</button>
           </div>
         </div>
