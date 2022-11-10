@@ -19,46 +19,15 @@
           opacity: this.imageConfig.opacity,
         }" ref="image"
     />
-    <v-rect
-      :config ="{
-        x: 0,
-        y: 0,
-        width: this.imageConfig.width,
-        height: this.imageConfig.width,
-        fill: 'rgb(0,0,0,0)',
-        stroke: 'black',
-        strokeWidth: 3,
-      }"
+    <Rect v-if="canDraw"
+      :boxName="boxName"
+      :fillColor="fillColor"
     />
-    <v-group
-      v-for="(rec, index) in recs"
-      :key="index"
-      :config="{
-        x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-        y: Math.min(rec.startPointY, rec.startPointY + rec.height),
-      }"
-      @click="showEventInfoModal(rec.name)"
-    >
-    <v-rect
-      :key="index"
-      :config="{
-        width: Math.abs(rec.width),
-        height: Math.abs(rec.height),
-        fill: 'rgb(256,256,256,0.1)',
-        stroke: 'rgb(20,20,200,1)',
-        strokeWidth: 3,
-      }"
+    <Rect v-else v-for="box in otherBoxes"
+      :key="box.boxName"
+      :boxName="box.boxName"
+      :fillColor="box.fillColor"
     />
-    <v-text
-      :config="{
-        text: index,
-        fontSize: 30,
-        fill: 'rgb(20,20,200,1)',
-        x: -20,
-        y: 0,
-      }"
-    />
-    </v-group>
   </v-layer>
   
   
@@ -79,6 +48,7 @@
 <script>
 const width = window.innerWidth * 0.6;
 const height = window.innerHeight * 0.6;
+import Rect from '@/components/Rect.vue'
 
 export default {
   name: 'Box',
@@ -94,6 +64,7 @@ export default {
     this.recs = this.$store.state[this.boxName];
   },
   components: {
+    Rect,
   },
   data(){
     return {
@@ -111,13 +82,13 @@ export default {
       },
       isDrawing: false,
       isInputing: false,
-      filters: [Konva.Filters.Blur]
     };
   },
   computed:{
   },
   methods:{
     handleMouseDown(event) {
+      if(!this.canDraw) return;
       this.isDrawing = true;
       const pos = this.$refs.stage.getNode().getPointerPosition();
       this.setRecs([
@@ -127,6 +98,7 @@ export default {
       this.$store.state[this.boxName] = this.recs;
     },
     handleMouseUp() {
+      if(!this.canDraw) return;
       this.isDrawing = false;
       this.inputText();
     },
@@ -178,8 +150,21 @@ export default {
   },
   props: {
     boxName: {
-      type: String
-    }
+      type: String,
+      required: true,
+    },
+    canDraw: {
+      type: Boolean,
+      default: true,
+    },
+    fillColor: {
+      type: Object,
+      required: false,
+    },
+    otherBoxes: {
+      type: Object,
+      required: false,
+   },
   },
 }
 </script>

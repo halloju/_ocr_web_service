@@ -5,10 +5,11 @@
   <div class="contentWrapperFlex">
     <Box 
       :boxName="boxName"
+      :fillColor="fillColor"
     />
     <BoxCard
       :boxName="boxName"
-      :BoxTitle="BoxTitle"
+      :boxTitle="boxTitle"
     />
   </div>
   <div class="buttons">
@@ -34,7 +35,13 @@ export default {
   data() {
     return {
       boxName: 'recs_block',
-      BoxTitle: '核取方塊位置',
+      boxTitle: '核取方塊位置',
+      fillColor: {
+        r: 0,
+        g: 0,
+        b: 255,
+        a: 0.5,
+      },
     };
   },
 };

@@ -3,11 +3,14 @@
     Step.5 資訊確認
   </div>
   <div class="contentWrapperFlex">
-    <Box :boxName="'recs_text'" />
+    <Box
+      :canDraw="false" 
+      :boxName="nothing"
+      :otherBoxes="otherBoxes" />
     <div class="contentWrapper2 py-5">
       <div class="contentWrapperSub">
-        <BoxCard :BoxTitle="'文字辨識位置'" :boxName="'recs_text'"/>
-        <BoxCard :boxName="'recs_block'" :BoxTitle="'核取方塊位置'"/>
+        <BoxCard :boxName="'recs_text'" :boxTitle="'文字辨識位置'"/>
+        <BoxCard :boxName="'recs_block'" :boxTitle="'核取方塊位置'"/>
         <div class="template-description">
           模板說明
           <br>
@@ -57,6 +60,28 @@ export default {
       return {
         open_eye: open_eye,
         close_eye: close_eye,
+        otherBoxes: [
+          {
+            boxName: 'recs_text',
+            boxTitle: '文字辨識位置',
+            fillColor: {
+              r: 0,
+              g: 255,
+              b: 0,
+              a: 0.5,
+            },
+          },
+          {
+            boxName: 'recs_block',
+            boxTitle: '核取方塊位置',
+            fillColor: {
+              r: 0,
+              g: 0,
+              b: 255,
+              a: 0.5,
+            },
+          },
+        ],
       };
     },
     methods: {},
