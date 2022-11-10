@@ -1,5 +1,5 @@
 <template>
-
+  <div class="contentWrapperBlock y-5" ref="img_block">
   <v-stage
   ref="stage"
   :config="stageConfig"
@@ -8,31 +8,29 @@
   @mouseDown="handleMouseDown"
   @mouseUp="handleMouseUp"
   >
-  <v-layer ref="layer">
-    <v-image
-        :config="{
-          x: 0,
-          y: 0,
-          width: this.imageConfig.width,
-          height: this.imageConfig.height,
-          image: this.image,
-          opacity: this.imageConfig.opacity,
-        }" ref="image"
-    />
-    <Rect v-if="canDraw"
-      :boxName="boxName"
-      :fillColor="fillColor"
-    />
-    <Rect v-else v-for="box in otherBoxes"
-      :key="box.boxName"
-      :boxName="box.boxName"
-      :fillColor="box.fillColor"
-    />
-  </v-layer>
-  
-  
-  
+    <v-layer ref="layer">
+      <v-image
+          :config="{
+            width: this.imageConfig.width,
+            height: this.imageConfig.height,
+            image: this.image,
+            opacity: this.imageConfig.opacity,
+            x: this.imageConfig.x,
+            y: this.imageConfig.y,
+          }" ref="image"
+      />
+      <Rect v-if="canDraw"
+        :boxName="boxName"
+        :fillColor="fillColor"
+      />
+      <Rect v-else v-for="box in otherBoxes"
+        :key="box.boxName"
+        :boxName="box.boxName"
+        :fillColor="box.fillColor"
+      />
+    </v-layer>
   </v-stage>
+  </div>
   <form v-if="isInputing">
     <div class="form-group" >
       <input class="form-control" type="text" placeholder="text name" ref="rec_name">
@@ -46,8 +44,7 @@
 </style>
 
 <script>
-const width = window.innerWidth * 0.6;
-const height = window.innerHeight * 0.6;
+const ratio = 0.6;
 import Rect from '@/components/Rect.vue'
 
 export default {
@@ -55,10 +52,13 @@ export default {
   mounted(){
     this.image = new window.Image();
     this.image.src = sessionStorage.imageSource;
+    const resize = Math.min(this.$refs.img_block.clientWidth/this.image.width, this.$refs.img_block.clientHeight/this.image.height);
     this.image.onload = () => {
       this.imageConfig = {
-        width: this.image.width,
-        height: this.image.height,
+        width: this.image.width * resize * 0.95,
+        height: this.image.height * resize * 0.95,
+        x: (this.$refs.img_block.clientWidth - this.image.width * resize * 0.95) / 2,
+        y: (this.$refs.img_block.clientHeight - this.image.height * resize * 0.95) / 2,
       }
     };
     this.recs = this.$store.state[this.boxName];
@@ -71,14 +71,16 @@ export default {
       recs: [],
       image: null,
       stageConfig: {
-        x: 10,
-        y: 30,
-        width: width,
-        height: height,
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 720,
       },
       imageConfig: {
         width: null,
         height: null,
+        x: 10,
+        y: 20,
       },
       isDrawing: false,
       isInputing: false,
@@ -147,6 +149,11 @@ export default {
       this.$store.state.eventInfoModal = true;
       this.$store.state.eventInfoModalName = name;
     },
+    centreRectShape(){
+      this.imageConfig.x = this.$refs.img_block.getBoundingClientRect().left + (this.$refs.img_block.clientWidth- this.imageConfig.width)/2;
+      this.imageConfig.y = this.$refs.img_block.getBoundingClientRect().top + (this.$refs.img_block.clientHeight - this.imageConfig.height)/2;
+      console.log(this.imageConfig.x, this.imageConfig.y);
+    }
   },
   props: {
     boxName: {
