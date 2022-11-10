@@ -1,7 +1,7 @@
 <template>
   <div class="contentWrapper2 py-5">
       <div class="bar">
-        <span class="content-title">{{ BoxTitle }}</span>
+        <span class="content-title">{{ boxTitle }}</span>
       </div>
       <div class="my-content2">
         <div class="my-table">
@@ -52,7 +52,7 @@ export default {
     boxName: {
       type: String
     },
-    BoxTitle: {
+    boxTitle: {
       type: String
     },
   },
