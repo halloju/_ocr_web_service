@@ -3,7 +3,6 @@
   <v-stage
   ref="stage"
   :config="stageConfig"
-  @wheel="wheelForScale($event)"
   @mousemove="handleMouseMove"
   @mouseDown="handleMouseDown"
   @mouseUp="handleMouseUp"
@@ -30,13 +29,14 @@
       />
     </v-layer>
   </v-stage>
-  </div>
   <form v-if="isInputing">
     <div class="form-group" >
       <input class="form-control" type="text" placeholder="text name" ref="rec_name">
     </div>
     <button type="submit" class="btn" @click="setRecName">Submit</button>
   </form>
+  </div>
+  
 </template>
 
 <style scope>
@@ -44,7 +44,7 @@
 </style>
 
 <script>
-const ratio = 0.6;
+const ratio = 0.95;
 import Rect from '@/components/Rect.vue'
 
 export default {
@@ -55,10 +55,10 @@ export default {
     const resize = Math.min(this.$refs.img_block.clientWidth/this.image.width, this.$refs.img_block.clientHeight/this.image.height);
     this.image.onload = () => {
       this.imageConfig = {
-        width: this.image.width * resize * 0.95,
-        height: this.image.height * resize * 0.95,
-        x: (this.$refs.img_block.clientWidth - this.image.width * resize * 0.95) / 2,
-        y: (this.$refs.img_block.clientHeight - this.image.height * resize * 0.95) / 2,
+        width: this.image.width * resize * ratio,
+        height: this.image.height * resize * ratio,
+        x: (this.$refs.img_block.clientWidth - this.image.width * resize * ratio) / 2,
+        y: (this.$refs.img_block.clientHeight - this.image.height * resize * ratio) / 2,
       }
     };
     this.recs = this.$store.state[this.boxName];

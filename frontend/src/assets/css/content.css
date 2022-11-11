@@ -53,9 +53,8 @@
     flex-grow:1;
     background-color: white;
     height: 100%;
-    margin-left: 1.5vw;
     border-radius: 3vw 3vw 3vw 3vw;
-    width: 300px;
+    width: auto;
 }
 .contentWrapperFlex .contentWrapper3{
     flex-grow:1;
@@ -66,8 +65,8 @@
 .contentWrapperFlex .contentWrapperSub{
     flex-grow:1;
     height: 100%;
-    margin-left: 1.5vw;
-    margin-right: 0.5vw;
+    /* margin-left: 1.5vw;
+    margin-right: 0.5vw; */
 }
 .contentWrapperFlex .contentWrapperSub1{
     background-color: white;
@@ -241,4 +240,13 @@ object-fit: contain;
     margin: 0 auto; /* Added */
     float: none; /* Added */
     margin-bottom: 10px; /* Added */
+}
+.delete-btn{
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    color: #333;
+    background-color:#fff;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
 }

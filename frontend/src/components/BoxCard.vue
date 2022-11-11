@@ -1,5 +1,5 @@
 <template>
-  <div class="contentWrapper2 py-5">
+  <div class="contentWrapper2">
       <div class="bar">
         <span class="content-title">{{ boxTitle }}</span>
       </div>
@@ -8,16 +8,16 @@
           <span class="no">No.</span>
           <span class="ele-name">要項名稱</span>
         </div>
-        <div v-for="(rec, index) in recs" class="card" style="width: 18rem;">
-          <div class="card-body">
-            <h4 class="card-subtitle mb-2 text-muted">id: {{ index }}</h4>
-            <h5 class="card-title">name: {{ rec.name }}</h5>
-            <button type="button" class="btn btn-primary btn-sm" @click="deleteRec(index)">刪除</button>
-          </div>
-        </div>
-      <!-- <button class="btn bg-primary btn-sm align-middle" @click="saveRects">儲存</button> -->
+        <Card v-if="canDelete"
+          :boxName="boxName"
+        />
+        <Card v-else v-for="box in otherBoxes"
+          :boxName="box.boxName"
+          :boxTitle="box.boxTitle"
+          :canDelete="canDelete"
+        />
       </div>
-    </div>
+      </div>
 </template>
 
 <style scope>
@@ -25,14 +25,15 @@
 </style>
 
 <script>
+import Card from '@/components/Card.vue';
 
 export default {
   name: 'BoxCard',
   mounted(){
     this.recs = this.$store.state[this.boxName];
-    console.log(this.recs);
   },
   components: {
+    Card,
   },
   computed:{
     recs(){
@@ -54,6 +55,14 @@ export default {
     },
     boxTitle: {
       type: String
+    },
+    canDelete: {
+      type: Boolean,
+      default: true,
+    },
+    otherBoxes: {
+      type: Object,
+      required: false,
     },
   },
 }
