@@ -19,6 +19,7 @@ const store = new Vuex.Store({
     response: {},
     recs_text: [],
     recs_block: [],
+    recs_mask: [],
   },
 
   mutations: {
