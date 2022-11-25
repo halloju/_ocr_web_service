@@ -1,83 +1,284 @@
-.my-home {
-  min-width: 1000px;
-  background: url('@/assets/images/dashborad-bg.svg') no-repeat;
-  background-size: 130%;
-  background-position: bottom;
-  background-color: #09747A;
-  border-radius: 0px;
-  height: 95vh;
-  overflow-x: scroll;
-}
-.home-logo {
-  text-align: center;
-}
-.home-logo img{
-  width: 300px;
-  height: 10vh;
-  text-align: center;
-  margin-top: 2vh;
-}
-.sub-title {
-  font-size: 30px;
-  text-align: center;
-  margin-top: 2vh;
-  color: white;
-}
-.title {
-  font-size: 50px;
-  text-align: center;
-  margin-top: 1vh;
-  color: white;
-}
-.buttons {
-  text-align: center;
-}
-.buttons .start-button{
-  background-image: linear-gradient(155deg,#F79E0E, #EEBD23);
-  padding: 15px 50px;
-  border-radius: 0.5vw 0.5vw 0.5vw 0.5vw;
-  color: white;
-  font-size: 26px;
-  font-weight: bold;
-  margin-top: 1vw;
-  border: none;
-}
-.feature-title {
-  font-weight: bold;
-  font-size: 26px;
-  color: #F79E0E;
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-.productWrapper {
-  display: flex;
-  justify-content: space-around;
-}
-.productWrapper .feature1, .productWrapper .feature2, .productWrapper .feature3{
-  display: grid;
-  background-color: white;
-  height: 45vh;
-  width: 300px;
-  max-width: 350px;
-  border-radius: 2vw 2vw 2vw 2vw;
-  text-align: center;
-  justify-content: center;
-}
-.productWrapper .feature-icon {
-  width: 100px;
-}
-.productWrapper .feature-sub {
-  color: #E1A325;
-  font-weight: bold;
-  font-size: 1.5rem;
-}
-.product-content {
-  display: flex;
-  align-items: center;
-  justify-self: center;
-}
-.product-content .tick-icon {
-  width: 35px;
-  margin-right: 10px;
-}
+/**
+* Template Name: Arsha - v4.9.1
+* Template URL: https://bootstrapmade.com/arsha-free-bootstrap-html-template-corporate/
+* Author: BootstrapMade.com
+* License: https://bootstrapmade.com/license/
+*/
+
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+body {
+    font-family: "Open Sans", sans-serif;
+    color: #444444;
+  }
+  
+  a {
+    color: #47b2e4;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #73c5eb;
+    text-decoration: none;
+  }
+  
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Jost", sans-serif;
+  }
+  
+  /*--------------------------------------------------------------
+  # Hero Section
+  --------------------------------------------------------------*/
+  #hero {
+    width: 100%;
+    background: #09747A;
+  }
+  
+  #hero .container {
+    padding-top: px;
+  }
+  
+  #hero h1 {
+    margin: 0 0 10px 0;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+    color: #fff;
+  }
+  
+  #hero h2 {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 50px;
+    font-size: 24px;
+  }
+  
+  #hero .btn-get-started {
+    font-family: "Jost", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: inline-block;
+    padding: 10px 28px 11px 28px;
+    border-radius: 50px;
+    transition: 0.5s;
+    margin: 10px 0 0 0;
+    color: #fff;
+    background: #47b2e4;
+  }
+  
+  #hero .btn-get-started:hover {
+    background: #209dd8;
+  }
+  
+  #hero .btn-watch-video {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    transition: 0.5s;
+    margin: 10px 0 0 25px;
+    color: #fff;
+    line-height: 1;
+  }
+  
+  #hero .btn-watch-video i {
+    line-height: 0;
+    color: #fff;
+    font-size: 32px;
+    transition: 0.3s;
+    margin-right: 8px;
+  }
+  
+  #hero .btn-watch-video:hover i {
+    color: #47b2e4;
+  }
+  
+  #hero .animated {
+    animation: up-down 2s ease-in-out infinite alternate-reverse both;
+    margin-bottom: 30px;
+  }
+  #hero .section-title h2{
+    font-size: 45px;
+    color: white !important;
+  }
+  #hero .section-title p {
+    font-size: 24px;
+    color: white !important;
+  }
+
+  @media (max-width: 991px) {
+    #hero {
+      height: 100vh;
+      text-align: center;
+    }
+  
+    #hero .animated {
+      -webkit-animation: none;
+      animation: none;
+    }
+  
+    #hero .hero-img {
+      text-align: center;
+    }
+  
+    #hero .hero-img img {
+      width: 50%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    #hero h1 {
+      font-size: 28px;
+      line-height: 36px;
+    }
+  
+    #hero h2 {
+      font-size: 18px;
+      line-height: 24px;
+      margin-bottom: 30px;
+    }
+  
+    #hero .hero-img img {
+      width: 70%;
+    }
+  }
+  
+  @media (max-width: 575px) {
+    #hero .hero-img img {
+      width: 80%;
+    }
+  
+    #hero .btn-get-started {
+      font-size: 16px;
+      padding: 10px 24px 11px 24px;
+    }
+  }
+  
+  @-webkit-keyframes up-down {
+    0% {
+      transform: translateY(10px);
+    }
+  
+    100% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  @keyframes up-down {
+    0% {
+      transform: translateY(10px);
+    }
+  
+    100% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  /*--------------------------------------------------------------
+  # Sections General
+  --------------------------------------------------------------*/
+  section {
+    padding: 60px 0;
+    overflow: hidden;
+  }
+  
+  .section-bg {
+    background-color: #f3f5fa;
+  }
+  
+  .section-title {
+    text-align: center;
+    padding-bottom: 30px;
+  }
+  
+  .section-title h2 {
+    font-size: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    position: relative;
+    color: white;
+  }
+  
+  .section-title h2::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 120px;
+    height: 1px;
+    background: #ddd;
+    bottom: 1px;
+    left: calc(50% - 60px);
+  }
+  
+  .section-title h2::after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: #47b2e4;
+    bottom: 0;
+    left: calc(50% - 20px);
+  }
+  
+  .section-title p {
+    margin-bottom: 0;
+  }
+
+  /*--------------------------------------------------------------
+  # Services
+  --------------------------------------------------------------*/
+  .container .card {
+    display: flex;
+    justify-content: space-around;
+  }
+  .container .icon-box {
+    box-shadow: 0px 0 25px 0 rgba(0, 0, 0, 0.1);
+    padding: 100px 100px;
+    transition: all ease-in-out 0.4s;
+    background: #fff;
+  }
+  
+  .container .icon-box .icon {
+    margin-bottom: 10px;
+  }
+  
+  .container .icon-box .icon i {
+    color: #47b2e4;
+    font-size: 36px;
+    transition: 0.3s;
+  }
+  
+  .container .icon-box h4 {
+    font-weight: 500;
+    margin-bottom: 15px;
+    font-size: 24px;
+  }
+  
+  .container .icon-box h4 a {
+    color: #37517e;
+    transition: ease-in-out 0.3s;
+  }
+  
+  .container .icon-box p {
+    line-height: 24px;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  
+  .container .icon-box:hover {
+    transform: translateY(-10px);
+  }
+  
+  .container .icon-box:hover h4 a {
+    color: #47b2e4;
+  }
+  
+ 

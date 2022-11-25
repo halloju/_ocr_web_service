@@ -1,83 +1,59 @@
 <template>
   <Navbar />
   <div class="my-home">
-      <div class="home-logo">
-        <img src="@/assets/images/esun-ocr-logo.svg" alt="logo">
-      </div>
-      <div class="sub-title">
-        由智金處研究開發
-      </div>
-      <div class="title">
-        一款專屬玉山場景的辨識工具
-      </div>
-      <div class="buttons">
-        <button class="start-button">開始體驗</button>
-      </div>
-      <div class="feature-title">
-        Our Services
-      </div>
-      <div class="productWrapper">
-        <div class="feature1">
-          <div class="product-content">
-            <img src="@/assets/images/feature1-black.svg" class="feature-icon"/>
+      <!-- ======= Hero Section ======= -->
+    <section id="hero" class="d-flex align-items-flex-start">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
+            <h1>玉山智能辨識系統</h1>
+            <h2>由智金處電腦視覺專家研發設計，解決行內 PDF、身份證、健保卡圖片辨識等問題</h2>
+            <div class="d-flex justify-content-center justify-content-lg-start">
+              <a href="#about" class="btn-get-started scrollto">立即體驗</a>
+              </div>
           </div>
-          <div class="product-content">
-            <p class="feature-sub">通用文件辨識功能</p>
-          </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 1</span>
-          </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 2</span>
-          </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 3</span>
+          <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-in" data-aos-delay="200">
+            <img src="@/assets/images/hero-img.png" class="img-fluid animated" alt="">
           </div>
         </div>
-        <div class="feature2">
-          <div class="product-content">
-            <img src="@/assets/images/feature2-black.svg" class="feature-icon"/>
+        
+        <!-- Services -->
+        <div class="row">
+
+          <div class="section-title">
+            <h2>Services</h2>
+            <p>我們服務包含以下功能，可以提供您完整的光學字元辨識體驗，點選不同的功能體驗看看吧！</p>
           </div>
-          <div class="product-content">
-            <p class="feature-sub">自定義模板</p>
+
+          <div class="col-xl-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-file"></i></div>
+              <h4><a href="">通用文件識別功能</a></h4>
+              <p>產品功能敘述、產品功能敘述、產品功能敘述、產品功能敘述、產品功能敘述</p>
+            </div>
           </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 1</span>
+
+          <div class="col-xl-4 col-md-6 d-flex align-items-stretch mt-4 mt-xl-0" data-aos="zoom-in" data-aos-delay="300">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-tachometer"></i></div>
+              <h4><a href="">自定義模板</a></h4>
+              <p>產品功能敘述、產品功能敘述、產品功能敘述、產品功能敘述、產品功能敘述</p>
+            </div>
           </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 2</span>
+
+          <div class="col-xl-4 col-md-6 d-flex align-items-stretch mt-4 mt-xl-0" data-aos="zoom-in" data-aos-delay="400">
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-layer"></i></div>
+              <h4><a href="">特殊文件辨別功能</a></h4>
+              <p>產品功能敘述、產品功能敘述、產品功能敘述、產品功能敘述、產品功能敘述</p>
+            </div>
           </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 3</span>
-          </div>
-        </div>
-        <div class="feature3">
-          <div class="product-content">
-            <img src="@/assets/images/feature3-black.svg" class="feature-icon"/>
-          </div>
-          <div class="product-content">
-            <p class="feature-sub">特殊文件辨別功能</p>
-          </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 1</span>
-          </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 2</span>
-          </div>
-          <div class="product-content">
-            <img src="@/assets/images/tick.svg" class="tick-icon">
-            <span class="feature-content">產品特色 3</span>
-          </div>
+
         </div>
       </div>
+ 
+    </section><!-- End Hero -->
+    
   </div>
 </template>
 
