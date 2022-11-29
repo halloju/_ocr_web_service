@@ -1,7 +1,7 @@
 <template>
     <!-- ======= Header ======= -->
     <header id="header" class="fixed-top header-scrolled">
-    <div class="container d-flex align-items-center">
+      <div class="container d-flex align-items-center">
 
       <h1 class="logo me-auto">
         <a href="index.html">
@@ -38,7 +38,7 @@
             </ul>
           </li> -->
           <li><a class="nav-link scrollto" href="#contact">聯繫</a></li>
-          <li><a class="getstarted scrollto" href="#about">立即體驗</a></li>
+          <li><router-link to="/signin" class="getstarted scrollto" >立即體驗</router-link></li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
@@ -55,7 +55,7 @@
           <h1>玉山智能辨識系統</h1>
           <h2>由智金處電腦視覺專家研發設計，解決行內 PDF、身份證、健保卡圖片辨識等問題。</h2>
           <div class="d-flex justify-content-center justify-content-lg-start">
-            <a href="#about" class="btn-get-started scrollto">立即體驗</a>
+            <router-link to="/signin" class="btn-get-started scrollto" >立即體驗</router-link>
           </div>
         </div>
         <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-in" data-aos-delay="200">
