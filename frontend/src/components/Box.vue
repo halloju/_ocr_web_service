@@ -27,6 +27,7 @@
         :boxName="box.boxName"
         :fillColor="box.fillColor"
       />
+      <v-transformer ref="transformer" />
     </v-layer>
   </v-stage>
   <form v-if="isInputing">
@@ -90,7 +91,33 @@ export default {
   },
   methods:{
     handleMouseDown(event) {
-      if(!this.canDraw) return;
+      if (!this.canDraw) return;
+      if (event.target.className === 'Rect') {
+        // clicked on stage - clear selection
+          // if (event.target === event.target.getStage()) {
+          //   this.selectedShapeName = '';
+          //   this.updateTransformer();
+          //   return;
+          // }
+
+          // // clicked on transformer - do nothing
+          // const clickedOnTransformer =
+          //   event.target.getParent().className === 'Transformer';
+          // if (clickedOnTransformer) {
+          //   return;
+          // }
+
+          // find clicked rect by its name
+          const name = event.target.name();
+          const rect = this.recs.find((r) => r.name === name);
+          if (rect) {
+            this.selectedShapeName = name;
+          } else {
+            this.selectedShapeName = '';
+          }
+          this.updateTransformer();
+          return;
+      }
       this.isDrawing = true;
       const pos = this.$refs.stage.getNode().getPointerPosition();
       this.setRecs([
@@ -99,8 +126,30 @@ export default {
       ]);
       this.$store.state[this.boxName] = this.recs;
     },
-    handleMouseUp() {
+    updateTransformer() {
+      // here we need to manually attach or detach Transformer node
+      const transformerNode = this.$refs.transformer.getNode();
+      const stage = transformerNode.getStage();
+      const { selectedShapeName } = this;
+
+      const selectedNode = stage.findOne('.' + selectedShapeName);
+      // do nothing if selected node is already attached
+      if (selectedNode === transformerNode.node()) {
+        return;
+      }
+
+      if (selectedNode) {
+        // attach to another node
+        transformerNode.nodes([selectedNode]);
+      } else {
+        // remove transformer
+        transformerNode.nodes([]);
+      }
+    },
+    handleMouseUp(event) {
+      console.log(event);
       if(!this.canDraw) return;
+      if(!this.isDrawing) return;
       this.isDrawing = false;
       this.inputText();
     },

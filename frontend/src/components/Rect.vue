@@ -6,7 +6,6 @@
       x: Math.min(rec.startPointX, rec.startPointX + rec.width),
       y: Math.min(rec.startPointY, rec.startPointY + rec.height),
     }"
-    @click="showEventInfoModal(rec.name)"
   >
     <v-rect
       :key="index"
@@ -17,6 +16,8 @@
         stroke: 'rgb(20,20,200,1)',
         strokeWidth: 3,
       }"
+      draggable="true"
+      @transformend="handleTransformEnd"
     />
     <v-text
       :config="{
@@ -40,7 +41,6 @@ export default {
   name: 'Rect',
   mounted(){
     this.recs = this.$store.state[this.boxName];
-    console.log(this.recs);
   },
   components: {
   },
@@ -52,6 +52,19 @@ export default {
     },
   },
   methods:{
+    handleTransformEnd(e) {
+      // shape is transformed, let us save new attrs back to the node
+      // find element in our state
+      const rect = this.recs.find(
+        (r) => r.name === this.selectedShapeName
+      );
+      // update the state
+      rect.x = e.target.x();
+      rect.y = e.target.y();
+      rect.rotation = e.target.rotation();
+      rect.scaleX = e.target.scaleX();
+      rect.scaleY = e.target.scaleY();
+    }
   },
   props: {
     boxName: {
