@@ -6,7 +6,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
-            <h1>玉山智能辨識系統</h1>
+            <h1>玉山智能辨識系統 Esun.OCR</h1>
             <h2>由智金處電腦視覺專家研發設計，解決行內 PDF、身份證、健保卡圖片辨識等問題</h2>
             <div class="d-flex justify-content-center justify-content-lg-start">
               <a href="#about" class="btn-get-started scrollto">立即體驗</a>

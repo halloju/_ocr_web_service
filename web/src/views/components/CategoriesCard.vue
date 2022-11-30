@@ -6,7 +6,7 @@
     <div class="p-3 card-body">
       <ul class="list-group" :class="this.$store.state.isRTL ? 'pe-0' : ''">
         <li
-          class="mb-2 border-0 list-group-item d-flex justify-content-between border-radius-lg"
+          class="mb-2 border-0 list-group-item d-flex justify-content-between border-radius-lg ps-0"
           :class="this.$store.state.isRTL ? 'pe-0' : 'ps-0'"
         >
           <div class="d-flex align-items-center">

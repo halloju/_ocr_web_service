@@ -13,11 +13,11 @@ services:
           MINIO_SECRET_KEY: admin123
         command: server --console-address ':9001' /data
         restart: always
-    frontend:
-        container_name: frontend
-        build: "frontend/."
+    web:
+        container_name: web
+        build: "web/."
         volumes:
-          - './frontend:/app'
+          - './web:/app'
           - '/app/node_modules'
         ports:
           - '3000:3000'
