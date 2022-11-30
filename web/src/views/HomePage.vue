@@ -573,19 +573,17 @@ export default {
   components: {
   },
   created() {
-    this.$store.state.hideConfigButton = false;
+    this.$store.state.hideConfigButton = true;
     this.$store.state.showNavbar = false;
     this.$store.state.showSidenav = false;
     this.$store.state.showFooter = false;
-    this.$store.state.showConfigurator = false;
     body.classList.remove("bg-gray-100");
   },
   beforeUnmount() {
-    this.$store.state.hideConfigButton = false;
+    this.$store.state.hideConfigButton = true;
     this.$store.state.showNavbar = false;
     this.$store.state.showSidenav = false;
     this.$store.state.showFooter = false;
-    this.$store.state.showConfigurator = false;
     body.classList.add("bg-gray-100");
   },
 };

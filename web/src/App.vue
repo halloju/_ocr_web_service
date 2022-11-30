@@ -45,7 +45,6 @@ Coded by www.creative-tim.com
         this.$store.state.showConfig ? 'show' : '',
         this.$store.state.hideConfigButton ? 'd-none' : ''
       ]"
-      v-if="this.$store.state.showConfigurator"
     />
   </main>
 </template>

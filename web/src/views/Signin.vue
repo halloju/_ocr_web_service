@@ -22,6 +22,7 @@
 
                     <div class="text-center">
                       <argon-button
+                        @button-click="login"
                         class="mt-4"
                         variant="gradient"
                         color="success"
@@ -45,11 +46,7 @@
             <div
               class="top-0 my-auto text-center col-6 d-lg-flex d-none h-100 pe-0 position-absolute end-0 justify-content-center flex-column"
             >
-              <div
-                class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
-                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg');
-          background-size: cover;"
-              >
+              <div class="signin-intro position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden">
                 <span class="mask bg-gradient-success opacity-6"></span>
                 <h2 class="mt-5 text-white font-weight-bolder position-relative">玉山智能辨識系統</h2>
                 <h4 class="mt-5 text-white font-weight-bolder position-relative">絕對是您最佳的工作夥伴</h4>
@@ -81,18 +78,24 @@ export default {
     ArgonButton,
   },
   created() {
-    this.$store.state.hideConfigButton = false;
+    this.$store.state.hideConfigButton = true;
     this.$store.state.showNavbar = false;
     this.$store.state.showSidenav = false;
     this.$store.state.showFooter = false;
     body.classList.remove("bg-gray-100");
   },
   beforeUnmount() {
-    this.$store.state.hideConfigButton = false;
+    this.$store.state.hideConfigButton = true;
     this.$store.state.showNavbar = false;
     this.$store.state.showSidenav = false;
     this.$store.state.showFooter = false;
     body.classList.add("bg-gray-100");
   },
+  methods: {
+    login() {
+      console.log('hi')
+      this.$router.push({ path: `/dashboard-default` });
+    }
+  }
 };
 </script>

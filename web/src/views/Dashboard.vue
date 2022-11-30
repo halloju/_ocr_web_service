@@ -128,6 +128,20 @@ import BR from "@/assets/img/icons/flags/BR.png";
 
 export default {
   name: "dashboard-default",
+  created() {
+    this.$store.state.hideConfigButton = false;
+    this.$store.state.showNavbar = true;
+    this.$store.state.showSidenav = true;
+    this.$store.state.showFooter = true;
+    // body.classList.remove("bg-gray-100");
+  },
+  beforeUnmount() {
+    this.$store.state.hideConfigButton = false;
+    this.$store.state.showNavbar = true;
+    this.$store.state.showSidenav = true;
+    this.$store.state.showFooter = true;
+    // body.classList.add("bg-gray-100");
+  },
   data() {
     return {
       stats: {

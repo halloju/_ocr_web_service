@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 <template>
-  <button class="btn mb-0" :class="getClasses(variant, color, size, fullWidth, active)">
+  <button class="btn mb-0" :class="getClasses(variant, color, size, fullWidth, active)" @click="myClick">
     <slot />
   </button>
 </template>
@@ -51,6 +51,9 @@ export default {
 
       return `${colorValue} ${sizeValue} ${fullWidthValue} ${activeValue}`;
     },
+    myClick(){
+      this.$emit("button-click")
+    }
   },
 };
 </script>
