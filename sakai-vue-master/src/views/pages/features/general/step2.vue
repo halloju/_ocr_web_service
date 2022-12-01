@@ -1,0 +1,98 @@
+<script>
+
+
+export default {
+  components: {
+  },
+  name: 'General2',
+  data() {
+    return {
+        nestedRouteItems: [
+                                {
+                                    label: '圖檔上傳',
+                                    to: '/features/general/step1'
+                                },
+                                {
+                                    label: '單張結果確認',
+                                    to: '/features/general/step2'
+                                },
+                            ],
+        breadcrumbHome: { icon: 'pi pi-home', to: '/' },
+        breadcrumbItems: [{ label: '主要功能', to: '#' }, { label: '通用文件辨識', to: '#' }, { label: '通用辨識', to: '#' }, { label: '單張結果確認', to: '#' }],
+        switchValue: false,
+
+    };
+  },
+  methods: {
+    submit() {
+                this.$router.push({path:"/features/general/step2"})
+            }
+    }
+
+};
+</script>
+<template>
+    <div class="grid p-fluid">
+        <!-- Breadcrumb -->
+        <div class="col-12">
+            <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" />
+            
+        </div>
+        <!-- Step -->
+        <div class="col-12">
+            <div class="card card-w-title">
+                <h5>辨識流程</h5>
+                <p>依照以下流程就可以輕鬆取得辨識結果！</p>
+                <Steps :model="nestedRouteItems" :readonly="false" />
+                <router-view />
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid p-fluid">
+        <div class="col-12 md:col-9">
+            <div class="card">
+                <h5>上傳圖檔之一</h5>
+            </div>
+
+        </div>
+
+        <div class="col-12 md:col-3">
+            <div class="card">
+
+                <h5>辨識結果</h5>
+                <ScrollPanel :style="{ width: '200px', height: '400px' }">
+                    <p>
+                        {"points": [[1,2],[1,3],[1,5],[1,8]],
+                            “text”: ”玉山金控與子公司",
+                            “tag”: “名稱”,
+                            "det_prob": 0.9586760401725769,
+                            "rec_prob": 0.9586760401725769},
+                            {"points":[],
+                            "text": " 出生日期 ",
+                            “tag”: “出生抬頭”,
+                            "det_prob": 0.9586760401725769,
+                            "rec_prob": 0.9586760401725769},
+                            {"points":[],
+                            "text": " 聯絡電話",
+                            “tag”: “電話抬頭”,
+                            "det_prob": 0.9586760401725769,
+                            "rec_prob": 0.9586760401725769}
+                            ]
+
+                    </p>
+                    <ScrollTop target="parent" :threshold="100" icon="pi pi-arrow-up"></ScrollTop>
+                </ScrollPanel>
+
+                <h5>已確認單張結果</h5>
+                <InputSwitch v-model="switchValue" />
+
+                <h5></h5>
+                <Button label="開始辨識全部檔案" class="mr-2 mb-2" @click="submit"></Button>
+            </div>
+        </div>
+        <div class="col-12">
+            <ProgressBar value="50" />
+        </div>
+    </div>
+</template>

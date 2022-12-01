@@ -9,6 +9,75 @@ const model = ref([
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
     },
     {
+        label: '主要功能',
+        items: [
+            {
+                label: '通用文件辨識',
+                icon: 'pi pi-fw pi-bookmark',
+                items: [
+                    {
+                        label: '通用辨識',
+                        icon: 'pi pi-fw pi-bookmark',
+                        to: '/features/general/step1',
+                    },
+                ]
+            },
+            {
+                label: '自定義模板',
+                icon: 'pi pi-fw pi-bookmark',
+                items: [
+                    {
+                        label: '新增自定義模板',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
+                            { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
+                        ]
+                    },
+                    {
+                        label: '模板列表',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                    },
+                    {
+                        label: '個人模板辨識',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                    },
+                    {
+                        label: '公開模板辨識',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                    }
+                ]
+            },
+            {
+                label: '特殊文件識別',
+                icon: 'pi pi-fw pi-bookmark',
+                items: [
+                    {
+                        label: '身份證',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
+                            { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
+                        ]
+                    },
+                    {
+                        label: '第二證件',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                    },
+                    {
+                        label: '存摺',
+                        icon: 'pi pi-fw pi-bookmark',
+                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                    }
+                ]
+            }
+        ]
+    },
+    {
         label: 'UI Components',
         items: [
             { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/uikit/formlayout' },

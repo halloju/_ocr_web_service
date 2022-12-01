@@ -41,9 +41,9 @@
   </div>
 </template>
 <style>
-.sidebar {
+/* .sidebar {
   background-color: #10A0A7;
-}
+} */
 .sidebar-title {
   font-weight: bold;
   font-size: 22px;

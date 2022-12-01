@@ -14,6 +14,16 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
+                    path: '/features/general/step1',
+                    name: 'General1',
+                    component: () => import('@/views/pages/features/general/step1.vue')
+                },
+                {
+                    path: '/features/general/step2',
+                    name: 'General2',
+                    component: () => import('@/views/pages/features/general/step2.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')
