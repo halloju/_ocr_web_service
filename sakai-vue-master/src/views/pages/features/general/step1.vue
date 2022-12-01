@@ -52,7 +52,7 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
             <div class="card">
-                <FileUpload name="demo[]" url="./upload" :maxFileSize="1000000" :fileLimit="3" :previewWidth="500" />
+                <FileUpload name="demo[]" url="./upload" :maxFileSize="1000000" :fileLimit="3" :previewWidth="500" chooseLabel="選擇檔案" uploadLabel="上傳檔案" cancelLabel="取消上傳" />
             </div>
 
         </div>
