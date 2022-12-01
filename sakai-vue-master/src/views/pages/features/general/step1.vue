@@ -33,17 +33,15 @@ export default {
 </script>
 <template>
     <div class="grid p-fluid">
-        <!-- Breadcrumb -->
-        <div class="col-12">
-            <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" />
-            
-        </div>
-        <!-- Step -->
         <div class="col-12">
             <div class="card card-w-title">
-                <h5>辨識流程</h5>
-                <p>依照以下流程就可以輕鬆取得辨識結果！</p>
+                <!-- Breadcrumb -->
+                <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" style="border-width: 0px;"/>
+                <br>
+                <!-- Step -->
                 <Steps :model="nestedRouteItems" :readonly="true" />
+                <h5>通用辨識</h5>
+                <p>請上傳一張或多張圖片。</p>
                 <router-view />
             </div>
         </div>
@@ -52,7 +50,7 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
             <div class="card">
-                <FileUpload name="demo[]" url="./upload" :maxFileSize="1000000" :fileLimit="3" :previewWidth="500" chooseLabel="選擇檔案" uploadLabel="上傳檔案" cancelLabel="取消上傳" />
+                <FileUpload name="demo[]" url="./upload" :maxFileSize="1000000" :fileLimit="3" :previewWidth="500" chooseLabel="選擇檔案" uploadLabel="上傳檔案" cancelLabel="取消上傳檔案" />
             </div>
 
         </div>

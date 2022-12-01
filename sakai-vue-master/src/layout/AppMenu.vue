@@ -29,10 +29,7 @@ const model = ref([
                     {
                         label: '新增自定義模板',
                         icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                            { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
-                        ]
+                        to: '/features/self-define/step1',
                     },
                     {
                         label: '模板列表',

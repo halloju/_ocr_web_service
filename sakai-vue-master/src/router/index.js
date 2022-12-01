@@ -24,6 +24,31 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/general/step2.vue')
                 },
                 {
+                    path: '/features/self-define/step1',
+                    name: 'SelfDefine1',
+                    component: () => import('@/views/pages/features/self-define/step1.vue')
+                },
+                {
+                    path: '/features/self-define/step2',
+                    name: 'SelfDefine2',
+                    component: () => import('@/views/pages/features/self-define/step2.vue')
+                },
+                {
+                    path: '/features/self-define/step3',
+                    name: 'SelfDefine3',
+                    component: () => import('@/views/pages/features/self-define/step3.vue')
+                },
+                {
+                    path: '/features/self-define/step4',
+                    name: 'SelfDefine4',
+                    component: () => import('@/views/pages/features/self-define/step4.vue')
+                },
+                {
+                    path: '/features/self-define/step5',
+                    name: 'SelfDefine5',
+                    component: () => import('@/views/pages/features/self-define/step5.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

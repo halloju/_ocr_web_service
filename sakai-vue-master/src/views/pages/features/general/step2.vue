@@ -33,17 +33,15 @@ export default {
 </script>
 <template>
     <div class="grid p-fluid">
-        <!-- Breadcrumb -->
-        <div class="col-12">
-            <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" />
-            
-        </div>
-        <!-- Step -->
         <div class="col-12">
             <div class="card card-w-title">
-                <h5>辨識流程</h5>
-                <p>依照以下流程就可以輕鬆取得辨識結果！</p>
-                <Steps :model="nestedRouteItems" :readonly="false" />
+                <!-- Breadcrumb -->
+                <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" style="border-width: 0px;"/>
+                <br>
+                <!-- Step -->
+                <Steps :model="nestedRouteItems" :readonly="true" />
+                <h5>確認您的圖片</h5>
+                <p>由於批次辨識時間較長，請確認辨識設定；若無任何問題，請點選開始辨識全部檔案。</p>
                 <router-view />
             </div>
         </div>
