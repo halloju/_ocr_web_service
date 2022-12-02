@@ -62,7 +62,7 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
             <div class="card">
-                
+                <Image :src="uploadedFiles" alt="Image Text" preview='true'/>
             </div>
 
         </div>

@@ -1,12 +1,14 @@
 <script>
-
+import UploadImage from '@/components/UploadImage.vue'
 
 export default {
   components: {
+    UploadImage
   },
   name: 'SelfDefine1',
   data() {
     return {
+        isOK: false,
         nestedRouteItems: [
                             {
                             label: '模板圖檔上傳',
@@ -38,9 +40,14 @@ export default {
   methods: {
     next() {
                 this.$router.push({path:"/features/self-define/step2"})
-            }
-    }
-
+    },
+    getFiles(val) {
+        this.myFiles = val;
+    },
+    Upload(val){
+        this.isOK = val;
+    },
+  },
 };
 </script>
 <template>
@@ -52,28 +59,29 @@ export default {
                 <br>
                 <!-- Step -->
                 <Steps :model="nestedRouteItems" :readonly="true" />
-                <h5>新增自定義模板</h5>
-                <p>上傳一張清晰的圖片進行標注，並於後續步驟框選標註需辨識的區域位於哪一個區域。</p>
+                <br>
+                <div class="grid">
+                    <div class="col-8">
+                        <h5>新增自定義模板</h5>
+                        <p>上傳一張清晰的圖片進行標注，並於後續步驟框選標註需辨識的區域位於哪一個區域。</p>
+                    </div>
+                    <div class="col-2">
+                        <FileUpload mode="basic" name="demo[]" url="./upload" :auto="true" chooseLabel="匯入設定檔" style="width: 12em; height: 4em;"/>
+                    </div>
+                    <div class="col-2">
+                        <Button v-if="isOK" label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em;"></Button>
+                        <Button v-else label=" 下一步" class="pi pi-arrow-right p-button-secondary" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em;" :disabled="true"></Button>
+                    </div>    
+                </div>
                 <router-view />
             </div>
         </div>
     </div>
     
     <div class="grid p-fluid">
-        <div class="col-12 md:col-9">
+        <div class="col-12">
             <div class="card">
-                <FileUpload name="demo[]" url="./upload" :maxFileSize="1000000" :fileLimit="3" :previewWidth="500" chooseLabel="選擇檔案" uploadLabel="上傳檔案" cancelLabel="取消上傳" />
-            </div>
-
-        </div>
-
-        <div class="col-12 md:col-3">
-            <div class="card">
-
-                <h5>是否匯入預先設定檔</h5>
-                <FileUpload mode="basic" name="demo[]" url="./upload" :auto="true" chooseLabel="匯入"/>
-                <h5></h5>
-                <Button label="下一步" class="p-button-info mr-2 mb-2" @click="next"></Button>
+                <UploadImage :isUploaded="true" @updateStatus="Upload"/>
             </div>
         </div>
     </div>
