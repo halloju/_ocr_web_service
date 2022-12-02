@@ -32,7 +32,10 @@ export default {
   name: 'UploadImage',
   mounted(){
     if (sessionStorage.imageSource!=='') {
+      this.isOK = true;
       this.imageSource = sessionStorage.imageSource;
+      this.filename = sessionStorage.filename;
+      this.filesize = sessionStorage.filesize;
     }
   },
   components: {
@@ -96,7 +99,9 @@ export default {
             this.isOK = true;
             this.filename = file.name;
             this.filesize = file.size/1024;
-            sessionStorage.imageSource = this.imageSource
+            sessionStorage.imageSource = this.imageSource;
+            sessionStorage.filename = this.filename;
+            sessionStorage.filesize = this.filesize;
           }
           reader.readAsDataURL(file)
         }else{
@@ -126,6 +131,8 @@ export default {
             this.filename = file.name;
             this.filesize = file.size/1024;
             sessionStorage.imageSource = this.imageSource
+            sessionStorage.filename = this.filename;
+            sessionStorage.filesize = this.filesize;
           }
           reader.readAsDataURL(file)
         }else{
