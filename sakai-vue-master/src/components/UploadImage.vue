@@ -13,7 +13,7 @@
       <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display:none">
       <!-- <div class="my-content" v-if="fileLimit && !isOK" style="color: black;">請勿超過10MB</div> -->
       <div class="col-12 text-center" v-if="isOK && !wrongFile">
-        <img :src="imageSource" style="height: 500px;"/>
+        <Image :src="imageSource" alt="Image" width="500" preview />
         <p class="mb-0 text-left">檔案名稱： {{ filename }}</p>
         <p class="mb-0 text-left">檔案大小： {{ Number(filesize).toFixed(2) }}KB</p>
       </div>
