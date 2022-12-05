@@ -4,7 +4,7 @@
         <div class="text-500 w-6 md:w-2 font-medium">{{ index }}</div>
         <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">{{ rec.name }}</div>
         <div class="w-6 md:w-6 flex justify-content-end">
-            <Button label="Edit" icon="pi pi-pencil" class="p-button-info" @click="editRec(index)" style="margin-right: 5px;"></Button>
+            <!-- <Button label="Edit" icon="pi pi-pencil" class="p-button-info" @click="editRec(index)" style="margin-right: 5px;"></Button> -->
             <Button label="Delete" icon="pi pi-times" class="p-button-danger" @click="deleteRec(index)"></Button>
         </div>
     </li>

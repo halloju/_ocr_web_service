@@ -16,7 +16,7 @@
         height: Math.abs(rec.height),
         fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
         stroke: 'rgb(20,20,200,1)',
-        strokeWidth: 3,
+        strokeWidth: 2,
       }"
       @transformend="handleTransformEnd"
     />
@@ -41,11 +41,14 @@
 export default {
   name: 'Rect',
   mounted(){
+    console.log( this.$store.state[this.boxName])
     this.recs = this.$store.state[this.boxName];
   },
   components: {
   },
   data(){
+    return {recs: this.$store.state[this.boxName],
+    }
   },
   computed:{
     recs(){
@@ -56,6 +59,7 @@ export default {
     handleTransformEnd(e) {
       // shape is transformed, let us save new attrs back to the node
       // find element in our state
+
       const rect = this.recs.find(
         (r) => r.name === this.selectedShapeName
       );

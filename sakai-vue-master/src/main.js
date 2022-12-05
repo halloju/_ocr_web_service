@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import BootstrapVue3 from 'bootstrap-vue-3'
 import App from './App.vue';
 import router from './router';
-import store from './store'
+import store from './store';
 
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';

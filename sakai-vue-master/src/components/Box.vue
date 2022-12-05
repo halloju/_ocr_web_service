@@ -1,6 +1,13 @@
 <template>
   <div class="" ref="img_block">
-    
+  <form v-if="isInputing">
+    <div class="form-group" >
+      <h5>方框命名</h5>
+      <input class="form-control" type="text" placeholder="請命名" ref="rec_name">
+    </div>
+    <br>
+    <Button label=" 確定" class="pi pi-check p-button-success" @click="setRecName" v-tooltip="'請框好圖片後點擊'" style="width: 12em; height: 4em;"></Button>
+  </form>
   <v-stage
   ref="stage"
   
@@ -33,14 +40,11 @@
       <v-transformer ref="transformer" />
     </v-layer>
   </v-stage>
-  <form v-if="isInputing">
-    <div class="form-group" >
-      <h5>方框命名</h5>
-      <input class="form-control" type="text" placeholder="請命名" ref="rec_name">
-    </div>
-    <br>
-    <Button label=" 確定" class="pi pi-check p-button-success" @click="setRecName" v-tooltip="'請框好圖片後點擊'" style="width: 12em; height: 4em;"></Button>
-  </form>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <Button icon="pi pi-search-plus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'放大圖片'" @click="photoPlus" />
+    <Button icon="pi pi-search-minus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'縮小圖片'" @click="photoMinus" />
+    <Button icon="pi pi-undo" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'還原圖片大小'" @click="resetSize" />
   </div>
   
 </template>
@@ -51,7 +55,7 @@
 
 <script>
 import Rect from '@/components/Rect.vue'
-const ratio = 0.95;
+const ratio = 1;
 const innerWidth = window.innerWidth;
 const innerHeight = window.innerHeight;
 
@@ -195,10 +199,25 @@ export default {
       curRec.width = point.x - curRec.startPointX;
       curRec.height = point.y - curRec.startPointY;
     },
+    photoPlus(){
+      let i = 0.01;
+      this.$refs.stage.getNode().scaleX(this.$refs.stage.getNode().scaleX() + i);
+      this.$refs.stage.getNode().scaleY(this.$refs.stage.getNode().scaleY() + i);
+    },
+    photoMinus(){
+      console.log(this.$refs.stage.getNode().scaleX())
+      console.log(this.$refs.stage.getNode().scaleY())
+      let i = 0.01;
+      this.$refs.stage.getNode().scaleX(this.$refs.stage.getNode().scaleX() - i);
+      this.$refs.stage.getNode().scaleY(this.$refs.stage.getNode().scaleY() - i);
+    },
+    resetSize(){
+      this.$refs.stage.getNode().scaleX(1);
+      this.$refs.stage.getNode().scaleY(1);
+    },
     wheelForScale(event) {
       if (event.evt.wheelDelta > 0) {
         let i = 0.01;
-
         this.$refs.stage.getNode().scaleX(this.$refs.stage.getNode().scaleX() + i);
         this.$refs.stage.getNode().scaleY(this.$refs.stage.getNode().scaleY() + i);
         i++;
