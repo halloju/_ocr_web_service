@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import BootstrapVue3 from 'bootstrap-vue-3'
 import App from './App.vue';
 import router from './router';
+import store from './store'
 
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
@@ -101,6 +102,8 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
+import VueKonva from 'vue-konva';
+
 
 import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
@@ -115,6 +118,8 @@ app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
+app.use(store);
+app.use(VueKonva);
 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);

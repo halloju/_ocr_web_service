@@ -1,8 +1,11 @@
 <script>
-
+import Box from '@/components/Box.vue';
+import BoxCard from '@/components/BoxCard.vue';
 
 export default {
   components: {
+    BoxCard,
+    Box,
   },
   name: 'SelfDefine2',
   data() {
@@ -32,7 +35,14 @@ export default {
         breadcrumbHome: { icon: 'pi pi-home', to: '/' },
         breadcrumbItems: [{ label: '主要功能', to: '#' }, { label: '自定義模板', to: '#' }, { label: '新增自定義模板', to: '#' }, { label: '模板圖檔上傳', to: '#' }],
         switchValue: false,
-
+        boxName: 'recs_text',
+        boxTitle: '文字辨識位置',
+        fillColor: {
+            r: 0,
+            g: 255,
+            b: 0,
+            a: 0.5,
+        },
     };
   },
   methods: {
@@ -52,78 +62,36 @@ export default {
                 <br>
                 <!-- Step -->
                 <Steps :model="nestedRouteItems" :readonly="false" />
-                <h5>文字位置標註</h5>
-                <p>框選文字辨識位置，並編輯區域要項名稱，按下確認後即會出現在右邊欄位中。</p>
+                <br>
+                <div class="grid">
+                    <div class="col-10">
+                        <h5>文字位置標註</h5>
+                        <p>框選文字辨識位置，並編輯區域要項名稱，按下確認後即會出現在右邊欄位中。</p>
+                    </div>
+                    <div class="col-2">
+                        <Button label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em;"></Button>
+                        <!-- <Button v-else label=" 下一步" class="pi pi-arrow-right p-button-secondary" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em;" :disabled="true"></Button> -->
+                    </div>    
+                </div>
                 <router-view />
             </div>
         </div>
     </div>
-    
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
             <div class="card">
-                <Image :src="uploadedFiles" alt="Image Text" preview='true'/>
+                <Box
+                    :boxName="boxName"
+                    :fillColor="fillColor"
+                    />
             </div>
-
         </div>
-
         <div class="col-12 md:col-4">
-
-            <div class="card">
-                    
-                <div class="surface-section">
-                <div class="font-medium text-3xl text-900 mb-3">文字辨識位置</div>
-                <ul class="list-none p-0 m-0">
-                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
-                        <div class="text-500 w-6 md:w-2 font-medium">No.</div>
-                        <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">要項名稱</div>
-                        <div class="w-6 md:w-2 flex justify-content-end">
-                            操作
-                        </div>
-                    </li>
-                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
-                        <div class="text-500 w-6 md:w-2 font-medium">1.</div>
-                        <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">姓名</div>
-                        <div class="w-6 md:w-6 flex justify-content-end">
-                            <Button label="Edit" icon="pi pi-pencil" class="p-button-info" style="margin-right: 5px;"></Button>
-                            <Button label="Delete" icon="pi pi-times" class="p-button-danger"></Button>
-                        </div>
-                    </li>
-                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
-                        <div class="text-500 w-6 md:w-2 font-medium">2.</div>
-                        <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">電話號碼</div>
-                        <div class="w-6 md:w-6 flex justify-content-end">
-                            <Button label="Edit" icon="pi pi-pencil" class="p-button-info" style="margin-right: 5px;"></Button>
-                            <Button label="Delete" icon="pi pi-times" class="p-button-danger"></Button>
-                        </div>
-                    </li>
-                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
-                        <div class="text-500 w-6 md:w-2 font-medium">3.</div>
-                        <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">標註C</div>
-                        <div class="w-6 md:w-6 flex justify-content-end">
-                            <Button label="Edit" icon="pi pi-pencil" class="p-button-info" style="margin-right: 5px;"></Button>
-                            <Button label="Delete" icon="pi pi-times" class="p-button-danger"></Button>
-                        </div>
-                    </li>
-                    <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
-                        <div class="text-500 w-6 md:w-2 font-medium">4.</div>
-                        <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">標註B</div>
-                        <div class="w-6 md:w-6 flex justify-content-end">
-                            <Button label="Edit" icon="pi pi-pencil" class="p-button-info" style="margin-right: 5px;"></Button>
-                            <Button label="Delete" icon="pi pi-times" class="p-button-danger"></Button>
-                        </div>
-                    </li>
-                    <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
-                        <div class="text-500 w-6 md:w-2 font-medium">5.</div>
-                        <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1 line-height-3">標註A</div>
-                        <div class="w-6 md:w-6 flex justify-content-end">
-                            <Button label="Edit" icon="pi pi-pencil" class="p-button-info" style="margin-right: 5px;"></Button>
-                            <Button label="Delete" icon="pi pi-times" class="p-button-danger"></Button>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-                <Button label="下一步" class="p-button-info mr-2 mb-2" @click="next"></Button>
+            <div class="card">     
+                <BoxCard
+                    :boxName="boxName"
+                    :boxTitle="boxTitle"
+                    />
             </div>
         </div>
     </div>
