@@ -85,6 +85,7 @@ export default {
       },
       isDrawing: false,
       isInputing: false,
+      isTransforming: false,
     };
   },
   computed:{
@@ -92,23 +93,28 @@ export default {
   methods:{
     handleMouseDown(event) {
       if (!this.canDraw) return;
+      if (event.target === event.target.getStage()) return;
+      if (this.isTransforming & event.target.className === 'Image') {
+            this.selectedShapeName = '';
+            this.updateTransformer();
+            this.isTransforming = false;
+            return;
+          }
+
+      // transform rect    
       if (event.target.className === 'Rect') {
-        // clicked on stage - clear selection
-          // if (event.target === event.target.getStage()) {
-          //   this.selectedShapeName = '';
-          //   this.updateTransformer();
-          //   return;
-          // }
+          this.isTransforming = true;
 
           // // clicked on transformer - do nothing
-          // const clickedOnTransformer =
-          //   event.target.getParent().className === 'Transformer';
-          // if (clickedOnTransformer) {
-          //   return;
-          // }
+          const clickedOnTransformer =
+            event.target.getParent().className === 'Transformer';
+          if (clickedOnTransformer) {
+            return;
+          }
 
           // find clicked rect by its name
           const name = event.target.name();
+          console.log(name)
           const rect = this.recs.find((r) => r.name === name);
           if (rect) {
             this.selectedShapeName = name;
@@ -118,6 +124,8 @@ export default {
           this.updateTransformer();
           return;
       }
+
+      // draw rect
       this.isDrawing = true;
       const pos = this.$refs.stage.getNode().getPointerPosition();
       this.setRecs([

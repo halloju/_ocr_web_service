@@ -6,9 +6,11 @@
       x: Math.min(rec.startPointX, rec.startPointX + rec.width),
       y: Math.min(rec.startPointY, rec.startPointY + rec.height),
     }"
+    draggable="true"
   >
     <v-rect
       :key="index"
+      :name="rec.name"
       :config="{
         width: Math.abs(rec.width),
         height: Math.abs(rec.height),
@@ -16,7 +18,6 @@
         stroke: 'rgb(20,20,200,1)',
         strokeWidth: 3,
       }"
-      draggable="true"
       @transformend="handleTransformEnd"
     />
     <v-text
@@ -24,7 +25,7 @@
         text: index,
         fontSize: 30,
         fill: 'rgb(20,20,200,1)',
-        x: -20,
+        x: 0,
         y: 0,
       }"
     />
