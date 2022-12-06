@@ -13,28 +13,29 @@ const model = ref([
         items: [
             {
                 label: '通用文件辨識',
-                icon: 'pi pi-fw pi-bookmark',
+                icon: 'pi pi-th-large',
                 items: [
                     {
                         label: '通用辨識',
-                        icon: 'pi pi-fw pi-bookmark',
-                        to: '/features/general/step1'
-                    }
+                        icon: 'pi pi-th-large',
+                        to: '/features/general/step1',
+                    },
                 ]
             },
             {
                 label: '自定義模板',
-                icon: 'pi pi-fw pi-bookmark',
+                icon: 'pi pi-book',
                 items: [
                     {
                         label: '新增自定義模板',
-                        icon: 'pi pi-fw pi-bookmark',
-                        to: '/features/self-define/step1'
+                        icon: 'pi pi-file-edit',
+                        to: '/features/self-define/step1',
                     },
                     {
                         label: '模板列表',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
+                        icon: 'pi pi-list',
+                        items: [{ label: '個人上傳', icon: 'pi pi-user' },
+                                { label: '公開', icon: 'pi pi-file' }]
                     },
                     {
                         label: '個人模板辨識',
@@ -50,11 +51,11 @@ const model = ref([
             },
             {
                 label: '特殊文件識別',
-                icon: 'pi pi-fw pi-bookmark',
+                icon: 'pi pi-star-fill',
                 items: [
                     {
                         label: '身份證',
-                        icon: 'pi pi-fw pi-bookmark',
+                        icon: 'pi pi-id-card',
                         items: [
                             { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
                             { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
@@ -62,12 +63,12 @@ const model = ref([
                     },
                     {
                         label: '第二證件',
-                        icon: 'pi pi-fw pi-bookmark',
+                        icon: 'pi pi-credit-card',
                         items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
                     },
                     {
                         label: '存摺',
-                        icon: 'pi pi-fw pi-bookmark',
+                        icon: 'pi pi-envelope',
                         items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
                     }
                 ]
