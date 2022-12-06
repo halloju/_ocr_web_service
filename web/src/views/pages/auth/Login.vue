@@ -1,23 +1,19 @@
 <script>
-
 export default {
-  components: {
-  },
-  name: 'Login',
-  data() {
-    return {
-        account: '',
-        password: '',
-        checked: false,
-
-    };
-  },
-  methods: {
-    login() {
-                this.$router.push({path:"/"})
-            }
+    components: {},
+    name: 'Login',
+    data() {
+        return {
+            account: '',
+            password: '',
+            checked: false
+        };
+    },
+    methods: {
+        login() {
+            this.$router.push({ path: '/' });
+        }
     }
-
 };
 </script>
 <template>
