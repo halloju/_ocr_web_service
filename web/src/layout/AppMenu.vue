@@ -18,8 +18,8 @@ const model = ref([
                     {
                         label: '通用辨識',
                         icon: 'pi pi-fw pi-bookmark',
-                        to: '/features/general/step1',
-                    },
+                        to: '/features/general/step1'
+                    }
                 ]
             },
             {
@@ -29,7 +29,7 @@ const model = ref([
                     {
                         label: '新增自定義模板',
                         icon: 'pi pi-fw pi-bookmark',
-                        to: '/features/self-define/step1',
+                        to: '/features/self-define/step1'
                     },
                     {
                         label: '模板列表',
