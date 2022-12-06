@@ -29,8 +29,7 @@ export default {
                 x: 0,
                 y: 0,
                 width: 800,
-                height: 600,
-                listening: false
+                height: 600
             },
             imageConfig: {
                 width: null,
@@ -48,10 +47,9 @@ export default {
     computed: {},
     methods: {
         handleMouseDown(event) {
-            console.log(event.target);
             if (!this.isNamingOk) return;
             if (!this.canDraw) return;
-            if (this.isTransforming & (event.target.getStage() === event.target)) {
+            if (this.isTransforming & (event.target.className === 'image')) {
                 this.selectedShapeName = '';
                 this.updateTransformer();
                 this.isTransforming = false;
@@ -122,7 +120,6 @@ export default {
             });
         },
         setRecName() {
-            console.log('setRecName');
             if (this.$refs.rec_name.value.length === 0) {
                 this.isWarning = true;
             } else {
