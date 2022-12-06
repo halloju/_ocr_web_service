@@ -40,10 +40,6 @@
 
 export default {
   name: 'Rect',
-  mounted(){
-    console.log( this.$store.state[this.boxName])
-    this.recs = this.$store.state[this.boxName];
-  },
   components: {
   },
   data(){
