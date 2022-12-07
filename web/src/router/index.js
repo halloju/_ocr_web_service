@@ -49,6 +49,16 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/self-define/step5.vue')
                 },
                 {
+                    path: '/features/model-list/person',
+                    name: 'Person',
+                    component: () => import('@/views/pages/features/model-list/person.vue')
+                },
+                {
+                    path: '/features/model-list/public',
+                    name: 'Public',
+                    component: () => import('@/views/pages/features/model-list/public.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

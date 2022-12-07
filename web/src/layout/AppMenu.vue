@@ -34,8 +34,8 @@ const model = ref([
                     {
                         label: '模板列表',
                         icon: 'pi pi-list',
-                        items: [{ label: '個人上傳', icon: 'pi pi-user' },
-                                { label: '公開', icon: 'pi pi-file' }]
+                        items: [{ label: '個人上傳', icon: 'pi pi-user', to: '/features/model-list/person',},
+                                { label: '公開', icon: 'pi pi-file', to: '/features/model-list/public',}]
                     },
                     {
                         label: '個人模板辨識',
