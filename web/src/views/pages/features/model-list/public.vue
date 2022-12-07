@@ -39,41 +39,7 @@
                 class="editable-row"
                 >
                 <span class="editable-row-span">{{ scope.row[item.prop] }}</span>
-                <el-popover
-                    placement="right"
-                    :width="120"
-                    trigger="hover"
-                    content="this is content, this is content, this is content"
-                >
-                    <template #reference>
-                    <el-icon class="icon" :size="18">
-                        <Edit />
-                    </el-icon>
-                    </template>
-                    <div class="menu-list">
-                    <div
-                        class="menu-item"
-                        @click="prepend(scope.$index)"
-                    >
-                        上方插入一行
-                    </div>
-                    <div
-                        class="menu-item divider"
-                        @click="append(scope.$index)"
-                    >
-                        下方插入一行
-                    </div>
-                    <div class="menu-item" @click="deleteCurrentColumn(index)">
-                        刪除當前列
-                    </div>
-                    <div class="menu-item" @click="insertBefore(index)">
-                        前方插入一列
-                    </div>
-                    <div class="menu-item" @click="insertAfter(index)">
-                        后方插入一列
-                    </div>
-                    </div>
-                </el-popover>
+
                 </div>
             </template>
             </el-table-column>
@@ -171,7 +137,7 @@ import BoxCard from '@/components/BoxCard.vue';
             prop: "no",
             label: "No.",
             editable: false,
-            type: "input",
+            type: "number",
             width: "50px",
           },
           {

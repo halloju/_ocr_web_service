@@ -37,16 +37,6 @@ const model = ref([
                         items: [{ label: '個人上傳', icon: 'pi pi-user', to: '/features/model-list/person',},
                                 { label: '公開', icon: 'pi pi-file', to: '/features/model-list/public',}]
                     },
-                    {
-                        label: '個人模板辨識',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                    },
-                    {
-                        label: '公開模板辨識',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                    }
                 ]
             },
             {
