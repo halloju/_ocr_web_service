@@ -1,26 +1,31 @@
-<script setup>
-import { useLayout } from '@/layout/composables/layout';
-import { computed } from 'vue';
-import AppConfig from '@/layout/AppConfig.vue';
+<script>
 
-const { layoutConfig, contextPath } = useLayout();
-
-const smoothScroll = (id) => {
-    document.querySelector(id).scrollIntoView({
+export default {
+    name: "landing",
+    data() {
+        return {
+            logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
+        }
+    },
+    methods: {
+      goLogin() {
+        this.$router.push({ path: '/auth/login' });
+      },
+      smoothScroll(id) {
+        document.querySelector(id).scrollIntoView({
         behavior: 'smooth'
-    });
-};
+        });
+      },
+  }
+}
 
-const logoUrl = computed(() => {
-    return `${contextPath}layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
-});
 </script>
 
 <template>
     <div class="surface-0 flex justify-content-center">
         <div id="home" class="landing-wrapper overflow-hidden">
             <div class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3">
-                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="Sakai Logo" height="50" class="mr-0 lg:mr-2" /><span class="text-900 font-medium text-2xl line-height-3 mr-8">SAKAI</span> </a>
+                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<span class="text-900 font-medium text-2xl line-height-3 mr-8" style="width:200px">玉山智能辨識系統</span> </a>
                 <a class="cursor-pointer block lg:hidden text-700 p-ripple" v-ripple v-styleclass="{ selector: '@next', enterClass: 'hidden', leaveToClass: 'hidden', hideOnOutsideClick: true }">
                     <i class="pi pi-bars text-4xl"></i>
                 </a>
@@ -28,52 +33,55 @@ const logoUrl = computed(() => {
                     <ul class="list-none p-0 m-0 flex lg:align-items-center select-none flex-column lg:flex-row cursor-pointer">
                         <li>
                             <a @click="smoothScroll('#hero')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Home</span>
+                                <span>首頁</span>
                             </a>
                         </li>
                         <li>
                             <a @click="smoothScroll('#features')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Features</span>
+                                <span>核心功能</span>
                             </a>
                         </li>
                         <li>
                             <a @click="smoothScroll('#highlights')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Highlights</span>
+                                <span>關於產品</span>
                             </a>
                         </li>
                         <li>
                             <a @click="smoothScroll('#pricing')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Pricing</span>
+                                <span>常見問題</span>
                             </a>
                         </li>
                     </ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500"></Button>
+                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500" @click="goLogin"></Button>
                         <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 bg-blue-500"></Button>
                     </div>
                 </div>
             </div>
+                    
+            <div id="hero"
+                 class="grid grid-nogutter surface-section text-800"
+                 style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%); clip-path: ellipse(150% 87% at 93% 13%)">
+                <div class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center ">
+                    <section>
+                        <span class="block text-6xl font-bold mb-1">玉山智能辨識系統</span>
+                        <div class="text-6xl text-primary font-bold mb-3">Esun.OCR</div>
+                        <p class="mt-0 mb-4 text-3xl text-700 line-height-3">由智金處電腦視覺專家研發設計，解決行內 PDF、身份證、健保卡圖片辨識等問題。</p>
 
-            <div
-                id="hero"
-                class="flex flex-column pt-4 px-4 lg:px-8 overflow-hidden"
-                style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%); clip-path: ellipse(150% 87% at 93% 13%)"
-            >
-                <div class="mx-4 md:mx-8 mt-0 md:mt-4">
-                    <h1 class="text-6xl font-bold text-gray-900 line-height-2"><span class="font-light block">Eu sem integer</span>eget magna fermentum</h1>
-                    <p class="font-normal text-2xl line-height-3 md:mt-3 text-gray-700">Sed blandit libero volutpat sed cras. Fames ac turpis egestas integer. Placerat in egestas erat...</p>
-                    <Button label="Get Started" class="p-button-rounded text-xl border-none mt-5 bg-blue-500 font-normal text-white line-height-3 px-3"></Button>
+                        <Button label="Learn More" type="button" class="mr-3 p-button-raised" @click="goLogin"></Button>
+                        <Button label="Live Demo" type="button" class="p-button-outlined"></Button>
+                    </section>
                 </div>
-                <div class="flex justify-content-center md:justify-content-end">
-                    <img src="/demo/images/landing/screen-1.png" alt="Hero Image" class="w-9 md:w-auto" />
+                <div class="col-12 md:col-6 overflow-hidden my-image">
+                    <img src="@/assets/img/hero-img.png" alt="Image" class="md:ml-auto block md:h-full animated" style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)">
                 </div>
             </div>
 
             <div id="features" class="py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8">
                 <div class="grid justify-content-center">
                     <div class="col-12 text-center mt-8 mb-4">
-                        <h2 class="text-900 font-normal mb-2">Marvelous Features</h2>
-                        <span class="text-600 text-2xl">Placerat in egestas erat...</span>
+                        <h2 class="text-900 font-normal mb-2">核心功能</h2>
+                        <span class="text-600 text-2xl">這是一款致力於解決行內通用光學字元辨識的問題。</span>
                     </div>
 
                     <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
@@ -361,10 +369,10 @@ const logoUrl = computed(() => {
 
             <div class="py-4 px-4 mx-0 mt-8 lg:mx-8">
                 <div class="grid justify-content-between">
-                    <div class="col-12 md:col-2" style="margin-top: -1.5rem">
+                    <div class="col-12 md:col-2" style="margin-top: -1.5rem;width:350px">
                         <a @click="smoothScroll('#home')" class="flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer">
-                            <img :src="logoUrl" alt="footer sections" width="50" height="50" class="mr-2" />
-                            <h4 class="font-medium text-3xl text-900">SAKAI</h4>
+                            <img :src="logoUrl" alt="footer sections" width="200" height="50" class="mr-2" />
+                            <h4 class="font-medium text-3xl text-900">玉山智能辨識系統</h4>
                         </a>
                     </div>
 
@@ -415,12 +423,15 @@ const logoUrl = computed(() => {
     height: 700px;
     overflow: hidden;
 }
+#hero .animated {
+  animation: up-down 2s ease-in-out infinite alternate-reverse both;
+}
 
 @media screen and (min-width: 768px) {
     #hero {
         -webkit-clip-path: ellipse(150% 87% at 93% 13%);
         clip-path: ellipse(150% 87% at 93% 13%);
-        height: 530px;
+        height: 600px;
     }
 }
 
@@ -430,23 +441,19 @@ const logoUrl = computed(() => {
     }
 
     #hero > div > p {
-        max-width: 450px;
+        max-width: 550px;
     }
 }
 
 @media screen and (max-width: 1300px) {
     #hero {
-        height: 600px;
+        height: 700px;
     }
 
     #hero > img {
         position: static;
         transform: scale(1);
         margin-left: auto;
-    }
-
-    #hero > div {
-        width: 100%;
     }
 
     #hero > div > p {

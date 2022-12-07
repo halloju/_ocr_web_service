@@ -46,20 +46,14 @@ const model = ref([
                     {
                         label: '身份證',
                         icon: 'pi pi-id-card',
-                        items: [
-                            { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                            { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
-                        ]
                     },
                     {
                         label: '第二證件',
                         icon: 'pi pi-credit-card',
-                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
                     },
                     {
                         label: '存摺',
                         icon: 'pi pi-envelope',
-                        items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
                     }
                 ]
             }

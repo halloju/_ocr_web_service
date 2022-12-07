@@ -5,11 +5,11 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: '/',
+            path: '/home',
             component: AppLayout,
             children: [
                 {
-                    path: '/',
+                    path: '/home',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
@@ -189,12 +189,7 @@ const router = createRouter({
             ]
         },
         {
-            path: '/home',
-            name: 'home',
-            component: () => import('@/views/pages/Homepage.vue')
-        },
-        {
-            path: '/landing',
+            path: '/',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')
         },
