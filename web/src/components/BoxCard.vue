@@ -43,8 +43,7 @@ export default {
 </script>
 
 <template>
-    <div class="surface-section" style="height: 700px; overflow-y: scroll">
-        {{ this.recs }}
+    <div class="surface-section" style="width: 400px">
         <div class="font-medium text-3xl text-900 mb-3">{{ boxTitle }}</div>
         <ul class="list-none p-0 m-0">
             <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">

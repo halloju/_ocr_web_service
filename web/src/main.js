@@ -4,6 +4,8 @@ import BootstrapVue3 from 'bootstrap-vue-3';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
@@ -113,6 +115,7 @@ const app = createApp(App);
 
 app.use(router);
 app.use(BootstrapVue3);
+app.use(ElementPlus);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);

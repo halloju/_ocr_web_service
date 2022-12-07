@@ -1,4 +1,5 @@
 <script>
+
 export default {
     name: 'BoxCard',
     mounted() {
@@ -44,7 +45,3 @@ export default {
         </li>
     </div>
 </template>
-
-<style scope>
-@import '@/assets/css/content.css';
-</style>

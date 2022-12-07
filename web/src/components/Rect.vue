@@ -75,7 +75,3 @@ export default {
         />
     </v-group>
 </template>
-
-<style scope>
-@import '@/assets/css/content.css';
-</style>
