@@ -130,7 +130,7 @@ import BoxCard from '@/components/BoxCard.vue';
     data() {
       return {
         models: [{ name: '文字位置標註' }, { name: '方塊位置標註' }, { name: '遮罩位置標註' }],
-        myModel: { name: '文字' },
+        myModel: { name: '文字位置標註' },
         images: null,
         tableHeader: [
           {
