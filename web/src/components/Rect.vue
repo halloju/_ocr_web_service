@@ -11,15 +11,26 @@ export default {
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
-
-            const rect = this.recs.find((r) => r.name === this.selectedShapeName);
+            const rect = this.recs.find((r) => r.name === e.target.attrs.name);
+            let image = e.target.getStage().findOne('Image');
+            let group = e.target.getParent();
             // update the state
-            console.log(rect);
-            rect.x = e.target.x();
-            rect.y = e.target.y();
-            rect.rotation = e.target.rotation();
+            rect.startPointX = group.x();
+            rect.startPointY = group.y();
+            rect.x = group.x() - image.x();
+            rect.y = group.y() - image.y();
             rect.scaleX = e.target.scaleX();
             rect.scaleY = e.target.scaleY();
+        },
+        handleDragEnd(e) {
+            const rect = this.recs.find((r) => r.name === e.target.children[0].attrs.name);
+            let image = e.target.getStage().findOne('Image');
+            let group = e.target;
+            // update the state
+            rect.startPointX = group.x();
+            rect.startPointY = group.y();
+            rect.x = group.x() - image.x();
+            rect.y = group.y() - image.y();
         }
     },
     props: {
@@ -51,6 +62,7 @@ export default {
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
         }"
         draggable="true"
+        @dragend="handleDragEnd"
     >
         <v-rect
             :key="index"

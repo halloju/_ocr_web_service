@@ -49,7 +49,8 @@ export default {
         handleMouseDown(event) {
             if (!this.isNamingOk) return;
             if (!this.canDraw) return;
-            if (this.isTransforming & (event.target.className === 'image')) {
+            if (event.target === event.target.getStage()) return;
+            if (this.isTransforming & (event.target.className === 'Image')) {
                 this.selectedShapeName = '';
                 this.updateTransformer();
                 this.isTransforming = false;
@@ -82,7 +83,8 @@ export default {
             this.isDrawing = true;
             this.isNamingOk = false;
             const pos = this.$refs.stage.getNode().getPointerPosition();
-            this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, width: 0, height: 0, canDelete: false }]);
+            const imgPos = this.$refs.image.getNode().position();
+            this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, x: pos.x - imgPos.x, y: pos.y - imgPos.y, width: 0, height: 0, canDelete: false }]);
             // this.$store.state[this.boxName] = this.recs;
             this.$store.commit('recsUpdate', this.recs);
             this.isInputing = false;
@@ -252,7 +254,7 @@ export default {
                     />
                     <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" />
                     <Rect v-else v-for="box in otherBoxes" :key="box.boxName" :boxName="box.boxName" :fillColor="box.fillColor" />
-                    <v-transformer ref="transformer" />
+                    <v-transformer ref="transformer" :rotateEnabled="false" />
                 </v-layer>
             </v-stage>
 
