@@ -25,36 +25,36 @@ export default {
     <div class="surface-0 flex justify-content-center">
         <div id="home" class="landing-wrapper overflow-hidden">
             <div class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3">
-                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<span class="text-900 font-medium text-2xl line-height-3 mr-8" style="width:200px">玉山智能辨識系統</span> </a>
+                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<span class="text-900 font-medium text-4xl line-height-3 mr-8" style="width:250px">玉山智能辨識系統</span> </a>
                 <a class="cursor-pointer block lg:hidden text-700 p-ripple" v-ripple v-styleclass="{ selector: '@next', enterClass: 'hidden', leaveToClass: 'hidden', hideOnOutsideClick: true }">
                     <i class="pi pi-bars text-4xl"></i>
                 </a>
                 <div class="align-items-center surface-0 flex-grow-1 justify-content-between hidden lg:flex absolute lg:static w-full left-0 px-6 lg:px-0 z-2" style="top: 120px">
                     <ul class="list-none p-0 m-0 flex lg:align-items-center select-none flex-column lg:flex-row cursor-pointer">
                         <li>
-                            <a @click="smoothScroll('#hero')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
+                            <a @click="smoothScroll('#hero')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
                                 <span>首頁</span>
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#features')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
+                            <a @click="smoothScroll('#features')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
                                 <span>核心功能</span>
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#highlights')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
+                            <a @click="smoothScroll('#highlights')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
                                 <span>關於產品</span>
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#pricing')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
+                            <a @click="smoothScroll('#pricing')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
                                 <span>常見問題</span>
                             </a>
                         </li>
                     </ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500" @click="goLogin"></Button>
-                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 bg-blue-500"></Button>
+                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="goLogin"></Button>
+                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 text-xl bg-blue-500"></Button>
                     </div>
                 </div>
             </div>
@@ -265,108 +265,44 @@ export default {
                 </div>
             </div>
 
-            <div id="pricing" class="py-4 px-4 lg:px-8 my-2 md:my-4">
-                <div class="text-center">
-                    <h2 class="text-900 font-normal mb-2">Matchless Pricing</h2>
-                    <span class="text-600 text-2xl">Amet consectetur adipiscing elit...</span>
-                </div>
-
-                <div class="grid justify-content-between mt-8 md:mt-0">
-                    <div class="col-12 lg:col-4 p-0 md:p-3">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
-                            <h3 class="text-900 text-center my-5">Free</h3>
-                            <img src="/demo/images/landing/free.svg" class="w-10 h-10 mx-auto" alt="free" />
-                            <div class="my-5 text-center">
-                                <span class="text-5xl font-bold mr-2 text-900">$0</span>
-                                <span class="text-600">per month</span>
-                                <button pButton pRipple label="Get Started" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></button>
-                            </div>
-                            <Divider class="w-full bg-surface-200"></Divider>
-                            <ul class="my-5 list-none p-0 flex text-900 flex-column">
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Responsive Layout</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Unlimited Push Messages</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">50 Support Ticket</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Free Shipping</span>
-                                </li>
-                            </ul>
-                        </div>
+            <!-- ======= Frequently Asked Questions Section ======= -->
+            <div id="faq" class="faq section-bg">
+                <div class="container" data-aos="fade-up">
+                    <div class="text-center">
+                        <h2 class="text-900 font-normal mb-2 text-5xl">常見問題</h2>
                     </div>
 
-                    <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
-                            <h3 class="text-900 text-center my-5">Startup</h3>
-                            <img src="/demo/images/landing/startup.svg" class="w-10 h-10 mx-auto" alt="startup" />
-                            <div class="my-5 text-center">
-                                <span class="text-5xl font-bold mr-2 text-900">$1</span>
-                                <span class="text-600">per month</span>
-                                <button pButton pRipple label="Try Free" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></button>
-                            </div>
-                            <Divider class="w-full bg-surface-200"></Divider>
-                            <ul class="my-5 list-none p-0 flex text-900 flex-column">
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Responsive Layout</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Unlimited Push Messages</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">50 Support Ticket</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Free Shipping</span>
-                                </li>
-                            </ul>
+                    <div class="faq-list text-2xl">
+                    <ul>
+                        <li data-aos="fade-up" data-aos-delay="100">
+                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">這個需要付費嗎？<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                        <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
+                            <p>
+                            完全不用！請盡情享受
+                            </p>
                         </div>
+                        </li>
+
+
+
+                        <li data-aos="fade-up" data-aos-delay="400">
+                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-4" class="collapsed">這可以幹麼？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                        <div id="faq-list-4" class="collapse" data-bs-parent=".faq-list">
+                            <p>
+                            解決您的辨識問題！
+                            </p>
+                        </div>
+                        </li>
+
+
+
+                    </ul>
                     </div>
 
-                    <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
-                            <h3 class="text-900 text-center my-5">Enterprise</h3>
-                            <img src="/demo/images/landing/enterprise.svg" class="w-10 h-10 mx-auto" alt="enterprise" />
-                            <div class="my-5 text-center">
-                                <span class="text-5xl font-bold mr-2 text-900">$999</span>
-                                <span class="text-600">per month</span>
-                                <button pButton pRipple label="Get a Quote" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></button>
-                            </div>
-                            <Divider class="w-full bg-surface-200"></Divider>
-                            <ul class="my-5 list-none p-0 flex text-900 flex-column">
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Responsive Layout</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Unlimited Push Messages</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">50 Support Ticket</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Free Shipping</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
-
+            <!-- End Frequently Asked Questions Section -->
+            
             <div class="py-4 px-4 mx-0 mt-8 lg:mx-8">
                 <div class="grid justify-content-between">
                     <div class="col-12 md:col-2" style="margin-top: -1.5rem;width:350px">
@@ -425,6 +361,79 @@ export default {
 }
 #hero .animated {
   animation: up-down 2s ease-in-out infinite alternate-reverse both;
+}
+#faq .faq-list {
+  padding: 0 100px;
+}
+
+#faq .faq-list ul {
+  padding: 0;
+  list-style: none;
+}
+
+#faq .faq-list li+li {
+  margin-top: 15px;
+}
+
+#faq .faq-list li {
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+}
+
+#faq .faq-list a {
+  display: block;
+  position: relative;
+  font-family: "Poppins", sans-serif;
+  font-size: 26px;
+  line-height: 24px;
+  font-weight: 500;
+  padding: 0 30px;
+  outline: none;
+  cursor: pointer;
+}
+
+#faq .faq-list .icon-help {
+  font-size: 30px;
+  position: absolute;
+  right: 0;
+  left: 20px;
+  color: #47b2e4;
+}
+
+#faq .faq-list .icon-show,
+#faq .faq-list .icon-close {
+  font-size: 24px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#faq .faq-list p {
+  margin-bottom: 0;
+  padding: 10px 0 0 0;
+}
+
+#faq .faq-list .icon-show {
+  display: none;
+}
+
+#faq .faq-list a.collapsed {
+  color: #37517e;
+  transition: 0.3s;
+}
+
+#faq .faq-list a.collapsed:hover {
+  color: #47b2e4;
+}
+
+#faq .faq-list a.collapsed .icon-show {
+  display: inline-block;
+}
+
+#faq .faq-list a.collapsed .icon-close {
+  display: none;
 }
 
 @media screen and (min-width: 768px) {
