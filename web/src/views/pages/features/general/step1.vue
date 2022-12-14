@@ -29,9 +29,8 @@
                 >
                     <el-icon><Plus /></el-icon>
                 </el-upload>
-
-                <el-dialog v-model="dialogVisible">
-                    <img :src="dialogImageUrl" alt="Preview Image" style="width:400px"/>
+                <el-dialog v-model="dialogVisible" :width="dialogWidth">
+                    <img :src="dialogImageUrl" alt="Preview Image" @load="onLoadImg" :width="imgWidth"/>
                 </el-dialog>
             </div>
         </div>
@@ -44,7 +43,7 @@
                 <InputSwitch v-model="switchValue" />
 
                 <h5></h5>
-                <Button label="提交" class="mr-2 mb-2" @click="submit"></Button>
+                <Button label="提交" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"></Button>
             </div>
         </div>
     </div>
@@ -82,8 +81,19 @@ export default {
             // upload 參數
             fileList: this.$store.state.general_upload_image,
             dialogVisible: false,
+            imaWidth: '',
+            dialogWidth: '',
 
         };
+    },
+    computed: {
+        disableUpload(){
+            if (this.fileList.length===0){
+                return true
+            } else {
+                return false
+            }
+        }
     },
     methods: {
         submit() {
@@ -112,7 +122,22 @@ export default {
             this.dialogImageUrl = file.url;
             this.dialogVisible = true;
         },
-
+        onLoadImg(e) {
+            const img = e.target;
+            let width = 0;
+            if (img.fileSize > 0 || (img.naturalWidth > 1 && img.naturalHeight > 1)) {
+                width = img.naturalWidth;
+            }
+            if (img.naturalWidth < 200) {
+                width = 200;
+            } else if (img.naturalHeight > img.naturalWidth && width > 370) {
+                width = 370;
+            } else {
+                width = 500;
+            }
+            this.imgWidth = width;
+            this.dialogWidth = width + 40;
+            },
     }
 };
 </script>
