@@ -16,36 +16,18 @@
 
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
+            {{fileList}}
+            {{dialogVisible}}
             <div class="card">
-                <el-upload action="#" list-type="picture-card" :auto-upload="false">
+                <el-upload
+                    :file-list="fileList"
+                    list-type="picture-card"
+                    :on-change="fileChange"
+                    :on-remove="handleRemove"
+                    :auto-upload="false"
+                    :on-preview="handlePictureCardPreview"
+                >
                     <el-icon><Plus /></el-icon>
-                    <template #file="{ file }">
-                    <div>
-                        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                        <span class="el-upload-list__item-actions">
-                        <span
-                            class="el-upload-list__item-preview"
-                            @click="handlePictureCardPreview(file)"
-                        >
-                            <el-icon><zoom-in /></el-icon>
-                        </span>
-                        <span
-                            v-if="!disabled"
-                            class="el-upload-list__item-delete"
-                            @click="handleDownload(file)"
-                        >
-                            <el-icon><Download /></el-icon>
-                        </span>
-                        <span
-                            v-if="!disabled"
-                            class="el-upload-list__item-delete"
-                            @click="handleRemove(file)"
-                        >
-                            <el-icon><Delete /></el-icon>
-                        </span>
-                        </span>
-                    </div>
-                    </template>
                 </el-upload>
 
                 <el-dialog v-model="dialogVisible">
@@ -53,7 +35,6 @@
                 </el-dialog>
             </div>
         </div>
-
         <div class="col-12 md:col-3">
             <div class="card">
                 <h5>選擇語言</h5>
@@ -98,28 +79,39 @@ export default {
                 { label: '圖檔上傳', to: '#' }
             ],
             switchValue: false,
-            idCardImgUrl: '',
-            idCardIsUpload: false,
-            idCardUploadPercentage: 0,
-            errorImgUrls: [],
+            // upload 參數
+            fileList: this.$store.state.general_upload_image,
             dialogVisible: false,
+
         };
-    },
-    props: {
-    /*可以在使用组件的时候传入一个支持上传的图片格式的数组进来，不传默认default数组*/
-        supportType: {//支持上传文件的格式
-        default: () => ['image/jpeg', 'image/jpg', 'image/png'],
-        type: Array
-        }
     },
     methods: {
         submit() {
             this.$router.push({ path: '/features/general/step2' });
         },
-        handlePictureCardPreview(file) {
-            this.dialogImageUrl = file.url
-            this.dialogVisible = true
-        }
+        fileChange(file, resfileList){
+            console.log('fileChange')
+            console.log(resfileList)
+            
+            this.$store.commit('generalImageUpdate', resfileList);
+            this.fileList = resfileList;
+        },
+        handleRemove(file){
+            console.log('handleRemove')
+            for (let i = 0; i < this.fileList.length; i++) {
+                if (this.fileList[i]['uid'] === file.uid) {
+                this.fileList.splice(i, 1);
+                break;
+                }
+            }
+            this.$store.commit('generalImageUpdate', this.fileList);
+
+        },
+        handlePictureCardPreview(file){
+            console.log(file)
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
 
     }
 };
