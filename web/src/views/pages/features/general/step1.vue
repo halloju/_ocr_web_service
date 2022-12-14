@@ -1,36 +1,3 @@
-<script>
-export default {
-    components: {},
-    name: 'General1',
-    data() {
-        return {
-            nestedRouteItems: [
-                {
-                    label: '圖檔上傳',
-                    to: '/features/general/step1'
-                },
-                {
-                    label: '單張結果確認',
-                    to: '/features/general/step2'
-                }
-            ],
-            breadcrumbHome: { icon: 'pi pi-home', to: '/' },
-            breadcrumbItems: [
-                { label: '主要功能', to: '#' },
-                { label: '通用文件辨識', to: '#' },
-                { label: '通用辨識', to: '#' },
-                { label: '圖檔上傳', to: '#' }
-            ],
-            switchValue: false
-        };
-    },
-    methods: {
-        submit() {
-            this.$router.push({ path: '/features/general/step2' });
-        }
-    }
-};
-</script>
 <template>
     <div class="grid p-fluid">
         <div class="col-12">
@@ -49,25 +16,128 @@ export default {
 
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
+            {{fileList}}
+            {{dialogVisible}}
             <div class="card">
-                <FileUpload name="demo[]" url="./upload" :maxFileSize="1000000" :fileLimit="3" :previewWidth="500" chooseLabel="選擇檔案" uploadLabel="上傳檔案" cancelLabel="取消上傳檔案" />
+                <el-upload
+                    :file-list="fileList"
+                    list-type="picture-card"
+                    :on-change="fileChange"
+                    :on-remove="handleRemove"
+                    :auto-upload="false"
+                    :on-preview="handlePictureCardPreview"
+                >
+                    <el-icon><Plus /></el-icon>
+                </el-upload>
+                <el-dialog v-model="dialogVisible" :width="dialogWidth">
+                    <img :src="dialogImageUrl" alt="Preview Image" @load="onLoadImg" :width="imgWidth"/>
+                </el-dialog>
             </div>
         </div>
-
         <div class="col-12 md:col-3">
             <div class="card">
                 <h5>選擇語言</h5>
-                <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Select" />
-
-                <h5>選擇模板</h5>
-                <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Select" />
+                <Dropdown v-model="selectedLang" :options="languages" optionLabel="name" placeholder="Select" />
 
                 <h5>是否使用高精準度模型(耗時較久)</h5>
                 <InputSwitch v-model="switchValue" />
 
                 <h5></h5>
-                <Button label="提交" class="mr-2 mb-2" @click="submit"></Button>
+                <Button label="提交" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"></Button>
             </div>
         </div>
     </div>
 </template>
+<script>
+
+export default {
+    components: {},
+    name: 'General1',
+    data() {
+        return {
+            selectedLang: null,
+            languages: [
+                {name: '繁體中文', code: 'zhant'},
+                {name: '英語', code: 'english'},
+            ],
+            nestedRouteItems: [
+                {
+                    label: '圖檔上傳',
+                    to: '/features/general/step1'
+                },
+                {
+                    label: '單張結果確認',
+                    to: '/features/general/step2'
+                }
+            ],
+            breadcrumbHome: { icon: 'pi pi-home', to: '/' },
+            breadcrumbItems: [
+                { label: '主要功能', to: '#' },
+                { label: '通用文件辨識', to: '#' },
+                { label: '通用辨識', to: '#' },
+                { label: '圖檔上傳', to: '#' }
+            ],
+            switchValue: false,
+            // upload 參數
+            fileList: this.$store.state.general_upload_image,
+            dialogVisible: false,
+            imaWidth: '',
+            dialogWidth: '',
+
+        };
+    },
+    computed: {
+        disableUpload(){
+            if (this.fileList.length===0){
+                return true
+            } else {
+                return false
+            }
+        }
+    },
+    methods: {
+        submit() {
+            this.$router.push({ path: '/features/general/step2' });
+        },
+        fileChange(file, resfileList){
+            console.log('fileChange')
+            console.log(resfileList)
+            
+            this.$store.commit('generalImageUpdate', resfileList);
+            this.fileList = resfileList;
+        },
+        handleRemove(file){
+            console.log('handleRemove')
+            for (let i = 0; i < this.fileList.length; i++) {
+                if (this.fileList[i]['uid'] === file.uid) {
+                this.fileList.splice(i, 1);
+                break;
+                }
+            }
+            this.$store.commit('generalImageUpdate', this.fileList);
+
+        },
+        handlePictureCardPreview(file){
+            console.log(file)
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
+        onLoadImg(e) {
+            const img = e.target;
+            let width = 0;
+            if (img.fileSize > 0 || (img.naturalWidth > 1 && img.naturalHeight > 1)) {
+                width = img.naturalWidth;
+            }
+            if (img.naturalWidth < 200) {
+                width = 200;
+            } else if (img.naturalHeight > img.naturalWidth && width > 370) {
+                width = 370;
+            } else {
+                width = 500;
+            }
+            this.imgWidth = width;
+            this.dialogWidth = width + 40;
+            },
+    }
+};
+</script>

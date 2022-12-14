@@ -11,7 +11,7 @@ export default {
     },
     methods: {
         login() {
-            this.$router.push({ path: '/' });
+            this.$router.push({ path: '/home' });
         }
     }
 };
@@ -23,7 +23,7 @@ export default {
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
                     <div class="text-center mb-5">
                         <img src="@/assets/img/esun_logo.svg" alt="Image" height="50" class="mb-3" />
-                        <div class="text-900 text-3xl font-medium mb-3">智能辨識服務系統</div>
+                        <div class="text-900 text-3xl font-medium mb-3">智能辨識系統</div>
                         <span class="text-600 font-medium">歡迎使用</span>
                     </div>
 

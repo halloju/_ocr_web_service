@@ -4,6 +4,8 @@ import BootstrapVue3 from 'bootstrap-vue-3';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
@@ -108,11 +110,17 @@ import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
 
 import '@/assets/styles.scss';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
 
 const app = createApp(App);
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }
 
 app.use(router);
 app.use(BootstrapVue3);
+app.use(ElementPlus);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
 app.use(DialogService);

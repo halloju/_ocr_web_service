@@ -88,7 +88,3 @@ export default {
         @mouseout="handleMouseOut"
     />
 </template>
-
-<style scope>
-@import '@/assets/css/content.css';
-</style>

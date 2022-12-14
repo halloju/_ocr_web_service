@@ -1,79 +1,87 @@
-<script setup>
-import { useLayout } from '@/layout/composables/layout';
-import { computed } from 'vue';
-import AppConfig from '@/layout/AppConfig.vue';
+<script>
 
-const { layoutConfig, contextPath } = useLayout();
-
-const smoothScroll = (id) => {
-    document.querySelector(id).scrollIntoView({
+export default {
+    name: "landing",
+    data() {
+        return {
+            logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
+        }
+    },
+    methods: {
+      goLogin() {
+        this.$router.push({ path: '/auth/login' });
+      },
+      smoothScroll(id) {
+        document.querySelector(id).scrollIntoView({
         behavior: 'smooth'
-    });
-};
+        });
+      },
+  }
+}
 
-const logoUrl = computed(() => {
-    return `${contextPath}layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
-});
 </script>
 
 <template>
     <div class="surface-0 flex justify-content-center">
         <div id="home" class="landing-wrapper overflow-hidden">
             <div class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3">
-                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="Sakai Logo" height="50" class="mr-0 lg:mr-2" /><span class="text-900 font-medium text-2xl line-height-3 mr-8">SAKAI</span> </a>
+                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<span class="text-900 font-medium text-4xl line-height-3 mr-8" style="width:250px">玉山智能辨識系統</span> </a>
                 <a class="cursor-pointer block lg:hidden text-700 p-ripple" v-ripple v-styleclass="{ selector: '@next', enterClass: 'hidden', leaveToClass: 'hidden', hideOnOutsideClick: true }">
                     <i class="pi pi-bars text-4xl"></i>
                 </a>
                 <div class="align-items-center surface-0 flex-grow-1 justify-content-between hidden lg:flex absolute lg:static w-full left-0 px-6 lg:px-0 z-2" style="top: 120px">
                     <ul class="list-none p-0 m-0 flex lg:align-items-center select-none flex-column lg:flex-row cursor-pointer">
                         <li>
-                            <a @click="smoothScroll('#hero')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Home</span>
+                            <a @click="smoothScroll('#hero')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
+                                <span>首頁</span>
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#features')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Features</span>
+                            <a @click="smoothScroll('#features')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
+                                <span>核心功能</span>
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#highlights')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Highlights</span>
+                            <a @click="smoothScroll('#highlights')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
+                                <span>關於產品</span>
                             </a>
                         </li>
                         <li>
-                            <a @click="smoothScroll('#pricing')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Pricing</span>
+                            <a @click="smoothScroll('#faq')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium text-2xl line-height-3 p-ripple" v-ripple>
+                                <span>常見問題</span>
                             </a>
                         </li>
                     </ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500"></Button>
-                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 bg-blue-500"></Button>
+                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="goLogin"></Button>
+                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 text-xl bg-blue-500"></Button>
                     </div>
                 </div>
             </div>
+                    
+            <div id="hero"
+                 class="grid grid-nogutter surface-section text-800"
+                 style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%); clip-path: ellipse(150% 87% at 93% 13%)">
+                <div class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center ">
+                    <section>
+                        <span class="block text-6xl font-bold mb-1">玉山智能辨識系統</span>
+                        <div class="text-6xl text-primary font-bold mb-3">Esun.OCR</div>
+                        <p class="mt-0 mb-4 text-3xl text-700 line-height-3">由智金處電腦視覺專家研發設計，解決行內 PDF、身份證、健保卡圖片辨識等問題。</p>
 
-            <div
-                id="hero"
-                class="flex flex-column pt-4 px-4 lg:px-8 overflow-hidden"
-                style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%); clip-path: ellipse(150% 87% at 93% 13%)"
-            >
-                <div class="mx-4 md:mx-8 mt-0 md:mt-4">
-                    <h1 class="text-6xl font-bold text-gray-900 line-height-2"><span class="font-light block">Eu sem integer</span>eget magna fermentum</h1>
-                    <p class="font-normal text-2xl line-height-3 md:mt-3 text-gray-700">Sed blandit libero volutpat sed cras. Fames ac turpis egestas integer. Placerat in egestas erat...</p>
-                    <Button label="Get Started" class="p-button-rounded text-xl border-none mt-5 bg-blue-500 font-normal text-white line-height-3 px-3"></Button>
+                        <Button label="Learn More" type="button" class="mr-3 p-button-raised" @click="goLogin"></Button>
+                        <Button label="Live Demo" type="button" class="p-button-outlined"></Button>
+                    </section>
                 </div>
-                <div class="flex justify-content-center md:justify-content-end">
-                    <img src="/demo/images/landing/screen-1.png" alt="Hero Image" class="w-9 md:w-auto" />
+                <div class="col-12 md:col-6 overflow-hidden my-image">
+                    <img src="@/assets/img/hero-img.png" alt="Image" class="md:ml-auto block md:h-full animated" style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)">
                 </div>
             </div>
 
             <div id="features" class="py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8">
                 <div class="grid justify-content-center">
                     <div class="col-12 text-center mt-8 mb-4">
-                        <h2 class="text-900 font-normal mb-2">Marvelous Features</h2>
-                        <span class="text-600 text-2xl">Placerat in egestas erat...</span>
+                        <h2 class="text-900 font-normal mb-2">核心功能</h2>
+                        <span class="text-600 text-2xl">這是一款致力於解決行內通用光學字元辨識的問題。</span>
                     </div>
 
                     <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
@@ -220,8 +228,8 @@ const logoUrl = computed(() => {
 
             <div id="highlights" class="py-4 px-4 lg:px-8 mx-0 my-6 lg:mx-8">
                 <div class="text-center">
-                    <h2 class="text-900 font-normal mb-2">Powerful Everywhere</h2>
-                    <span class="text-600 text-2xl">Amet consectetur adipiscing elit...</span>
+                    <h2 class="text-900 font-normal mb-2">關於產品</h2>
+                    <span class="text-600 text-2xl">齊心齊力打造更完善、優良的服務體驗</span>
                 </div>
 
                 <div class="grid mt-8 pb-2 md:pb-8">
@@ -233,7 +241,7 @@ const logoUrl = computed(() => {
                         <div class="flex align-items-center justify-content-center bg-purple-200 align-self-center lg:align-self-end" style="width: 4.2rem; height: 4.2rem; border-radius: 10px">
                             <i class="pi pi-fw pi-mobile text-5xl text-purple-700"></i>
                         </div>
-                        <h2 class="line-height-1 text-900 text-4xl font-normal">Congue Quisque Egestas</h2>
+                        <h2 class="line-height-1 text-900 text-4xl font-normal">手機</h2>
                         <span class="text-700 text-2xl line-height-3 ml-0 md:ml-2" style="max-width: 650px"
                             >Lectus arcu bibendum at varius vel pharetra vel turpis nunc. Eget aliquet nibh praesent tristique magna sit amet purus gravida. Sit amet mattis vulputate enim nulla aliquet.</span
                         >
@@ -245,7 +253,7 @@ const logoUrl = computed(() => {
                         <div class="flex align-items-center justify-content-center bg-yellow-200 align-self-center lg:align-self-start" style="width: 4.2rem; height: 4.2rem; border-radius: 10px">
                             <i class="pi pi-fw pi-desktop text-5xl text-yellow-700"></i>
                         </div>
-                        <h2 class="line-height-1 text-900 text-4xl font-normal">Celerisque Eu Ultrices</h2>
+                        <h2 class="line-height-1 text-900 text-4xl font-normal">桌機</h2>
                         <span class="text-700 text-2xl line-height-3 mr-0 md:mr-2" style="max-width: 650px"
                             >Adipiscing commodo elit at imperdiet dui. Viverra nibh cras pulvinar mattis nunc sed blandit libero. Suspendisse in est ante in. Mauris pharetra et ultrices neque ornare aenean euismod elementum nisi.</span
                         >
@@ -257,114 +265,50 @@ const logoUrl = computed(() => {
                 </div>
             </div>
 
-            <div id="pricing" class="py-4 px-4 lg:px-8 my-2 md:my-4">
-                <div class="text-center">
-                    <h2 class="text-900 font-normal mb-2">Matchless Pricing</h2>
-                    <span class="text-600 text-2xl">Amet consectetur adipiscing elit...</span>
-                </div>
-
-                <div class="grid justify-content-between mt-8 md:mt-0">
-                    <div class="col-12 lg:col-4 p-0 md:p-3">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
-                            <h3 class="text-900 text-center my-5">Free</h3>
-                            <img src="/demo/images/landing/free.svg" class="w-10 h-10 mx-auto" alt="free" />
-                            <div class="my-5 text-center">
-                                <span class="text-5xl font-bold mr-2 text-900">$0</span>
-                                <span class="text-600">per month</span>
-                                <button pButton pRipple label="Get Started" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></button>
-                            </div>
-                            <Divider class="w-full bg-surface-200"></Divider>
-                            <ul class="my-5 list-none p-0 flex text-900 flex-column">
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Responsive Layout</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Unlimited Push Messages</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">50 Support Ticket</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Free Shipping</span>
-                                </li>
-                            </ul>
-                        </div>
+            <!-- ======= Frequently Asked Questions Section ======= -->
+            <div id="faq" class="faq section-bg">
+                <div class="container" data-aos="fade-up">
+                    <div class="text-center">
+                        <h2 class="text-900 font-normal mb-2 text-5xl">常見問題</h2>
                     </div>
 
-                    <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
-                            <h3 class="text-900 text-center my-5">Startup</h3>
-                            <img src="/demo/images/landing/startup.svg" class="w-10 h-10 mx-auto" alt="startup" />
-                            <div class="my-5 text-center">
-                                <span class="text-5xl font-bold mr-2 text-900">$1</span>
-                                <span class="text-600">per month</span>
-                                <button pButton pRipple label="Try Free" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></button>
-                            </div>
-                            <Divider class="w-full bg-surface-200"></Divider>
-                            <ul class="my-5 list-none p-0 flex text-900 flex-column">
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Responsive Layout</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Unlimited Push Messages</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">50 Support Ticket</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Free Shipping</span>
-                                </li>
-                            </ul>
+                    <div class="faq-list text-2xl">
+                    <ul>
+                        <li data-aos="fade-up" data-aos-delay="100">
+                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">這個需要付費嗎？<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                        <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
+                            <p>
+                            完全不用！請盡情享受
+                            </p>
                         </div>
+                        </li>
+
+
+
+                        <li data-aos="fade-up" data-aos-delay="400">
+                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-4" class="collapsed">這可以幹麼？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                        <div id="faq-list-4" class="collapse" data-bs-parent=".faq-list">
+                            <p>
+                            解決您的辨識問題！
+                            </p>
+                        </div>
+                        </li>
+
+
+
+                    </ul>
                     </div>
 
-                    <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
-                            <h3 class="text-900 text-center my-5">Enterprise</h3>
-                            <img src="/demo/images/landing/enterprise.svg" class="w-10 h-10 mx-auto" alt="enterprise" />
-                            <div class="my-5 text-center">
-                                <span class="text-5xl font-bold mr-2 text-900">$999</span>
-                                <span class="text-600">per month</span>
-                                <button pButton pRipple label="Get a Quote" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></button>
-                            </div>
-                            <Divider class="w-full bg-surface-200"></Divider>
-                            <ul class="my-5 list-none p-0 flex text-900 flex-column">
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Responsive Layout</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Unlimited Push Messages</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">50 Support Ticket</span>
-                                </li>
-                                <li class="py-2">
-                                    <i class="pi pi-fw pi-check text-xl text-cyan-500 mr-2"></i>
-                                    <span class="text-xl line-height-3">Free Shipping</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
-
+            <!-- End Frequently Asked Questions Section -->
+            
             <div class="py-4 px-4 mx-0 mt-8 lg:mx-8">
                 <div class="grid justify-content-between">
-                    <div class="col-12 md:col-2" style="margin-top: -1.5rem">
+                    <div class="col-12 md:col-2" style="margin-top: -1.5rem;width:350px">
                         <a @click="smoothScroll('#home')" class="flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer">
-                            <img :src="logoUrl" alt="footer sections" width="50" height="50" class="mr-2" />
-                            <h4 class="font-medium text-3xl text-900">SAKAI</h4>
+                            <img :src="logoUrl" alt="footer sections" width="200" height="50" class="mr-2" />
+                            <h4 class="font-medium text-3xl text-900">玉山智能辨識系統</h4>
                         </a>
                     </div>
 
@@ -415,12 +359,88 @@ const logoUrl = computed(() => {
     height: 700px;
     overflow: hidden;
 }
+#hero .animated {
+  animation: up-down 2s ease-in-out infinite alternate-reverse both;
+}
+#faq .faq-list {
+  padding: 0 100px;
+}
+
+#faq .faq-list ul {
+  padding: 0;
+  list-style: none;
+}
+
+#faq .faq-list li+li {
+  margin-top: 15px;
+}
+
+#faq .faq-list li {
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+}
+
+#faq .faq-list a {
+  display: block;
+  position: relative;
+  font-family: "Poppins", sans-serif;
+  font-size: 26px;
+  line-height: 24px;
+  font-weight: 500;
+  padding: 0 30px;
+  outline: none;
+  cursor: pointer;
+}
+
+#faq .faq-list .icon-help {
+  font-size: 30px;
+  position: absolute;
+  right: 0;
+  left: 20px;
+  color: #47b2e4;
+}
+
+#faq .faq-list .icon-show,
+#faq .faq-list .icon-close {
+  font-size: 24px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#faq .faq-list p {
+  margin-bottom: 0;
+  padding: 10px 0 0 0;
+}
+
+#faq .faq-list .icon-show {
+  display: none;
+}
+
+#faq .faq-list a.collapsed {
+  color: #37517e;
+  transition: 0.3s;
+}
+
+#faq .faq-list a.collapsed:hover {
+  color: #47b2e4;
+}
+
+#faq .faq-list a.collapsed .icon-show {
+  display: inline-block;
+}
+
+#faq .faq-list a.collapsed .icon-close {
+  display: none;
+}
 
 @media screen and (min-width: 768px) {
     #hero {
         -webkit-clip-path: ellipse(150% 87% at 93% 13%);
         clip-path: ellipse(150% 87% at 93% 13%);
-        height: 530px;
+        height: 600px;
     }
 }
 
@@ -430,23 +450,19 @@ const logoUrl = computed(() => {
     }
 
     #hero > div > p {
-        max-width: 450px;
+        max-width: 550px;
     }
 }
 
 @media screen and (max-width: 1300px) {
     #hero {
-        height: 600px;
+        height: 700px;
     }
 
     #hero > img {
         position: static;
         transform: scale(1);
         margin-left: auto;
-    }
-
-    #hero > div {
-        width: 100%;
     }
 
     #hero > div > p {

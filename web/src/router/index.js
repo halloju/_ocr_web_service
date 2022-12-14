@@ -5,11 +5,11 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: '/',
+            path: '/home',
             component: AppLayout,
             children: [
                 {
-                    path: '/',
+                    path: '/home',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue')
                 },
@@ -47,6 +47,16 @@ const router = createRouter({
                     path: '/features/self-define/step5',
                     name: 'SelfDefine5',
                     component: () => import('@/views/pages/features/self-define/step5.vue')
+                },
+                {
+                    path: '/features/model-list/person',
+                    name: 'Person',
+                    component: () => import('@/views/pages/features/model-list/person.vue')
+                },
+                {
+                    path: '/features/model-list/public',
+                    name: 'Public',
+                    component: () => import('@/views/pages/features/model-list/public.vue')
                 },
                 {
                     path: '/uikit/formlayout',
@@ -179,12 +189,7 @@ const router = createRouter({
             ]
         },
         {
-            path: '/home',
-            name: 'home',
-            component: () => import('@/views/pages/Homepage.vue')
-        },
-        {
-            path: '/landing',
+            path: '/',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')
         },
