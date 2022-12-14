@@ -21,8 +21,15 @@ export default {
                 { label: '通用辨識', to: '#' },
                 { label: '單張結果確認', to: '#' }
             ],
-            switchValue: false
+            switchValue: false,
+            firstImage: this.$store.state.general_upload_image[0],
         };
+    },
+    computed: {
+        getFile() {
+            this.firstImage = this.$store.state.general_upload_image[0]
+            return  this.firstImage
+        }
     },
     methods: {
         submit() {
@@ -51,6 +58,7 @@ export default {
         <div class="col-12 md:col-9">
             <div class="card">
                 <h5>上傳圖檔之一</h5>
+                <Image src="" alt="Image" width="500" preview />
             </div>
         </div>
 
@@ -69,7 +77,7 @@ export default {
                 <InputSwitch v-model="switchValue" />
 
                 <h5></h5>
-                <Button label="開始辨識全部檔案" class="mr-2 mb-2" @click="submit"></Button>
+                <Button label="開始辨識全部檔案" class="mr-2 mb-2" @click="submit" :disabled="!switchValue"></Button>
             </div>
         </div>
         <div class="col-12">

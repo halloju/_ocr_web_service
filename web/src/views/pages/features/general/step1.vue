@@ -8,7 +8,7 @@
                 <!-- Step -->
                 <Steps :model="nestedRouteItems" :readonly="true" />
                 <h5>通用辨識</h5>
-                <p>請上傳一張或多張圖片。</p>
+                <p>請上傳一張或多張圖片，下一步會先辨識第一張圖片讓您確認結果，再進行全部辨識。</p>
                 <router-view />
             </div>
         </div>
@@ -16,8 +16,6 @@
 
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
-            {{fileList}}
-            {{dialogVisible}}
             <div class="card">
                 <el-upload
                     :file-list="fileList"
@@ -39,11 +37,12 @@
                 <h5>選擇語言</h5>
                 <Dropdown v-model="selectedLang" :options="languages" optionLabel="name" placeholder="Select" />
 
-                <h5>是否使用高精準度模型(耗時較久)</h5>
+                <h5>使用高精準度模型</h5>
+                <p>注意：當您使用高精準模型時耗時會較久</p>
                 <InputSwitch v-model="switchValue" />
 
                 <h5></h5>
-                <Button label="提交" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"></Button>
+                <Button label="圖檔提交" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"></Button>
             </div>
         </div>
     </div>
@@ -79,7 +78,7 @@ export default {
             ],
             switchValue: false,
             // upload 參數
-            fileList: this.$store.state.general_upload_image,
+            fileList: [],
             dialogVisible: false,
             imaWidth: '',
             dialogWidth: '',
@@ -97,13 +96,13 @@ export default {
     },
     methods: {
         submit() {
+            this.$store.commit('generalImageUpdate', this.fileList);
             this.$router.push({ path: '/features/general/step2' });
         },
         fileChange(file, resfileList){
             console.log('fileChange')
             console.log(resfileList)
             
-            this.$store.commit('generalImageUpdate', resfileList);
             this.fileList = resfileList;
         },
         handleRemove(file){
@@ -114,7 +113,6 @@ export default {
                 break;
                 }
             }
-            this.$store.commit('generalImageUpdate', this.fileList);
 
         },
         handlePictureCardPreview(file){
