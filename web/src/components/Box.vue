@@ -83,8 +83,7 @@ export default {
             this.isDrawing = true;
             this.isNamingOk = false;
             const pos = this.$refs.stage.getNode().getPointerPosition();
-            const imgPos = this.$refs.image.getNode().position();
-            this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, x: pos.x - imgPos.x, y: pos.y - imgPos.y, width: 0, height: 0, canDelete: false }]);
+            this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, endPointX: pos.x, endPointY: pos.y, scaleX: 1, scaleY: 1, width: 0, height: 0, canDelete: false }]);
             // this.$store.state[this.boxName] = this.recs;
             this.$store.commit('recsUpdate', this.recs);
             this.isInputing = false;
@@ -149,6 +148,8 @@ export default {
             let curRec = this.recs[this.recs.length - 1];
             curRec.width = point.x - curRec.startPointX;
             curRec.height = point.y - curRec.startPointY;
+            curRec.endPointX = point.x;
+            curRec.endPointY = point.y;
         },
         photoPlus() {
             let i = 0.01;
@@ -254,7 +255,22 @@ export default {
                     />
                     <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" />
                     <Rect v-else v-for="box in otherBoxes" :key="box.boxName" :boxName="box.boxName" :fillColor="box.fillColor" />
-                    <v-transformer ref="transformer" :rotateEnabled="false" />
+                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" :enabledAnchors="['top-left', 'top-right', 'bottom-left', 'bottom-right']"/>
+                </v-layer>
+                <v-layer ref="layer2">
+                    <v-text
+                        :config="{
+                            name: 'tooltip',
+                            text: '',
+                            fontFamily: 'Calibri',
+                            fontSize: 24,
+                            padding: 5,
+                            textFill: 'white',
+                            fill: 'red',
+                            alpha: 0.75,
+                            visible: false
+                        }"
+                    />
                 </v-layer>
             </v-stage>
 

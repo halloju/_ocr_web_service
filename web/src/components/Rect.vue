@@ -12,25 +12,39 @@ export default {
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
-            let image = e.target.getStage().findOne('Image');
-            let group = e.target.getParent();
-            // update the state
-            rect.startPointX = group.x();
-            rect.startPointY = group.y();
-            rect.x = group.x() - image.x();
-            rect.y = group.y() - image.y();
-            rect.scaleX = e.target.scaleX();
-            rect.scaleY = e.target.scaleY();
+            // const transformer = e.target.getTransform();
+            // const next = transformer.point({ x: 0, y: 0 });
+
+            rect.startPointX = e.target.x();
+            rect.startPointY = e.target.y();
+            rect.scaleX = e.target.attrs.scaleX;
+            rect.scaleY = e.target.attrs.scaleY;
+            rect.endPointX = e.target.x() + rect.width * rect.scaleX;
+            rect.endPointY = e.target.y() + rect.height * rect.scaleY;
         },
         handleDragEnd(e) {
-            const rect = this.recs.find((r) => r.name === e.target.children[0].attrs.name);
-            let image = e.target.getStage().findOne('Image');
-            let group = e.target;
+            const rect = this.recs.find((r) => r.name === e.target.attrs.name);
+            const pos = e.target.getPosition();
             // update the state
-            rect.startPointX = group.x();
-            rect.startPointY = group.y();
-            rect.x = group.x() - image.x();
-            rect.y = group.y() - image.y();
+            rect.startPointX = pos.x;
+            rect.startPointY = pos.y;
+            rect.endPointX = pos.x + rect.width * rect.scaleX;
+            rect.endPointY = pos.y + rect.height * rect.scaleY;
+        },
+        handleMouseMove(e) {
+            const rect = this.recs.find((r) => r.name === e.target.attrs.name);
+            var mousePos = e.target.getStage().getPointerPosition();
+            var tooltip = e.target.getStage().findOne('.tooltip');
+            tooltip.position({
+                x: mousePos.x,
+                y: mousePos.y
+            });
+            tooltip.text(rect.name);
+            tooltip.show();
+        },
+        handleMouseOut(e) {
+            var tooltip = e.target.getStage().findOne('.tooltip');
+            tooltip.hide();
         }
     },
     props: {
@@ -54,38 +68,25 @@ export default {
 </script>
 
 <template>
-    <v-group
+    <v-rect
         v-for="(rec, index) in recs"
         :key="index"
+        :name="rec.name"
         :config="{
+            width: Math.abs(rec.width),
+            height: Math.abs(rec.height),
+            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
+            stroke: 'rgb(20,20,200,1)',
+            strokeWidth: 0.5,
             x: Math.min(rec.startPointX, rec.startPointX + rec.width),
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
         }"
         draggable="true"
+        @transformend="handleTransformEnd"
         @dragend="handleDragEnd"
-    >
-        <v-rect
-            :key="index"
-            :name="rec.name"
-            :config="{
-                width: Math.abs(rec.width),
-                height: Math.abs(rec.height),
-                fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
-                stroke: 'rgb(20,20,200,1)',
-                strokeWidth: 2
-            }"
-            @transformend="handleTransformEnd"
-        />
-        <v-text
-            :config="{
-                text: index,
-                fontSize: 30,
-                fill: 'rgb(20,20,200,1)',
-                x: 0,
-                y: 0
-            }"
-        />
-    </v-group>
+        @mouseover="handleMouseMove"
+        @mouseout="handleMouseOut"
+    />
 </template>
 
 <style scope>
