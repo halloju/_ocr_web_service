@@ -1,5 +1,4 @@
 <script>
-
 export default {
     name: 'BoxCard',
     mounted() {
@@ -34,7 +33,7 @@ export default {
 </script>
 
 <template>
-    <div v-for="(rec, index) in recs">
+    <div v-for="(rec, index) in this.recs">
         <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap" name="rec.name">
             <div class="text-500 w-6 md:w-2 font-medium">{{ index }}</div>
             <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">{{ rec.name }}</div>

@@ -5,6 +5,7 @@ const ratio = 1;
 export default {
     name: 'Box',
     mounted() {
+        console.log(this.Boxes[0]);
         this.image = new window.Image();
         this.image.src = sessionStorage.imageSource;
         const resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
@@ -16,7 +17,8 @@ export default {
                 y: (this.$refs.img_block.clientHeight - this.image.height * resize * ratio) / 2
             };
         };
-        this.recs = this.$store.state[this.boxName];
+        this.recs = this.$store.state[this.Boxes[0].name];
+        this.canDraw = this.Boxes.length <= 1;
     },
     components: {
         Rect
@@ -41,10 +43,15 @@ export default {
             isInputing: false,
             isNamingOk: true,
             isTransforming: false,
-            isWarning: false
+            isWarning: false,
+            canDraw: true,
         };
     },
-    computed: {},
+    watch: {
+        $route() {
+            this.recs = [];
+        }
+    },
     methods: {
         handleMouseDown(event) {
             if (!this.isNamingOk) return;
@@ -84,8 +91,8 @@ export default {
             this.isNamingOk = false;
             const pos = this.$refs.stage.getNode().getPointerPosition();
             this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, endPointX: pos.x, endPointY: pos.y, scaleX: 1, scaleY: 1, width: 0, height: 0, canDelete: false }]);
-            // this.$store.state[this.boxName] = this.recs;
-            this.$store.commit('recsUpdate', this.recs);
+            this.$store.state[this.Boxes[0].name] = this.recs;
+            //this.$store.commit('recsUpdate', this.recs);
             this.isInputing = false;
         },
         updateTransformer() {
@@ -205,20 +212,8 @@ export default {
         }
     },
     props: {
-        boxName: {
-            type: String,
-            required: true
-        },
-        canDraw: {
-            type: Boolean,
-            default: true
-        },
-        fillColor: {
-            type: Object,
-            required: false
-        },
-        otherBoxes: {
-            type: Object,
+        Boxes: {
+            type: Array,
             required: false
         }
     }
@@ -227,18 +222,6 @@ export default {
 
 <template>
     <div class="" ref="img_block">
-        <!-- <div v-if="isNamingOk">
-            <h3>編輯標籤模式</h3>
-            <span>現在請您利用滑鼠標註圖片或是可以調整已經標註完成框的大小、位置</span>
-        </div>
-        <div v-else-if="!isNamingOk">
-            <h3>編輯標籤模式</h3>
-            <span>現在請您對框選的圖片進行命名</span>
-        </div>
-        <div v-else>
-            <h3>拖曳縮放模式</h3>
-            <span>現在請您可以拖曳滑鼠移動圖片，亦可利用滾輪進行縮放</span>
-        </div> -->
         <div class="flex card-container overflow-hidden">
             <v-stage ref="stage" :config="stageConfig" @mousemove="handleMouseMove" @mouseDown="handleMouseDown" @mouseUp="handleMouseUp" @wheel="imgZoom">
                 <v-layer ref="layer">
@@ -253,8 +236,8 @@ export default {
                         }"
                         ref="image"
                     />
-                    <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" />
-                    <Rect v-else v-for="box in otherBoxes" :key="box.boxName" :boxName="box.boxName" :fillColor="box.fillColor" />
+                    <!-- <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" /> -->
+                    <Rect v-for="box in this.Boxes" :key="box.name" :boxName="box.name" :fillColor="box.fillColor" />
                     <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" :enabledAnchors="['top-left', 'top-right', 'bottom-left', 'bottom-right']"/>
                 </v-layer>
                 <v-layer ref="layer2">

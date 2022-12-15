@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 
@@ -24,29 +25,57 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/general/step2.vue')
                 },
                 {
-                    path: '/features/self-define/step1',
+                    path: '/features/self-define/step/1',
                     name: 'SelfDefine1',
                     component: () => import('@/views/pages/features/self-define/step1.vue')
                 },
                 {
-                    path: '/features/self-define/step2',
-                    name: 'SelfDefine2',
-                    component: () => import('@/views/pages/features/self-define/step2.vue')
+                    path: '/features/self-define/step/2',
+                    component: () => import('@/views/pages/features/self-define/step.vue'),
+                    props: { Boxes: [{ name: 'recs_text', title: '文字辨識位置', step: 2, fillColor: { r: 0, g: 255, b: 0, a: 0.5 } }],
+                             step: 2, pageTitle: '文字辨識位置', pageDesc: '請選擇文字辨識位置' }
                 },
                 {
-                    path: '/features/self-define/step3',
-                    name: 'SelfDefine3',
-                    component: () => import('@/views/pages/features/self-define/step3.vue')
+                    path: '/features/self-define/step/3',
+                    component: () => import('@/views/pages/features/self-define/step.vue'),
+                    props: { Boxes: [{ name: 'recs_block', title: '核取方塊位置', step: 3, fillColor: { r: 0, g: 0, b: 255, a: 0.5 } }],
+                             step: 3, pageTitle: '方塊位置', pageDesc: '請選擇方塊辨識位置' }
+                },  
+                {
+                    path: '/features/self-define/step/4',
+                    component: () => import('@/views/pages/features/self-define/step.vue'),
+                    props: { Boxes: [{ name: 'recs_mask', title: '遮罩位置', step: 4, fillColor: { r: 0, g: 0, b: 0, a: 0.5 } }],
+                             step: 4, pageTitle: '遮罩位置', pageDesc: '請選擇遮罩位置' }
                 },
                 {
-                    path: '/features/self-define/step4',
-                    name: 'SelfDefine4',
-                    component: () => import('@/views/pages/features/self-define/step4.vue')
-                },
-                {
-                    path: '/features/self-define/step5',
+                    path: '/features/self-define/step/5',
                     name: 'SelfDefine5',
-                    component: () => import('@/views/pages/features/self-define/step5.vue')
+                    component: () => import('@/views/pages/features/self-define/step.vue'),
+                    props: {
+                        Boxes: [
+                            {
+                                name: 'recs_text',
+                                title: '文字辨識位置',
+                                fillColor: {
+                                    r: 0,
+                                    g: 255,
+                                    b: 0,
+                                    a: 0.5
+                                }
+                            },
+                            {
+                                name: 'recs_block',
+                                title: '核取方塊位置',
+                                fillColor: {
+                                    r: 0,
+                                    g: 0,
+                                    b: 255,
+                                    a: 0.5
+                                }
+                            }
+                        ]
+                    },
+                    step: 5
                 },
                 {
                     path: '/features/model-list/person',
