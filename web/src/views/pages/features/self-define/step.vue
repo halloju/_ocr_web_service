@@ -95,7 +95,7 @@ export default {
             </div>
         </div>
         <div class="col-12 md:col-4">
-            <div class="card">
+            <div class="card" style="overflow-x:scroll;">
                 <BoxCard :Boxes="this.Boxes" />
             </div>
         </div>

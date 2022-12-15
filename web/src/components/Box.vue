@@ -5,7 +5,6 @@ const ratio = 1;
 export default {
     name: 'Box',
     mounted() {
-        console.log(this.Boxes[0]);
         this.image = new window.Image();
         this.image.src = sessionStorage.imageSource;
         const resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
@@ -90,7 +89,7 @@ export default {
             this.isDrawing = true;
             this.isNamingOk = false;
             const pos = this.$refs.stage.getNode().getPointerPosition();
-            this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, endPointX: pos.x, endPointY: pos.y, scaleX: 1, scaleY: 1, width: 0, height: 0, canDelete: false }]);
+            this.setRecs([...this.recs, { startPointX: pos.x, startPointY: pos.y, endPointX: pos.x, endPointY: pos.y, scaleX: 1, scaleY: 1, width: 0, height: 0, canDelete: false, canEdit: false, canSave: false }]);
             this.$store.state[this.Boxes[0].name] = this.recs;
             //this.$store.commit('recsUpdate', this.recs);
             this.isInputing = false;
@@ -134,6 +133,7 @@ export default {
                 this.isInputing = false;
                 this.recs[this.recs.length - 1].name = this.$refs.rec_name.value;
                 this.recs[this.recs.length - 1].canDelete = true;
+                this.recs[this.recs.length - 1].canEdit = true;
                 this.$refs.rec_name.value = '';
                 // this.$store.state[this.boxName] = this.recs;
                 this.$store.commit('recsUpdate', this.recs);
@@ -274,13 +274,4 @@ export default {
             </div>
         </div>
     </div>
-    isInputing:{{ isInputing }}
-    <br />
-    isDrawing:{{ isDrawing }}
-    <br />
-    isNamingOk:{{ isNamingOk }}
 </template>
-
-<style scope>
-@import '@/assets/css/content.css';
-</style>

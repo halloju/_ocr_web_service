@@ -30,7 +30,7 @@ export default {
             <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
                 <div class="text-500 w-6 md:w-2 font-medium">No.</div>
                 <div class="text-900 w-full md:w-3 md:flex-order-0 flex-order-1">要項名稱</div>
-                <div class="text-900 w-6 md:w-3 flex justify-content-end">操作</div>
+                <div class="text-900 w-6 md:w-3 flex justify-content-center">操作</div>
             </li>
         </ul>
         <Card :key="box.name" :boxName="box.name" :boxTitle="box.name" />
