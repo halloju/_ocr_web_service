@@ -7,29 +7,29 @@ export default {
         BoxCard,
         Box
     },
-    name: 'SelfDefine2',
+    name: 'SelfDefine',
     data() {
         return {
             nestedRouteItems: [
                 {
                     label: '模板圖檔上傳',
-                    to: '/features/self-define/step1'
+                    to: '/features/self-define/step/1'
                 },
                 {
                     label: '文字位置標註',
-                    to: '/features/self-define/step2'
+                    to: '/features/self-define/step/2'
                 },
                 {
                     label: '方塊位置標註',
-                    to: '/features/self-define/step3'
+                    to: '/features/self-define/step/3'
                 },
                 {
                     label: '遮罩位置標註',
-                    to: '/features/self-define/step4'
+                    to: '/features/self-define/step/4'
                 },
                 {
                     label: '確認',
-                    to: '/features/self-define/step5'
+                    to: '/features/self-define/step/5'
                 }
             ],
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
@@ -39,20 +39,27 @@ export default {
                 { label: '新增自定義模板', to: '#' },
                 { label: '模板圖檔上傳', to: '#' }
             ],
-            switchValue: false,
-            boxName: 'recs_text',
-            boxTitle: '文字辨識位置',
-            fillColor: {
-                r: 0,
-                g: 255,
-                b: 0,
-                a: 0.5
-            }
+            switchValue: false
         };
     },
     methods: {
         next() {
-            this.$router.push({ path: '/features/self-define/step3' });
+            const nextStep = this.step + 1;
+            this.$router.push({ path: `/features/self-define/step/${nextStep}` });
+        }
+    },
+    props: {
+        step: {
+            type: Number
+        },
+        Boxes: {
+            type: Array
+        },
+        pageTitle: {
+            type: String
+        },
+        pageDesc: {
+            type: String
         }
     }
 };
@@ -69,8 +76,8 @@ export default {
                 <br />
                 <div class="grid">
                     <div class="col-10">
-                        <h5>文字位置標註</h5>
-                        <p>框選文字辨識位置，並編輯區域要項名稱，按下確認後即會出現在右邊欄位中。</p>
+                        <h5>{{ this.pageTitle }}</h5>
+                        <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-2">
                         <Button label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
@@ -84,12 +91,12 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
             <div class="card">
-                <Box :boxName="boxName" :fillColor="fillColor" />
+                <Box :Boxes="this.Boxes" />
             </div>
         </div>
         <div class="col-12 md:col-4">
             <div class="card">
-                <BoxCard :boxName="boxName" :boxTitle="boxTitle" />
+                <BoxCard :Boxes="this.Boxes" />
             </div>
         </div>
     </div>
