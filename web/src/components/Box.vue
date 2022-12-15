@@ -44,7 +44,7 @@ export default {
             isNamingOk: true,
             isTransforming: false,
             isWarning: false,
-            canDraw: true,
+            canDraw: true
         };
     },
     watch: {
@@ -238,7 +238,7 @@ export default {
                     />
                     <!-- <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" /> -->
                     <Rect v-for="box in this.Boxes" :key="box.name" :boxName="box.name" :fillColor="box.fillColor" />
-                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" :enabledAnchors="['top-left', 'top-right', 'bottom-left', 'bottom-right']"/>
+                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" :enabledAnchors="['top-left', 'top-right', 'bottom-left', 'bottom-right']" />
                 </v-layer>
                 <v-layer ref="layer2">
                     <v-text
@@ -256,7 +256,6 @@ export default {
                     />
                 </v-layer>
             </v-stage>
-
         </div>
         <div class="flex align-items-stretch flex-wrap card-container blue-container" style="min-height: 70px">
             <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">

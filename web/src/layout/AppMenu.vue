@@ -14,8 +14,8 @@ const model = ref([
                     {
                         label: '通用辨識',
                         icon: 'pi pi-th-large',
-                        to: '/features/general/step1',
-                    },
+                        to: '/features/general/step1'
+                    }
                 ]
             },
             {
@@ -25,14 +25,16 @@ const model = ref([
                     {
                         label: '新增自定義模板',
                         icon: 'pi pi-file-edit',
-                        to: '/features/self-define/step1',
+                        to: '/features/self-define/step1'
                     },
                     {
                         label: '模板列表',
                         icon: 'pi pi-list',
-                        items: [{ label: '個人上傳', icon: 'pi pi-user', to: '/features/model-list/person',},
-                                { label: '公開', icon: 'pi pi-file', to: '/features/model-list/public',}]
-                    },
+                        items: [
+                            { label: '個人上傳', icon: 'pi pi-user', to: '/features/model-list/person' },
+                            { label: '公開', icon: 'pi pi-file', to: '/features/model-list/public' }
+                        ]
+                    }
                 ]
             },
             {
@@ -41,15 +43,15 @@ const model = ref([
                 items: [
                     {
                         label: '身份證',
-                        icon: 'pi pi-id-card',
+                        icon: 'pi pi-id-card'
                     },
                     {
                         label: '第二證件',
-                        icon: 'pi pi-credit-card',
+                        icon: 'pi pi-credit-card'
                     },
                     {
                         label: '存摺',
-                        icon: 'pi pi-envelope',
+                        icon: 'pi pi-envelope'
                     }
                 ]
             }
@@ -80,7 +82,7 @@ const model = ref([
                 label: 'Home',
                 icon: 'pi pi-fw pi-home',
                 to: '/home'
-            },           
+            },
             {
                 label: 'Landing',
                 icon: 'pi pi-fw pi-globe',
@@ -207,7 +209,7 @@ const model = ref([
                 ]
             }
         ]
-    },
+    }
 ]);
 </script>
 

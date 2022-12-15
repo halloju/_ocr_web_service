@@ -1,31 +1,31 @@
 <script>
-
 export default {
-    name: "landing",
+    name: 'landing',
     data() {
         return {
-            logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
-        }
+            logoUrl: `../src/assets/img/esun-ocr-logo.svg`
+        };
     },
     methods: {
-      goLogin() {
-        this.$router.push({ path: '/auth/login' });
-      },
-      smoothScroll(id) {
-        document.querySelector(id).scrollIntoView({
-        behavior: 'smooth'
-        });
-      },
-  }
-}
-
+        goLogin() {
+            this.$router.push({ path: '/auth/login' });
+        },
+        smoothScroll(id) {
+            document.querySelector(id).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    }
+};
 </script>
 
 <template>
     <div class="surface-0 flex justify-content-center">
         <div id="home" class="landing-wrapper overflow-hidden">
             <div class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3">
-                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<span class="text-900 font-medium text-4xl line-height-3 mr-8" style="width:250px">玉山智能辨識系統</span> </a>
+                <a class="flex align-items-center" href="#">
+                    <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<span class="text-900 font-medium text-4xl line-height-3 mr-8" style="width: 250px">玉山智能辨識系統</span>
+                </a>
                 <a class="cursor-pointer block lg:hidden text-700 p-ripple" v-ripple v-styleclass="{ selector: '@next', enterClass: 'hidden', leaveToClass: 'hidden', hideOnOutsideClick: true }">
                     <i class="pi pi-bars text-4xl"></i>
                 </a>
@@ -58,11 +58,13 @@ export default {
                     </div>
                 </div>
             </div>
-                    
-            <div id="hero"
-                 class="grid grid-nogutter surface-section text-800"
-                 style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%); clip-path: ellipse(150% 87% at 93% 13%)">
-                <div class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center ">
+
+            <div
+                id="hero"
+                class="grid grid-nogutter surface-section text-800"
+                style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%); clip-path: ellipse(150% 87% at 93% 13%)"
+            >
+                <div class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center">
                     <section>
                         <span class="block text-6xl font-bold mb-1">玉山智能辨識系統</span>
                         <div class="text-6xl text-primary font-bold mb-3">Esun.OCR</div>
@@ -73,7 +75,7 @@ export default {
                     </section>
                 </div>
                 <div class="col-12 md:col-6 overflow-hidden my-image">
-                    <img src="@/assets/img/hero-img.png" alt="Image" class="md:ml-auto block md:h-full animated" style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)">
+                    <img src="@/assets/img/hero-img.png" alt="Image" class="md:ml-auto block md:h-full animated" style="clip-path: polygon(8% 0, 100% 0%, 100% 100%, 0 100%)" />
                 </div>
             </div>
 
@@ -273,39 +275,31 @@ export default {
                     </div>
 
                     <div class="faq-list text-2xl">
-                    <ul>
-                        <li data-aos="fade-up" data-aos-delay="100">
-                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">這個需要付費嗎？<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
-                        <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
-                            <p>
-                            完全不用！請盡情享受
-                            </p>
-                        </div>
-                        </li>
+                        <ul>
+                            <li data-aos="fade-up" data-aos-delay="100">
+                                <i class="bx bx-help-circle icon-help"></i>
+                                <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">這個需要付費嗎？<i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
+                                    <p>完全不用！請盡情享受</p>
+                                </div>
+                            </li>
 
-
-
-                        <li data-aos="fade-up" data-aos-delay="400">
-                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-4" class="collapsed">這可以幹麼？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
-                        <div id="faq-list-4" class="collapse" data-bs-parent=".faq-list">
-                            <p>
-                            解決您的辨識問題！
-                            </p>
-                        </div>
-                        </li>
-
-
-
-                    </ul>
+                            <li data-aos="fade-up" data-aos-delay="400">
+                                <i class="bx bx-help-circle icon-help"></i>
+                                <a data-bs-toggle="collapse" data-bs-target="#faq-list-4" class="collapsed">這可以幹麼？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                <div id="faq-list-4" class="collapse" data-bs-parent=".faq-list">
+                                    <p>解決您的辨識問題！</p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-
                 </div>
             </div>
             <!-- End Frequently Asked Questions Section -->
-            
+
             <div class="py-4 px-4 mx-0 mt-8 lg:mx-8">
                 <div class="grid justify-content-between">
-                    <div class="col-12 md:col-2" style="margin-top: -1.5rem;width:350px">
+                    <div class="col-12 md:col-2" style="margin-top: -1.5rem; width: 350px">
                         <a @click="smoothScroll('#home')" class="flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer">
                             <img :src="logoUrl" alt="footer sections" width="200" height="50" class="mr-2" />
                             <h4 class="font-medium text-3xl text-900">玉山智能辨識系統</h4>
@@ -360,80 +354,80 @@ export default {
     overflow: hidden;
 }
 #hero .animated {
-  animation: up-down 2s ease-in-out infinite alternate-reverse both;
+    animation: up-down 2s ease-in-out infinite alternate-reverse both;
 }
 #faq .faq-list {
-  padding: 0 100px;
+    padding: 0 100px;
 }
 
 #faq .faq-list ul {
-  padding: 0;
-  list-style: none;
+    padding: 0;
+    list-style: none;
 }
 
-#faq .faq-list li+li {
-  margin-top: 15px;
+#faq .faq-list li + li {
+    margin-top: 15px;
 }
 
 #faq .faq-list li {
-  padding: 20px;
-  background: #fff;
-  border-radius: 4px;
-  position: relative;
+    padding: 20px;
+    background: #fff;
+    border-radius: 4px;
+    position: relative;
 }
 
 #faq .faq-list a {
-  display: block;
-  position: relative;
-  font-family: "Poppins", sans-serif;
-  font-size: 26px;
-  line-height: 24px;
-  font-weight: 500;
-  padding: 0 30px;
-  outline: none;
-  cursor: pointer;
+    display: block;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    line-height: 24px;
+    font-weight: 500;
+    padding: 0 30px;
+    outline: none;
+    cursor: pointer;
 }
 
 #faq .faq-list .icon-help {
-  font-size: 30px;
-  position: absolute;
-  right: 0;
-  left: 20px;
-  color: #47b2e4;
+    font-size: 30px;
+    position: absolute;
+    right: 0;
+    left: 20px;
+    color: #47b2e4;
 }
 
 #faq .faq-list .icon-show,
 #faq .faq-list .icon-close {
-  font-size: 24px;
-  position: absolute;
-  right: 0;
-  top: 0;
+    font-size: 24px;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 #faq .faq-list p {
-  margin-bottom: 0;
-  padding: 10px 0 0 0;
+    margin-bottom: 0;
+    padding: 10px 0 0 0;
 }
 
 #faq .faq-list .icon-show {
-  display: none;
+    display: none;
 }
 
 #faq .faq-list a.collapsed {
-  color: #37517e;
-  transition: 0.3s;
+    color: #37517e;
+    transition: 0.3s;
 }
 
 #faq .faq-list a.collapsed:hover {
-  color: #47b2e4;
+    color: #47b2e4;
 }
 
 #faq .faq-list a.collapsed .icon-show {
-  display: inline-block;
+    display: inline-block;
 }
 
 #faq .faq-list a.collapsed .icon-close {
-  display: none;
+    display: none;
 }
 
 @media screen and (min-width: 768px) {

@@ -5,7 +5,7 @@ const store = new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
         recs_text: [],
-        general_upload_image: [],
+        general_upload_image: []
     },
 
     mutations: {

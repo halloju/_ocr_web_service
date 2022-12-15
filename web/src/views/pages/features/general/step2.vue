@@ -22,13 +22,13 @@ export default {
                 { label: '單張結果確認', to: '#' }
             ],
             switchValue: false,
-            firstImage: this.$store.state.general_upload_image[0],
+            firstImage: this.$store.state.general_upload_image[0]
         };
     },
     computed: {
         getFile() {
-            this.firstImage = this.$store.state.general_upload_image[0]
-            return  this.firstImage
+            this.firstImage = this.$store.state.general_upload_image[0];
+            return this.firstImage;
         }
     },
     methods: {
