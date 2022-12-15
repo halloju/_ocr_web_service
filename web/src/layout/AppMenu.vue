@@ -25,7 +25,7 @@ const model = ref([
                     {
                         label: '新增自定義模板',
                         icon: 'pi pi-file-edit',
-                        to: '/features/self-define/step1'
+                        to: '/features/self-define/step/1'
                     },
                     {
                         label: '模板列表',
