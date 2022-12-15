@@ -36,7 +36,7 @@ export default {
     },
     computed: {
         disableUpload() {
-            if (this.fileList.length === 0) {
+            if (this.fileList.length === 0 | this.selectedLang===null) {
                 return true;
             } else {
                 return false;
