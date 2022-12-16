@@ -41,15 +41,18 @@
                 <InputSwitch v-model="switchValue" />
 
                 <h5></h5>
-                <Button label="圖檔提交" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"></Button>
+                <el-button type="primary" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { ElLoading } from 'element-plus'
+    
 export default {
-    components: {},
+    components: {
+    },
     name: 'General1',
     data() {
         return {
@@ -81,7 +84,8 @@ export default {
             dialogVisible: false,
             imaWidth: '',
             dialogWidth: '',
-            imageSource: '',
+            // loading 參數
+
         };
     },
     computed: {
@@ -95,8 +99,16 @@ export default {
     },
     methods: {
         submit() {
-            this.$store.commit('generalImageUpdate', this.fileList);
-            this.$router.push({ path: '/features/general/step2' });
+            const loading = ElLoading.service({
+                            lock: true,
+                            text: 'Loading',
+                            background: 'rgba(0, 0, 0, 0.7)',
+                        })
+            setTimeout(() => {
+                this.$store.commit('generalImageUpdate', this.fileList);
+                this.$router.push({ path: '/features/general/step2' });
+                loading.close()
+            }, 2000)
         },
         fileChange(file, resfileList) {
             console.log('fileChange');
@@ -109,10 +121,8 @@ export default {
                         file.reader = f.target.result;
                     };
                     reader.readAsDataURL(file.raw);
+                    this.fileList.push(file)
             }
-            console.log(file)
-            this.fileList.push(file)
-            console.log(this.fileList)
 
         },
         handleRemove(file) {
