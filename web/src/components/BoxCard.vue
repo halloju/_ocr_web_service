@@ -24,6 +24,7 @@ export default {
 </script>
 
 <template>
+    {{recs}}
     <div v-for="box in this.Boxes" class="surface-section" style="width: 400px">
         <div class="font-medium text-3xl text-900 mb-3">{{ box.title }}</div>
         <ul class="list-none p-0 m-0">
