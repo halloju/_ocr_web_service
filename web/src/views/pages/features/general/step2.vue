@@ -22,6 +22,7 @@ export default {
                 { label: '單張結果確認', to: '#' }
             ],
             switchValue: false,
+            // 前一步驟上傳的圖檔
             firstImage: this.$store.state.general_upload_image[0]
         };
     },
@@ -58,7 +59,7 @@ export default {
         <div class="col-12 md:col-9">
             <div class="card">
                 <h5>上傳圖檔之一</h5>
-                <Image src="" alt="Image" width="500" preview />
+                <Image :src="firstImage.reader" alt="Image" width="500" preview />
             </div>
         </div>
 
