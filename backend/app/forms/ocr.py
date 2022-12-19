@@ -14,7 +14,7 @@ class CreateGPOCRForm:
         self.language = self.request.language
 
     async def is_valid(self):
-        if not self.image_complexity or not self.image_complexity not in ['medium', 'high']:
+        if not self.image_complexity:
             self.errors.append("image_complexity should be medium or high")
         if not self.errors:
             return True

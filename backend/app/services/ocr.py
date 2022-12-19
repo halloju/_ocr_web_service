@@ -40,7 +40,7 @@ def gpocr(ocr_image_info, db: Session):
         if not type(img_pil).__name__.endswith('ImageFile'):
             raise ImageTypeError(type(img_pil).__name__)
         img_arr = np.array(img_pil.convert('RGB'))
-        img_width, img_height = img_arr.shape[:1]
+        img_width, img_height = img_arr.shape[:2]
         random_points = [(random.randint(0, img_width), random.randint(0, img_height)) for times in range(3)]
         max_random_points = [(random.randint(point_width, img_width), random.randint(point_height, img_height)) for point_width, point_height in random_points]
         text_list = ['222', 'who are you?', '你是誰']
