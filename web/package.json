@@ -1,5 +1,5 @@
 {
-    "name": "gpOCR",
+    "name": "gp-ocr",
     "version": "3.5.0",
     "scripts": {
         "dev": "vite",
