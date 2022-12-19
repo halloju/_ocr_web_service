@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import BootstrapVue3 from 'bootstrap-vue-3';
 import App from './App.vue';
+import axios from 'axios';
 import router from './router';
 import store from './store';
 import ElementPlus from 'element-plus';
@@ -112,12 +113,28 @@ import BlockViewer from '@/components/BlockViewer.vue';
 import '@/assets/styles.scss';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
+axios.defaults.withCredentials = true;
+
+// switch(process.env.NODE_ENV) {
+//     case "development":
+//        axios.defaults.baseURL= "http://localhost/backend"
+//        break
+//     case "staging":
+//        axios.defaults.baseURL = "YOUR_STAGING"
+//        break
+//     case "production":
+//        axios.defaults.baseURL = "YOUR_PRODUCTION"
+//        break
+//     default:
+//        throw new Error(`'NODE_ENV' ${process.env.NODE_ENV} is not handled!`)
+// }
+
 const app = createApp(App);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component);
 }
 
-app.use(router);
+app.use(router, axios);
 app.use(BootstrapVue3);
 app.use(ElementPlus);
 app.use(PrimeVue, { ripple: true });
