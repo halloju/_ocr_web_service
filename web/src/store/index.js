@@ -5,7 +5,8 @@ const store = new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
         recs_text: [],
-        general_upload_image: []
+        general_upload_image: [],
+        general_upload_res: [],
     },
 
     mutations: {
@@ -14,6 +15,9 @@ const store = new Vuex.Store({
         },
         generalImageUpdate: function (state, payload) {
             state.general_upload_image = payload;
+        },
+        generalImageResponse: function (state, payload){
+            state.general_upload_res = payload;
         }
     }
 });

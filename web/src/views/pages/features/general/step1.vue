@@ -34,7 +34,7 @@
         <div class="col-12 md:col-3">
             <div class="card">
                 <h5>選擇語言</h5>
-                <Dropdown v-model="selectedLang" :options="languages" optionLabel="name" placeholder="Select" />
+                <Dropdown v-model="selectedLang" :options="languages" optionLabel="name" placeholder="請選擇" />
 
                 <h5>使用高精準度模型</h5>
                 <p>注意：當您使用高精準模型時耗時會較久</p>
@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import axios from "axios"
 import { ElLoading } from 'element-plus'
     
 export default {
@@ -58,8 +59,7 @@ export default {
         return {
             selectedLang: null,
             languages: [
-                { name: '繁體中文', code: 'zhant' },
-                { name: '英語', code: 'english' }
+                { name: '繁體中文', code: 'Chinese' },
             ],
             nestedRouteItems: [
                 {
@@ -79,14 +79,22 @@ export default {
                 { label: '圖檔上傳', to: '#' }
             ],
             switchValue: false,
+            image_complexity: 'medium',
             // upload 參數
             fileList: [],
             dialogVisible: false,
             imaWidth: '',
             dialogWidth: '',
-            // loading 參數
-
         };
+    },
+    watch: {
+        switchValue: function(newVal){
+            if (newVal){
+                this.image_complexity = 'high';
+            } else {
+                this.image_complexity = 'medium';
+            }
+        }
     },
     computed: {
         disableUpload() {
@@ -95,7 +103,7 @@ export default {
             } else {
                 return false;
             }
-        }
+        },
     },
     methods: {
         submit() {
@@ -106,13 +114,30 @@ export default {
                         })
             setTimeout(() => {
                 this.$store.commit('generalImageUpdate', this.fileList);
-                this.$router.push({ path: '/features/general/step2' });
+                // 前綴拿掉
+                const base64Image = this.fileList[0].reader.split(',')[1]
+                axios.post("/ocr/gpocr", {
+                                "image": base64Image,
+                                "image_complexity": this.image_complexity,
+                                "language": this.selectedLang.code,
+                            })
+                            .then( (response) =>
+                               {this.status = response.status;
+                                this.response = response;
+                                console.log(response)
+                                this.$store.commit('generalImageResponse', response);
+                                })
+                            .catch( (error) => {
+                                console.log(error)
+                                if(error.code === 'ERR_NETWORK'){
+                                    this.status = 'network';
+                                }
+                })
                 loading.close()
             }, 2000)
+            this.$router.push({ path: '/features/general/step2' });
         },
         fileChange(file, resfileList) {
-            console.log('fileChange');
-
             // allows image only
             if (file.raw.type.indexOf('image/') >= 0) {
                     var reader = new FileReader();
@@ -126,7 +151,6 @@ export default {
 
         },
         handleRemove(file) {
-            console.log('handleRemove');
             for (let i = 0; i < this.fileList.length; i++) {
                 if (this.fileList[i]['uid'] === file.uid) {
                     this.fileList.splice(i, 1);
@@ -135,7 +159,6 @@ export default {
             }
         },
         handlePictureCardPreview(file) {
-            console.log(file);
             this.dialogImageUrl = file.url;
             this.dialogVisible = true;
         },

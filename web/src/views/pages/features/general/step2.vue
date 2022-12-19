@@ -29,7 +29,7 @@
                 <DataTable :value="getRegData" :scrollable="true" scrollHeight="400px" :loading="loading">
                     <Column field="text" header="text" style="min-width:50px"></Column>
                     <Column field="points" header="points" style="min-width:50px"></Column>
-                    <Column field="tag" header="tag" style="min-width:50px"></Column>
+                    <Column field="tag" header="tag" style="min-width:100px"></Column>
                     <Column field="det_prob" header="det_prob" style="min-width:50px"></Column>
                     <Column field="rec_prob" header="rec_prob" style="min-width:50px"></Column>
                 </DataTable>
@@ -81,21 +81,22 @@ export default {
             // 前一步驟上傳的圖檔
             firstImage: this.$store.state.general_upload_image[0],
             allImage:  this.$store.state.general_upload_image,
-            regData: [{"points": [[1,2],[1,3],[1,5],[1,8]], 
-                       "text": "玉山金控與子公司", 
-                       "tag": "名稱",
-                       "det_prob": 0.9586760401725769,
-                       "rec_prob": 0.9586760401725769},
-                      {"points":[], 
-                       "text": "出生日期",
-                       "tag": "出生抬頭",
-                       "det_prob": 0.9586760401725769,
-                       "rec_prob": 0.9586760401725769}, 
-                      {"points":[], 
-                       "text": "聯絡電話",
-                       "tag": "電話抬頭",
-                       "det_prob": 0.9586760401725769,
-                       "rec_prob": 0.9586760401725769}],
+            regData: this.$store.state.general_upload_res.data.ocr_results,
+            // regData: [{"points": [[1,2],[1,3],[1,5],[1,8]], 
+            //            "text": "玉山金控與子公司", 
+            //            "tag": "名稱",
+            //            "det_prob": 0.9586760401725769,
+            //            "rec_prob": 0.9586760401725769},
+            //           {"points":[], 
+            //            "text": "出生日期",
+            //            "tag": "出生抬頭",
+            //            "det_prob": 0.9586760401725769,
+            //            "rec_prob": 0.9586760401725769}, 
+            //           {"points":[], 
+            //            "text": "聯絡電話",
+            //            "tag": "電話抬頭",
+            //            "det_prob": 0.9586760401725769,
+            //            "rec_prob": 0.9586760401725769}],
             uploadPercentage: 0,
             isDownload: false,
         };
@@ -106,8 +107,8 @@ export default {
             return this.firstImage;
         },
         getRegData() {
+            console.log(this.regData)
             for (let i = 0; i < this.regData.length; i++) {
-                console.log(this.regData[i])
                 this.regData[i].det_prob = this.regData[i].det_prob.toFixed(2);
                 this.regData[i].rec_prob = this.regData[i].rec_prob.toFixed(2);
             }
