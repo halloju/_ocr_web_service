@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import CustomException, exception_handler
-from app.routers import register, login, db, docs
+from app.routers import db, docs, template, ocr
 
 
 def get_application():
@@ -23,26 +23,17 @@ def get_application():
     app.include_router(docs.router)
 
     app.include_router(
-        db.router,
-        prefix="/db",
-        tags=["db"],
+        template.router,
+        prefix="/template",
+        tags=["template"],
     )
-
     app.include_router(
-        register.router,
-        prefix="/register",
-        tags=["register"],
-    )
-
-    app.include_router(
-        login.router,
-        prefix="/login",
-        tags=["login"],
+        ocr.router,
+        prefix="/ocr",
+        tags=["ocr"],
     )
 
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     return app
 
 app = get_application()
-
-

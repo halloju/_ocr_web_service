@@ -13,3 +13,5 @@ requests==2.27.1
 scikit-learn==0.24.1
 sqlalchemy==1.4.36
 uvicorn==0.17.6
+minio==7.1.12
+Pillow==9.2.0
