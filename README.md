@@ -29,6 +29,17 @@ docker ps -a
 docker logs -f backend
 ```
 
+* 停止服務
+```
+docker-compose stop
+```
+
+* 重啟 image (有更新到 image / db init setting)
+```
+docker-compose down
+docker-compose build --no-cache
+```
+
 * nginx (web server)
 * backend (API server)
 * frontend (web)
