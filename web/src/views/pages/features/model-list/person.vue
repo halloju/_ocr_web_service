@@ -1,6 +1,6 @@
 <script>
 import PhotoService from '@/service/PhotoService';
-import BoxCard from '@/components/BoxCard.vue';
+// import BoxCard from '@/components/BoxCard.vue';
 
 const item = {
     name: '',
@@ -19,7 +19,7 @@ const header = {
 export default {
     name: 'public',
     components: {
-        BoxCard
+
     },
     created() {
         this.galleriaService = new PhotoService();
@@ -143,7 +143,7 @@ export default {
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <SelectButton v-model="myModel" :options="models" optionLabel="name" />
                     </div>
-                    <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
+                    <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
                         <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="" />
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'編輯模版'" @click="" />
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="" disabled="true" />
@@ -152,7 +152,7 @@ export default {
                         <Image src="../src/assets/img/card-visa.jpg" alt="Image" width="500" preview />
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                        <BoxCard boxName="recs_text" :boxTitle="myModel.name" />
+                        <!-- <BoxCard boxName="recs_text" :boxTitle="myModel.name" /> -->
                     </div>
                 </div>
             </div>

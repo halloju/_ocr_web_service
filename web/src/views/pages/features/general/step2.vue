@@ -14,10 +14,11 @@
         </div>
     </div>
 
+
     <div class="grid p-fluid">
         <div class="col-12 md:col-7" >
             <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
-                <h5>上傳圖檔之一</h5>
+                <h5>第一個檔案</h5>
                 <Image :src="firstImage.reader" alt="Image" width="500" preview />
             </div>
         </div>
@@ -33,16 +34,19 @@
                     <Column field="rec_prob" header="rec_prob" style="min-width:50px"></Column>
                 </DataTable>
 
-                <h5>已確認單張結果</h5>
-                <InputSwitch v-model="switchValue" />
+                <h5>我已確認單張結果</h5>
+                <InputSwitch v-model="switchValue" :disabled="isDownload" />
                 <br>
-                <Button label="開始辨識全部檔案" class="mr-2 mb-2" @click="submit" :disabled="!switchValue"></Button>
+                <Button label=" 開始辨識全部檔案" class="mr-2 mb-2 pi pi-images" @click="submit" :disabled="!switchValue | isDownload"></Button>
+                <Button label=" 下載 excel 檔" class="mr-2 mb-2 pi pi-download" @click="submit" :disabled="!isDownload"></Button>
+                
                 <!-- Progress Bar -->
                 <el-progress
                 :text-inside="true"
                 :stroke-width="24"
                 :percentage="uploadPercentage"
                 status="success"
+                color="#3b82f6"
                 />
             </div>
         </div>
@@ -76,6 +80,7 @@ export default {
             switchValue: false,
             // 前一步驟上傳的圖檔
             firstImage: this.$store.state.general_upload_image[0],
+            allImage:  this.$store.state.general_upload_image,
             regData: [{"points": [[1,2],[1,3],[1,5],[1,8]], 
                        "text": "玉山金控與子公司", 
                        "tag": "名稱",
@@ -92,6 +97,7 @@ export default {
                        "det_prob": 0.9586760401725769,
                        "rec_prob": 0.9586760401725769}],
             uploadPercentage: 0,
+            isDownload: false,
         };
     },
     computed: {
@@ -111,7 +117,9 @@ export default {
     methods: {
         submit() {
             let formData = new FormData();
-            formData.append('file', this.file);
+            formData.append('file', this.allImage);
+            console.log(this.allImage)
+            console.log(formData)
             axios.post( '/file-progress',
                 formData,
                     { headers: {'Content-Type': 'multipart/form-data'},
@@ -125,6 +133,7 @@ export default {
             .catch(function(){
                 console.log('FAILURE!!');
             });
+            this.isDownload = true;
         }
     }
 };
