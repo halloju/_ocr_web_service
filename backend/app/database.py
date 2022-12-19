@@ -9,7 +9,7 @@ mode = os.environ["MODE"]
 
 if mode=="dev":
     SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@db/postgres"
-    schema_name = "public"
+    schema_name = "if_gp_ocr"
 else:
     SQLALCHEMY_DATABASE_URL = "postgresql://XXXXX@10.240.205.109:5432/feature"
     schema_name = "AICLOUD_DB_SCHEMA"
@@ -25,4 +25,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
