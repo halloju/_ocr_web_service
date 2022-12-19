@@ -41,7 +41,7 @@ services:
           - 80:80
         depends_on:
           - backend
-          - frontend
+          - web
     db:
         container_name: postgres
         image: postgres:14

@@ -1,5 +1,5 @@
 {
-    "name": "sakai-vue",
+    "name": "gpOCR",
     "version": "3.5.0",
     "scripts": {
         "dev": "vite",
