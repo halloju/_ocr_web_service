@@ -88,4 +88,4 @@ def gpocr(ocr_image_info, db: Session):
         raise CustomException(status_code=424, message="[DB Error] 請聯絡管理者")
     except ImageTypeError as e:
         logger.error("image type error:{}".format(e))
-        raise CustomException(status_code=5402, message="上傳圖片格式錯誤，請確認上傳檔案格式是否為 .jpg, .png")
+        raise ImageTypeError(status_code=5402, message="上傳圖片格式錯誤，請確認上傳檔案格式是否為 .jpg, .png")
