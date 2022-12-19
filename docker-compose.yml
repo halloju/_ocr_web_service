@@ -21,6 +21,8 @@ services:
           - '/app/node_modules'
         ports:
           - '3000:3000'
+        environment:
+          - MODE=development
     backend:
         container_name: backend
         build: "backend/."

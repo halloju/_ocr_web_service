@@ -115,19 +115,19 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
 axios.defaults.withCredentials = true;
 
-// switch(process.env.NODE_ENV) {
-//     case "development":
-//        axios.defaults.baseURL= "http://localhost/backend"
-//        break
-//     case "staging":
-//        axios.defaults.baseURL = "YOUR_STAGING"
-//        break
-//     case "production":
-//        axios.defaults.baseURL = "YOUR_PRODUCTION"
-//        break
-//     default:
-//        throw new Error(`'NODE_ENV' ${process.env.NODE_ENV} is not handled!`)
-// }
+switch(process.env.NODE_ENV) {
+    case "development":
+       axios.defaults.baseURL= "http://localhost/backend"
+       break
+    case "staging":
+       axios.defaults.baseURL = "YOUR_STAGING"
+       break
+    case "production":
+       axios.defaults.baseURL = "YOUR_PRODUCTION"
+       break
+    default:
+       throw new Error(`'NODE_ENV' ${process.env.NODE_ENV} is not handled!`)
+}
 
 const app = createApp(App);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
