@@ -14,7 +14,7 @@ const model = ref([
                     {
                         label: '通用辨識',
                         icon: 'pi pi-th-large',
-                        to: '/features/general/step1'
+                        to: '/features/general'
                     }
                 ]
             },

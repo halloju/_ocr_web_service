@@ -1,20 +1,5 @@
 <template>
     <div class="grid p-fluid">
-        <div class="col-12">
-            <div class="card card-w-title">
-                <!-- Breadcrumb -->
-                <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" style="border-width: 0px" />
-                <br />
-                <!-- Step -->
-                <Steps :model="nestedRouteItems" :readonly="true" />
-                <h5>通用辨識</h5>
-                <p>請上傳一張或多張圖片，下一步會先辨識第一張圖片讓您確認結果，再進行全部辨識。</p>
-                <router-view />
-            </div>
-        </div>
-    </div>
-
-    <div class="grid p-fluid">
         <div class="col-12 md:col-9">
             <div class="card">
                 <el-upload :file-list="fileList" 
@@ -39,7 +24,6 @@
                 <h5>使用高精準度模型</h5>
                 <p>注意：當您使用高精準模型時耗時會較久</p>
                 <InputSwitch v-model="switchValue" />
-
                 <h5></h5>
                 <el-button type="primary" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
             </div>
@@ -52,9 +36,8 @@ import axios from "axios"
 import { ElLoading } from 'element-plus'
     
 export default {
-    components: {
-    },
-    name: 'General1',
+    name: 'GeneralUploadImage',
+    props: ['nextStepEmit'],
     data() {
         return {
             selectedLang: null,
@@ -64,7 +47,7 @@ export default {
             nestedRouteItems: [
                 {
                     label: '圖檔上傳',
-                    to: '/features/general/step1'
+                    to: '/features/general'
                 },
                 {
                     label: '單張結果確認',
@@ -106,17 +89,17 @@ export default {
         },
     },
     methods: {
-        submit() {
+        async submit() {
             const loading = ElLoading.service({
                             lock: true,
                             text: 'Loading',
                             background: 'rgba(0, 0, 0, 0.7)',
                         })
-            setTimeout(() => {
-                this.$store.commit('generalImageUpdate', this.fileList);
-                // 前綴拿掉
-                const base64Image = this.fileList[0].reader.split(',')[1]
-                axios.post("/ocr/gpocr", {
+            this.$store.commit('generalImageUpdate', this.fileList);
+            // 前綴拿掉
+            const base64Image = this.fileList[0].reader.split(',')[1]
+            // 打 API
+            axios.post("/ocr/gpocr", {
                                 "image": base64Image,
                                 "image_complexity": this.image_complexity,
                                 "language": this.selectedLang.code,
@@ -133,9 +116,12 @@ export default {
                                     this.status = 'network';
                                 }
                 })
+            setTimeout(()=>{
+                // 下一步
+                this.$emit('nextStepEmit', 2)
+                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code)
                 loading.close()
-            }, 2000)
-            this.$router.push({ path: '/features/general/step2' });
+            }, 2500)
         },
         fileChange(file, resfileList) {
             // allows image only

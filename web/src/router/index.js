@@ -15,14 +15,9 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/features/general/step1',
+                    path: '/features/general',
                     name: 'General1',
-                    component: () => import('@/views/pages/features/general/step1.vue')
-                },
-                {
-                    path: '/features/general/step2',
-                    name: 'General2',
-                    component: () => import('@/views/pages/features/general/step2.vue')
+                    component: () => import('@/views/pages/features/General.vue')
                 },
                 {
                     path: '/features/self-define/step/1',
