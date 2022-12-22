@@ -7,6 +7,7 @@ const store = new Vuex.Store({
         recs_text: [],
         general_upload_image: [],
         general_upload_res: [],
+        general_execute_time: 0,
     },
 
     mutations: {
@@ -18,6 +19,9 @@ const store = new Vuex.Store({
         },
         generalImageResponse: function (state, payload){
             state.general_upload_res = payload;
+        },
+        generalExecuteTime: function (state, payload){
+            state.general_execute_time = payload;
         }
     }
 });

@@ -9,31 +9,33 @@
 
         <div class="col-12 md:col-5">
             <div class="card">
-                <div class="flex justify-content-between">
+                <div class="flex justify-content-between align-items-center">
                     <h5>Response</h5>
-                    <Button v-if="!switchButton" icon="pi pi-copy" class="p-button-text" @click="copyText"></Button>
                 </div>
-                <SelectButton v-model="selectButtonValue" :options="selectButtonValues" optionLabel="name" />
-                <div v-if="!switchButton">
-                    <div ref="message">
-                        {{regData}}
-                    </div>
-                </div>
-                <div v-else>
-                    <DataTable :value="regData" :scrollable="true" scrollHeight="400px" :loading="loading">
-                        <Column field="text" header="text" style="min-width:50px"></Column>
-                        <Column field="tag" header="tag" style="min-width:100px"></Column>
-                    </DataTable>
-                </div>
-
+                <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+                    <el-tab-pane label="詳細資訊" name="first">
+                        <Button icon="pi pi-copy" class="p-button-text" @click="copyText"></Button>
+                        <div ref="message">
+                            {{regData}}
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="文字" name="second">
+                        <DataTable :value="regData" :scrollable="true" scrollHeight="400px" :loading="loading">
+                            <Column field="text" header="text" style="min-width:50px"></Column>
+                            <Column field="tag" header="tag" style="min-width:100px"></Column>
+                        </DataTable>
+                    </el-tab-pane>
+                </el-tabs>
                 <h5>我已確認單張結果</h5>
-                <InputSwitch v-model="switchValue" :disabled="isDownload" />
+                <el-switch
+                    v-model="switchValue"
+                    inline-prompt
+                    active-text="是"
+                    inactive-text="否"
+                />
                 <br>
                 <Button label=" 開始辨識全部檔案" class="mr-2 mb-2 pi pi-images" @click="submit" :disabled="!switchValue"></Button>
-                <Button label=" 重新上傳" class="mr-2 mb-2 pi pi-upload" @click="back"></Button>
-                <!-- <Button label=" 開始辨識全部檔案" class="mr-2 mb-2 pi pi-images" @click="submit" :disabled="!switchValue | isDownload"></Button> -->
-                <!-- <Button label=" 下載 excel 檔" class="mr-2 mb-2 pi pi-download" @click="submit" :disabled="!isDownload"></Button> -->
-                
+                <Button label=" 重新上傳" class="mr-2 mb-2 pi pi-upload p-button-danger" @click="back"></Button>
                 <!-- Progress Bar -->
                 <el-progress
                 :text-inside="true"
@@ -48,6 +50,7 @@
 </template>
 <script>
 import axios from "axios";
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { ElLoading } from 'element-plus'
 
 export default {
@@ -92,15 +95,11 @@ export default {
             document.execCommand('copy');
         },
         submit() {
+            const start_time = new Date().getTime();
             const imageLen = this.allImage.length
             const stepPercentage = 100 / imageLen
             const generalImageResponseList = []
-            // 成功張數
-            const count = 0
-            // 耗時秒數
-            const time = 0
             for (let i = 0; i < imageLen; i++) {
-
                 // 前綴拿掉
                 const base64Image = this.allImage[i].reader.split(',')[1]
                 // 一張一張打
@@ -111,7 +110,8 @@ export default {
                             })
                             .then( (response) =>
                                {
-                                generalImageResponseList.push(response)
+                                console.log(JSON.stringify(response.data.ocr_results))
+                                generalImageResponseList.push(response.data)
                                 this.uploadPercentage = (this.uploadPercentage + stepPercentage)
                                 count = count + 1
                                 })
@@ -122,22 +122,45 @@ export default {
                                 }
                 })
             }
+            const end_time = new Date().getTime();
             const loading = ElLoading.service({
                             lock: true,
                             text: 'Loading',
                             background: 'rgba(0, 0, 0, 0.7)',
                         })
             setTimeout(()=>{
-                // 下一步
-                this.$emit('nextStepEmit', 3)
                 this.$store.commit('generalImageResponse', generalImageResponseList);
+                const api_time = (end_time - start_time) / 1000 ;
+                this.$store.commit('generalExecuteTime', api_time);
+                this.$emit('nextStepEmit', 3)
                 loading.close()
-            }, 2500)
-
+            }, 2000)
         },
-        back() {
-            this.$emit('nextStepEmit', 1)
-        }
+        back(){
+            ElMessageBox.confirm(
+                '本次辨識結果將不保留，請問是否要繼續？',
+                '警告',
+                {
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true,
+                }
+            )
+                .then(() => {
+                    ElMessage({
+                        type: 'success',
+                        message: '回到圖檔上傳',
+                    })
+                    this.$emit('nextStepEmit', 1)
+                })
+                .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '操作取消',
+                })
+                })
+        },
     }
 };
 </script>
