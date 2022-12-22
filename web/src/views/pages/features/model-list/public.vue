@@ -18,9 +18,7 @@ const header = {
 };
 export default {
     name: 'public',
-    components: {
-        
-    },
+    components: {},
     created() {
         this.galleriaService = new PhotoService();
     },
@@ -151,9 +149,7 @@ export default {
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                         <Image src="../src/assets/img/card-visa.jpg" alt="Image" width="500" preview />
                     </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                        
-                    </div>
+                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2"></div>
                 </div>
             </div>
         </div>

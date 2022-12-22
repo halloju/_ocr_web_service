@@ -1,43 +1,3 @@
-<template>
-    <div class="" ref="img_block">
-        <div class="flex card-container overflow-hidden">
-            <v-stage ref="stage" :config="stageConfig" @mousemove="handleMouseMove" @mouseDown="handleMouseDown" @mouseUp="handleMouseUp" @wheel="imgZoom">
-                <v-layer ref="layer">
-                    <v-image
-                        :config="{
-                            width: this.imageConfig.width,
-                            height: this.imageConfig.height,
-                            image: this.image,
-                            opacity: this.imageConfig.opacity,
-                            x: this.imageConfig.x,
-                            y: this.imageConfig.y
-                        }"
-                        ref="image"
-                    />
-                    <!-- <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" /> -->
-                    <Rect v-for="box in this.Boxes" :key="box.name" :boxName="box.name" :fillColor="box.fillColor" />
-                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" :enabledAnchors="['top-left', 'top-right', 'bottom-left', 'bottom-right']" />
-                </v-layer>
-            </v-stage>
-        </div>
-        <div class="flex align-items-stretch flex-wrap card-container blue-container" style="min-height: 70px">
-            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">
-                <Button icon="pi pi-search-plus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'放大圖片'" @click="photoPlus" />
-                <Button icon="pi pi-search-minus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'縮小圖片'" @click="photoMinus" />
-                <Button icon="pi pi-undo" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'還原圖片大小'" @click="resetSize" />
-            </div>
-            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">
-                <div v-if="isInputing" class="p-inputgroup">
-                    <input class="form-control" type="text" placeholder="請輸入 Label 名稱(不可重複)" ref="rec_name" :disabled="!isInputing" />
-                    <Button label="GO! 命名" @click="setRecName" v-tooltip="'請先框好圖片再點擊'" style="width: 250px" :disabled="!isInputing"></Button>
-                </div>
-            </div>
-            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">
-                <InlineMessage v-if="isWarning">請至少輸入一個文字，謝謝配合。</InlineMessage>
-            </div>
-        </div>
-    </div>
-</template>
 <script>
 import Rect from '@/components/Rect.vue';
 const ratio = 1;
@@ -56,6 +16,7 @@ export default {
                 y: (this.$refs.img_block.clientHeight - this.image.height * resize * ratio) / 2
             };
         };
+        console.log(this.$store.state);
         this.recs = this.$store.state[this.Boxes[0].name];
         this.canDraw = this.Boxes.length <= 1;
     },
@@ -175,8 +136,8 @@ export default {
                 this.recs[this.recs.length - 1].canDelete = true;
                 this.recs[this.recs.length - 1].canEdit = true;
                 this.$refs.rec_name.value = '';
-                // this.$store.state[this.boxName] = this.recs;
-                this.$store.commit('recsUpdate', this.recs);
+                this.$store.state[this.boxName] = this.recs;
+                //this.$store.commit('recsUpdate', this.recs);
                 this.isNamingOk = true;
                 this.isWarning = false;
             }
@@ -259,3 +220,43 @@ export default {
     }
 };
 </script>
+<template>
+    <div class="" ref="img_block">
+        <div class="flex card-container overflow-hidden">
+            <v-stage ref="stage" :config="stageConfig" @mousemove="handleMouseMove" @mouseDown="handleMouseDown" @mouseUp="handleMouseUp" @wheel="imgZoom">
+                <v-layer ref="layer">
+                    <v-image
+                        :config="{
+                            width: this.imageConfig.width,
+                            height: this.imageConfig.height,
+                            image: this.image,
+                            opacity: this.imageConfig.opacity,
+                            x: this.imageConfig.x,
+                            y: this.imageConfig.y
+                        }"
+                        ref="image"
+                    />
+                    <!-- <Rect v-if="canDraw" :boxName="boxName" :fillColor="fillColor" /> -->
+                    <Rect v-for="box in this.Boxes" :key="box.name" :boxName="box.name" :fillColor="box.fillColor" />
+                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" :enabledAnchors="['top-left', 'top-right', 'bottom-left', 'bottom-right']" />
+                </v-layer>
+            </v-stage>
+        </div>
+        <div class="flex align-items-stretch flex-wrap card-container blue-container" style="min-height: 70px">
+            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">
+                <Button icon="pi pi-search-plus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'放大圖片'" @click="photoPlus" />
+                <Button icon="pi pi-search-minus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'縮小圖片'" @click="photoMinus" />
+                <Button icon="pi pi-undo" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'還原圖片大小'" @click="resetSize" />
+            </div>
+            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">
+                <div v-if="isInputing" class="p-inputgroup">
+                    <input class="form-control" type="text" placeholder="請輸入 Label 名稱(不可重複)" ref="rec_name" :disabled="!isInputing" />
+                    <Button label="GO! 命名" @click="setRecName" v-tooltip="'請先框好圖片再點擊'" style="width: 250px" :disabled="!isInputing"></Button>
+                </div>
+            </div>
+            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-2" style="min-width: 200px; min-height: 50px">
+                <InlineMessage v-if="isWarning">請至少輸入一個文字，謝謝配合。</InlineMessage>
+            </div>
+        </div>
+    </div>
+</template>

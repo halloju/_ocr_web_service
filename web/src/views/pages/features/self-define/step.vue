@@ -1,6 +1,7 @@
 <script>
 import Box from '@/components/Box.vue';
 import BoxCard from '@/components/BoxCard.vue';
+import axios from 'axios';
 
 export default {
     components: {
@@ -39,13 +40,88 @@ export default {
                 { label: '新增自定義模板', to: '#' },
                 { label: '模板圖檔上傳', to: '#' }
             ],
-            switchValue: false
+            switchValue: false,
+            isFinal: false,
+            boxes: [],
+            boxNames: ['text', 'box', 'mask']
         };
+    },
+    mounted() {
+        this.isFinalStep();
     },
     methods: {
         next() {
             const nextStep = this.step + 1;
             this.$router.push({ path: `/features/self-define/step/${nextStep}` });
+        },
+        upload() {
+            const image = new window.Image();
+            image.src = sessionStorage.imageSource;
+
+            for (let i = 0; i < this.boxNames.length; i++) {
+                this.$store.state[this.boxNames[i]].forEach((box) => {
+                    this.boxes.push({
+                        type: this.boxNames[i],
+                        tag: box.name,
+                        x_min: box.startPointX,
+                        y_min: box.startPointY,
+                        x_max: box.endPointX,
+                        y_max: box.endPointY
+                    });
+                });
+            }
+
+            axios
+                .post('/template/create', {
+                    user_id: 1,
+                    image: image.src.split(',').pop(),
+                    is_no_ttl: false,
+                    bbox: this.boxes
+                })
+                .then((res) => {
+                    if (res.status === 200) {
+                        this.$toast.add({
+                            severity: 'success',
+                            summary: '成功',
+                            detail: '新增成功',
+                            life: 3000
+                        });
+                        this.clearState();
+                        this.$router.push({ path: '/features/self-define/step/1' });
+                    } else {
+                        this.$toast.add({
+                            severity: 'error',
+                            summary: '失敗',
+                            detail: '新增失敗',
+                            life: 3000
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        },
+        isFinalStep() {
+            if (this.step === 5) {
+                this.isFinal = true;
+            }
+        },
+        clearState() {
+            let state = this.$store.state;
+            let newState = {};
+
+            Object.keys(state).forEach((key) => {
+                newState[key] = [];
+            });
+
+            this.$store.replaceState(newState);
+
+            sessionStorage.clear();
+        }
+    },
+    watch: {
+        step() {
+            this.isFinalStep();
         }
     },
     props: {
@@ -80,8 +156,8 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-2">
-                        <Button label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
-                        <!-- <Button v-else label=" 下一步" class="pi pi-arrow-right p-button-secondary" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em;" :disabled="true"></Button> -->
+                        <Button v-if="!this.isFinal" label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
+                        <Button v-else label=" 提交" class="pi pi-arrow-right p-button-secondary" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
                     </div>
                 </div>
                 <router-view />
@@ -95,7 +171,7 @@ export default {
             </div>
         </div>
         <div class="col-12 md:col-4">
-            <div class="card" style="overflow-x:scroll;">
+            <div class="card" style="overflow-x: scroll">
                 <BoxCard :Boxes="this.Boxes" />
             </div>
         </div>
