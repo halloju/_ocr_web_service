@@ -1,30 +1,3 @@
-<template>
-
-    <v-rect
-        v-for="(rec, index) in recs"
-        :key="index"
-        :name="rec.name"
-        :config="{
-            width: Math.abs(rec.width),
-            height: Math.abs(rec.height),
-            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
-            stroke: 'rgb(20,20,200,1)',
-            strokeWidth: 0.5,
-            x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-            y: Math.min(rec.startPointY, rec.startPointY + rec.height)
-        }"
-        draggable="true"
-        @transformend="handleTransformEnd"
-        @dragend="handleDragEnd"
-    >
-    </v-rect>
-    <v-text  v-for="(rec, index) in recs"
-        :config="{text: `No.`+ index + `\n要項名稱：` + rec.name, fontSize: 13,
-                  x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-                  y: Math.min(rec.startPointY, rec.startPointY + rec.height)}" />
-    
-</template>
-
 <script scope>
 export default {
     name: 'Rect',
@@ -38,12 +11,10 @@ export default {
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
-            var width = window.innerWidth;
-            var height = window.innerHeight;
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
             // const transformer = e.target.getTransform();
             // const next = transformer.point({ x: 0, y: 0 });
-            
+
             rect.startPointX = e.target.x();
             rect.startPointY = e.target.y();
             rect.scaleX = e.target.attrs.scaleX;
@@ -59,7 +30,7 @@ export default {
             rect.startPointY = pos.y;
             rect.endPointX = pos.x + rect.width * rect.scaleX;
             rect.endPointY = pos.y + rect.height * rect.scaleY;
-        },
+        }
     },
     props: {
         boxName: {
@@ -81,3 +52,24 @@ export default {
 };
 </script>
 
+<template>
+    <v-rect
+        v-for="(rec, index) in recs"
+        :key="index"
+        :name="rec.name"
+        :config="{
+            width: Math.abs(rec.width),
+            height: Math.abs(rec.height),
+            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
+            stroke: 'rgb(20,20,200,1)',
+            strokeWidth: 0.5,
+            x: Math.min(rec.startPointX, rec.startPointX + rec.width),
+            y: Math.min(rec.startPointY, rec.startPointY + rec.height)
+        }"
+        draggable="true"
+        @transformend="handleTransformEnd"
+        @dragend="handleDragEnd"
+    >
+    </v-rect>
+    <v-text v-for="(rec, index) in recs" :config="{ text: `No.` + index + `\n要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height) }" />
+</template>

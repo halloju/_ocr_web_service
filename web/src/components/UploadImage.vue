@@ -137,9 +137,9 @@ export default {
 <template>
     <div class="container col-12" :class="getClasses" @dragover.prevent="dragOver" @dragleave.prevent="dragLeave" @drop.prevent="drop($event)">
         <div class="col-12 text-center">
-            <h1 class="mb-3">上傳圖檔 </h1>
+            <h1 class="mb-3">上傳圖檔</h1>
         </div>
-        
+
         <Button type="button" label="選擇圖檔" class="pi p-button-outlined" style="width: 12em; height: 4em">
             <label for="my-file">選擇圖檔</label>
         </Button>

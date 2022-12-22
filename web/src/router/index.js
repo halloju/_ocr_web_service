@@ -27,29 +27,28 @@ const router = createRouter({
                 {
                     path: '/features/self-define/step/2',
                     component: () => import('@/views/pages/features/self-define/step.vue'),
-                    props: { Boxes: [{ name: 'recs_text', title: '文字辨識位置', step: 2, fillColor: { r: 0, g: 255, b: 0, a: 0.5 } }],
+                    props: { Boxes: [{ name: 'text', title: '文字辨識位置', step: 2, fillColor: { r: 0, g: 255, b: 0, a: 0.5 } }],
                              step: 2, pageTitle: '文字辨識位置', pageDesc: '請選擇文字辨識位置' }
                 },
                 {
                     path: '/features/self-define/step/3',
                     component: () => import('@/views/pages/features/self-define/step.vue'),
-                    props: { Boxes: [{ name: 'recs_block', title: '核取方塊位置', step: 3, fillColor: { r: 0, g: 0, b: 255, a: 0.5 } }],
+                    props: { Boxes: [{ name: 'box', title: '核取方塊位置', step: 3, fillColor: { r: 0, g: 0, b: 255, a: 0.5 } }],
                              step: 3, pageTitle: '方塊位置', pageDesc: '請選擇方塊辨識位置' }
                 },  
                 {
                     path: '/features/self-define/step/4',
                     component: () => import('@/views/pages/features/self-define/step.vue'),
-                    props: { Boxes: [{ name: 'recs_mask', title: '遮罩位置', step: 4, fillColor: { r: 0, g: 0, b: 0, a: 0.5 } }],
+                    props: { Boxes: [{ name: 'mask', title: '遮罩位置', step: 4, fillColor: { r: 0, g: 0, b: 0, a: 0.5 } }],
                              step: 4, pageTitle: '遮罩位置', pageDesc: '請選擇遮罩位置' }
                 },
                 {
                     path: '/features/self-define/step/5',
-                    name: 'SelfDefine5',
                     component: () => import('@/views/pages/features/self-define/step.vue'),
                     props: {
                         Boxes: [
                             {
-                                name: 'recs_text',
+                                name: 'text',
                                 title: '文字辨識位置',
                                 fillColor: {
                                     r: 0,
@@ -59,7 +58,7 @@ const router = createRouter({
                                 }
                             },
                             {
-                                name: 'recs_block',
+                                name: 'box',
                                 title: '核取方塊位置',
                                 fillColor: {
                                     r: 0,
@@ -68,9 +67,9 @@ const router = createRouter({
                                     a: 0.5
                                 }
                             }
-                        ]
+                        ],
+                        step: 5
                     },
-                    step: 5
                 },
                 {
                     path: '/features/model-list/person',

@@ -64,7 +64,7 @@ const isOutsideClicked = (event) => {
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img src="@/assets/img/esun-ocr-logo.svg" alt="logo" />
-            <span style="width: 400px; color: #09747A;margin-left: 10px;">智能辨識服務</span>
+            <span style="width: 400px; color: #09747a; margin-left: 10px">智能辨識服務</span>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

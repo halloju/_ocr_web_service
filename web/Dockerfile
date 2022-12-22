@@ -1,4 +1,4 @@
-FROM node:17-alpine
+FROM node:16-alpine
 # 設置項目目錄
 WORKDIR /app
 # 安裝項目依賴

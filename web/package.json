@@ -17,6 +17,7 @@
         "crypto-js": "^4.1.1",
         "element-plus": "^2.2.26",
         "konva": "^8.3.14",
+        "popper.js": "^1.16.1",
         "primeflex": "^3.2.1",
         "primeicons": "^6.0.1",
         "primevue": "^3.18.1",
