@@ -2,7 +2,7 @@
     <div class="grid p-fluid">
         <div class="col-12 md:col-7" >
             <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
-                <h5>第一個檔案</h5>
+                <h5>我們先看第一張圖片辨識的狀況</h5>
                 <Image :src="firstImage.reader" alt="Image" width="500" preview />
             </div>
         </div>
@@ -12,7 +12,7 @@
                 <div class="flex justify-content-between align-items-center">
                     <h5>Response</h5>
                 </div>
-                <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+                <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
                     <el-tab-pane label="詳細資訊" name="first">
                         <Button icon="pi pi-copy" class="p-button-text" @click="copyText"></Button>
                         <div ref="message">
@@ -67,7 +67,8 @@ export default {
             switchValue: false,
             switchButton: false,
             selectButtonValue: { name: '詳細資訊' },
-            selectButtonValues: [{ name: '詳細資訊' }, { name: '文字' }]
+            selectButtonValues: [{ name: '詳細資訊' }, { name: '文字' }],
+            activeTab: "first",
         };
     },
     watch: {
