@@ -10,15 +10,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def get_available_templates(db: Session, user_id: str):
+def get_available_templates(db: Session, user_id: str, is_public: bool):
     """
     從 DB 取得公開的 templates 以及該 user_id 自定義的 templates
     """
     try:
-        available_templates = db.query(
-            TemplateInfo.template_id,
-            TemplateInfo.template_name,
-            TemplateInfo.updated_at).filter(TemplateInfo.user_id == user_id)
+        if is_public:
+            available_templates = db.query(
+                TemplateInfo.template_id,
+                TemplateInfo.template_name,
+                TemplateInfo.updated_at).filter(TemplateInfo.is_public == True)
+        else:
+            available_templates = db.query(
+                TemplateInfo.template_id,
+                TemplateInfo.template_name,
+                TemplateInfo.updated_at).filter(TemplateInfo.user_id == user_id)
         if not available_templates.first():
             raise CustomException(status_code=400, message="available_templates are not found")
         return available_templates.all()
