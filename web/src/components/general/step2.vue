@@ -97,12 +97,18 @@ export default {
         },
         submit() {
             const start_time = new Date().getTime();
+            console.log(this.allImage)
             const imageLen = this.allImage.length
             const stepPercentage = 100 / imageLen
             const generalImageResponseList = []
+
             for (let i = 0; i < imageLen; i++) {
-                // 前綴拿掉
-                const base64Image = this.allImage[i].reader.split(',')[1]
+                // 準備 responseData
+                const responseData = {}
+                const base64Image = this.allImage[i].reader.split(',')[1];
+                const fileName =  this.allImage[i].name;
+                responseData['base64Image'] = base64Image
+                responseData['fileName'] = fileName
                 // 一張一張打
                 axios.post("/ocr/gpocr", {
                                 "image": base64Image,
@@ -111,10 +117,10 @@ export default {
                             })
                             .then( (response) =>
                                {
-                                console.log(JSON.stringify(response.data.ocr_results))
-                                generalImageResponseList.push(response.data)
+                                responseData['ocr_results'] = response.data.ocr_results;
+                                responseData['image_cv_id'] = response.data.image_cv_id;
+                                generalImageResponseList.push(responseData)
                                 this.uploadPercentage = (this.uploadPercentage + stepPercentage)
-                                count = count + 1
                                 })
                             .catch( (error) => {
                                 console.log(error)
@@ -130,6 +136,7 @@ export default {
                             background: 'rgba(0, 0, 0, 0.7)',
                         })
             setTimeout(()=>{
+                console.log(generalImageResponseList)
                 this.$store.commit('generalImageResponse', generalImageResponseList);
                 const api_time = (end_time - start_time) / 1000 ;
                 this.$store.commit('generalExecuteTime', api_time);
