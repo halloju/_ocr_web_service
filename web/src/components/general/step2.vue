@@ -3,7 +3,27 @@
         <div class="col-12 md:col-7" >
             <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
                 <h5>我們先看第一張圖片辨識的狀況</h5>
-                <Image :src="firstImage.reader" alt="Image" width="500" preview />
+                <!-- <Image :src="firstImage.reader" alt="Image" width="500" preview /> -->
+                <div class="" ref="img_block">
+                    <div class="flex card-container overflow-hidden">
+                        <v-stage ref="stage" :config="stageConfig">
+                            <v-layer ref="layer">
+                                <v-image
+                                    :config="{
+                                        width: this.imageConfig.width,
+                                        height: this.imageConfig.height,
+                                        image: this.image,
+                                        opacity: this.imageConfig.opacity,
+                                        x: this.imageConfig.x,
+                                        y: this.imageConfig.y
+                                    }"
+                                    ref="image"
+                                />
+                                <Rect v-for="box in this.Boxes" :key="box.name" :boxName="box.name" :fillColor="box.fillColor" />
+                            </v-layer>
+                        </v-stage>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -52,10 +72,35 @@
 import axios from "axios";
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ElLoading } from 'element-plus'
+import Rect from '@/components/Rect.vue';
+import Box from '@/components/Box.vue';
+
+
+const ratio = 1;
 
 export default {
-    components: {},
+    components: {
+        Box,
+        Rect
+    },
     name: 'General2',
+    mounted() {
+        this.image = new window.Image();
+        this.image.src = this.$store.state.general_upload_image[0].reader;
+        const resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
+        this.image.onload = () => {
+            this.imageConfig = {
+                width: this.image.width * resize * ratio,
+                height: this.image.height * resize * ratio,
+                x: (this.$refs.img_block.clientWidth - this.image.width * resize * ratio) / 2,
+                y: (this.$refs.img_block.clientHeight - this.image.height * resize * ratio) / 2
+            };
+        };
+        const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_0" }, 
+                       { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_1" },
+                       { "startPointX": 140, "startPointY": 50, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
+        this.$store.commit('generalBoxesUpdate', fake);
+    },
     data() {
         return {
             // 前一步驟上傳的圖檔
@@ -69,6 +114,21 @@ export default {
             selectButtonValue: { name: '詳細資訊' },
             selectButtonValues: [{ name: '詳細資訊' }, { name: '文字' }],
             activeTab: "first",
+            Boxes: [ { "name": "general_boxes", "title": "文字辨識位置", "step": 2, "fillColor": { "r": 0, "g": 255, "b": 0, "a": 0.5 } }, ],
+            image: null,
+            stageConfig: {
+                x: 0,
+                y: 0,
+                width: 800,
+                height: 600
+            },
+            imageConfig: {
+                width: 800,
+                height: 600,
+                x: 10,
+                y: 20
+            },
+
         };
     },
     watch: {
