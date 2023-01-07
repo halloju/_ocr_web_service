@@ -76,8 +76,6 @@ import Rect from '@/components/Rect.vue';
 import Box from '@/components/Box.vue';
 
 
-const ratio = 1;
-
 export default {
     components: {
         Box,
@@ -85,9 +83,11 @@ export default {
     },
     name: 'General2',
     mounted() {
+        const ratio = 1;
         this.image = new window.Image();
         this.image.src = this.$store.state.general_upload_image[0].reader;
         const resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
+        console.log(this.imageConfig)
         this.image.onload = () => {
             this.imageConfig = {
                 width: this.image.width * resize * ratio,
@@ -96,6 +96,7 @@ export default {
                 y: (this.$refs.img_block.clientHeight - this.image.height * resize * ratio) / 2
             };
         };
+        console.log(this.imageConfig)
         const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_0" }, 
                        { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_1" },
                        { "startPointX": 140, "startPointY": 50, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
@@ -123,8 +124,8 @@ export default {
                 height: 600
             },
             imageConfig: {
-                width: 800,
-                height: 600,
+                width: null,
+                height: null,
                 x: 10,
                 y: 20
             },
