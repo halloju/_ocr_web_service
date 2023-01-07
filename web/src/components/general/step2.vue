@@ -3,7 +3,6 @@
         <div class="col-12 md:col-7" >
             <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
                 <h5>我們先看第一張圖片辨識的狀況</h5>
-                <!-- <Image :src="firstImage.reader" alt="Image" width="500" preview /> -->
                 <div class="" ref="img_block">
                     <div class="flex card-container overflow-hidden">
                         <v-stage ref="stage" :config="stageConfig">
@@ -75,7 +74,6 @@ import { ElLoading } from 'element-plus'
 import Rect from '@/components/Rect.vue';
 import Box from '@/components/Box.vue';
 
-
 export default {
     components: {
         Box,
@@ -83,20 +81,19 @@ export default {
     },
     name: 'General2',
     mounted() {
-        const ratio = 1;
         this.image = new window.Image();
         this.image.src = this.$store.state.general_upload_image[0].reader;
-        const resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
-        console.log(this.imageConfig)
+        this.$nextTick(() => {
+            this.resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
+            })
         this.image.onload = () => {
             this.imageConfig = {
-                width: this.image.width * resize * ratio,
-                height: this.image.height * resize * ratio,
-                x: (this.$refs.img_block.clientWidth - this.image.width * resize * ratio) / 2,
-                y: (this.$refs.img_block.clientHeight - this.image.height * resize * ratio) / 2
+                width: this.image.width * this.resize * this.ratio,
+                height: this.image.height * this.resize * this.ratio,
+                x: (this.$refs.img_block.clientWidth - this.image.width * this.resize * this.ratio) / 2,
+                y: (this.$refs.img_block.clientHeight - this.image.height * this.resize * this.ratio) / 2
             };
         };
-        console.log(this.imageConfig)
         const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_0" }, 
                        { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_1" },
                        { "startPointX": 140, "startPointY": 50, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
@@ -117,6 +114,8 @@ export default {
             activeTab: "first",
             Boxes: [ { "name": "general_boxes", "title": "文字辨識位置", "step": 2, "fillColor": { "r": 0, "g": 255, "b": 0, "a": 0.5 } }, ],
             image: null,
+            resize: null,
+            ratio: 1,
             stageConfig: {
                 x: 0,
                 y: 0,
