@@ -3,7 +3,9 @@
         <div class="col-12 md:col-7" >
             <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
                 <h5>我們先看第一張圖片辨識的狀況</h5>
-                <div class="" ref="img_block">
+                <Image :src="preview" alt="Image" width="600" preview />
+                <img ref="preview" />
+                <div v-show="showKonva" class="" ref="img_block">
                     <div class="flex card-container overflow-hidden">
                         <v-stage ref="stage" :config="stageConfig">
                             <v-layer ref="layer">
@@ -93,10 +95,18 @@ export default {
                 x: (this.$refs.img_block.clientWidth - this.image.width * this.resize * this.ratio) / 2,
                 y: (this.$refs.img_block.clientHeight - this.image.height * this.resize * this.ratio) / 2
             };
+            console.log("----1-----")
+            const dataURL = this.$refs.stage.getStage().toDataURL()
+            const image = new Image()
+            image.src = dataURL
+            const width = image.width
+            const height = image.height
+            console.log(width, height)
+            this.preview = dataURL
         };
         const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_0" }, 
                        { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_1" },
-                       { "startPointX": 140, "startPointY": 50, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
+                       { "startPointX": 250, "startPointY": 160, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
         this.$store.commit('generalBoxesUpdate', fake);
     },
     data() {
@@ -113,8 +123,10 @@ export default {
             selectButtonValues: [{ name: '詳細資訊' }, { name: '文字' }],
             activeTab: "first",
             Boxes: [ { "name": "general_boxes", "title": "文字辨識位置", "step": 2, "fillColor": { "r": 0, "g": 255, "b": 0, "a": 0.5 } }, ],
+            preview: null,
             image: null,
             resize: null,
+            showKonva: false,
             ratio: 1,
             stageConfig: {
                 x: 0,
@@ -123,8 +135,8 @@ export default {
                 height: 600
             },
             imageConfig: {
-                width: null,
-                height: null,
+                width: 800,
+                height: 600,
                 x: 10,
                 y: 20
             },
@@ -147,6 +159,17 @@ export default {
         },
     },
     methods: {
+        previewImage() {
+            console.log("----2-----")
+            const dataURL = this.$refs.stage.getStage().toDataURL()
+            const image = new Image()
+            image.src = dataURL
+
+            const width = image.width
+            const height = image.height
+            console.log(width, height)
+            this.preview = dataURL
+        },
         copyText() {
             const range = document.createRange();
             range.selectNode(this.$refs.message);
