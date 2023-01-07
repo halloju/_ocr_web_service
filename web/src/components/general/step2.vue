@@ -95,13 +95,7 @@ export default {
                 x: (this.$refs.img_block.clientWidth - this.image.width * this.resize * this.ratio) / 2,
                 y: (this.$refs.img_block.clientHeight - this.image.height * this.resize * this.ratio) / 2
             };
-            console.log("----1-----")
             const dataURL = this.$refs.stage.getStage().toDataURL()
-            const image = new Image()
-            image.src = dataURL
-            const width = image.width
-            const height = image.height
-            console.log(width, height)
             this.preview = dataURL
         };
         const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_0" }, 
@@ -160,14 +154,7 @@ export default {
     },
     methods: {
         previewImage() {
-            console.log("----2-----")
             const dataURL = this.$refs.stage.getStage().toDataURL()
-            const image = new Image()
-            image.src = dataURL
-
-            const width = image.width
-            const height = image.height
-            console.log(width, height)
             this.preview = dataURL
         },
         copyText() {
