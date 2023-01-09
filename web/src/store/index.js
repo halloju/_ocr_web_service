@@ -9,6 +9,7 @@ const store = new Vuex.Store({
         box: [],
         mask: [],
         // 通用辨識
+        general_boxes: [],
         general_upload_image: [],
         general_upload_res: [],
         general_execute_time: 0,
@@ -17,6 +18,9 @@ const store = new Vuex.Store({
     mutations: {
         recsUpdate: function (state, payload) {
             state.recs_text = payload;
+        },
+        generalBoxesUpdate: function (state, payload) {
+            state.general_boxes = payload;
         },
         generalImageUpdate: function (state, payload) {
             state.general_upload_image = payload;

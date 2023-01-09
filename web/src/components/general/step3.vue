@@ -14,7 +14,7 @@
                                 </el-tooltip>
                             </div>
                             <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">
-                                成功辨識：{{ this.regData.length }} 張，共耗時 {{ general_execute_time }} 秒
+                                成功辨識：{{ this.resData.length }} 張，共耗時 {{ general_execute_time }} 秒
                             </div>
                         </div>
                     </div>
@@ -23,8 +23,20 @@
                             :data="getExcel"
                             style="width: 100%"
                         >
-                            <el-table-column prop="image_cv_id" label="image_cv_id" sortable width="180" />
-                            <el-table-column prop="ocr_results" label="ocr_results" width="700" />
+                            <el-table-column label="圖片預覽" width="180">
+                                <template #default="scope">
+                                    <el-image
+                                        style="width: 120px; height: 120px;"
+                                        :src="scope.row.image"
+                                        :preview-src-list="[scope.row.image]"
+                                        hide-on-click-modal="true"
+                                        preview-teleported="true"
+                                        >
+                                    </el-image>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="filename" label="檔案名稱" sortable width="180" />
+                            <el-table-column prop="ocr_results" label="辨識結果" width="700" />
                         </el-table>
                     </div>
                 </div>
@@ -45,23 +57,31 @@ export default {
     data() {
         return {
             isDownload: false,
-            regData: this.$store.state.general_upload_res,
+            resData: this.$store.state.general_upload_res,
             general_execute_time: this.$store.state.general_execute_time,
             Download: Download,
             Back: Back,
-            excelData: []
+            excelData: [],
+            tableData: []
         };
     },
     computed: {
         getExcel() {
-            for (let i = 0; i < this.regData.length; i++) {
+            console.log(this.resData)
+            for (let i = 0; i < this.resData.length; i++) {
                 this.excelData.push({
-                    "image_cv_id": this.regData[i].image_cv_id,
-                    "ocr_results": JSON.stringify(this.regData[i].ocr_results)
+                    "filename": this.resData[i].fileName,
+                    "image_cv_id": this.resData[i].image_cv_id,
+                    "ocr_results": JSON.stringify(this.resData[i].ocr_results)
+                })
+                this.tableData.push({
+                    "filename": this.resData[i].fileName,
+                    "ocr_results": JSON.stringify(this.resData[i].ocr_results),
+                    "image": `data:image/png;base64, ` + this.resData[i].base64Image
                 })
             }
-            return this.excelData
-        }
+            return this.tableData
+        },
     },
     methods: {
         back(){
