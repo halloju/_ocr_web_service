@@ -3,9 +3,8 @@
         <div class="col-12 md:col-7" >
             <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
                 <h5>我們先看第一張圖片辨識的狀況</h5>
-                <Image :src="preview" alt="Image" width="600" preview />
-                <img ref="preview" />
-                <div v-show="showKonva" class="" ref="img_block">
+                <Image :src="preview" alt="Image" :width="imageConfig.width" :height="imageConfig.height" preview />
+                <div v-show="true" class="" ref="img_block">
                     <div class="flex card-container overflow-hidden">
                         <v-stage ref="stage" :config="stageConfig">
                             <v-layer ref="layer">
@@ -85,6 +84,7 @@ export default {
     mounted() {
         this.image = new window.Image();
         this.image.src = this.$store.state.general_upload_image[0].reader;
+        console.log(this.image.width, this.image.height);
         this.$nextTick(() => {
             this.resize = Math.min(this.$refs.img_block.clientWidth / this.image.width, this.$refs.img_block.clientHeight / this.image.height);
             })
@@ -95,12 +95,18 @@ export default {
                 x: (this.$refs.img_block.clientWidth - this.image.width * this.resize * this.ratio) / 2,
                 y: (this.$refs.img_block.clientHeight - this.image.height * this.resize * this.ratio) / 2
             };
+            console.log('this.imageConfig:', this.imageConfig)
             const dataURL = this.$refs.stage.getStage().toDataURL()
             this.preview = dataURL
+            var img = new Image();
+            img.src = dataURL;
+            console.log(img.width, img.height)
+
+
         };
-        const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_0" }, 
-                       { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_1" },
-                       { "startPointX": 250, "startPointY": 160, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
+        const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "222" },
+                       { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "who are you?" },
+                       { "startPointX": 250, "startPointY": 160, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "你是誰？" } ]
         this.$store.commit('generalBoxesUpdate', fake);
         this.getRegData();
     },
