@@ -7,12 +7,12 @@ const store = new Vuex.Store({
         recs_text: [],
         general_upload_image: [],
         general_upload_res: [],
-        general_execute_time: 0,
+        general_execute_time: 0
     },
 
     mutations: {
-        recsUpdate: function (state, payload) {
-            state.recs_text = payload;
+        recsUpdate: function (state, name, payload) {
+            state.state[name] = payload;
         },
         generalImageUpdate: function (state, payload) {
             state.general_upload_image = payload;

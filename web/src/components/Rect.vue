@@ -23,6 +23,7 @@ export default {
             rect.endPointY = e.target.y() + rect.height * rect.scaleY;
         },
         handleDragEnd(e) {
+            e.cancelBubble = true;
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
             const pos = e.target.getPosition();
             // update the state
@@ -30,6 +31,23 @@ export default {
             rect.startPointY = pos.y;
             rect.endPointX = pos.x + rect.width * rect.scaleX;
             rect.endPointY = pos.y + rect.height * rect.scaleY;
+        },
+        handleDragBond(e) {
+            const rect = this.recs.find((r) => r.name === e.target.attrs.name);
+            const pos = e.target.getPosition();
+
+            if (pos.x < 0) {
+                e.target.x(0);
+            }
+            if (pos.y < 0) {
+                e.target.y(0);
+            }
+            if ((pos.x + rect.width * rect.scaleX) > this.imageAttrs.width) {
+                e.target.x(this.imageAttrs.width - rect.width * rect.scaleX);
+            }
+            if ((pos.y + rect.height * rect.scaleY) > this.imageAttrs.height) {
+                e.target.y(this.imageAttrs.height - rect.height * rect.scaleY);
+            }
         }
     },
     props: {
@@ -45,6 +63,15 @@ export default {
                     g: 0,
                     b: 0,
                     a: 0.3
+                };
+            }
+        },
+        imageAttrs: {
+            type: Object,
+            default() {
+                return {
+                    width: 0,
+                    height: 0
                 };
             }
         }
@@ -66,9 +93,9 @@ export default {
             x: Math.min(rec.startPointX, rec.startPointX + rec.width),
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
         }"
-        draggable="true"
         @transformend="handleTransformEnd"
         @dragend="handleDragEnd"
+        @dragmove="handleDragBond"
     >
     </v-rect>
     <v-text v-for="(rec, index) in recs" :config="{ text: `No.` + index + `\n要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height) }" />

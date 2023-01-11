@@ -73,10 +73,12 @@ export default {
 
             axios
                 .post('/template/create', {
-                    user_id: 1,
+                    user_id: 12345,
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
-                    bbox: this.boxes
+                    bbox: this.boxes,
+                    template_name: "身分證",
+                    is_public: false
                 })
                 .then((res) => {
                     if (res.status === 200) {
@@ -166,9 +168,7 @@ export default {
     </div>
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
-            <div class="card">
-                <Box :Boxes="this.Boxes" />
-            </div>
+            <Box :Boxes="this.Boxes" />
         </div>
         <div class="col-12 md:col-4">
             <div class="card" style="overflow-x: scroll">

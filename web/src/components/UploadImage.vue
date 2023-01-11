@@ -114,15 +114,18 @@ export default {
         },
         reset() {
             this.filename = null;
-            this.filesize = null;
+            this.filesize = 0;
             this.preview = null;
             this.isOK = false;
             this.wrongFile = false;
             sessionStorage.imageSource = '';
             sessionStorage.filename = null;
-            sessionStorage.filesize = null;
+            sessionStorage.filesize = 0;
             sessionStorage.isUploaded = false;
             this.$refs.inputFile.value = '';
+        },
+        openfolder() {
+            this.$refs.inputFile.click();
         }
     },
     props: {
@@ -140,13 +143,13 @@ export default {
             <h1 class="mb-3">上傳圖檔</h1>
         </div>
 
-        <Button type="button" label="選擇圖檔" class="pi p-button-outlined" style="width: 12em; height: 4em">
+        <Button type="button" label="選擇圖檔"  @click="openfolder" class="pi p-button-outlined" style="width: 12em; height: 4em">
             <label for="my-file">選擇圖檔</label>
         </Button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
         <!-- <div class="my-content" v-if="fileLimit && !isOK" style="color: black;">請勿超過10MB</div> -->
         <div class="col-12 text-center" v-if="isOK && !wrongFile">
-            <Image :src="imageSource" alt="Image" width="500" preview />
+            <Image v-if="imageSource" :src="imageSource" alt="Image" width="500" preview />
             <p class="mb-0 text-left">檔案名稱： {{ filename }}</p>
             <p class="mb-0 text-left">檔案大小： {{ Number(filesize).toFixed(2) }}KB</p>
         </div>
