@@ -34,17 +34,17 @@
                     <h5>Response</h5>
                 </div>
                 <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
-                    <el-tab-pane label="詳細資訊" name="first">
+                    <el-tab-pane label="文字" name="first">
+                        <DataTable :value="regData" :scrollable="true" scrollHeight="400px" :loading="loading">
+                            <Column field="index" header="編號" style="min-width:100px"></Column>
+                            <Column field="text" header="文字" style="min-width:50px"></Column>
+                        </DataTable>
+                    </el-tab-pane>
+                    <el-tab-pane label="詳細資訊" name="second">
                         <Button icon="pi pi-copy" class="p-button-text" @click="copyText"></Button>
                         <div ref="message">
                             {{regData}}
                         </div>
-                    </el-tab-pane>
-                    <el-tab-pane label="文字" name="second">
-                        <DataTable :value="regData" :scrollable="true" scrollHeight="400px" :loading="loading">
-                            <Column field="text" header="text" style="min-width:50px"></Column>
-                            <Column field="tag" header="tag" style="min-width:100px"></Column>
-                        </DataTable>
                     </el-tab-pane>
                 </el-tabs>
                 <h5>我已確認單張結果</h5>
@@ -102,13 +102,14 @@ export default {
                        { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_1" },
                        { "startPointX": 250, "startPointY": 160, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "example_2" } ]
         this.$store.commit('generalBoxesUpdate', fake);
+        this.getRegData();
     },
     data() {
         return {
             // 前一步驟上傳的圖檔
             firstImage: this.$store.state.general_upload_image[0],
             allImage:  this.$store.state.general_upload_image,
-            regData: this.$store.state.general_upload_res.data.ocr_results,
+            regData: null,
             uploadPercentage: 0,
             isDownload: false,
             switchValue: false,
@@ -156,6 +157,13 @@ export default {
         previewImage() {
             const dataURL = this.$refs.stage.getStage().toDataURL()
             this.preview = dataURL
+        },
+        getRegData() {
+            this.regData = this.$store.state.general_upload_res.data.ocr_results;
+            this.regData.forEach(function(element, index) {
+                element.index = index + 1;
+            });
+            return this.regData
         },
         copyText() {
             const range = document.createRange();
