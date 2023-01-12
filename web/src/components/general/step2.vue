@@ -54,8 +54,8 @@
                     inactive-text="否"
                 />
                 <br>
-                <Button label=" 開始辨識全部檔案" class="mr-2 mb-2 pi pi-images" @click="submit" :disabled="!switchValue"></Button>
-                <Button label=" 重新上傳" class="mr-2 mb-2 pi pi-upload p-button-danger" @click="back"></Button>
+                <el-button type="primary"  style="width: 100%" class="mr-2 mb-2" @click="submit" :disabled="!switchValue">  開始辨識全部檔案 </el-button>
+                <el-button type="danger"  style="width: 100%" class="mr-2 mb-2 pi pi-upload" @click="back"> 重新上傳 </el-button>
                 <!-- Progress Bar -->
                 <el-progress
                 :text-inside="true"
@@ -256,3 +256,8 @@ export default {
     }
 };
 </script>
+<style>
+.el-button {
+    margin-left: 0px !important;
+}
+</style>
