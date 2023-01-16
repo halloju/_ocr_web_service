@@ -43,7 +43,7 @@ def gpocr(ocr_image_info, db: Session):
         img_width, img_height = img_arr.shape[:2]
         random_points = [(random.randint(0, img_width), random.randint(0, img_height)) for times in range(3)]
         max_random_points = [(random.randint(point_width, img_width), random.randint(point_height, img_height)) for point_width, point_height in random_points]
-        text_list = ['222', 'who are you?', '你是誰']
+        text_list = ['2023.01.16', '刪除 tag 欄位', 'gogogo']
         fake_ocr_results = []
         for i in range(3):
             fake_ocr_results.append({
@@ -55,8 +55,7 @@ def gpocr(ocr_image_info, db: Session):
                 ],
                 'text': text_list[i],
                 'det_prob': round(random.random(), 4),
-                'rec_prob': round(random.random(), 4),
-                'tag': f'example_{i}'
+                'rec_prob': round(random.random(), 4)
 
             })
         ocr_results = [i for i in fake_ocr_results if i['text']]
