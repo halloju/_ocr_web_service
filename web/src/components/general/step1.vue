@@ -23,7 +23,7 @@
                         <h5>選擇語言</h5>
                     </div>
                     <div class="flex justify-content-start mb-5">
-                        <Dropdown v-model="selectedLang" :options="languages" optionLabel="name" placeholder="請選擇" />
+                        <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
                     </div>
                     <div class="flex justify-content-start mb-1">
                         <h5>使用高精準度模型</h5>
@@ -40,7 +40,7 @@
                         />
                     </div>
                     <div class="flex justify-content-start mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
                     </div>
                 </div>
             </div>
