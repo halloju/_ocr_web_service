@@ -20,6 +20,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/General.vue')
                 },
                 {
+                    path: '/features/test',
+                    name: 'TEST',
+                    component: () => import('@/views/pages/features/TEST.vue')
+                },
+                {
                     path: '/features/self-define/step/1',
                     name: 'SelfDefine1',
                     component: () => import('@/views/pages/features/self-define/step1.vue')

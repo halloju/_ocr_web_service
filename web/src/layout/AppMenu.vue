@@ -15,6 +15,11 @@ const model = ref([
                         label: '通用辨識',
                         icon: 'pi pi-th-large',
                         to: '/features/general'
+                    },
+                    {
+                        label: 'TEST',
+                        icon: 'pi pi-th-large',
+                        to: '/features/test'
                     }
                 ]
             },
