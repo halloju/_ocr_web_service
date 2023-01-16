@@ -9,7 +9,7 @@
             :localStorageKey="localStorageKey"
             :width="width"
             :height="height"
-            :dataCallback="dataCallback"
+            :dataCallback="callback"
             initialData=""
             :initialDataId="initialDataId"
         ></Annotation>
@@ -27,7 +27,7 @@
             :imageSrc="imageSrc"
             :width="width"
             :height="height"
-            :dataCallback="dataCallback"
+            dataCallback=""
             :initialData="initialData"
             :initialDataId="initialDataId"
         ></Annotation>
@@ -39,25 +39,29 @@ import Image from '@/assets/img/hero-img.png'
 import Annotation from '@/components/Annotation.vue';
 
 export default {
-components: {
-    Annotation
-},
-data() {
-    return { 
-        containerId: 'my-pic-annotation',
-        containerId2: 'my-pic-annotation-output',
-        editMode: true,
-        editMode: 'en',
-        imageSrc: Image,
-        localStorageKey: "storage",
-        width: 1200,
-        height: 600,
-        dataCallback: '',
-        initialData: '',
-        initialDataId: null,
-    }
-},
+    components: {
+        Annotation
+    },
+    data() {
+        return { 
+            containerId: 'my-pic-annotation',
+            containerId2: 'my-pic-annotation-output',
+            editMode: true,
+            editMode: 'en',
+            imageSrc: Image,
+            localStorageKey: "storage",
+            width: 1200,
+            height: 600,
+            dataCallback: '',
+            initialData: '',
+            initialDataId: null,
+        }
+    },
+    methods: {
+        callback(data) {
+            document.getElementById('output').innerHTML = data;
+        }
+    },
 }
-
 </script>
 

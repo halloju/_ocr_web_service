@@ -129,6 +129,7 @@ created () {
     this.callback = this.dataCallback &&
     typeof eval(this.dataCallback) && // eslint-disable-line no-eval
     eval(this.dataCallback); // eslint-disable-line no-eval
+    console.log("this.callback:", this.callback)
 },
 mounted () {
     document.addEventListener('keydown', this.handleKeyEvent);
@@ -166,7 +167,6 @@ methods: {
     // in edit mode?
     if (this.editMode) {
         // edit mode only
-        console.log('this.editMode:', this.editMode)
         // clicked on stage - clear selection
         if (e.target === e.target.getStage()) {
         this.selectedShapeName = '';
@@ -495,6 +495,7 @@ methods: {
     // callback on update
     shapesUpdated () {
     if (this.callback && typeof this.callback === 'function') {
+        console.log(JSON.stringify(this.shapes));
         this.callback(JSON.stringify(this.shapes));
     }
 
