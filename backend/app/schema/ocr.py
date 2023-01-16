@@ -57,9 +57,6 @@ class OcrPredict(BaseModel, extra=Extra.forbid):
         title='辨識機率值',
         example=0.9586
     )
-    tag: Optional[StrictStr] = Field(
-        title='辨識要項',
-        example="id")
 
 
 class GetGPOCRResponse(BaseModel):
