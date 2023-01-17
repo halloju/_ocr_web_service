@@ -21,9 +21,13 @@
         </form>
       </template>
       <template v-else>
-        <div v-if="shape.annotation.text" class="pa-annotation-text"><nl2br tag="p" :text="shape.annotation.text"/></div>
-
-        <a :href="shape.annotation.link" v-if="shape.annotation.link" class="pa-annotation-link">{{shape.annotation.linkTitle || more}}</a>
+        <form class="pa-annotation-form" @submit.prevent.stop="submitted">
+          <label :for="shape.name + '-title'">{{ annotation_title }}</label>
+          <input type="text" name="title" :id="shape.name + '-title'" v-model="formData.title">
+          <label :for="shape.name + '-text'">{{ annotation_text }}</label>
+          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" />
+          <button type="submit">{{ submit }}</button>
+        </form>
       </template>
     </div>
   </div>
