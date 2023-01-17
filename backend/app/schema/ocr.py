@@ -7,7 +7,7 @@ class CreateGPOCRRequest(BaseModel):
         title='base64 字串的影像',
         description='''
         ''',
-        example='/9j/4AAQSkZJRgABAQEBLAEsAAD/2w'
+        example='iVBORw0KGgoAAAANSUhEUgAAACwAAAAbCAIAAACImfpDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAA0SURBVEhL7c4xDQAgEAAx/Jtk5V0wkNPA0qQCuvac7yQiEYlIRCISkYhEJCIRiUhE4plzAes2eXW72BJeAAAAAElFTkSuQmCC'
     )
     image_complexity: Optional[StrictStr] = Field(
         default='medium',
