@@ -1,5 +1,5 @@
 from app.database import Base, schema_name
-from sqlalchemy import Column, DateTime, String, ARRAY, JSON
+from sqlalchemy import Column, DateTime, String, ARRAY, JSON, Boolean
 from sqlalchemy.sql import func
 
 class TemplateInfo(Base):
@@ -10,3 +10,4 @@ class TemplateInfo(Base):
     template_name = Column(String, nullable=False)
     bbox = Column(ARRAY(JSON(String)), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    is_public = Column(Boolean, nullable=False)

@@ -62,7 +62,6 @@ def gpocr(ocr_image_info, db: Session):
         for ocr_result in ocr_results:
             insert_ocr_results = OCRResults(
                 image_cv_id=image_cv_id,
-                tag=ocr_result['tag'],
                 text=ocr_result['text'],
                 det_model='example',
                 rec_model='example',

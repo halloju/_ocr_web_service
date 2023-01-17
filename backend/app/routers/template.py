@@ -36,8 +36,11 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
         template = CreateTemplateRequest(
             user_id=form.user_id,
             image=form.image,
+            is_no_ttl=form.is_no_ttl,
             bbox=form.bbox,
-            template_name=form.template_name)
+            template_name=form.template_name,
+            is_public=form.is_public
+            )
         template_id = service_create.create_template(template=template, db=db)
         return CreateTemplateResponse(
             template_id=template_id
@@ -46,11 +49,11 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
 
 
 @router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(user_id: str, db: Session = Depends(get_db)):
+def get_available_templates(user_id: str, is_public: bool, db: Session = Depends(get_db)):
     '''
     取得該 user_id 可用的 template 清單
     '''
-    available_templates = service_read.get_available_templates(db, user_id)
+    available_templates = service_read.get_available_templates(db, user_id, is_public)
     return GetAvailableTemplatesResponse(
         available_templates=available_templates
     )
