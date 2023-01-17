@@ -28,17 +28,13 @@
               <v-rect v-if="shape.type === 'rect'" :config="shape" :key="shape.name"
                       @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
                       @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"/>
-              <v-circle v-if="shape.type === 'circle'" :config="shape" :key="shape.name"
-                      @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
-                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"/>
-              <v-line v-if="shape.type === 'poly'" :config="shape" :key="shape.name"
-                      @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
-                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"/>
-              <v-path v-if="shape.type === 'path'" :config="shape" :key="shape.name"
-                      @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
-                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"/>
+              <v-text :config="
+                        { text: shape.annotation.title, fontSize: 30, 
+                        x: Math.min(shape.x, shape.x + shape.width),
+                        y: Math.min(shape.y, shape.y + shape.height)
+                        }" />
           </template>
-          <v-transformer ref="transformer" v-if="editMode"/>
+          <v-transformer ref="transformer" :rotateEnabled="false" v-if="editMode"/>
           </v-layer>
       </v-stage>
   
@@ -118,6 +114,7 @@ created () {
     image.onload = () => {
     // set image only when it is loaded
     this.image = image;
+    console.log(this.image.width, this.image.height)
 
     // adapt initial scale to fit canvas
     this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
@@ -222,72 +219,6 @@ methods: {
     e.evt.preventDefault();
     },
 
-    // handle additions
-    startPolygonDrawing () {
-    // actually drawing polygon right now?
-    if (this.isAddingPolygon) {
-        this.finishPolygon();
-    } else {
-        this.isAddingPolygon = true;
-    }
-    },
-    addPolygonPoint () { // add single polygon point
-    // get stage and calculate pointer
-    const stage = this.$refs.stage.getStage();
-    const pointerPosition = stage.getPointerPosition();
-    const x = (pointerPosition.x - (stage.attrs.x || 0)) / stage.attrs.scaleX;
-    const y = (pointerPosition.y - (stage.attrs.y || 0)) / stage.attrs.scaleY;
-
-    // add to list of points
-    this.polygonPoints.push(x, y);
-
-    // add new rect
-    this.polygonAddShapes.push({
-        ...this.getBaseShapeForPolygon(),
-        x: x - 15,
-        y: y - 15,
-        width: 30,
-        height: 30
-    });
-    },
-    removePolygonPoint () { // remove single polygon point
-    if (this.polygonPoints.length) {
-        // remove last two points from list
-        this.polygonPoints.splice(this.polygonPoints.length - 2, 2);
-
-        // slice last shape off
-        this.polygonAddShapes.pop();
-    }
-    },
-    finishPolygon () {
-    // clear list and copy
-    const points = this.polygonPoints.splice(0, this.polygonPoints.length);
-
-    // if polygon has 3 or more points, accept it
-    if (points.length > 5) {
-        this.addPolygon(points);
-    }
-
-    // clear points
-    if (this.polygonAddShapes.length) {
-        this.polygonAddShapes.splice(0, this.polygonAddShapes.length);
-    }
-
-    this.isAddingPolygon = false;
-    },
-
-    addPolygon (points) {
-    this.shapes.push({
-        ...this.getBaseShape('poly'),
-        points: points,
-        closed: true,
-        x: 0,
-        y: 0
-    });
-
-    // call update
-    this.shapesUpdated();
-    },
     addRectangle () {
     if (this.isAddingPolygon) return;
 
@@ -302,63 +233,23 @@ methods: {
     // call update
     this.shapesUpdated();
     },
-    addCircle () {
-    if (this.isAddingPolygon) return;
-
-    this.shapes.push({
-        ...this.getBaseShape('circle'),
-        x: 180 / this.scale,
-        y: 200 / this.scale,
-        radius: 100 / this.scale
-    });
-
-    // call update
-    this.shapesUpdated();
-    },
-
-    addPerson () {
-    if (this.isAddingPolygon) return;
-
-    this.shapes.push({
-        ...this.getBaseShape('path'),
-        x: 80 / this.scale,
-        y: 80 / this.scale,
-        data: 'm 105.61519,0 a 52.807596,52.807596 0 1 1 0,105.61519 52.807596,52.807596 0 0 1 0,-105.61519 m 0,105.61519 c 58.3524,0 105.61522,23.63141 105.61522,52.8076 V 264.038 H 0 V 158.42279 c 0,-29.17619 47.262803,-52.8076 105.61519,-52.8076 z',
-        scale: {
-        x: 1 / this.scale,
-        y: 1 / this.scale
-        }
-    });
-
-    // call update
-    this.shapesUpdated();
-    },
-
+  
     getBaseShape (type) {
     return {
-        type: type,
-        name: 'shape-' + (new Date()).valueOf(),
-        fill: '#b0c4de',
-        opacity: 0.5,
-        stroke: '#0000ff',
-        draggable: true,
-        strokeWidth: 2,
-        strokeScaleEnabled: false,
-        annotation: {
-        title: '',
-        text: '',
-        linkTitle: '',
-        link: ''
+          type: type,
+          name: 'shape-' + (new Date()).valueOf(),
+          fill: '#b0c4de',
+          opacity: 0.5,
+          stroke: '#0000ff',
+          draggable: true,
+          strokeWidth: 2,
+          strokeScaleEnabled: false,
+          annotation: {
+          title: '',
+          text: '',
+          linkTitle: '',
+          link: ''
         }
-    };
-    },
-    getBaseShapeForPolygon (type) {
-    return {
-        fill: '#a24545',
-        opacity: 0.5,
-        stroke: '#800000',
-        strokeWidth: 2,
-        strokeScaleEnabled: false
     };
     },
 
@@ -424,7 +315,7 @@ methods: {
     this.shapesUpdated();
     },
     handleTransform (event, shape) {
-    // shape.rotation = event.currentTarget.attrs.rotation;
+    shape.rotation = event.currentTarget.attrs.rotation;
     shape.scaleX = event.currentTarget.attrs.scaleX;
     shape.scaleY = event.currentTarget.attrs.scaleY;
     shape.x = event.currentTarget.attrs.x;
