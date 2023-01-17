@@ -19,15 +19,17 @@
       }" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent"
           @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
           <v-layer ref="background">
-          <v-image :config="{
-              image: image
-              }" />
+            <v-image :config="{
+                image: image,
+                stroke: 'black'
+                }" />
           </v-layer>
           <v-layer ref="items">
           <template v-for="shape in shapes">
               <v-rect v-if="shape.type === 'rect'" :config="shape" :key="shape.name"
                       @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
-                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"/>
+                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"
+                      />
               <v-text :config="
                         { text: shape.annotation.title, fontSize: 30, 
                         x: Math.min(shape.x, shape.x + shape.width),
@@ -308,21 +310,37 @@ methods: {
 
     // handle manipulation events
     handleDragEnd (event, shape) {
-    shape.x = event.currentTarget.attrs.x;
-    shape.y = event.currentTarget.attrs.y;
-
-    // call update
-    this.shapesUpdated();
+      shape.x = event.currentTarget.attrs.x;
+      shape.y = event.currentTarget.attrs.y;
+      // call update
+      this.shapesUpdated();
     },
+    // handleDragBond (event, shape) {
+    //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
+    //   if (event.currentTarget.attrs.x < 0) {
+    //     event.target.x(0)
+    //   } 
+    //   if (event.currentTarget.attrs.y < 0) {
+    //     event.target.y(0)
+    //   }
+    //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
+    //     event.target.x(this.image.width - shape.width * shape.scaleX)
+    //   }
+    //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
+    //     event.target.y(this.image.height - shape.height * shape.scaleY)
+    //   }
+    //   // call update
+    //   this.shapesUpdated();
+    // },
     handleTransform (event, shape) {
-    shape.rotation = event.currentTarget.attrs.rotation;
-    shape.scaleX = event.currentTarget.attrs.scaleX;
-    shape.scaleY = event.currentTarget.attrs.scaleY;
-    shape.x = event.currentTarget.attrs.x;
-    shape.y = event.currentTarget.attrs.y;
+      console.log(shape.width, shape.height)
+      shape.scaleX = event.currentTarget.attrs.scaleX;
+      shape.scaleY = event.currentTarget.attrs.scaleY;
+      shape.x = event.currentTarget.attrs.x;
+      shape.y = event.currentTarget.attrs.y;
 
-    // call update
-    this.shapesUpdated();
+      // call update
+      this.shapesUpdated();
     },
 
     // handle show stuff
@@ -386,7 +404,6 @@ methods: {
     // callback on update
     shapesUpdated () {
     if (this.callback && typeof this.callback === 'function') {
-        console.log(JSON.stringify(this.shapes));
         this.callback(JSON.stringify(this.shapes));
     }
 
