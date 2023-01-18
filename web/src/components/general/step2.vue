@@ -11,13 +11,9 @@
                     :width="width"
                     :height="height"
                     dataCallback=""
-                    :initialData="initialData"
+                    :initialData="getShapeData"
                     :initialDataId="initialDataId"
                 ></Annotation>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="card">
                 <h5>我已確認單張結果，包含以上所有要項</h5>
                 <el-switch
                     v-model="switchValue"
@@ -42,7 +38,6 @@
 </template>
 <script>
 import axios from "axios";
-import Image from '@/assets/img/hero-img.png'
 import Annotation from '@/components/Annotation.vue';
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ElLoading } from 'element-plus'
@@ -53,10 +48,7 @@ export default {
     },
     name: 'General2',
     mounted() {
-        this.getRegData();
-        const fake = [ { "startPointX": 100, "startPointY": 200, "endPointX": 500, "endPointY": 250, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "222" },
-                       { "startPointX": 200, "startPointY": 347, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "who are you?" },
-                       { "startPointX": 250, "startPointY": 160, "endPointX": 376, "endPointY": 493, "scaleX": 1, "scaleY": 1, "width": 100, "height": 100, "name": "你是誰？" } ]
+
     },
     data() {
         return {
@@ -76,6 +68,7 @@ export default {
             switchValue: false,
             // 資料
             regData: null,
+            shapes: [],
 
         };
     },
@@ -93,19 +86,47 @@ export default {
             this.firstImage = this.$store.state.general_upload_image[0];
             return this.firstImage;
         },
+        getShapeData() {
+            let myShapes = []
+            this.regData = this.$store.state.general_upload_res.data.ocr_results;
+            console.log(this.regData)
+
+            this.regData.forEach(function(element, index) {
+                var label = Object.values(element);
+                var points = Object.values(label[0]);
+                var myContent = label[1];
+                var label_x = points[0][0];
+                var label_y = points[0][1];
+                var label_width = points[1][0] - label_x ;
+                var label_height = points[2][1] - label_y ;
+                myShapes.push({
+                    type: 'rect',
+                    name: 'shape-' + (new Date()).valueOf() + (index),
+                    fill: '#b0c4de',
+                    opacity: 0.5,
+                    stroke: '#0ff',
+                    draggable: true,
+                    strokeWidth: 2,
+                    strokeScaleEnabled: false,
+                    annotation: {
+                        title: index+1,
+                        text: myContent,
+                        linkTitle: '',
+                        link: ''
+                    },
+                    x: label_x,
+                    y: label_y,
+                    width: label_width,
+                    height: label_height
+                });
+            });
+            return JSON.stringify(myShapes)
+        },
     },
     methods: {
         previewImage() {
             const dataURL = this.$refs.stage.getStage().toDataURL()
             this.preview = dataURL
-        },
-        getRegData() {
-            this.regData = this.$store.state.general_upload_res.data.ocr_results;
-            this.regData.forEach(function(element, index) {
-                element.index = index + 1;
-            });
-            console.log(this.regData)
-            return this.regData
         },
         copyText() {
             const range = document.createRange();
