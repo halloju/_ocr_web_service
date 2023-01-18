@@ -6,7 +6,6 @@
                 <Annotation
                     containerId="my-pic-annotation-output"
                     :editMode="false"
-                    :language="language"
                     :imageSrc="imageSrc"
                     :width="width"
                     :height="height"
@@ -47,16 +46,9 @@ export default {
         Annotation
     },
     name: 'General2',
-    mounted() {
-
-    },
     data() {
         return {
             // 上方
-            containerId: 'my-pic-annotation',
-            containerId2: 'my-pic-annotation-output',
-            editMode: true,
-            editMode: 'en',
             imageSrc: this.$store.state.general_upload_image[0].reader,
             localStorageKey: "storage",
             width: 1200,
@@ -66,9 +58,11 @@ export default {
             initialDataId: null,
             // 下方
             switchValue: false,
+            submitClick: false,
             // 資料
             regData: null,
             shapes: [],
+            allImage:  this.$store.state.general_upload_image,
 
         };
     },
@@ -90,7 +84,6 @@ export default {
             let myShapes = []
             this.regData = this.$store.state.general_upload_res.data.ocr_results;
             console.log(this.regData)
-
             this.regData.forEach(function(element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
@@ -137,6 +130,7 @@ export default {
             document.execCommand('copy');
         },
         submit() {
+            this.submitClick = true;
             const start_time = new Date().getTime();
             console.log(this.allImage)
             const imageLen = this.allImage.length
