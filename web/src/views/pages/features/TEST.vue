@@ -4,7 +4,6 @@
         <Annotation
             :containerId="containerId"
             :editMode="true"
-            :language="language"
             :imageSrc="imageSrc"
             :localStorageKey="localStorageKey"
             :width="width"
@@ -23,7 +22,6 @@
         <Annotation
             containerId="my-pic-annotation-output"
             :editMode="false"
-            :language="language"
             :imageSrc="imageSrc"
             :width="width"
             :height="height"
@@ -47,7 +45,7 @@ export default {
             containerId: 'my-pic-annotation',
             containerId2: 'my-pic-annotation-output',
             editMode: true,
-            editMode: 'en',
+            language: 'en',
             imageSrc: Image,
             localStorageKey: "storage",
             width: 1200,
@@ -63,5 +61,6 @@ export default {
         }
     },
 }
+
 </script>
 

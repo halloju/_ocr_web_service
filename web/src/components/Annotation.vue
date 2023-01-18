@@ -66,7 +66,7 @@ components: {
     Icon,
     Loader
 },
-props: ['language', 'containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId'],
+props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId'],
 data () {
     return {
     image: null,
@@ -132,12 +132,6 @@ created () {
 },
 mounted () {
     document.addEventListener('keydown', this.handleKeyEvent);
-
-    // set language
-    if (this.language) {
-    this.$i18n.locale = this.language;
-    }
-
     // try to load from local storage or local data
     this.load();
 },
