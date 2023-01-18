@@ -22,6 +22,11 @@ from app.schema.template import DeleteTemplateRequest
 from app.forms.template.delete import DeleteTemplateForm
 from app.services.template import delete as service_delete
 
+from app.schema.template_ocr import CreateTemplateOCRRequest
+from app.forms.template_ocr import CreateTemplateOCRForm
+from app.services.template_ocr import template_ocr as service_template_ocr
+from app.schema.template_ocr import GetTemplateOCRResponse
+
 router = APIRouter()
 
 
@@ -100,4 +105,24 @@ async def delete_template(request: DeleteTemplateRequest, db: Session = Depends(
             )
         template_id = service_delete.delete_template(template=template, db=db)
         return Response(data={"status": 200})
+    raise CustomException(status_code=400, message=form.errors)
+
+
+@router.post("/template_ocr", response_model=GetTemplateOCRResponse)
+async def template_ocr(request: CreateTemplateOCRRequest, db: Session = Depends(get_db)):
+    '''
+    將 image 影像上傳至 MinIO, 並進行模板辨識，將辨識結果存入 db
+    '''
+    form = CreateTemplateOCRForm(request)
+    await form.load_data()
+    if await form.is_valid():
+        template_ocr_info = CreateTemplateOCRRequest(
+            image=form.image, 
+            template_id=form.template_id,
+            model_name=form.model_name)
+        image_cv_id, ocr_results = service_template_ocr(template_ocr_info=template_ocr_info, db=db)
+        return GetTemplateOCRResponse(
+            image_cv_id=image_cv_id,
+            ocr_results=ocr_results
+        )
     raise CustomException(status_code=400, message=form.errors)
