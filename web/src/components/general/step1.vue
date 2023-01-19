@@ -143,8 +143,11 @@ export default {
                 this.$store.commit('generalImageResponse', generalImageResponseList);
                 const api_time = (end_time - start_time) / 1000 ;
                 this.$store.commit('generalExecuteTime', api_time);
-                // 下一步
-                this.$emit('nextStepEmit', 2)
+                if (this.fileList.length > 1) {
+                    this.$emit('nextStepEmit', 2)
+                } else {
+                    this.$emit('nextStepEmit', 3)
+                }
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code)
                 loading.close()
             }, 2000)

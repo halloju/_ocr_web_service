@@ -47,6 +47,10 @@ export default {
         Annotation
     },
     name: 'General2',
+    props:{
+        image_complexity: String,
+        selectedLang: String,
+    },
     data() {
         return {
             // 上方
@@ -142,8 +146,8 @@ export default {
                 // 一張一張打
                 axios.post("/ocr/gpocr", {
                                 "image": base64Image,
-                                "image_complexity": 'medium',
-                                "language": 'Chinese',
+                                "image_complexity": this.image_complexity,
+                                "language": this.selectedLang,
                             })
                             .then( (response) =>
                                {
