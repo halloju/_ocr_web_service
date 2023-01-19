@@ -54,15 +54,14 @@ export default {
         }
     },
     methods: {
-        async submit() {
-            const loading = ElLoading.service({
-                lock: true,
-                text: 'Loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            this.$store.commit('generalImageUpdate', this.fileList);
-            // 前綴拿掉
+        submit() {
+            this.$store.commit('generalImageUpdate', this.fileList); // all image
+            const start_time = new Date().getTime();
+            const generalImageResponseList = [];
+            const responseData = {};
             const base64Image = this.fileList[0].reader.split(',')[1];
+            responseData['base64Image'] = base64Image;
+            responseData['fileName'] = this.fileList[0].name;
             // 打 API
             axios
                 .post('/ocr/gpocr', {
@@ -71,10 +70,9 @@ export default {
                     language: this.selectedLang.code
                 })
                 .then((response) => {
-                    this.status = response.status;
-                    this.response = response;
-                    console.log(response);
-                    this.$store.commit('generalImageResponse', response);
+                    responseData['ocr_results'] = response.data.ocr_results;
+                    responseData['image_cv_id'] = response.data.image_cv_id;
+                    generalImageResponseList.push(responseData);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -82,16 +80,38 @@ export default {
                         this.status = 'network';
                     }
                 });
+            const end_time = new Date().getTime();
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             setTimeout(() => {
+                this.$store.commit('generalImageResponse', generalImageResponseList);
+                const api_time = (end_time - start_time) / 1000;
+                this.$store.commit('generalExecuteTime', api_time);
                 // 下一步
                 this.$emit('nextStepEmit', 2);
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
             }, 2000);
         },
-        fileChange(file, resfileList) {
-            // allows image only
-            if (file.raw.type.indexOf('image/') >= 0) {
+        fileChange(file, fileList) {
+            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
+            const isLt1M = file.size / 1024 / 1024 < 1;
+
+            if (!isIMAGE) {
+                this.$message.error('上傳文件只能是圖片格式!');
+                fileList.pop();
+                return false;
+            }
+            if (!isLt1M) {
+                this.$message.error('上傳圖案大小不能超過 8 MB!');
+                fileList.pop();
+                return false;
+            }
+
+            if (isIMAGE && isLt1M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
@@ -137,7 +157,7 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
             <div class="card">
-                <el-upload :file-list="fileList" list-type="picture-card" :on-change="fileChange" :on-remove="handleRemove" :auto-upload="false" :on-preview="handlePictureCardPreview" accept="image/*">
+                <el-upload :file-list="fileList" list-type="picture-card" :on-change="fileChange" :on-remove="handleRemove" multiple :auto-upload="false" :on-preview="handlePictureCardPreview" accept="image/*">
                     <el-icon><Plus /></el-icon>
                 </el-upload>
                 <el-dialog v-model="dialogVisible" :width="dialogWidth">
@@ -152,7 +172,7 @@ export default {
                         <h5>選擇語言</h5>
                     </div>
                     <div class="flex justify-content-start mb-5">
-                        <Dropdown v-model="selectedLang" :options="languages" optionLabel="name" placeholder="請選擇" />
+                        <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
                     </div>
                     <div class="flex justify-content-start mb-1">
                         <h5>使用高精準度模型</h5>
@@ -164,7 +184,7 @@ export default {
                         <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" />
                     </div>
                     <div class="flex justify-content-start mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
                     </div>
                 </div>
             </div>

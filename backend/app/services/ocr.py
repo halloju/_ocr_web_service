@@ -10,6 +10,7 @@ from datetime import datetime
 from io import BytesIO
 import logging
 import random
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -21,8 +22,8 @@ def gpocr(ocr_image_info, db: Session):
     """
     try:
         today = datetime.today()
-        request_id = '927d1f0d-dc31-42c5-b44c-283d18e50271'
-        image_cv_id = datetime.now().strftime("%Y/%m/%d/%H/%M/") + request_id
+        request_id = str(uuid.uuid4())
+        image_cv_id = datetime.now().strftime("%Y/%m/%d/%H/%M/%S") + request_id
         image_base64_binary = ocr_image_info.image.encode('utf-8')
         image_binary = base64.b64decode(image_base64_binary)
         # Step 1. 將 template 影像寫入 MinIO
@@ -43,7 +44,7 @@ def gpocr(ocr_image_info, db: Session):
         img_width, img_height = img_arr.shape[:2]
         random_points = [(random.randint(0, img_width), random.randint(0, img_height)) for times in range(3)]
         max_random_points = [(random.randint(point_width, img_width), random.randint(point_height, img_height)) for point_width, point_height in random_points]
-        text_list = ['222', 'who are you?', '你是誰']
+        text_list = ['2023.01.16', '刪除 tag 欄位', 'gogogo']
         fake_ocr_results = []
         for i in range(3):
             fake_ocr_results.append({
@@ -55,15 +56,13 @@ def gpocr(ocr_image_info, db: Session):
                 ],
                 'text': text_list[i],
                 'det_prob': round(random.random(), 4),
-                'rec_prob': round(random.random(), 4),
-                'tag': f'example_{i}'
+                'rec_prob': round(random.random(), 4)
 
             })
         ocr_results = [i for i in fake_ocr_results if i['text']]
         for ocr_result in ocr_results:
             insert_ocr_results = OCRResults(
                 image_cv_id=image_cv_id,
-                tag=ocr_result['tag'],
                 text=ocr_result['text'],
                 det_model='example',
                 rec_model='example',

@@ -4,7 +4,12 @@ import createPersistedState from 'vuex-persistedstate';
 const store = new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
-        recs_text: [],
+        // 自定義模板
+        text: [],
+        box: [],
+        mask: [],
+        // 通用辨識
+        general_boxes: [],
         general_upload_image: [],
         general_upload_res: [],
         general_execute_time: 0
@@ -13,6 +18,9 @@ const store = new Vuex.Store({
     mutations: {
         recsUpdate: function (state, name, payload) {
             state.state[name] = payload;
+        },
+        generalBoxesUpdate: function (state, payload) {
+            state.general_boxes = payload;
         },
         generalImageUpdate: function (state, payload) {
             state.general_upload_image = payload;
