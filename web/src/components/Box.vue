@@ -55,7 +55,6 @@ export default {
     },
     methods: {
         handleMouseDown(event) {
-            console.log("isActive: " + this.isActive);
             if (!this.isNamingOk) return;
             if (!this.canDraw) return;
             if (this.isActive) return
@@ -103,6 +102,7 @@ export default {
         updateTransformer() {
             // here we need to manually attach or detach Transformer node
             const transformerNode = this.$refs.transformer.getNode();
+            transformerNode.anchorDragBoundFunc(this.transformerBoundBoxFunc);
             const stage = transformerNode.getStage();
             const { selectedShapeName } = this;
 
@@ -158,6 +158,18 @@ export default {
             }
             // console.log(event);
             const point = this.$refs.image.getNode().getRelativePointerPosition();
+            if (point.x < 0) {
+                point.x = 0;
+            };
+            if (point.y < 0) {
+                point.y = 0;
+            };
+            if (point.x > this.imageConfig.width) {
+                point.x = this.imageConfig.width;
+            };
+            if (point.y > this.imageConfig.height) {
+                point.y = this.imageConfig.height;
+            };
             // handle  rectangle part
             let curRec = this.recs[this.recs.length - 1];
             curRec.width = point.x - curRec.startPointX;
@@ -165,28 +177,27 @@ export default {
             curRec.endPointX = point.x;
             curRec.endPointY = point.y;
         },
-        photoPlus() {
-            if (!this.isActive) return;
-            let i = 0.01;
+        photoZoom(i) {
+            if (!this.isActive) {
+                this.$message({
+                    message: '請進入可移動圖片模式',
+                    type: 'warning'
+                });
+                return;
+            }
+
             this.$refs.stage.getNode().scaleX(this.$refs.stage.getNode().scaleX() + i);
             this.$refs.stage.getNode().scaleY(this.$refs.stage.getNode().scaleY() + i);
         },
-        photoMinus() {
-            if (!this.isActive) return;
-            let i = 0.01;
-            this.$refs.stage.getNode().scaleX(this.$refs.stage.getNode().scaleX() - i);
-            this.$refs.stage.getNode().scaleY(this.$refs.stage.getNode().scaleY() - i);
-        },
         resetSize() {
             this.updateStageConfig();
-            console.log(this.stageConfig);
             let stage = this.$refs.stage.getStage();
             stage.scale({ x: 1, y: 1 });
-            stage.position(this.stageConfig.x, this.stageConfig.y);
-            console.log(stage.position());
+            stage.x(this.stageConfig.x);
+            stage.y(this.stageConfig.y);
         },
         imgZoom(event) {
-            if (this.isActive === false) return;
+            if (!this.isActive) return;
             var scaleBy = 1.001;
             let stage = event.target.getStage();
             stage.on('wheel', (e) => {
@@ -251,6 +262,33 @@ export default {
                 width: this.$refs.img_block.clientWidth,
                 height: this.$refs.img_block.clientHeight
             };
+        },
+        transformerBoundBoxFunc(oldAbsPos, newAbsPos, event) {
+            const div = this.$refs.img_block.getBoundingClientRect();
+            console.log(this.$refs.stage.getNode().getAbsolutePosition());
+            console.log(div);
+            const AbsPos = {
+                x: div.left + this.stageConfig.x,
+                y: div.top + this.stageConfig.y
+            };
+            console.log(oldAbsPos);
+            console.log(newAbsPos);
+            console.log(AbsPos);
+            let x = newAbsPos.x;
+            let y = newAbsPos.y;
+            if (newAbsPos.x < AbsPos.x) {
+                x = AbsPos.x;
+            }
+            if (newAbsPos.y < AbsPos.y) {
+                y = AbsPos.y;
+            }
+            if (newAbsPos.x > AbsPos.x + this.image.width) {
+                x = this.image.width - this.selectedShape.width;
+            }
+            return {
+                x: x,
+                y: y
+            };
         }
     },
     props: {
@@ -284,8 +322,8 @@ export default {
         </div>
         <div class="flex align-items-stretch flex-wrap card-container blue-container overflow-hidden" style="min-height: 70px">
             <div class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
-                <Button icon="pi pi-search-plus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'放大圖片'" @click="photoPlus" />
-                <Button icon="pi pi-search-minus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'縮小圖片'" @click="photoMinus" />
+                <Button icon="pi pi-search-plus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'放大圖片'" @click="photoZoom(0.01)" />
+                <Button icon="pi pi-search-minus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'縮小圖片'" @click="photoZoom(-0.01)" />
                 <Button icon="pi pi-undo" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'還原圖片大小'" @click="resetSize" />
             </div>
             <div class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">

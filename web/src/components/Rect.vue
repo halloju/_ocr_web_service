@@ -42,10 +42,10 @@ export default {
             if (pos.y < 0) {
                 e.target.y(0);
             }
-            if ((pos.x + rect.width * rect.scaleX) > this.imageAttrs.width) {
+            if (pos.x + rect.width * rect.scaleX > this.imageAttrs.width) {
                 e.target.x(this.imageAttrs.width - rect.width * rect.scaleX);
             }
-            if ((pos.y + rect.height * rect.scaleY) > this.imageAttrs.height) {
+            if (pos.y + rect.height * rect.scaleY > this.imageAttrs.height) {
                 e.target.y(this.imageAttrs.height - rect.height * rect.scaleY);
             }
         }
@@ -93,6 +93,7 @@ export default {
             x: Math.min(rec.startPointX, rec.startPointX + rec.width),
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
         }"
+        draggable="true"
         @transformend="handleTransformEnd"
         @dragend="handleDragEnd"
         @dragmove="handleDragBond"

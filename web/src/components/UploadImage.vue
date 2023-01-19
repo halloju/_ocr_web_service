@@ -143,7 +143,7 @@ export default {
             <h1 class="mb-3">上傳圖檔</h1>
         </div>
 
-        <Button type="button" label="選擇圖檔"  @click="openfolder" class="pi p-button-outlined" style="width: 12em; height: 4em">
+        <Button type="button" label="選擇圖檔" @click="openfolder" class="pi p-button-outlined" style="width: 12em; height: 4em">
             <label for="my-file">選擇圖檔</label>
         </Button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />

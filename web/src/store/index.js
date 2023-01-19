@@ -17,10 +17,10 @@ const store = new Vuex.Store({
         generalImageUpdate: function (state, payload) {
             state.general_upload_image = payload;
         },
-        generalImageResponse: function (state, payload){
+        generalImageResponse: function (state, payload) {
             state.general_upload_res = payload;
         },
-        generalExecuteTime: function (state, payload){
+        generalExecuteTime: function (state, payload) {
             state.general_execute_time = payload;
         }
     }

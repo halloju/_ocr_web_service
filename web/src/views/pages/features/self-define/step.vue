@@ -77,7 +77,7 @@ export default {
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
                     bbox: this.boxes,
-                    template_name: "身分證",
+                    template_name: '身分證',
                     is_public: false
                 })
                 .then((res) => {
