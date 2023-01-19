@@ -21,6 +21,7 @@
                     <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                         <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside">
                             <el-carousel-item v-for="item in this.resData.length" :key="item">
+                                <h3> 第 {{item}} 張</h3>
                                 <Annotation
                                     containerId="my-pic-annotation-output"
                                     :editMode="false"
@@ -111,7 +112,7 @@ export default {
                 this.tableData.push({
                     "filename": this.resData[i].fileName,
                     "ocr_results": JSON.stringify(this.resData[i].ocr_results),
-                    "image": `data:image/png;base64, ` + this.resData[i].base64Image
+                    "image": `data:image/png;base64, ` + this.resData[i].base64Image,
                 })
             }
             return this.tableData
@@ -134,13 +135,11 @@ export default {
             console.log(this.resData)
         },
         getImage(item) {
-            let ImageSrc = this.$store.state.general_upload_image[item-1].reader;
+            let ImageSrc = 'data:image/png;base64,' + this.resData[item-1].base64Image;
             return ImageSrc
         },
         getShapeData(item) {
-            console.log("item:", item)
             let myShapes = []
-            console.log(this.$store.state.general_upload_res)
             let regData = this.$store.state.general_upload_res[item-1].ocr_results;
             let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item-1].image_cv_id);
             regData.forEach(function(element, index) {
@@ -218,14 +217,6 @@ export default {
 }
 .el-carousel{
   width: 1200px;
-}
-.el-carousel__item h3 {
-  display: flex;
-  color: #475669;
-  opacity: 0.75;
-  width: 1200px;
-  line-height: 1000px;
-  margin: 0;
 }
 
 .el-carousel__item:nth-child(2n) {
