@@ -1,16 +1,16 @@
 <template>
     <div class="grid p-fluid">
         <div class="col-12">
-            <div class="card" style="overflow-x:scroll;overflow-y:scroll; height: 600px;">
+            <div class="card" style="overflow-x:scroll;overflow-y:scroll; height: 860px;">
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-start font-bold m-2 mb-3">
                         <div class="flex">
                             <div class="flex-grow-1 flex align-items-center justify-content-center font-bold p-4 m-3">
                                 <el-tooltip content="回到圖檔上傳">
-                                    <el-button type="success" :icon="Back" circle @click="back"></el-button>
+                                    <el-button class="my-button" type="success" :icon="Back" circle @click="back"></el-button>
                                 </el-tooltip>
                                 <el-tooltip content="下載 excel">
-                                    <el-button type="primary" :icon="Download" circle @click="downloadFile"></el-button>
+                                    <el-button class="my-button" type="primary" :icon="Download" circle @click="downloadFile"></el-button>
                                 </el-tooltip>
                             </div>
                             <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">
@@ -28,9 +28,10 @@
                                     :imageSrc="getImage(item)"
                                     :width="width"
                                     :height="height"
-                                    dataCallback=""
+                                    :dataCallback="callback"
                                     :initialData="getShapeData(item)"
                                     :initialDataId="initialDataId"
+                                    :image_cv_id="this.resData[item-1].image_cv_id"
                             ></Annotation>
                             </el-carousel-item>
                         </el-carousel>
@@ -99,7 +100,8 @@ export default {
     },
     computed: {
         getExcel() {
-            console.log(this.resData)
+            this.excelData = []
+            this.tableData = []
             for (let i = 0; i < this.resData.length; i++) {
                 this.excelData.push({
                     "filename": this.resData[i].fileName,
@@ -116,6 +118,21 @@ export default {
         },
     },
     methods: {
+        callback(data, image_cv_id) {
+            console.log(data)
+            console.log(image_cv_id)
+            console.log(this.resData)
+            for (let i = 0; i < this.resData.length; i++) {
+
+                if (image_cv_id === this.resData[i].image_cv_id) {
+                    for (let j = 0; j < this.resData[i].ocr_results.length; j++) {
+                        this.resData[i].ocr_results[j].text = data[j].annotation.text;
+                    }
+                    break
+                }
+            }
+            console.log(this.resData)
+        },
         getImage(item) {
             let ImageSrc = this.$store.state.general_upload_image[item-1].reader;
             return ImageSrc
@@ -125,7 +142,7 @@ export default {
             let myShapes = []
             console.log(this.$store.state.general_upload_res)
             let regData = this.$store.state.general_upload_res[item-1].ocr_results;
-            console.log(this.regData)
+            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item-1].image_cv_id);
             regData.forEach(function(element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
@@ -136,7 +153,7 @@ export default {
                 var label_height = points[2][1] - label_y ;
                 myShapes.push({
                     type: 'rect',
-                    name: 'shape-' + (new Date()).valueOf() + (index),
+                    name: image_cv_id + index,
                     fill: '#b0c4de',
                     opacity: 0.5,
                     stroke: '#0ff',
@@ -196,6 +213,9 @@ export default {
 };
 </script>
 <style scoped>
+.my-button{
+  margin: 10px;
+}
 .el-carousel{
   width: 1200px;
 }

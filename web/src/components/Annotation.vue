@@ -66,7 +66,7 @@ components: {
     Icon,
     Loader
 },
-props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId'],
+props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id'],
 data () {
     return {
     image: null,
@@ -116,7 +116,6 @@ created () {
     image.onload = () => {
     // set image only when it is loaded
     this.image = image;
-    console.log(this.image.width, this.image.height)
 
     // adapt initial scale to fit canvas
     this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
@@ -128,7 +127,6 @@ created () {
     this.callback = this.dataCallback &&
     typeof eval(this.dataCallback) && // eslint-disable-line no-eval
     eval(this.dataCallback); // eslint-disable-line no-eval
-    console.log("this.callback:", this.callback)
 },
 mounted () {
     document.addEventListener('keydown', this.handleKeyEvent);
@@ -398,7 +396,7 @@ methods: {
     // callback on update
     shapesUpdated () {
     if (this.callback && typeof this.callback === 'function') {
-        this.callback(JSON.stringify(this.shapes));
+        this.callback(this.shapes, this.image_cv_id);
     }
 
     // save to local storage, if defined

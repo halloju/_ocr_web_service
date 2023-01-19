@@ -77,7 +77,7 @@ export default {
     computed: {
         getShapeData() {
             let myShapes = []
-            console.log(this.$store.state.general_upload_res)
+            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[0].image_cv_id);
             let regData = this.$store.state.general_upload_res[0].ocr_results;
             regData.forEach(function(element, index) {
                 var label = Object.values(element);
@@ -89,7 +89,7 @@ export default {
                 var label_height = points[2][1] - label_y ;
                 myShapes.push({
                     type: 'rect',
-                    name: 'shape-' + (new Date()).valueOf() + (index),
+                    name: image_cv_id + index,
                     fill: '#b0c4de',
                     opacity: 0.5,
                     stroke: '#0ff',

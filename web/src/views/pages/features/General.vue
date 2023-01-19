@@ -54,7 +54,6 @@ export default {
     },
     methods: {
         nextStep(step) {
-            console.log(step)
             this.step = step
         },
         getUploadConfig(image_complexity, selectedLang) {
