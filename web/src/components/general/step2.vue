@@ -12,6 +12,7 @@
                     dataCallback=""
                     :initialData="getShapeData"
                     :initialDataId="initialDataId"
+                    :justShow="true"
                 ></Annotation>
                 <h5>我已確認單張結果，包含以上所有要項</h5>
                 <el-switch
@@ -25,12 +26,13 @@
                 <el-button type="primary" style="width: 150px" class="mr-2 mb-2" @click="submit" :disabled="!switchValue">  開始辨識全部檔案 </el-button>
                 <el-button type="danger" style="width: 150px" class="mr-2 mb-2 pi pi-upload" @click="back"> 重新上傳 </el-button>
                 <!-- Progress Bar -->
-                <el-progress v-show="submitClick"
-                :text-inside="true"
-                :stroke-width="24"
-                :percentage="uploadPercentage"
-                status="success"
-                color="#3b82f6"
+                <el-progress 
+                    v-show="submitClick"
+                    :text-inside="true"
+                    :stroke-width="24"
+                    :percentage="uploadPercentage"
+                    status="success"
+                    color="#3b82f6"
                 />
             </div>
         </div>
@@ -64,6 +66,7 @@ export default {
             // 下方
             switchValue: false,
             submitClick: false,
+            uploadPercentage: 0,
             // 資料
             shapes: [],
             allImage:  this.$store.state.general_upload_image,
@@ -154,7 +157,7 @@ export default {
                                 responseData['ocr_results'] = response.data.ocr_results;
                                 responseData['image_cv_id'] = response.data.image_cv_id;
                                 generalImageResponseList.push(responseData)
-                                this.uploadPercentage = (this.uploadPercentage + stepPercentage)
+                                this.uploadPercentage = (this.uploadPercentage + stepPercentage).toFixed(2);
                                 })
                             .catch( (error) => {
                                 console.log(error)
@@ -197,10 +200,10 @@ export default {
                     this.$emit('nextStepEmit', 1)
                 })
                 .catch(() => {
-                ElMessage({
-                    type: 'info',
-                    message: '操作取消',
-                })
+                    ElMessage({
+                        type: 'info',
+                        message: '操作取消',
+                    })
                 })
         },
     }

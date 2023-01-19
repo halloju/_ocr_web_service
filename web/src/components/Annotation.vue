@@ -45,7 +45,7 @@
       <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
       </div>
       <div class="pa-infobar">
-      <side-bar-entry v-for="shape in shapes" :key="shape.name" :shape="shape" :edit-mode="editMode"
+      <side-bar-entry v-for="shape in shapes" :key="shape.name" :shape="shape" :edit-mode="editMode" :justShow="justShow"
                       :selected-shape-name="selectedShapeName" :current-hover-shape="currentHoverShape"
                       v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
                       v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
@@ -66,7 +66,7 @@ components: {
     Icon,
     Loader
 },
-props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id'],
+props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow'],
 data () {
     return {
     image: null,

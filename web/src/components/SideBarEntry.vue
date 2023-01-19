@@ -23,8 +23,8 @@
       <template v-else>
         <form class="pa-annotation-form" @submit.prevent.stop="submitted">
           <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" />
-          <button type="submit">{{ submit }}</button>
+          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" />
+          <button v-if="!justShow" type="submit">{{ submit }}</button>
         </form>
       </template>
     </div>
@@ -40,7 +40,7 @@ export default {
     Icon,
     Nl2br
   },
-  props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape'],
+  props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow'],
   data () {
     return {
       annotation_title: '要向名稱：',
