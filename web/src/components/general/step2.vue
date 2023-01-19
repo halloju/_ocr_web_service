@@ -19,10 +19,11 @@
                     inline-prompt
                     active-text="是"
                     inactive-text="否"
+                    style="width: 150px"
                 />
                 <br>
-                <el-button type="primary" style="width: 100%" class="mr-2 mb-2" @click="submit" :disabled="!switchValue">  開始辨識全部檔案 </el-button>
-                <el-button type="danger" style="width: 100%" class="mr-2 mb-2 pi pi-upload" @click="back"> 重新上傳 </el-button>
+                <el-button type="primary" style="width: 150px" class="mr-2 mb-2" @click="submit" :disabled="!switchValue">  開始辨識全部檔案 </el-button>
+                <el-button type="danger" style="width: 150px" class="mr-2 mb-2 pi pi-upload" @click="back"> 重新上傳 </el-button>
                 <!-- Progress Bar -->
                 <el-progress v-show="submitClick"
                 :text-inside="true"
