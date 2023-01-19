@@ -10,6 +10,7 @@ from datetime import datetime
 from io import BytesIO
 import logging
 import random
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ def gpocr(ocr_image_info, db: Session):
     """
     try:
         today = datetime.today()
-        request_id = '927d1f0d-dc31-42c5-b44c-283d18e50271'
+        request_id = str(uuid.uuid4())
         image_cv_id = datetime.now().strftime("%Y/%m/%d/%H/%M/%S") + request_id
         image_base64_binary = ocr_image_info.image.encode('utf-8')
         image_binary = base64.b64decode(image_base64_binary)
