@@ -14,7 +14,7 @@
                 <el-steps :active="step" align-center>
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="單張結果確認" />
-                    <el-step title="Step 3" description="下載結果" />
+                    <el-step title="Step 3" description="全部確認" />
                 </el-steps>
                 <h5>通用辨識</h5>
                 <p>請上傳一張或多張圖片，下一步會先辨識第一張圖片讓您確認結果，再進行全部辨識。</p>

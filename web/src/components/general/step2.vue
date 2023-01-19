@@ -60,7 +60,6 @@ export default {
             switchValue: false,
             submitClick: false,
             // 資料
-            regData: null,
             shapes: [],
             allImage:  this.$store.state.general_upload_image,
 
@@ -76,15 +75,11 @@ export default {
         }
     },
     computed: {
-        getFile() {
-            this.firstImage = this.$store.state.general_upload_image[0];
-            return this.firstImage;
-        },
         getShapeData() {
             let myShapes = []
-            this.regData = this.$store.state.general_upload_res.data.ocr_results;
-            console.log(this.regData)
-            this.regData.forEach(function(element, index) {
+            console.log(this.$store.state.general_upload_res)
+            let regData = this.$store.state.general_upload_res[0].ocr_results;
+            regData.forEach(function(element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
                 var myContent = label[1];
@@ -132,7 +127,6 @@ export default {
         submit() {
             this.submitClick = true;
             const start_time = new Date().getTime();
-            console.log(this.allImage)
             const imageLen = this.allImage.length
             const stepPercentage = 100 / imageLen
             const generalImageResponseList = []
