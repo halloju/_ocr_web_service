@@ -2,6 +2,7 @@
 import Box from '@/components/Box.vue';
 import BoxCard from '@/components/BoxCard.vue';
 import axios from 'axios';
+import { mapState } from 'vuex';
 
 export default {
     components: {
@@ -40,10 +41,14 @@ export default {
                 { label: '新增自定義模板', to: '#' },
                 { label: '模板圖檔上傳', to: '#' }
             ],
-            switchValue: false,
             isFinal: false,
             boxes: [],
-            boxNames: ['text', 'box', 'mask']
+            boxNames: ['text', 'box', 'mask'],
+            isShapesVisible: {
+                text: true,
+                box: true,
+                mask: true
+            }
         };
     },
     mounted() {
@@ -59,7 +64,7 @@ export default {
             image.src = sessionStorage.imageSource;
 
             for (let i = 0; i < this.boxNames.length; i++) {
-                this.$store.state[this.boxNames[i]].forEach((box) => {
+                this.selfDefinedRecs[this.boxNames[i]].forEach((box) => {
                     this.boxes.push({
                         type: this.boxNames[i],
                         tag: box.name,
@@ -109,17 +114,17 @@ export default {
             }
         },
         clearState() {
-            let state = this.$store.state;
-            let newState = {};
-
-            Object.keys(state).forEach((key) => {
-                newState[key] = [];
-            });
-
-            this.$store.replaceState(newState);
-
-            sessionStorage.clear();
+            this.$store.commit('recsClear');
+            sessionStorage.removeItem('imageSource');
+            sessionStorage.filename = '';
+            sessionStorage.filesize = 0;
+        },
+        onSwitchChange(name, value) {
+            this.isShapesVisible[name] = value;
         }
+    },
+    computed: {
+        ...mapState(['selfDefinedRecs'])
     },
     watch: {
         step() {
@@ -168,11 +173,11 @@ export default {
     </div>
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
-            <Box :Boxes="this.Boxes" />
+            <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" />
         </div>
         <div class="col-12 md:col-4">
             <div class="card" style="overflow-x: scroll">
-                <BoxCard :Boxes="this.Boxes" />
+                <BoxCard :Boxes="this.Boxes" @toggleShowShapes="onSwitchChange" />
             </div>
         </div>
     </div>

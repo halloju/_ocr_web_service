@@ -1,48 +1,39 @@
 <script>
+import { mapState } from 'vuex';
+
 export default {
     name: 'BoxCard',
-    mounted() {
-        this.recs = this.$store.state[this.boxName];
-    },
     components: {},
     computed: {
+        ...mapState(['selfDefinedRecs']),
         recs() {
-            return this.$store.state[this.boxName];
+            return this.selfDefinedRecs[this.boxName];
         }
-    },
-    data() {
-        return {
-            newName: ''
-        };
     },
     methods: {
         deleteRec(index) {
-            this.recs.splice(index, 1);
-            this.$store.state[this.boxName] = this.recs;
+            this.$store.commit('recsDelete', {
+                type: this.boxName,
+                index: index
+            });
         },
         editRec(index) {
-            this.newName = '';
-            for (let i = 0; i < this.recs.length; i++) {
-                if (index === i) {
-                    this.recs[i].canSave = true;
-                    this.recs[i].canEdit = false;
-                    break;
-                }
-            }
+            this.$store.commit('recsNameEdit', {
+                type: this.boxName,
+                index: index,
+                name: '',
+                canEdit: false,
+                canSave: true
+            });
         },
         saveRec(index, newName) {
-            for (let i = 0; i < this.recs.length; i++) {
-                if (index === i) {
-                    this.recs[i].canSave = false;
-                    this.recs[i].canEdit = true;
-                    if (newName.length !== 0) {
-                        this.recs[i].name = newName;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            this.$store.state[this.boxName] = this.recs;
+            this.$store.commit('recsNameSave', {
+                type: this.boxName,
+                index: index,
+                name: newName,
+                canEdit: true,
+                canSave: false
+            });
         }
     },
     props: {

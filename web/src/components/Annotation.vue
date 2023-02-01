@@ -1,428 +1,444 @@
-<template>
-  <div :id="containerId" class="pa-container" :style="{width: width + 'px', height: height + 'px'}">
-      <div class="pa-canvas">
-      <div class="pa-controls">
-          <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
-          <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
-          <hr />
-          <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-          <a href="#" @click.prevent="addRectangle" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-      </div>
-      <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-  
-      <v-stage :config="{
-          width: stageSize.width,
-          height: stageSize.height,
-          scaleX: scale,
-          scaleY: scale,
-          draggable: true
-      }" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent"
-          @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
-          <v-layer ref="background">
-            <v-image :config="{
-                image: image,
-                stroke: 'black'
-                }" />
-          </v-layer>
-          <v-layer ref="items">
-          <template v-for="shape in shapes">
-              <v-rect v-if="shape.type === 'rect'" :config="shape" :key="shape.name"
-                      @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
-                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"
-                      />
-              <v-text :config="
-                        { text: shape.annotation.title, fontSize: 30, 
-                        x: Math.min(shape.x, shape.x + shape.width),
-                        y: Math.min(shape.y, shape.y + shape.height)
-                        }" />
-          </template>
-          <v-transformer ref="transformer" :rotateEnabled="false" v-if="editMode"/>
-          </v-layer>
-      </v-stage>
-  
-      <loader v-if="isLoading" />
-  
-      <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
-      </div>
-      <div class="pa-infobar">
-      <side-bar-entry v-for="shape in shapes" :key="shape.name" :shape="shape" :edit-mode="editMode"
-                      :selected-shape-name="selectedShapeName" :current-hover-shape="currentHoverShape"
-                      v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
-                      v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
-                      v-on:sidebar-entry-delete="deleteShape($event)"
-                      v-on:sidebar-entry-save="formSubmitted($event)"/>
-      </div>
-  </div>
-  </template>
-  
 <script>
 import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';
 import SideBarEntry from '@/components/SideBarEntry.vue';
 
 export default {
-components: {
-    SideBarEntry,
-    Icon,
-    Loader
-},
-props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id'],
-data () {
-    return {
-    image: null,
-    stageSize: {
-        width: null,
-        height: null
+    components: {
+        SideBarEntry,
+        Icon,
+        Loader
     },
-    scale: 1, // current scale
-    shapes: [], // shape container
-    selectedShapeName: '', // currently selected shape
-    currentHoverShape: '', // hovering over certain shape
-    isLoading: true, // loading image?
-    isShapesVisible: true, // show shapes?
-    isAddingPolygon: false, // currently in polygon add mode?
-    polygonPoints: [],
-    polygonAddShapes: [],
-    callback: undefined, // actual callback function
-    formData: {
-        title: '',
-        text: '',
-        linkTitle: '',
-        link: ''
-    }
-    };
-},
-computed: {
-    polygonPointsConfig () {
-    return {
-        points: this.polygonPoints,
-        ...this.getBaseShapeForPolygon(),
-        closed: true
-    };
-    }
-},
-// created live cycle hook
-created () {
-    // set defaults
-    this.stageSize.width = parseInt(this.width) / 3 * 2 - 2; // - 2 for border
-    this.stageSize.height = parseInt(this.height);
-
-    if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
-    if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
-
-    // load image
-    const image = new window.Image();
-    image.src = this.imageSrc;
-    image.onload = () => {
-    // set image only when it is loaded
-    this.image = image;
-
-    // adapt initial scale to fit canvas
-    this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
-    // loading finished
-    this.isLoading = false;
-    };
-
-    // define callback function
-    this.callback = this.dataCallback &&
-    typeof eval(this.dataCallback) && // eslint-disable-line no-eval
-    eval(this.dataCallback); // eslint-disable-line no-eval
-},
-mounted () {
-    document.addEventListener('keydown', this.handleKeyEvent);
-    // try to load from local storage or local data
-    this.load();
-},
-beforeDestroy () {
-    document.removeEventListener('keydown', this.handleKeyEvent);
-},
-methods: {
-    // handle transformation of elements
-    handleStageMouseDown (e) {
-    // adding polygon shape?
-    if (this.isAddingPolygon) {
-        e.evt.preventDefault();
-        e.evt.stopPropagation();
-        e.evt.stopImmediatePropagation();
-
-        // right mouse button deletes last point
-        if (e.evt.button === 2) this.removePolygonPoint();
-        else if (e.evt.detail === 1) this.addPolygonPoint(); // ignore double clicks
-
-        return; // no further stuff
-    }
-
-    // only handle left mouse button
-    if (e.evt && e.evt.button !== 0) return;
-
-    // in edit mode?
-    if (this.editMode) {
-        // edit mode only
-        // clicked on stage - clear selection
-        if (e.target === e.target.getStage()) {
-        this.selectedShapeName = '';
-        this.updateTransformer();
-        return;
+    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id'],
+    data() {
+        return {
+            image: null,
+            stageSize: {
+                width: null,
+                height: null
+            },
+            scale: 1, // current scale
+            shapes: [], // shape container
+            selectedShapeName: '', // currently selected shape
+            currentHoverShape: '', // hovering over certain shape
+            isLoading: true, // loading image?
+            isShapesVisible: true, // show shapes?
+            isAddingPolygon: false, // currently in polygon add mode?
+            polygonPoints: [],
+            polygonAddShapes: [],
+            callback: undefined, // actual callback function
+            formData: {
+                title: '',
+                text: '',
+                linkTitle: '',
+                link: ''
+            }
+        };
+    },
+    computed: {
+        polygonPointsConfig() {
+            return {
+                points: this.polygonPoints,
+                ...this.getBaseShapeForPolygon(),
+                closed: true
+            };
         }
-
-        // clicked on transformer - do nothing
-        const clickedOnTransformer =
-        e.target.getParent().className === 'Transformer';
-        if (clickedOnTransformer) {
-        return;
-        }
-    }
-
-    // find clicked shape by its name
-    const name = e.target.name();
-    const shape = this.shapes.find(r => r.name === name);
-    if (shape) {
-        this.selectedShapeName = name;
-    } else {
-        this.selectedShapeName = '';
-    }
-
-    if (this.editMode) {
-        this.updateTransformer();
-    }
     },
-    updateTransformer () {
-    if (!this.editMode) return; // edit mode only
+    // created live cycle hook
+    created() {
+        // set defaults
+        this.stageSize.width = (parseInt(this.width) / 3) * 2 - 2; // - 2 for border
+        this.stageSize.height = parseInt(this.height);
 
-    // here we need to manually attach or detach Transformer node
-    const transformerNode = this.$refs.transformer.getStage();
-    const stage = transformerNode.getStage();
-    const { selectedShapeName } = this;
+        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
+        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
 
-    const selectedNode = stage.findOne('.' + selectedShapeName);
-    // do nothing if selected node is already attached
-    if (selectedNode === transformerNode.node()) {
-        return;
-    }
+        // load image
+        const image = new window.Image();
+        image.src = this.imageSrc;
+        image.onload = () => {
+            // set image only when it is loaded
+            this.image = image;
 
-    if (selectedNode) {
-        // attach to another node
-        transformerNode.attachTo(selectedNode);
-    } else {
-        // remove transformer
-        transformerNode.detach();
-    }
-    transformerNode.getLayer().batchDraw();
+            // adapt initial scale to fit canvas
+            this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
+            // loading finished
+            this.isLoading = false;
+        };
+
+        // define callback function
+        this.callback =
+            this.dataCallback &&
+            typeof eval(this.dataCallback) && // eslint-disable-line no-eval
+            eval(this.dataCallback); // eslint-disable-line no-eval
     },
-    cancelEvent (e) {
-    e.evt.preventDefault();
+    mounted() {
+        document.addEventListener('keydown', this.handleKeyEvent);
+        // try to load from local storage or local data
+        this.load();
     },
-
-    addRectangle () {
-    if (this.isAddingPolygon) return;
-
-    this.shapes.push({
-        ...this.getBaseShape('rect'),
-        x: 80 / this.scale,
-        y: 50 / this.scale,
-        width: 200 / this.scale,
-        height: 200 / this.scale
-    });
-
-    // call update
-    this.shapesUpdated();
+    beforeUnmount() {
+        document.removeEventListener('keydown', this.handleKeyEvent);
     },
-  
-    getBaseShape (type) {
-    return {
-          type: type,
-          name: 'shape-' + (new Date()).valueOf(),
-          fill: '#b0c4de',
-          opacity: 0.5,
-          stroke: '#0000ff',
-          draggable: true,
-          strokeWidth: 2,
-          strokeScaleEnabled: false,
-          annotation: {
-          title: '',
-          text: '',
-          linkTitle: '',
-          link: ''
-        }
-    };
-    },
+    methods: {
+        // handle transformation of elements
+        handleStageMouseDown(e) {
+            // adding polygon shape?
+            if (this.isAddingPolygon) {
+                e.evt.preventDefault();
+                e.evt.stopPropagation();
+                e.evt.stopImmediatePropagation();
 
-    // delete shape
-    deleteShape (name) {
-    const idx = this.shapes.findIndex(r => r.name === name);
-    if (idx >= 0) {
-        if (name === this.selectedShapeName) {
-        this.selectedShapeName = '';
-        this.updateTransformer();
-        }
+                // right mouse button deletes last point
+                if (e.evt.button === 2) this.removePolygonPoint();
+                else if (e.evt.detail === 1) this.addPolygonPoint(); // ignore double clicks
 
-        this.shapes.splice(idx, 1);
+                return; // no further stuff
+            }
 
-        // call update
-        this.shapesUpdated();
-    }
-    },
+            // only handle left mouse button
+            if (e.evt && e.evt.button !== 0) return;
 
-    // handle key events
-    handleKeyEvent (event) {
-    // shape selected?
-    if (this.editMode && this.selectedShapeName) {
-        // delete key pressed?
-        if (event.key === 'Delete') this.deleteShape(this.selectedShapeName);
-    }
-    // TODO only if focued
-    /* if (!this.selectedShapeName) {
+            // in edit mode?
+            if (this.editMode) {
+                // edit mode only
+                // clicked on stage - clear selection
+                if (e.target === e.target.getStage()) {
+                    this.selectedShapeName = '';
+                    this.updateTransformer();
+                    return;
+                }
+
+                // clicked on transformer - do nothing
+                const clickedOnTransformer = e.target.getParent().className === 'Transformer';
+                if (clickedOnTransformer) {
+                    return;
+                }
+            }
+
+            // find clicked shape by its name
+            const name = e.target.name();
+            const shape = this.shapes.find((r) => r.name === name);
+            if (shape) {
+                this.selectedShapeName = name;
+            } else {
+                this.selectedShapeName = '';
+            }
+
+            if (this.editMode) {
+                this.updateTransformer();
+            }
+        },
+        updateTransformer() {
+            if (!this.editMode) return; // edit mode only
+
+            // here we need to manually attach or detach Transformer node
+            const transformerNode = this.$refs.transformer.getStage();
+            const stage = transformerNode.getStage();
+            const { selectedShapeName } = this;
+
+            const selectedNode = stage.findOne('.' + selectedShapeName);
+            // do nothing if selected node is already attached
+            if (selectedNode === transformerNode.node()) {
+                return;
+            }
+
+            if (selectedNode) {
+                // attach to another node
+                transformerNode.attachTo(selectedNode);
+            } else {
+                // remove transformer
+                transformerNode.detach();
+            }
+            transformerNode.getLayer().batchDraw();
+        },
+        cancelEvent(e) {
+            e.evt.preventDefault();
+        },
+
+        addRectangle() {
+            if (this.isAddingPolygon) return;
+
+            this.shapes.push({
+                ...this.getBaseShape('rect'),
+                x: 80 / this.scale,
+                y: 50 / this.scale,
+                width: 200 / this.scale,
+                height: 200 / this.scale
+            });
+
+            // call update
+            this.shapesUpdated();
+        },
+
+        getBaseShape(type) {
+            return {
+                type: type,
+                name: 'shape-' + new Date().valueOf(),
+                fill: '#b0c4de',
+                opacity: 0.5,
+                stroke: '#0000ff',
+                draggable: true,
+                strokeWidth: 2,
+                strokeScaleEnabled: false,
+                annotation: {
+                    title: '',
+                    text: '',
+                    linkTitle: '',
+                    link: ''
+                }
+            };
+        },
+
+        // delete shape
+        deleteShape(name) {
+            const idx = this.shapes.findIndex((r) => r.name === name);
+            if (idx >= 0) {
+                if (name === this.selectedShapeName) {
+                    this.selectedShapeName = '';
+                    this.updateTransformer();
+                }
+
+                this.shapes.splice(idx, 1);
+
+                // call update
+                this.shapesUpdated();
+            }
+        },
+
+        // handle key events
+        handleKeyEvent(event) {
+            // shape selected?
+            if (this.editMode && this.selectedShapeName) {
+                // delete key pressed?
+                if (event.key === 'Delete') this.deleteShape(this.selectedShapeName);
+            }
+            // TODO only if focued
+            /* if (!this.selectedShapeName) {
         if (event.key === '+') this.changeScale(0.1);
     } */
-    },
+        },
 
-    // handle scaling of canvas
-    handleScroll (e) {
-    if (e.evt) {
-        const event = e.evt;
-        event.preventDefault();
+        // handle scaling of canvas
+        handleScroll(e) {
+            if (e.evt) {
+                const event = e.evt;
+                event.preventDefault();
 
-        // Normalize wheel to +1 or -1.
-        const wheel = event.deltaY < 0 ? 1 : -1;
+                // Normalize wheel to +1 or -1.
+                const wheel = event.deltaY < 0 ? 1 : -1;
 
-        // calculate scale
-        this.changeScale(wheel * 0.02);
-    }
-    },
-    changeScale (diff) {
-    let scale = this.scale + diff;
+                // calculate scale
+                this.changeScale(wheel * 0.02);
+            }
+        },
+        changeScale(diff) {
+            let scale = this.scale + diff;
 
-    // minimum and maximum
-    if (scale < 0.1) scale = 0.1;
-    if (scale > 5) scale = 5;
+            // minimum and maximum
+            if (scale < 0.1) scale = 0.1;
+            if (scale > 5) scale = 5;
 
-    // TODO: easing or timer - https://konvajs.org/docs/tweens/Common_Easings.html
-    this.scale = scale;
-    },
+            // TODO: easing or timer - https://konvajs.org/docs/tweens/Common_Easings.html
+            this.scale = scale;
+        },
 
-    // handle manipulation events
-    handleDragEnd (event, shape) {
-      shape.x = event.currentTarget.attrs.x;
-      shape.y = event.currentTarget.attrs.y;
-      // call update
-      this.shapesUpdated();
-    },
-    // handleDragBond (event, shape) {
-    //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
-    //   if (event.currentTarget.attrs.x < 0) {
-    //     event.target.x(0)
-    //   } 
-    //   if (event.currentTarget.attrs.y < 0) {
-    //     event.target.y(0)
-    //   }
-    //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
-    //     event.target.x(this.image.width - shape.width * shape.scaleX)
-    //   }
-    //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
-    //     event.target.y(this.image.height - shape.height * shape.scaleY)
-    //   }
-    //   // call update
-    //   this.shapesUpdated();
-    // },
-    handleTransform (event, shape) {
-      console.log(shape.width, shape.height)
-      shape.scaleX = event.currentTarget.attrs.scaleX;
-      shape.scaleY = event.currentTarget.attrs.scaleY;
-      shape.x = event.currentTarget.attrs.x;
-      shape.y = event.currentTarget.attrs.y;
+        // handle manipulation events
+        handleDragEnd(event, shape) {
+            shape.x = event.currentTarget.attrs.x;
+            shape.y = event.currentTarget.attrs.y;
+            // call update
+            this.shapesUpdated();
+        },
+        // handleDragBond (event, shape) {
+        //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
+        //   if (event.currentTarget.attrs.x < 0) {
+        //     event.target.x(0)
+        //   }
+        //   if (event.currentTarget.attrs.y < 0) {
+        //     event.target.y(0)
+        //   }
+        //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
+        //     event.target.x(this.image.width - shape.width * shape.scaleX)
+        //   }
+        //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
+        //     event.target.y(this.image.height - shape.height * shape.scaleY)
+        //   }
+        //   // call update
+        //   this.shapesUpdated();
+        // },
+        handleTransform(event, shape) {
+            console.log(shape.width, shape.height);
+            shape.scaleX = event.currentTarget.attrs.scaleX;
+            shape.scaleY = event.currentTarget.attrs.scaleY;
+            shape.x = event.currentTarget.attrs.x;
+            shape.y = event.currentTarget.attrs.y;
 
-      // call update
-      this.shapesUpdated();
-    },
+            // call update
+            this.shapesUpdated();
+        },
 
-    // handle show stuff
-    handleMouseEnter (name) {
-    if (!this.isAddingPolygon) {
-        this.$refs.stage.getStage().container().style.cursor = 'pointer';
-        this.currentHoverShape = name;
-    }
-    },
-    handleMouseLeave () {
-    if (!this.isAddingPolygon) {
-        this.$refs.stage.getStage().container().style.cursor = 'default';
-        this.currentHoverShape = '';
-    }
-    },
-    handleGlobalMouseEnter () {
-    if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'crosshair';
-    },
-    handleGlobalMouseLeave () {
-    if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'default';
-    },
-    handleSideBarMouseEnter (name) {
-    if (!this.isAddingPolygon) {
-        const idx = this.shapes.findIndex(r => r.name === name);
-        if (idx >= 0) {
-        this.shapes[idx].stroke = '#c00';
-        this.shapes[idx].fill = '#dec4b0';
+        // handle show stuff
+        handleMouseEnter(name) {
+            if (!this.isAddingPolygon) {
+                this.$refs.stage.getStage().container().style.cursor = 'pointer';
+                this.currentHoverShape = name;
+            }
+        },
+        handleMouseLeave() {
+            if (!this.isAddingPolygon) {
+                this.$refs.stage.getStage().container().style.cursor = 'default';
+                this.currentHoverShape = '';
+            }
+        },
+        handleGlobalMouseEnter() {
+            if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'crosshair';
+        },
+        handleGlobalMouseLeave() {
+            if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'default';
+        },
+        handleSideBarMouseEnter(name) {
+            if (!this.isAddingPolygon) {
+                const idx = this.shapes.findIndex((r) => r.name === name);
+                if (idx >= 0) {
+                    this.shapes[idx].stroke = '#c00';
+                    this.shapes[idx].fill = '#dec4b0';
+                }
+            }
+        },
+        handleSideBarMouseLeave(name) {
+            if (!this.isAddingPolygon) {
+                const idx = this.shapes.findIndex((r) => r.name === name);
+                if (idx >= 0) {
+                    this.shapes[idx].stroke = '#00f';
+                    this.shapes[idx].fill = '#b0c4de';
+                }
+            }
+        },
+
+        formSubmitted(name) {
+            // save correct color
+            const idx = this.shapes.findIndex((r) => r.name === name);
+            if (idx >= 0) {
+                this.shapes[idx].stroke = '#00f';
+                this.shapes[idx].fill = '#b0c4de';
+            }
+
+            // callback/persist
+            this.shapesUpdated();
+        },
+
+        // toggle shapes shown or not
+        toggleShowShapes() {
+            // toggle
+            this.$refs.items.getStage().canvas._canvas.style.opacity = this.isShapesVisible ? '0' : '1';
+            // TODO: fade animation
+            this.isShapesVisible = !this.isShapesVisible;
+        },
+
+        // callback on update
+        shapesUpdated() {
+            if (this.callback && typeof this.callback === 'function') {
+                this.callback(this.shapes, this.image_cv_id);
+            }
+
+            // save to local storage, if defined
+            if (this.localStorageKey) {
+                localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
+            }
+        },
+        load() {
+            if (this.initialDataId) {
+                const node = document.getElementById(this.initialDataId);
+                if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
+            } else if (this.initialData && this.initialData.length > 0) {
+                this.shapes = JSON.parse(this.initialData);
+            } else if (this.localStorageKey) {
+                const data = localStorage.getItem(this.localStorageKey) || '[]';
+                this.shapes = JSON.parse(data);
+            }
+
+            // if we only show data, remove draggable from it
+            if (!this.editMode) {
+                this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
+            }
         }
     }
-    },
-    handleSideBarMouseLeave (name) {
-    if (!this.isAddingPolygon) {
-        const idx = this.shapes.findIndex(r => r.name === name);
-        if (idx >= 0) {
-        this.shapes[idx].stroke = '#00f';
-        this.shapes[idx].fill = '#b0c4de';
-        }
-    }
-    },
-
-    formSubmitted (name) {
-    // save correct color
-    const idx = this.shapes.findIndex(r => r.name === name);
-    if (idx >= 0) {
-        this.shapes[idx].stroke = '#00f';
-        this.shapes[idx].fill = '#b0c4de';
-    }
-
-    // callback/persist
-    this.shapesUpdated();
-    },
-
-    // toggle shapes shown or not
-    toggleShowShapes () {
-    // toggle
-    this.$refs.items.getStage().canvas._canvas.style.opacity = this.isShapesVisible ? '0' : '1';
-    // TODO: fade animation
-    this.isShapesVisible = !this.isShapesVisible;
-    },
-
-    // callback on update
-    shapesUpdated () {
-    if (this.callback && typeof this.callback === 'function') {
-        this.callback(this.shapes, this.image_cv_id);
-    }
-
-    // save to local storage, if defined
-    if (this.localStorageKey) {
-        localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
-    }
-    },
-    load () {
-    if (this.initialDataId) {
-        const node = document.getElementById(this.initialDataId);
-        if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
-    } else if (this.initialData && this.initialData.length > 0) {
-        this.shapes = JSON.parse(this.initialData);
-    } else if (this.localStorageKey) {
-        const data = localStorage.getItem(this.localStorageKey) || '[]';
-        this.shapes = JSON.parse(data);
-    }
-
-    // if we only show data, remove draggable from it
-    if (!this.editMode) {
-        this.shapes.forEach(shape => shape.draggable && delete shape.draggable);
-    }
-    }
-}
 };
 </script>
+
+<template>
+    <div :id="containerId" class="pa-container" :style="{ width: width + 'px', height: height + 'px' }">
+        <div class="pa-canvas">
+            <div class="pa-controls">
+                <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
+                <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
+                <hr />
+                <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
+                <a href="#" @click.prevent="addRectangle" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+            </div>
+            <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
+
+            <v-stage
+                :config="{
+                    width: stageSize.width,
+                    height: stageSize.height,
+                    scaleX: scale,
+                    scaleY: scale,
+                    draggable: true
+                }"
+                @mousedown="handleStageMouseDown"
+                @contextmenu="cancelEvent"
+                @mouseenter="handleGlobalMouseEnter"
+                @mouseleave="handleGlobalMouseLeave"
+                @wheel="handleScroll"
+                :ref="'stage'"
+            >
+                <v-layer ref="background">
+                    <v-image
+                        :config="{
+                            image: image,
+                            stroke: 'black'
+                        }"
+                    />
+                </v-layer>
+                <v-layer ref="items">
+                    <template v-for="shape in shapes">
+                        <v-rect
+                            v-if="shape.type === 'rect'"
+                            :config="shape"
+                            :key="shape.name"
+                            @dragend="handleDragEnd($event, shape)"
+                            @transformend="handleTransform($event, shape)"
+                            @mouseenter="handleMouseEnter(shape.name)"
+                            @mouseleave="handleMouseLeave"
+                        />
+                        <v-text :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                    </template>
+                    <v-transformer ref="transformer" :rotateEnabled="false" v-if="editMode" />
+                </v-layer>
+            </v-stage>
+
+            <loader v-if="isLoading" />
+
+            <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
+        </div>
+        <div class="pa-infobar">
+            <side-bar-entry
+                v-for="shape in shapes"
+                :key="shape.name"
+                :shape="shape"
+                :edit-mode="editMode"
+                :selected-shape-name="selectedShapeName"
+                :current-hover-shape="currentHoverShape"
+                v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
+                v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
+                v-on:sidebar-entry-delete="deleteShape($event)"
+                v-on:sidebar-entry-save="formSubmitted($event)"
+            />
+        </div>
+    </div>
+</template>
 
 <style lang="sass">
 .pa-container

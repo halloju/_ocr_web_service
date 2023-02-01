@@ -1,12 +1,9 @@
 <script scope>
+import { mapState } from 'vuex';
+
 export default {
     name: 'Rect',
     components: {},
-    computed: {
-        recs() {
-            return this.$store.state[this.boxName];
-        }
-    },
     methods: {
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node
@@ -74,7 +71,33 @@ export default {
                     height: 0
                 };
             }
+        },
+        isShapesVisible: {
+            type: Boolean,
+            default: true
         }
+    },
+    watch: {
+        isShapesVisible() {
+            this.opacity = this.isShapesVisible ? '.5' : '0';
+            this.textOpacity = this.isShapesVisible ? '1' : '0';
+            console.log(this.isShapesVisible);
+        }
+    },
+    computed: {
+        ...mapState(['selfDefinedRecs']),
+        recs() {
+            return this.selfDefinedRecs[this.boxName];
+        }
+    },
+    data() {
+        return {
+            opacity: 0.5,
+            textOpacity: 1
+        };
+    },
+    mounted() {
+        console.log(this.isShapesVisible);
     }
 };
 </script>
@@ -87,8 +110,8 @@ export default {
         :config="{
             width: Math.abs(rec.width),
             height: Math.abs(rec.height),
-            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
-            stroke: 'rgb(20,20,200,1)',
+            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.opacity})`,
+            stroke: `rgb(20,20,200,${this.opacity})`,
             strokeWidth: 0.5,
             x: Math.min(rec.startPointX, rec.startPointX + rec.width),
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
@@ -99,5 +122,10 @@ export default {
         @dragmove="handleDragBond"
     >
     </v-rect>
-    <v-text v-for="(rec, index) in recs" :config="{ text: `No.` + index + `\n要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height) }" />
+    <v-text
+        v-for="(rec, index) in recs"
+        :key="index"
+        :name="rec.name"
+        :config="{ text: `No.` + index + `\n要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height), opacity: this.textOpacity }"
+    />
 </template>

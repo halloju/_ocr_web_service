@@ -1,24 +1,37 @@
 <script>
 import Card from '@/components/Card.vue';
+import Icon from '@/components/Icon.vue';
 
 export default {
     name: 'BoxCard',
-    mounted() {
-        this.recs = this.$store.state[this.Boxes[0].name];
-    },
     components: {
-        Card
-    },
-    computed: {
-        recs() {
-            return this.$store.state[this.Boxes[0].name];
-        }
+        Card,
+        Icon
     },
     props: {
         Boxes: {
             type: Array,
             required: false
         }
+    },
+    data() {
+        return {
+            isShapesVisible: {
+                text: true,
+                box: true,
+                mask: true
+            }
+        }
+    },
+    methods: {
+        toggleShowShapes(name) {
+            this.isShapesVisible[name] = !this.isShapesVisible[name];
+            console.log(this.isShapesVisible[name]);
+            this.$emit('toggleShowShapes', name, this.isShapesVisible[name]);
+        }
+    },
+    mounted() {
+        console.log(this.isShapesVisible[this.Boxes[0].name]);
     }
 };
 </script>
@@ -26,7 +39,10 @@ export default {
 <template>
     {{ recs }}
     <div v-for="box in this.Boxes" class="surface-section" style="width: 400px">
-        <div class="font-medium text-3xl text-900 mb-3">{{ box.title }}</div>
+        <div class="font-medium text-3xl text-900 mb-3">
+            {{ box.title }}
+            <a href="#" @click.prevent="toggleShowShapes(box.name)" :title="this.isShapesVisible[box.name] ? 'show_shapes' : 'hide_shapes'"><icon :type="this.isShapesVisible[box.name] ? 'shapes-on' : 'shapes-off'" /></a>
+        </div>
         <ul class="list-none p-0 m-0">
             <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
                 <div class="text-500 w-6 md:w-2 font-medium">No.</div>
