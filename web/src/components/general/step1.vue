@@ -154,20 +154,20 @@ export default {
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg'||'image/png';
-            const isLt1M = file.size / 1024 / 1024 < 8;
+            const isLt8M = file.size / 1024 / 1024 < 8;
 
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
                 fileList.pop()
                 return false;
             }
-            if (!isLt1M) {
+            if (!isLt8M) {
                 this.$message.error('上傳圖案大小不能超過 8 MB!');
                 fileList.pop()
                 return false;
             }
 
-            if (isIMAGE&&isLt1M) {
+            if (isIMAGE&&isLt8M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
