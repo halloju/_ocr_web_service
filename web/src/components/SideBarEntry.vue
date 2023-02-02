@@ -4,10 +4,11 @@
 
     <button type="button" @click.prevent.stop="toggleContent" class="pa-accordion" :class="{'is-active': active}">
       <icon :type="shape.type" />
-      <span v-if="shape.annotation.title" class="pa-side-bar-title">{{shape.annotation.title}}</span>
+      <span v-if="shape.annotation.title" class="pa-side-bar-title">{{shape.annotation.title}}.</span>
       <span v-if="editMode && (active || selectedShapeName === shape.name)" class="pa-side-bar-icons">
         <a href="#" @click.prevent="deleteShape" :title="delete_shape"><icon type="delete-shape" fill="red" /></a>
       </span>
+      {{ truncateText(formData.text, 10) }}
     </button>
 
     <div class="pa-panel" ref="panel">
@@ -91,6 +92,12 @@ export default {
       this.toggleContent();
 
       this.$emit('sidebar-entry-save', this.shape.name);
+    },
+    truncateText(text, maxLength) {
+      if (text.length > maxLength) {
+        return text.substring(0, maxLength) + "...";
+      }
+      return text
     }
   },
   watch: {
