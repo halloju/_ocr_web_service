@@ -154,7 +154,7 @@ export default {
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg'||'image/png';
-            const isLt1M = file.size / 1024 / 1024 < 1;
+            const isLt1M = file.size / 1024 / 1024 < 8;
 
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
