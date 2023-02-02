@@ -1,13 +1,13 @@
-# if_gp_ocr_system
-玉山 OCR 系統
+# 智能 OCR 系統
 
 ## Roles
-| 角色  | 成員 |
+| 角色 | 成員 |
 | ------------- | ------------- |
 | PM  | 李立晟 |
-| PG (Frontend)  |  何信賢、林莞筑 |
-| PG (Backend)   |  王逸庭、張晏誠 |
-| TL  | 蔡根元 |
+| PG (Frontend) | 何信賢、林莞筑 |
+| PG (Backend) | 王逸庭、張晏誠 |
+| Team Lead | 蔡根元、李杰恩 |
+| Tech Lead | 劉軒彤 |
 
 ## 安裝 Docker Engine
 [Link](https://www.docker.com/products/docker-desktop/)
