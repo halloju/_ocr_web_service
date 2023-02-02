@@ -60,8 +60,8 @@ export default {
         return {
             selectedLang: null,
             languages: [
-                { name: '繁體中文 + 英數字', code: '1' },
-                { name: '英數字', code: '2' },
+                { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
+                { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' },
             ],
             nestedRouteItems: [
                 {
