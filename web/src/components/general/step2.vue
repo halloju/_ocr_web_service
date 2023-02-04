@@ -147,10 +147,10 @@ export default {
                 responseData['base64Image'] = base64Image
                 responseData['fileName'] = fileName
                 // 一張一張打
-                axios.post("/ocr/gpocr", {
+                axios.post("/ocr/gp_ocr", {
                                 "image": base64Image,
                                 "image_complexity": this.image_complexity,
-                                "language": this.selectedLang,
+                                "model_name": this.selectedLang,
                             })
                             .then( (response) =>
                                {
