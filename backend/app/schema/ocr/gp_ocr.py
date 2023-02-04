@@ -1,13 +1,19 @@
+import os
 from typing import Optional, List
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
 
 
-class CreateGPOCRRequest(BaseModel):
+filepath = os.path.join(os.getcwd(), "app", "image-base64-string.txt")
+with open(filepath, 'r') as f:
+    img_base64_string = f.read()
+
+
+class GpocrRequest(BaseModel):
     image: StrictStr = Field(
         title='base64 字串的影像',
         description='''
         ''',
-        example='iVBORw0KGgoAAAANSUhEUgAAACwAAAAbCAIAAACImfpDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAA0SURBVEhL7c4xDQAgEAAx/Jtk5V0wkNPA0qQCuvac7yQiEYlIRCISkYhEJCIRiUhE4plzAes2eXW72BJeAAAAAElFTkSuQmCC'
+        example=img_base64_string
     )
     image_complexity: Optional[StrictStr] = Field(
         default='medium',
@@ -18,13 +24,21 @@ class CreateGPOCRRequest(BaseModel):
         ''',
         example='medium'
     )
-    language: Optional[StrictStr] = Field(
-        default='Chinese',
-        title='影像複雜度',
+    model_name: Optional[StrictStr] = Field(
+        default='dbnet_v0+cht_ppocr_v1',
+        title='文字辨識模型名稱',
         description='''
-        中文："Chinese"
+        格式為: det_model+rec_model
+        e.g., dbnet_v0+cht_ppocr_v1
+
+        目前可使用的detection模型:
+        dbnet_v0(中文＋英文模型)
+
+        目前可使用的recognition模型:
+        cht_ppocr_v1(繁體中文模型)
+        en_ppocr_v0(英文模型)
         ''',
-        example='Chinese'
+        example='dbnet_v0+cht_ppocr_v1'
     )
 
     @validator("image", allow_reuse=True)
@@ -39,6 +53,12 @@ class CreateGPOCRRequest(BaseModel):
             raise ValueError("影像複雜度僅可為 medium 或 high")
         return v
 
+    @validator("model_name", allow_reuse=True)
+    def model_name_check(cls, v):
+        if len(v.split("+")) != 2:
+            raise ValueError("model_name 格式為: det_model+rec_model")
+        return v
+
 
 class OcrPredict(BaseModel, extra=Extra.forbid):
     points: List = Field(
@@ -49,7 +69,7 @@ class OcrPredict(BaseModel, extra=Extra.forbid):
         title='辨識結果',
         example="F1234567"
     )
-    det_prob: Optional[float] = Field(
+    det_prob: float = Field(
         title='偵測機率值',
         example=0.9586
     )
@@ -59,7 +79,7 @@ class OcrPredict(BaseModel, extra=Extra.forbid):
     )
 
 
-class GetGPOCRResponse(BaseModel):
+class GpocrResponse(BaseModel):
     image_cv_id: StrictStr = Field(
         title='影像註冊的 key 值',
         description='''

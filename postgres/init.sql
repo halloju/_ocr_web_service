@@ -6,9 +6,12 @@ CREATE TABLE IF NOT EXISTS if_gp_ocr.template_info(
     user_id VARCHAR(5) NOT NULL,
     template_name VARCHAR,
     bbox JSON[],
-    updated_at TIMESTAMP WITH TIME ZONE,
-    is_public BOOLEAN NOT NULL
+    is_no_ttl BOOLEAN DEFAULT FALSE,
+    is_public BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp 
 );
+
+CREATE INDEX IF NOT EXISTS template_info_updated_at ON if_gp_ocr.template_info (updated_at);
 
 /*紀錄驗證碼辨識結果的表*/
 CREATE TABLE IF NOT EXISTS if_gp_ocr.ocr_results(

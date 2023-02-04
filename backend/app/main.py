@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import CustomException, exception_handler
-from app.routers import db, docs, template, ocr
+from app.routers import db, docs
+from app.routers.ocr import gp_ocr, template_ocr
+from app.routers.template_crud import create, read, update, delete
 
 
 def get_application():
@@ -23,12 +25,32 @@ def get_application():
     app.include_router(docs.router)
 
     app.include_router(
-        template.router,
-        prefix="/template",
-        tags=["template"],
+        create.router,
+        prefix="/template_crud",
+        tags=["template_crud"],
     )
     app.include_router(
-        ocr.router,
+        read.router,
+        prefix="/template_crud",
+        tags=["template_crud"],
+    )
+    app.include_router(
+        update.router,
+        prefix="/template_crud",
+        tags=["template_crud"],
+    )
+    app.include_router(
+        delete.router,
+        prefix="/template_crud",
+        tags=["template_crud"],
+    )
+    app.include_router(
+        gp_ocr.router,
+        prefix="/ocr",
+        tags=["ocr"],
+    )
+    app.include_router(
+        template_ocr.router,
         prefix="/ocr",
         tags=["ocr"],
     )
