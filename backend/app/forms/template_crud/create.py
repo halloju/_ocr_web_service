@@ -1,7 +1,7 @@
 from typing import List
 from typing import Optional
 from urllib import request
-from app.schema.template import CreateTemplateRequest
+from app.schema.template_crud.create import CreateTemplateRequest
 
 
 class CreateTemplateForm:
@@ -16,6 +16,7 @@ class CreateTemplateForm:
         self.bbox = self.request.bbox
         self.template_name = self.request.template_name
         self.is_public = self.request.is_public
+        self.is_no_ttl = self.request.is_no_ttl
 
     async def is_valid(self):
         if not self.user_id or not len(self.user_id) == 5:

@@ -1,11 +1,11 @@
 from typing import List
 from urllib import request
-from app.schema.template_ocr import CreateTemplateOCRRequest
+from app.schema.ocr.template_ocr import TemplateocrRequest
 
 
-class CreateTemplateOCRForm:
-    def __init__(self, request: CreateTemplateOCRRequest):
-        self.request: CreateTemplateOCRRequest = request
+class TemplateocrForm:
+    def __init__(self, request: TemplateocrRequest):
+        self.request: TemplateocrRequest = request
         self.errors: List = []
 
     async def load_data(self):

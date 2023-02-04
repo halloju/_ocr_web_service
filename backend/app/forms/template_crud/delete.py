@@ -1,7 +1,7 @@
 from typing import List
 from typing import Optional
 from urllib import request
-from app.schema.template import DeleteTemplateRequest
+from app.schema.template_crud.delete import DeleteTemplateRequest
 
 
 class DeleteTemplateForm:

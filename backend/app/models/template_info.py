@@ -11,3 +11,4 @@ class TemplateInfo(Base):
     bbox = Column(ARRAY(JSON(String)), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     is_public = Column(Boolean, nullable=False)
+    is_no_ttl = Column(Boolean, nullable=False)

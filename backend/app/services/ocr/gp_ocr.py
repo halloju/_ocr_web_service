@@ -16,14 +16,14 @@ import uuid
 logger = logging.getLogger(__name__)
 
 
-def gpocr(ocr_image_info, db: Session):
+def gp_ocr(ocr_image_info, db: Session):
     """
     辨識圖片中的文字
     """
     try:
         today = datetime.today()
         request_id = str(uuid.uuid4())
-        image_cv_id = datetime.now().strftime("%Y/%m/%d/%H/%M/%S") + request_id
+        image_cv_id = datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + request_id
         image_base64_binary = ocr_image_info.image.encode('utf-8')
         image_binary = base64.b64decode(image_base64_binary)
         # Step 1. 將 template 影像寫入 MinIO

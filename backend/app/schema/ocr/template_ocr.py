@@ -1,13 +1,19 @@
+import os
 from typing import Optional, List
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
 
 
-class CreateTemplateOCRRequest(BaseModel):
+filepath = os.path.join(os.getcwd(), "app", "image-base64-string.txt")
+with open(filepath, 'r') as f:
+    img_base64_string = f.read()
+
+
+class TemplateocrRequest(BaseModel):
     image: StrictStr = Field(
         title='base64 字串的影像',
         description='''
         ''',
-        example='/9j/4AAQSkZJRgABAQEBLAEsAAD/2w'
+        example=img_base64_string
     )
     template_id: StrictStr = Field(
         title='alignment 的模板編號（key）',
@@ -60,12 +66,12 @@ class OcrPredict(BaseModel, extra=Extra.forbid):
         title='辨識機率值',
         example=0.9586
     )
-    tag: Optional[StrictStr] = Field(
+    tag: StrictStr = Field(
         title='辨識要項',
         example="id")
 
 
-class GetTemplateOCRResponse(BaseModel):
+class TemplateocrResponse(BaseModel):
     image_cv_id: StrictStr = Field(
         title='影像註冊的 key 值',
         description='''

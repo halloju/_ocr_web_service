@@ -1,7 +1,7 @@
 from typing import List
 from typing import Optional
 from urllib import request
-from app.schema.template import UpdateTemplateRequest
+from app.schema.template_crud.update import UpdateTemplateRequest
 
 
 class UpdateTemplateForm:
