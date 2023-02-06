@@ -10,6 +10,7 @@ class UpdateTemplateForm:
         self.errors: List = []
 
     async def load_data(self):
+        self.user_id = self.request.user_id
         self.template_id = self.request.template_id
         self.bbox = self.request.bbox
         self.template_name = self.request.template_name
