@@ -3,15 +3,12 @@
         <div class="col-7">
             <div class="card" style="height: 850px; overflow-y: scroll">
                 <h2>個人模板檢視</h2>
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="formattedTableData" style="width: 100%">
                     <el-table-column :prop="item.prop" :label="item.label" v-for="(item, index) in tableHeader" :key="item.prop" :width="item.width">
                         <template #default="scope">
                             <div v-show="item.editable || scope.row.editable" class="editable-row">
                                 <template v-if="item.type === 'input'">
                                     <el-input size="small" v-model="scope.row[item.prop]" :placeholder="`請輸入 ${item.label}`" @change="handleEdit(scope.$index, scope.row)" />
-                                </template>
-                                <template v-if="item.type === 'date'">
-                                    <el-date-picker v-model="scope.row[item.prop]" type="date" value-format="YYYY-MM-DD" :placeholder="`請輸入 ${item.label}`" @change="handleEdit(scope.$index, scope.row)" />
                                 </template>
                             </div>
                             <div v-show="!item.editable && !scope.row.editable" class="editable-row">
@@ -32,7 +29,7 @@
         </div>
         <div class="col-5">
             <div class="card" style="height: 850px; overflow-y: scroll">
-                <h5>請選擇模式</h5>
+                <h5>請選擇標註模式</h5>
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <SelectButton v-model="myModel" :options="models" optionLabel="name" />
@@ -64,6 +61,7 @@
     </div>
 </template>
 <script>
+import moment from 'moment'
 import axios from "axios";
 import PhotoService from '@/service/PhotoService';
 import AnnotationVertical from '@/components/AnnotationVertical.vue';
@@ -89,6 +87,9 @@ export default {
     },
     created() {
         this.galleriaService = new PhotoService();
+        this.getAvailableTemplate().then((tableData) => {
+            this.tableData = tableData;
+        });
     },
     mounted() {
         this.galleriaService.getImages().then((data) => (this.images = data));
@@ -129,93 +130,72 @@ export default {
             });
             return JSON.stringify(myShapes)
         },
-        // getAvailableTemplate() {
-        //     let user_id = '13520';
-        //     axios.get("/template/get_available_templates", {
-        //                         "user_id": user_id,
-        //                         "is_public": false,
-        //                     })
-        //                     .then( (response) =>
-        //                        {
-        //                         console.log(response)
-        //                         })
-        //                     .catch( (error) => {
-        //                         console.log(error)
-        //                         if(error.code === 'ERR_NETWORK'){
-        //                             this.status = 'network';
-        //                         }
-        //         })
-        // },
+        formattedTableData() {
+            return this.tableData.map(row => {
+                return {
+                ...row,
+                updated_at: this.formatDate(row.updated_at)
+                };
+            });
+        },
     },
     data() {
         return {
-            models: [{ name: '文字位置標註' }, { name: '方塊位置標註' }, { name: '遮罩位置標註' }],
-            myModel: { name: '文字位置標註' },
+            models: [{ name: '文字' }, { name: '方塊' }, { name: '遮罩' }],
+            myModel: { name: '文字' },
             width: 1000,
-            height: 500,
+            height: 600,
             images: null,
             imageSrc: this.$store.state.general_upload_image[0].reader,
             tableHeader: [
                 {
-                    prop: 'no',
-                    label: 'No.',
+                    prop: 'template_id',
+                    label: '編號',
                     editable: false,
                     type: 'number',
-                    width: '50px'
+                    width: '200px'
                 },
                 {
-                    prop: 'name',
+                    prop: 'template_name',
                     label: '姓名',
                     editable: false,
                     type: 'input',
-                    width: '250px'
+                    width: '200px'
                 },
                 {
-                    prop: 'date',
+                    prop: 'updated_at',
                     label: '更新日期',
                     editable: false,
                     type: 'date',
-                    width: '130px'
+                    width: '200px'
                 }
             ],
-            tableData: [
-                {
-                    no: 1,
-                    name: '企鵝不捨',
-                    date: '2016-05-02'
-                },
-                {
-                    no: 2,
-                    name: '企噗噗',
-                    date: '2016-05-04'
-                },
-                {
-                    no: 3,
-                    name: '我就小企',
-                    date: '2016-05-01'
-                },
-                {
-                    no: 4,
-                    name: '我真的生企了',
-                    date: '2016-05-03'
-                }
-            ]
+            tableData: [],
         };
     },
     methods: {
-        getAvailableTemplate() {
+        formatDate(date) {
+            return moment(date).format('YYYY-MM-DD HH:mm:ss');
+        },
+        async getAvailableTemplate() {
             let user_id = '13520';
-            axios.get("/template/get_available_templates/13520?is_public=false")
-                            .then( (response) =>
-                               {
-                                console.log(response)
-                                })
-                            .catch( (error) => {
-                                console.log(error)
-                                if(error.code === 'ERR_NETWORK'){
-                                    this.status = 'network';
-                                }
+            let tableData = []
+            try {
+                const response = await axios.get("/template_crud/get_available_templates/"+ user_id, {
+                    params: {
+                        is_public: false,
+                    }
                 })
+                tableData = response["data"]["available_templates"];
+                console.log(tableData)
+                return tableData;
+            } catch (error) {
+                console.log(error)
+                if (error.code === 'ERR_NETWORK') {
+                    this.status = 'network'
+                }
+                return error
+            }
         },
         handleEdit(row) {
             row.editable = true;
