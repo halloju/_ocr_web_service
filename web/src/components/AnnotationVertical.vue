@@ -427,7 +427,7 @@ methods: {
 .pa-container
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
-  grid-template-rows: 5fr 5fr
+  grid-template-rows: 4fr 6fr
   overflow: hidden
 
 .pa-canvas
