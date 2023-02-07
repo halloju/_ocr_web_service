@@ -108,7 +108,13 @@ export default {
       } else if (this.active && newShape !== this.shape.name) {
         this.toggleContent();
       }
-    }
+    },
+    shape() {
+      this.formData.title = this.shape.annotation.title;
+      this.formData.text = this.shape.annotation.text;
+      this.formData.linkTitle = this.shape.annotation.linkTitle;
+      this.formData.link = this.shape.annotation.link;
+    },
   }
 };
 </script>
