@@ -125,12 +125,9 @@ mounted () {
 },
 watch: {
         initialData() {
-            console.log("initialData")
             this.load();
-            this.shapesUpdated();
         },
         imageSrc() {
-            console.log("imageSrc")
             this.loadImage();
         },
 },
@@ -309,7 +306,6 @@ methods: {
       this.shapesUpdated();
     },
     handleTransform (event, shape) {
-      console.log(shape.width, shape.height)
       shape.scaleX = event.currentTarget.attrs.scaleX;
       shape.scaleY = event.currentTarget.attrs.scaleY;
       shape.x = event.currentTarget.attrs.x;
@@ -379,7 +375,6 @@ methods: {
 
     // callback on update
     shapesUpdated () {
-      console.log("shapesUpdated")
     if (this.callback && typeof this.callback === 'function') {
         this.callback(this.shapes, this.image_cv_id);
     }
@@ -390,22 +385,15 @@ methods: {
     }
     },
     load () {
-      console.log("load")
-      console.log("this.initialData:", this.initialData)
-      console.log("this.initialDataId:", this.initialDataId)
       if (this.initialDataId) {
-          console.log("1")
           const node = document.getElementById(this.initialDataId);
           if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
       } else if (this.initialData && this.initialData.length > 0) {
-          console.log("2")
           this.shapes = JSON.parse(this.initialData);
       } else if (this.localStorageKey) {
-          console.log("3")
           const data = localStorage.getItem(this.localStorageKey) || '[]';
           this.shapes = JSON.parse(data);
       }
-
       // if we only show data, remove draggable from it
       if (!this.editMode) {
           this.shapes.forEach(shape => shape.draggable && delete shape.draggable);

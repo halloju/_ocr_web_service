@@ -213,13 +213,10 @@ export default {
             try {
                 const response = await axios.get("/template_crud/get_template_detail/"+ this.template_id)
                 this.template = response["data"];
-                console.log(this.template)
                 let bbox = this.template.bbox.filter(item => item.type === userType)
                 this.initialData = this.generateTemplate(template_id, bbox)
                 this.imageSrc = 'data:image/png;base64,' + this.template.image;
-                console.log(this.initialData)
             } catch (error) {
-                console.log(error)
                 if (error.code === 'ERR_NETWORK') {
                     this.status = 'network'
                 }
