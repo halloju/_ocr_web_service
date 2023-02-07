@@ -1,5 +1,5 @@
 <template>
-  <div :id="containerId" class="pa-container" :style="{width: width + 'px', height: height + 'px'}">
+  <div :id="containerId" class="pa-containerVert" :style="{width: width + 'px', height: height + 'px'}">
       <div class="pa-canvas">
       <div class="pa-controls">
           <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
@@ -418,7 +418,7 @@ methods: {
 </script>
 
 <style lang="sass">
-.pa-container
+.pa-containerVert
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
   grid-template-rows: 4fr 6fr

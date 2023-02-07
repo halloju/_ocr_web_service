@@ -20,7 +20,7 @@
                     </div>
                     <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                         <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside">
-                            <el-carousel-item v-for="item in this.resData.length" :key="item">
+                            <el-carousel-item v-for="item in this.resData.length" :key="item" style="overflow: scroll">
                                 <h3> 第 {{item}} 張</h3>
                                 <Annotation
                                     containerId="my-pic-annotation-output"
@@ -120,9 +120,6 @@ export default {
     },
     methods: {
         callback(data, image_cv_id) {
-            console.log(data)
-            console.log(image_cv_id)
-            console.log(this.resData)
             for (let i = 0; i < this.resData.length; i++) {
 
                 if (image_cv_id === this.resData[i].image_cv_id) {
@@ -218,7 +215,6 @@ export default {
 .el-carousel{
   width: 1200px;
 }
-
 .el-carousel__item:nth-child(2n) {
   background-color: #99a9bf;
 }
