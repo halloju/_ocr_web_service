@@ -110,17 +110,7 @@ created () {
     if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
 
     // load image
-    const image = new window.Image();
-    image.src = this.imageSrc;
-    image.onload = () => {
-    // set image only when it is loaded
-    this.image = image;
-
-    // adapt initial scale to fit canvas
-    this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
-    // loading finished
-    this.isLoading = false;
-    };
+    this.loadImage();
 
     // define callback function
     this.callback = this.dataCallback &&
@@ -131,6 +121,18 @@ mounted () {
     document.addEventListener('keydown', this.handleKeyEvent);
     // try to load from local storage or local data
     this.load();
+    this.loadImage();
+},
+watch: {
+        initialData() {
+            console.log("initialData")
+            this.load();
+            this.shapesUpdated();
+        },
+        imageSrc() {
+            console.log("imageSrc")
+            this.loadImage();
+        },
 },
 beforeDestroy () {
     document.removeEventListener('keydown', this.handleKeyEvent);
@@ -306,23 +308,6 @@ methods: {
       // call update
       this.shapesUpdated();
     },
-    // handleDragBond (event, shape) {
-    //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
-    //   if (event.currentTarget.attrs.x < 0) {
-    //     event.target.x(0)
-    //   } 
-    //   if (event.currentTarget.attrs.y < 0) {
-    //     event.target.y(0)
-    //   }
-    //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
-    //     event.target.x(this.image.width - shape.width * shape.scaleX)
-    //   }
-    //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
-    //     event.target.y(this.image.height - shape.height * shape.scaleY)
-    //   }
-    //   // call update
-    //   this.shapesUpdated();
-    // },
     handleTransform (event, shape) {
       console.log(shape.width, shape.height)
       shape.scaleX = event.currentTarget.attrs.scaleX;
@@ -394,6 +379,7 @@ methods: {
 
     // callback on update
     shapesUpdated () {
+      console.log("shapesUpdated")
     if (this.callback && typeof this.callback === 'function') {
         this.callback(this.shapes, this.image_cv_id);
     }
@@ -404,20 +390,40 @@ methods: {
     }
     },
     load () {
-    if (this.initialDataId) {
-        const node = document.getElementById(this.initialDataId);
-        if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
-    } else if (this.initialData && this.initialData.length > 0) {
-        this.shapes = JSON.parse(this.initialData);
-    } else if (this.localStorageKey) {
-        const data = localStorage.getItem(this.localStorageKey) || '[]';
-        this.shapes = JSON.parse(data);
-    }
+      console.log("load")
+      console.log("this.initialData:", this.initialData)
+      console.log("this.initialDataId:", this.initialDataId)
+      if (this.initialDataId) {
+          console.log("1")
+          const node = document.getElementById(this.initialDataId);
+          if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
+      } else if (this.initialData && this.initialData.length > 0) {
+          console.log("2")
+          this.shapes = JSON.parse(this.initialData);
+      } else if (this.localStorageKey) {
+          console.log("3")
+          const data = localStorage.getItem(this.localStorageKey) || '[]';
+          this.shapes = JSON.parse(data);
+      }
 
-    // if we only show data, remove draggable from it
-    if (!this.editMode) {
-        this.shapes.forEach(shape => shape.draggable && delete shape.draggable);
-    }
+      // if we only show data, remove draggable from it
+      if (!this.editMode) {
+          this.shapes.forEach(shape => shape.draggable && delete shape.draggable);
+      }
+    },
+    loadImage() {
+      // load image
+      const image = new window.Image();
+      image.src = this.imageSrc;
+          image.onload = () => {
+          // set image only when it is loaded
+          this.image = image;
+
+          // adapt initial scale to fit canvas
+          this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
+          // loading finished
+          this.isLoading = false;
+      };
     }
 }
 };
@@ -427,7 +433,7 @@ methods: {
 .pa-container
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
-  grid-template-rows: 5fr 5fr
+  grid-template-rows: 4fr 6fr
   overflow: hidden
 
 .pa-canvas

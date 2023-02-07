@@ -3,7 +3,7 @@
        :class="{'is-selected-target': selectedShapeName === shape.name, 'is-hover-target': currentHoverShape === shape.name}">
 
     <button type="button" @click.prevent.stop="toggleContent" class="pa-accordion" :class="{'is-active': active}">
-      <icon :type="shape.type" />
+      <!-- <icon :type="shape.type" /> -->
       <span v-if="shape.annotation.title" class="pa-side-bar-title">{{shape.annotation.title}}.</span>
       <span v-if="editMode && (active || selectedShapeName === shape.name)" class="pa-side-bar-icons">
         <a href="#" @click.prevent="deleteShape" :title="delete_shape"><icon type="delete-shape" fill="red" /></a>
@@ -108,7 +108,13 @@ export default {
       } else if (this.active && newShape !== this.shape.name) {
         this.toggleContent();
       }
-    }
+    },
+    shape() {
+      this.formData.title = this.shape.annotation.title;
+      this.formData.text = this.shape.annotation.text;
+      this.formData.linkTitle = this.shape.annotation.linkTitle;
+      this.formData.link = this.shape.annotation.link;
+    },
   }
 };
 </script>

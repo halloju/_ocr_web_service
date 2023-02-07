@@ -3,15 +3,12 @@
         <div class="col-7">
             <div class="card" style="height: 850px; overflow-y: scroll">
                 <h2>個人模板檢視</h2>
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="formattedTableData" style="width: 100%">
                     <el-table-column :prop="item.prop" :label="item.label" v-for="(item, index) in tableHeader" :key="item.prop" :width="item.width">
                         <template #default="scope">
                             <div v-show="item.editable || scope.row.editable" class="editable-row">
                                 <template v-if="item.type === 'input'">
                                     <el-input size="small" v-model="scope.row[item.prop]" :placeholder="`請輸入 ${item.label}`" @change="handleEdit(scope.$index, scope.row)" />
-                                </template>
-                                <template v-if="item.type === 'date'">
-                                    <el-date-picker v-model="scope.row[item.prop]" type="date" value-format="YYYY-MM-DD" :placeholder="`請輸入 ${item.label}`" @change="handleEdit(scope.$index, scope.row)" />
                                 </template>
                             </div>
                             <div v-show="!item.editable && !scope.row.editable" class="editable-row">
@@ -19,23 +16,26 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="320px">
+                    <el-table-column label="操作" width="100px">
                         <template #default="scope">
-                            <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
-                            <el-button v-show="scope.row.editable" size="small" type="success" @click="scope.row.editable = false">確認</el-button>
-                            <el-button size="big" type="info" @click="">檢視</el-button>
-                            <el-button size="big" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
+                            <!-- <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
+                            <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button> -->
+                            <el-button size="big" type="info" @click="handleLook(scope.row.template_id, this.myModel.code)">檢視</el-button>
+                            <!-- <el-button size="big" type="danger" @click="handleDelete(scope.$index)">刪除</el-button> -->
                         </template>
                     </el-table-column>
                 </el-table>
             </div>
         </div>
         <div class="col-5">
-            <div class="card" style="height: 850px; overflow-y: scroll">
-                <h5>請選擇模式</h5>
+            <div v-if="formattedTableData.length>=1&!template_id" class="card flex justify-content-center align-items-center" style="height: 850px;">
+                請點選檢視
+            </div>
+            <div v-else-if="template_id" class="card" style="height: 850px; overflow-y: scroll">
+                <h5>請選擇標註模式</h5>
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                        <SelectButton v-model="myModel" :options="models" optionLabel="name" />
+                        <SelectButton v-model="myModel" :options="models" optionLabel="name" @click="handleLook(this.template_id, this.myModel.code)" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
                         <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="" />
@@ -43,14 +43,14 @@
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="" disabled="true" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                        <AnnotationVertical
+                        <AnnotationVertical ref="child"
                             containerId="my-pic-annotation-output"
                             :editMode="false"
                             :imageSrc="imageSrc"
                             :width="width"
                             :height="height"
                             dataCallback=""
-                            :initialData="getShapeData"
+                            :initialData="initialData"
                             :initialDataId="initialDataId"
                             :justShow="true"
                         ></AnnotationVertical>
@@ -60,10 +60,14 @@
                     </div>
                 </div>
             </div>
+            <div v-else class="card flex justify-content-center align-items-center" style="height: 850px;">
+                沒有模板可以檢視
+            </div>
         </div>
     </div>
 </template>
 <script>
+import moment from 'moment'
 import axios from "axios";
 import PhotoService from '@/service/PhotoService';
 import AnnotationVertical from '@/components/AnnotationVertical.vue';
@@ -89,26 +93,101 @@ export default {
     },
     created() {
         this.galleriaService = new PhotoService();
+        this.getAvailableTemplate().then((tableData) => {
+            this.tableData = tableData;
+        });
     },
     mounted() {
         this.galleriaService.getImages().then((data) => (this.images = data));
     },
     computed: {
-        getShapeData() {
-            let myShapes = []
-            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[0].image_cv_id);
-            let regData = this.$store.state.general_upload_res[0].ocr_results;
-            regData.forEach(function(element, index) {
-                var label = Object.values(element);
-                var points = Object.values(label[0]);
-                var myContent = label[1];
-                var label_x = points[0][0];
-                var label_y = points[0][1];
-                var label_width = points[1][0] - label_x ;
-                var label_height = points[2][1] - label_y ;
+        formattedTableData() {
+            if (this.tableData.length===0) {
+                return [];
+            }
+            return this.tableData.map(row => {
+                return {
+                ...row,
+                updated_at: this.formatDate(row.updated_at)
+                };
+            });
+        },
+    },
+    data() {
+        return {
+            models: [{ name: '文字', code: 'text' },
+                     { name: '方塊', code: 'box' },
+                     { name: '遮罩', code: 'mask' }],
+            myModel: { name: '文字', code: 'text' },
+            width: 1000,
+            height: 600,
+            images: null,
+            imageSrc: "",
+            tableHeader: [
+                {
+                    prop: 'template_id',
+                    label: '編號',
+                    editable: false,
+                    type: 'number',
+                    width: '200px'
+                },
+                {
+                    prop: 'template_name',
+                    label: '姓名',
+                    editable: false,
+                    type: 'input',
+                    width: '150px'
+                },
+                {
+                    prop: 'updated_at',
+                    label: '更新日期',
+                    editable: false,
+                    type: 'date',
+                    width: '200px'
+                }
+            ],
+            tableData: [],
+            template_id: "",
+            template: "",
+            initialData: "",
+        };
+    },
+    methods: {
+        formatDate(date) {
+            return moment(date).format('YYYY-MM-DD HH:mm:ss');
+        },
+        async getAvailableTemplate() {
+            let user_id = '13520';
+            let tableData = []
+            try {
+                const response = await axios.get("/template_crud/get_available_templates/"+ user_id, {
+                    params: {
+                        is_public: false,
+                    }
+                })
+                tableData = response["data"]["available_templates"];
+                return tableData;
+            } catch (error) {
+                if (error.response.data.msg === 'available_templates are not found') {
+                    return []
+                }
+                return error
+            }
+        },
+        handleEdit(row) {
+            row.editable = true;
+        },
+        generateTemplate(template_id, bbox){
+            let myShapes = [];
+            bbox.forEach(function(element, index) {
+                var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
+                var label_x = element['x_min'];
+                var label_y = element['y_min'];
+                var label_width = element['x_max'] - element['x_min'] ;
+                var label_height = element['y_max'] - element['y_min'] ;
                 myShapes.push({
                     type: 'rect',
-                    name: image_cv_id + index,
+                    name: template_id,
                     fill: '#b0c4de',
                     opacity: 0.5,
                     stroke: '#0ff',
@@ -129,96 +208,26 @@ export default {
             });
             return JSON.stringify(myShapes)
         },
-        // getAvailableTemplate() {
-        //     let user_id = '13520';
-        //     axios.get("/template/get_available_templates", {
-        //                         "user_id": user_id,
-        //                         "is_public": false,
-        //                     })
-        //                     .then( (response) =>
-        //                        {
-        //                         console.log(response)
-        //                         })
-        //                     .catch( (error) => {
-        //                         console.log(error)
-        //                         if(error.code === 'ERR_NETWORK'){
-        //                             this.status = 'network';
-        //                         }
-        //         })
-        // },
-    },
-    data() {
-        return {
-            models: [{ name: '文字位置標註' }, { name: '方塊位置標註' }, { name: '遮罩位置標註' }],
-            myModel: { name: '文字位置標註' },
-            width: 1000,
-            height: 500,
-            images: null,
-            imageSrc: this.$store.state.general_upload_image[0].reader,
-            tableHeader: [
-                {
-                    prop: 'no',
-                    label: 'No.',
-                    editable: false,
-                    type: 'number',
-                    width: '50px'
-                },
-                {
-                    prop: 'name',
-                    label: '姓名',
-                    editable: false,
-                    type: 'input',
-                    width: '250px'
-                },
-                {
-                    prop: 'date',
-                    label: '更新日期',
-                    editable: false,
-                    type: 'date',
-                    width: '130px'
+        async handleLook(template_id, userType) {
+            this.template_id = template_id;
+            try {
+                const response = await axios.get("/template_crud/get_template_detail/"+ this.template_id)
+                this.template = response["data"];
+                console.log(this.template)
+                let bbox = this.template.bbox.filter(item => item.type === userType)
+                this.initialData = this.generateTemplate(template_id, bbox)
+                this.imageSrc = 'data:image/png;base64,' + this.template.image;
+                console.log(this.initialData)
+            } catch (error) {
+                console.log(error)
+                if (error.code === 'ERR_NETWORK') {
+                    this.status = 'network'
                 }
-            ],
-            tableData: [
-                {
-                    no: 1,
-                    name: '企鵝不捨',
-                    date: '2016-05-02'
-                },
-                {
-                    no: 2,
-                    name: '企噗噗',
-                    date: '2016-05-04'
-                },
-                {
-                    no: 3,
-                    name: '我就小企',
-                    date: '2016-05-01'
-                },
-                {
-                    no: 4,
-                    name: '我真的生企了',
-                    date: '2016-05-03'
-                }
-            ]
-        };
-    },
-    methods: {
-        getAvailableTemplate() {
-            let user_id = '13520';
-            axios.get("/template/get_available_templates/13520?is_public=false")
-                            .then( (response) =>
-                               {
-                                console.log(response)
-                                })
-                            .catch( (error) => {
-                                console.log(error)
-                                if(error.code === 'ERR_NETWORK'){
-                                    this.status = 'network';
-                                }
-                })
+                return error
+            }
         },
-        handleEdit(row) {
-            row.editable = true;
+        handleConfirm(row){
+            row.editable = false;
         },
         handleDelete(index) {
             this.tableData.splice(index, 1);
