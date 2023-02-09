@@ -129,7 +129,6 @@ export default {
         updateTransformer() {
             // here we need to manually attach or detach Transformer node
             const transformerNode = this.$refs.transformer.getNode();
-            transformerNode.anchorDragBoundFunc(this.transformerBoundBoxFunc);
             const stage = transformerNode.getStage();
             const { selectedShapeName } = this;
 
@@ -313,28 +312,6 @@ export default {
                 y: (this.$refs.img_block.clientHeight - this.image.height) / 2,
                 width: this.$refs.img_block.clientWidth,
                 height: this.$refs.img_block.clientHeight
-            };
-        },
-        transformerBoundBoxFunc(oldAbsPos, newAbsPos) {
-            const div = this.$refs.img_block.getBoundingClientRect();
-            const AbsPos = {
-                x: div.left + this.stageConfig.x,
-                y: div.top + this.stageConfig.y
-            };
-            let x = newAbsPos.x;
-            let y = newAbsPos.y;
-            if (newAbsPos.x < AbsPos.x) {
-                x = AbsPos.x;
-            }
-            if (newAbsPos.y < AbsPos.y) {
-                y = AbsPos.y;
-            }
-            if (newAbsPos.x > AbsPos.x + this.image.width) {
-                x = this.image.width - this.selectedShape.width;
-            }
-            return {
-                x: x,
-                y: y
             };
         }
     },

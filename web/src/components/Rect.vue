@@ -9,8 +9,7 @@ export default {
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
-            // const transformer = e.target.getTransform();
-            // const next = transformer.point({ x: 0, y: 0 });
+            this.handleDragBond(e);
 
             rect.startPointX = e.target.x();
             rect.startPointY = e.target.y();
@@ -30,6 +29,7 @@ export default {
             rect.endPointY = pos.y + rect.height * rect.scaleY;
         },
         handleDragBond(e) {
+            console.log(e.target);
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
             const pos = e.target.getPosition();
 
