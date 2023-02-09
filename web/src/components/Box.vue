@@ -18,8 +18,16 @@ export default {
         this.canDraw = this.Boxes.length <= 1;
         this.$nextTick(() => {
             this.updateStageConfig();
+            let Recs = this.$refs.image
+                .getNode()
+                .getParent()
+                .getChildren(function (node) {
+                    return node.getClassName() === 'Rect';
+                });
+            Recs.forEach((rec) => {
+                rec.draggable(this.canDraw);
+            });
         });
-        console.log(this.recs);
     },
     components: {
         Rect
@@ -40,17 +48,19 @@ export default {
                 y: 0
             },
             isDrawing: false,
-            isInputing: false,
+            isInputting: false,
             isNamingOk: true,
             isTransforming: false,
             isWarning: false,
             canDraw: true,
-            isActive: false
+            imageMode: false
         };
     },
     watch: {
         $route() {
             this.recs = [];
+            this.canDraw = !/5/.test(this.$route.path);
+            this.rectDraggable();
         }
     },
     computed: {
@@ -63,7 +73,7 @@ export default {
         handleMouseDown(event) {
             if (!this.isNamingOk) return;
             if (!this.canDraw) return;
-            if (this.isActive) return;
+            if (this.imageMode) return;
             if (event.target === event.target.getStage()) return;
             if (this.isTransforming & (event.target.className === 'Image')) {
                 this.selectedShapeName = '';
@@ -74,7 +84,6 @@ export default {
             // transform rect
             if (event.target.className === 'Rect' || event.target.className === 'Text') {
                 this.isTransforming = true;
-                console.log('transforming');
                 // // clicked on transformer - do nothing
                 const clickedOnTransformer = event.target.getParent().className === 'Transformer';
                 if (clickedOnTransformer) {
@@ -83,9 +92,7 @@ export default {
 
                 // find clicked rect by its name
                 const name = event.target.name();
-                console.log(this.recs);
                 const rect = this.recs.find((r) => r.name === name);
-                console.log(rect);
                 if (rect) {
                     this.selectedShapeName = name;
                 } else {
@@ -115,8 +122,7 @@ export default {
                     canSave: false
                 }
             });
-            console.log(this.Boxes[0].name);
-            this.isInputing = false;
+            this.isInputting = false;
         },
         updateTransformer() {
             // here we need to manually attach or detach Transformer node
@@ -146,7 +152,7 @@ export default {
             this.inputText();
         },
         inputText() {
-            this.isInputing = true;
+            this.isInputting = true;
             this.$nextTick(() => {
                 this.$refs.rec_name.focus();
             });
@@ -155,7 +161,7 @@ export default {
             if (this.$refs.rec_name.value.length === 0) {
                 this.isWarning = true;
             } else {
-                this.isInputing = false;
+                this.isInputting = false;
                 this.$store.commit('recsNameUpdate', {
                     type: this.Boxes[0].name,
                     name: this.$refs.rec_name.value,
@@ -169,7 +175,6 @@ export default {
         },
         setRecs(element) {
             this.recs = element;
-            console.log(this.recs);
         },
         handleMouseMove() {
             // no drawing - skipping
@@ -202,7 +207,7 @@ export default {
             });
         },
         photoZoom(i) {
-            if (!this.isActive) {
+            if (!this.imageMode) {
                 this.$message({
                     message: '請進入可移動圖片模式',
                     type: 'warning'
@@ -221,8 +226,7 @@ export default {
             stage.on('wheel', (e) => {
                 // stop default scrolling
                 e.evt.preventDefault();
-                if (!this.isActive) {
-                    console.log('not wheel');
+                if (!this.imageMode) {
                     return;
                 }
             });
@@ -233,8 +237,7 @@ export default {
             stage.on('wheel', (e) => {
                 // stop default scrolling
                 e.evt.preventDefault();
-                if (!this.isActive) {
-                    console.log('not wheel');
+                if (!this.imageMode) {
                     return;
                 }
                 var oldScale = stage.scaleX();
@@ -267,7 +270,7 @@ export default {
         },
         toggle() {
             const stage = this.$refs.stage.getNode();
-            stage.draggable(this.isActive);
+            stage.draggable(this.imageMode);
             this.selectedShapeName = '';
             this.updateTransformer();
             this.isTransforming = false;
@@ -278,7 +281,20 @@ export default {
                     return node.getClassName() === 'Rect';
                 });
             Recs.forEach((rec) => {
-                rec.draggable(!this.isActive);
+                rec.draggable(!this.imageMode);
+            });
+        },
+        rectDraggable() {
+            this.$nextTick(() => {
+                let Recs = this.$refs.image
+                    .getNode()
+                    .getParent()
+                    .getChildren(function (node) {
+                        return node.getClassName() === 'Rect';
+                    });
+                Recs.forEach((rec) => {
+                    rec.draggable(this.canDraw);
+                });
             });
         },
         handleImageDragEnd(e) {
@@ -360,18 +376,18 @@ export default {
             </v-stage>
         </div>
         <div class="flex align-items-stretch flex-wrap card-container blue-container overflow-hidden" style="min-height: 70px">
-            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
+            <div v-if="this.canDraw" class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
                 <Button icon="pi pi-search-plus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'放大圖片'" @click="photoZoom(0.01)" />
                 <Button icon="pi pi-search-minus" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'縮小圖片'" @click="photoZoom(-0.01)" />
                 <Button icon="pi pi-undo" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'還原圖片大小'" @click="resetSize" />
             </div>
-            <div class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
-                <ToggleButton v-model="isActive" onLabel="可移動圖片" offLabel="編輯模式" onIcon="pi pi-check" offIcon="pi pi-times" @change="toggle" />
+            <div v-if="this.canDraw" class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
+                <ToggleButton v-model="imageMode" onLabel="可移動圖片" offLabel="編輯模式" onIcon="pi pi-check" offIcon="pi pi-times" @change="toggle" />
             </div>
             <div class="flex align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
-                <div v-if="isInputing" class="p-inputgroup">
-                    <input class="form-control" type="text" placeholder="請輸入 Label 名稱(不可重複)" ref="rec_name" :disabled="!isInputing" />
-                    <Button label="GO! 命名" @click="setRecName" v-tooltip="'請先框好圖片再點擊'" style="width: 250px" :disabled="!isInputing"></Button>
+                <div v-if="isInputting" class="p-inputgroup">
+                    <input class="form-control" type="text" placeholder="請輸入 Label 名稱(不可重複)" ref="rec_name" :disabled="!isInputting" />
+                    <Button label="GO! 命名" @click="setRecName" v-tooltip="'請先框好圖片再點擊'" style="width: 250px" :disabled="!isInputting"></Button>
                 </div>
             </div>
             <div class="align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">

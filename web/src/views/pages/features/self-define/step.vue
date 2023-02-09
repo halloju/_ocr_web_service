@@ -111,6 +111,8 @@ export default {
         isFinalStep() {
             if (this.step === 5) {
                 this.isFinal = true;
+            } else {
+                this.isFinal = false;
             }
         },
         clearState() {
@@ -164,7 +166,7 @@ export default {
                     </div>
                     <div class="col-2">
                         <Button v-if="!this.isFinal" label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
-                        <Button v-else label=" 提交" class="pi pi-arrow-right p-button-secondary" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
+                        <Button v-else label=" 提交" class="pi pi-arrow-right p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
                     </div>
                 </div>
                 <router-view />

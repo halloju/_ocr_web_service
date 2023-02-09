@@ -81,7 +81,6 @@ export default {
         isShapesVisible() {
             this.opacity = this.isShapesVisible ? '.5' : '0';
             this.textOpacity = this.isShapesVisible ? '1' : '0';
-            console.log(this.isShapesVisible);
         }
     },
     computed: {
@@ -95,9 +94,6 @@ export default {
             opacity: 0.5,
             textOpacity: 1
         };
-    },
-    mounted() {
-        console.log(this.isShapesVisible);
     }
 };
 </script>
@@ -116,7 +112,7 @@ export default {
             x: Math.min(rec.startPointX, rec.startPointX + rec.width),
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
         }"
-        draggable="true"
+        draggable="false"
         @transformend="handleTransformEnd"
         @dragend="handleDragEnd"
         @dragmove="handleDragBond"
