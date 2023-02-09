@@ -79,11 +79,13 @@ export default {
                 this.selectedShapeName = '';
                 this.updateTransformer();
                 this.isTransforming = false;
+                this.$emit('update:isEditing', false);
                 return;
             }
             // transform rect
             if (event.target.className === 'Rect' || event.target.className === 'Text') {
                 this.isTransforming = true;
+                this.$emit('update:isEditing', true);
                 // // clicked on transformer - do nothing
                 const clickedOnTransformer = event.target.getParent().className === 'Transformer';
                 if (clickedOnTransformer) {
@@ -351,7 +353,8 @@ export default {
                 };
             }
         }
-    }
+    },
+    emits: ['update:isTransforming']
 };
 </script>
 <template>

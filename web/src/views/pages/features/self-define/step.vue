@@ -48,7 +48,8 @@ export default {
                 text: true,
                 box: true,
                 mask: true
-            }
+            },
+            isEditing: false
         };
     },
     mounted() {
@@ -56,6 +57,13 @@ export default {
     },
     methods: {
         next() {
+            if (this.isEditing) {
+                this.$message({
+                    message: '請先完成編輯',
+                    type: 'warning'
+                });
+                return;
+            }
             const nextStep = this.step + 1;
             this.$router.push({ path: `/features/self-define/step/${nextStep}` });
         },
@@ -123,6 +131,9 @@ export default {
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;
+        },
+        update(isEditing) {
+            this.isEditing = isEditing;
         }
     },
     computed: {
@@ -165,8 +176,8 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-2">
-                        <Button v-if="!this.isFinal" label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
-                        <Button v-else label=" 提交" class="pi pi-arrow-right p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
+                        <Button v-if="!this.isFinal" label=" 下一步" :class="{ 'pi pi-arrow-right p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
+                        <Button v-else label=" 提交" class="pi p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
                     </div>
                 </div>
                 <router-view />
@@ -175,7 +186,7 @@ export default {
     </div>
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
-            <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" />
+            <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" @update:isEditing="update" />
         </div>
         <div class="col-12 md:col-4">
             <div class="card" style="overflow-x: scroll">
