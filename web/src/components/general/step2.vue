@@ -1,3 +1,43 @@
+<template>
+    <div class="grid p-fluid">
+        <div class="col-12" >
+            <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
+                <h5>我們先看第一張圖片辨識的狀況</h5>
+                <Annotation
+                    containerId="my-pic-annotation-output"
+                    :editMode="false"
+                    :imageSrc="imageSrc"
+                    :width="width"
+                    :height="height"
+                    dataCallback=""
+                    :initialData="getShapeData"
+                    :initialDataId="initialDataId"
+                    :justShow="true"
+                ></Annotation>
+                <h5>我已確認單張結果，包含以上所有要項</h5>
+                <el-switch
+                    v-model="switchValue"
+                    inline-prompt
+                    active-text="是"
+                    inactive-text="否"
+                    style="width: 150px"
+                />
+                <br>
+                <el-button type="primary" style="width: 150px" class="mr-2 mb-2" @click="submit" :disabled="!switchValue">  開始辨識全部檔案 </el-button>
+                <el-button type="danger" style="width: 150px" class="mr-2 mb-2 pi pi-upload" @click="back"> 重新上傳 </el-button>
+                <!-- Progress Bar -->
+                <el-progress 
+                    v-show="submitClick"
+                    :text-inside="true"
+                    :stroke-width="24"
+                    :percentage="uploadPercentage"
+                    status="success"
+                    color="#3b82f6"
+                />
+            </div>
+        </div>
+    </div>
+</template>
 <script>
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -122,6 +162,10 @@ export default {
         Annotation
     },
     name: 'General2',
+    props:{
+        image_complexity: String,
+        selectedLang: String,
+    },
     data() {
         return {
             // 上方
@@ -136,6 +180,7 @@ export default {
             // 下方
             switchValue: false,
             submitClick: false,
+            uploadPercentage: 0,
             // 資料
             shapes: [],
             allImage: this.$store.state.general_upload_image
@@ -215,24 +260,24 @@ export default {
                 responseData['base64Image'] = base64Image;
                 responseData['fileName'] = fileName;
                 // 一張一張打
-                axios
-                    .post('/ocr/gpocr', {
-                        image: base64Image,
-                        image_complexity: 'medium',
-                        language: 'Chinese'
-                    })
-                    .then((response) => {
-                        responseData['ocr_results'] = response.data.ocr_results;
-                        responseData['image_cv_id'] = response.data.image_cv_id;
-                        generalImageResponseList.push(responseData);
-                        this.uploadPercentage = this.uploadPercentage + stepPercentage;
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        if (error.code === 'ERR_NETWORK') {
-                            this.status = 'network';
-                        }
-                    });
+                axios.post("/ocr/gp_ocr", {
+                                "image": base64Image,
+                                "image_complexity": this.image_complexity,
+                                "model_name": this.selectedLang,
+                            })
+                            .then( (response) =>
+                               {
+                                responseData['ocr_results'] = response.data.ocr_results;
+                                responseData['image_cv_id'] = response.data.image_cv_id;
+                                generalImageResponseList.push(responseData)
+                                this.uploadPercentage = (this.uploadPercentage + stepPercentage).toFixed(2);
+                                })
+                            .catch( (error) => {
+                                console.log(error)
+                                if(error.code === 'ERR_NETWORK'){
+                                    this.status = 'network';
+                                }
+                })
             }
             const end_time = new Date().getTime();
             const loading = ElLoading.service({
@@ -266,10 +311,10 @@ export default {
                 .catch(() => {
                     ElMessage({
                         type: 'info',
-                        message: '操作取消'
-                    });
-                });
-        }
+                        message: '操作取消',
+                    })
+                })
+        },
     }
 };
 </script>

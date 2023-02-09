@@ -88,8 +88,7 @@ export default {
             </div>
         </div>
     </div>
-
-    <Step1 v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" />
-    <Step2 v-else-if="step == 2" @nextStepEmit="nextStep" />
-    <Step3 v-else-if="step == 3" @nextStepEmit="nextStep" />
+    <Step1 v-if="step==1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig"/>
+    <Step2 v-else-if="step==2" @nextStepEmit="nextStep" :image_complexity="image_complexity" :selectedLang="selectedLang"/>
+    <Step3 v-else-if="step==3" @nextStepEmit="nextStep" />
 </template>

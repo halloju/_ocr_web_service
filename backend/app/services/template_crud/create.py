@@ -7,6 +7,7 @@ import base64
 from datetime import datetime
 from io import BytesIO
 import logging
+import pytz
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,11 @@ def create_template(template, db: Session):
     將 template 其餘資訊寫入 DB
     """
     try:
-        today = datetime.today()
+        today = datetime.now(pytz.timezone("Asia/Taipei"))
+        print(f'datetime.now(): {datetime.now()}')
+        print(f'datetime.now(pytz.timezone("Europe/London")): {datetime.now(pytz.timezone("Europe/London"))}')
+        print(f'datetime.now(pytz.timezone("Asia/Taipei")): {datetime.now(pytz.timezone("Asia/Taipei"))}')
+        print(f'today: {today}')
         template_id=template.user_id+today.strftime('%Y%m%d%H%M%S')
 
         image_base64_binary = template.image.encode('utf-8')
@@ -33,7 +38,7 @@ def create_template(template, db: Session):
             BytesIO(image_binary),
             len(image_binary)
         )
-
+        print(f"service template create <template>: {template}")
         # Step 2. 將 template 其餘資訊寫入 DB
         template_info = TemplateInfo(
             template_id=template_id,
@@ -41,7 +46,8 @@ def create_template(template, db: Session):
             template_name=template.template_name,
             bbox=template.bbox,
             updated_at=today,
-            is_public=template.is_public
+            is_public=template.is_public,
+            is_no_ttl=template.is_no_ttl
         )
         db.add(template_info)
         db.commit()

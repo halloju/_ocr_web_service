@@ -8,7 +8,9 @@ export default {
     data() {
         return {
             selectedLang: null,
-            languages: [{ name: '繁體中文', code: 'Chinese' }],
+            languages: [
+                { name: '繁體中文', code: 'Chinese' },
+            ],
             nestedRouteItems: [
                 {
                     label: '圖檔上傳',
@@ -63,16 +65,22 @@ export default {
             responseData['base64Image'] = base64Image;
             responseData['fileName'] = this.fileList[0].name;
             // 打 API
-            axios
-                .post('/ocr/gpocr', {
-                    image: base64Image,
-                    image_complexity: this.image_complexity,
-                    language: this.selectedLang.code
-                })
-                .then((response) => {
-                    responseData['ocr_results'] = response.data.ocr_results;
-                    responseData['image_cv_id'] = response.data.image_cv_id;
-                    generalImageResponseList.push(responseData);
+            axios.post("/ocr/gpocr", {
+                                "image": base64Image,
+                                "image_complexity": this.image_complexity,
+                                "language": this.selectedLang.code,
+                            })
+                            .then( (response) =>
+                               {
+                                responseData['ocr_results'] = response.data.ocr_results;
+                                responseData['image_cv_id'] = response.data.image_cv_id;
+                                generalImageResponseList.push(responseData)
+                                })
+                            .catch( (error) => {
+                                console.log(error)
+                                if(error.code === 'ERR_NETWORK'){
+                                    this.status = 'network';
+                                }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -91,13 +99,13 @@ export default {
                 const api_time = (end_time - start_time) / 1000;
                 this.$store.commit('generalExecuteTime', api_time);
                 // 下一步
-                this.$emit('nextStepEmit', 2);
-                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
-                loading.close();
-            }, 2000);
+                this.$emit('nextStepEmit', 2)
+                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code)
+                loading.close()
+            }, 2000)
         },
         fileChange(file, fileList) {
-            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
+            const isIMAGE = file.type === 'image/jpeg'||'image/png';
             const isLt1M = file.size / 1024 / 1024 < 1;
 
             if (!isIMAGE) {
@@ -105,13 +113,13 @@ export default {
                 fileList.pop();
                 return false;
             }
-            if (!isLt1M) {
+            if (!isLt8M) {
                 this.$message.error('上傳圖案大小不能超過 8 MB!');
                 fileList.pop();
                 return false;
             }
 
-            if (isIMAGE && isLt1M) {
+            if (isIMAGE&&isLt1M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;

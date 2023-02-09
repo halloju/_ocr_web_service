@@ -1,13 +1,78 @@
+<template>
+  <div :id="containerId" class="pa-container" :style="{width: width + 'px', height: height + 'px'}">
+      <div class="pa-canvas">
+      <div class="pa-controls">
+          <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
+          <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
+          <hr />
+          <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
+          <a href="#" @click.prevent="addRectangle" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+      </div>
+      <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
+  
+      <v-stage :config="{
+          width: stageSize.width,
+          height: stageSize.height,
+          scaleX: scale,
+          scaleY: scale,
+          draggable: true
+      }" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent"
+          @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
+          <v-layer ref="background">
+            <v-image :config="{
+                image: image,
+                stroke: 'black'
+                }" />
+          </v-layer>
+          <v-layer ref="items">
+          <template v-for="shape in shapes">
+              <v-rect v-if="shape.type === 'rect'" :config="shape" :key="shape.name"
+                      @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
+                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"
+                      />
+              <v-text :config="
+                        { text: shape.annotation.title, fontSize: 30, 
+                        x: Math.min(shape.x, shape.x + shape.width),
+                        y: Math.min(shape.y, shape.y + shape.height)
+                        }" />
+          </template>
+          <v-transformer ref="transformer" :rotateEnabled="false" v-if="editMode"/>
+          </v-layer>
+      </v-stage>
+  
+      <loader v-if="isLoading" />
+  
+      <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
+      </div>
+      <div class="pa-infobar">
+      <side-bar-entry v-for="shape in shapes" :key="shape.name" :shape="shape" :edit-mode="editMode" :justShow="justShow"
+                      :selected-shape-name="selectedShapeName" :current-hover-shape="currentHoverShape"
+                      v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
+                      v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
+                      v-on:sidebar-entry-delete="deleteShape($event)"
+                      v-on:sidebar-entry-save="formSubmitted($event)"/>
+      </div>
+  </div>
+  </template>
+  
 <script>
 import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';
 import SideBarEntry from '@/components/SideBarEntry.vue';
 
 export default {
-    components: {
-        SideBarEntry,
-        Icon,
-        Loader
+components: {
+    SideBarEntry,
+    Icon,
+    Loader
+},
+props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow'],
+data () {
+    return {
+    image: null,
+    stageSize: {
+        width: null,
+        height: null
     },
     props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id'],
     data() {

@@ -3,11 +3,12 @@
        :class="{'is-selected-target': selectedShapeName === shape.name, 'is-hover-target': currentHoverShape === shape.name}">
 
     <button type="button" @click.prevent.stop="toggleContent" class="pa-accordion" :class="{'is-active': active}">
-      <icon :type="shape.type" />
-      <span v-if="shape.annotation.title" class="pa-side-bar-title">{{shape.annotation.title}}</span>
+      <!-- <icon :type="shape.type" /> -->
+      <span v-if="shape.annotation.title" class="pa-side-bar-title">{{shape.annotation.title}}.</span>
       <span v-if="editMode && (active || selectedShapeName === shape.name)" class="pa-side-bar-icons">
         <a href="#" @click.prevent="deleteShape" :title="delete_shape"><icon type="delete-shape" fill="red" /></a>
       </span>
+      {{ truncateText(formData.text, 10) }}
     </button>
 
     <div class="pa-panel" ref="panel">
@@ -23,8 +24,8 @@
       <template v-else>
         <form class="pa-annotation-form" @submit.prevent.stop="submitted">
           <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" />
-          <button type="submit">{{ submit }}</button>
+          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" />
+          <button v-if="!justShow" type="submit">{{ submit }}</button>
         </form>
       </template>
     </div>
@@ -40,7 +41,7 @@ export default {
     Icon,
     Nl2br
   },
-  props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape'],
+  props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow'],
   data () {
     return {
       annotation_title: '要向名稱：',
@@ -91,6 +92,12 @@ export default {
       this.toggleContent();
 
       this.$emit('sidebar-entry-save', this.shape.name);
+    },
+    truncateText(text, maxLength) {
+      if (text.length > maxLength) {
+        return text.substring(0, maxLength) + "...";
+      }
+      return text
     }
   },
   watch: {
@@ -101,7 +108,13 @@ export default {
       } else if (this.active && newShape !== this.shape.name) {
         this.toggleContent();
       }
-    }
+    },
+    shape() {
+      this.formData.title = this.shape.annotation.title;
+      this.formData.text = this.shape.annotation.text;
+      this.formData.linkTitle = this.shape.annotation.linkTitle;
+      this.formData.link = this.shape.annotation.link;
+    },
   }
 };
 </script>

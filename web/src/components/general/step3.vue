@@ -160,7 +160,8 @@ export default {
                     </div>
                     <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                         <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside">
-                            <el-carousel-item v-for="item in this.resData.length" :key="item">
+                            <el-carousel-item v-for="item in this.resData.length" :key="item" style="overflow: scroll">
+                                <h3> 第 {{item}} 張</h3>
                                 <Annotation
                                     containerId="my-pic-annotation-output"
                                     :editMode="false"
@@ -196,6 +197,147 @@ export default {
         </div>
     </div>
 </template>
+
+<script>
+import Annotation from '@/components/Annotation.vue';
+import { Download, Back } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import * as XLSX from 'xlsx/xlsx.mjs'
+
+export default {
+    components: {
+        Annotation
+    },
+    name: 'General3',
+    data() {
+        return {
+            // 上方
+            imageSrc: this.$store.state.general_upload_image[0].reader,
+            localStorageKey: "storage",
+            width: 1200,
+            height: 600,
+            dataCallback: '',
+            initialData: '[{"type":"rect","name":"shape-1673851677198","fill":"#b0c4de","opacity":0.5,"stroke":"#00f","draggable":true,"strokeWidth":2,"strokeScaleEnabled":false,"annotation":{"title":"要項一","text":"","linkTitle":"","link":""},"x":121.30823537700691,"y":186.11122465281173,"width": 200,"height":215.33333333333334},{"type":"rect","name":"shape-1673851944263","fill":"#b0c4de","opacity":0.5,"stroke":"#00f","draggable":true,"strokeWidth":2,"strokeScaleEnabled":false,"annotation":{"title":"要項二","text":"","linkTitle":"","link":""},"x":219.74836905871385,"y":37.62814538676607,"width":150.5125815470643,"height":150.5125815470643}]',
+            initialDataId: null,
+            // 下方
+            isDownload: false,
+            resData: this.$store.state.general_upload_res,
+            general_execute_time: this.$store.state.general_execute_time,
+            Download: Download,
+            Back: Back,
+            excelData: [],
+            tableData: []
+        };
+    },
+    computed: {
+        getExcel() {
+            this.excelData = []
+            this.tableData = []
+            for (let i = 0; i < this.resData.length; i++) {
+                this.excelData.push({
+                    "filename": this.resData[i].fileName,
+                    "image_cv_id": this.resData[i].image_cv_id,
+                    "ocr_results": JSON.stringify(this.resData[i].ocr_results)
+                })
+                this.tableData.push({
+                    "filename": this.resData[i].fileName,
+                    "ocr_results": JSON.stringify(this.resData[i].ocr_results),
+                    "image": `data:image/png;base64, ` + this.resData[i].base64Image,
+                })
+            }
+            return this.tableData
+        },
+    },
+    methods: {
+        callback(data, image_cv_id) {
+            for (let i = 0; i < this.resData.length; i++) {
+
+                if (image_cv_id === this.resData[i].image_cv_id) {
+                    for (let j = 0; j < this.resData[i].ocr_results.length; j++) {
+                        this.resData[i].ocr_results[j].text = data[j].annotation.text;
+                    }
+                    break
+                }
+            }
+            console.log(this.resData)
+        },
+        getImage(item) {
+            let ImageSrc = 'data:image/png;base64,' + this.resData[item-1].base64Image;
+            return ImageSrc
+        },
+        getShapeData(item) {
+            let myShapes = []
+            let regData = this.$store.state.general_upload_res[item-1].ocr_results;
+            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item-1].image_cv_id);
+            regData.forEach(function(element, index) {
+                var label = Object.values(element);
+                var points = Object.values(label[0]);
+                var myContent = label[1];
+                var label_x = points[0][0];
+                var label_y = points[0][1];
+                var label_width = points[1][0] - label_x ;
+                var label_height = points[2][1] - label_y ;
+                myShapes.push({
+                    type: 'rect',
+                    name: image_cv_id + index,
+                    fill: '#b0c4de',
+                    opacity: 0.5,
+                    stroke: '#0ff',
+                    draggable: true,
+                    strokeWidth: 2,
+                    strokeScaleEnabled: false,
+                    annotation: {
+                        title: index+1,
+                        text: myContent,
+                        linkTitle: '',
+                        link: ''
+                    },
+                    x: label_x,
+                    y: label_y,
+                    width: label_width,
+                    height: label_height
+                });
+            });
+            return JSON.stringify(myShapes)
+        },
+        back(){
+            ElMessageBox.confirm(
+                '本次辨識結果將不保留，請問是否要繼續？',
+                '警告',
+                {
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true,
+                }
+            )
+                .then(() => {
+                    ElMessage({
+                        type: 'success',
+                        message: '回到圖檔上傳',
+                    })
+                    this.$emit('nextStepEmit', 1)
+                })
+                .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '操作取消',
+                })
+                })
+        },
+        downloadFile() {
+            const jsonWorkSheet = XLSX.utils.json_to_sheet(this.excelData);
+            const workBook = {
+                SheetNames: ['jsonWorkSheet'],
+                Sheets: {
+                    'jsonWorkSheet': jsonWorkSheet,
+                }
+            }
+            XLSX.writeFile(workBook, "通用辨識結果.xlsx");
+        },
+    }
+};
+</script>
 <style scoped>
 .my-button {
     margin: 10px;
@@ -203,15 +345,6 @@ export default {
 .el-carousel {
     width: 1200px;
 }
-.el-carousel__item h3 {
-    display: flex;
-    color: #475669;
-    opacity: 0.75;
-    width: 1200px;
-    line-height: 1000px;
-    margin: 0;
-}
-
 .el-carousel__item:nth-child(2n) {
     background-color: #99a9bf;
 }
