@@ -1,6 +1,7 @@
 <script>
 import Card from '@/components/Card.vue';
 import Icon from '@/components/Icon.vue';
+import { mapState } from 'vuex';
 
 export default {
     name: 'BoxCard',
@@ -28,6 +29,12 @@ export default {
             this.isShapesVisible[name] = !this.isShapesVisible[name];
             console.log(this.isShapesVisible[name]);
             this.$emit('toggleShowShapes', name, this.isShapesVisible[name]);
+        }
+    },
+    computed: {
+        ...mapState(['selfDefinedRecs']),
+        recs() {
+            return this.selfDefinedRecs[this.Boxes[0].name] || [];
         }
     },
     mounted() {

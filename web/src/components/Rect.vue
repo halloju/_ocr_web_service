@@ -126,6 +126,6 @@ export default {
         v-for="(rec, index) in recs"
         :key="index"
         :name="rec.name"
-        :config="{ text: `No.` + index + `\n要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height), opacity: this.textOpacity }"
+        :config="{ text: `要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height), opacity: this.textOpacity }"
     />
 </template>

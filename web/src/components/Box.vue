@@ -61,7 +61,6 @@ export default {
     },
     methods: {
         handleMouseDown(event) {
-            console.log(!this.isNamingOk, !this.canDraw, this.isActive, event.target === event.target.getStage(), this.isTransforming, event.target.className);
             if (!this.isNamingOk) return;
             if (!this.canDraw) return;
             if (this.isActive) return;
@@ -100,24 +99,6 @@ export default {
             this.isDrawing = true;
             this.isNamingOk = false;
             const pos = this.$refs.image.getNode().getRelativePointerPosition();
-            console.log(this.recs);
-            // this.setRecs([
-            //     ...this.recs,
-            //     {
-            //         startPointX: pos.x,
-            //         startPointY: pos.y,
-            //         endPointX: pos.x,
-            //         endPointY: pos.y,
-            //         scaleX: 1,
-            //         scaleY: 1,
-            //         width: 0,
-            //         height: 0,
-            //         canDelete: false,
-            //         canEdit: false,
-            //         canSave: false
-            //     }
-            // ]);
-            // this.$store.state.selfDefinedRecs[this.Boxes[0].name] = this.recs;
             this.$store.commit('recsUpdate', {
                 type: this.Boxes[0].name,
                 data: {
@@ -135,7 +116,6 @@ export default {
                 }
             });
             console.log(this.Boxes[0].name);
-            //console.log(this.$store.state[this.Boxes[0].name]);
             this.isInputing = false;
         },
         updateTransformer() {
@@ -163,7 +143,6 @@ export default {
             if (!this.canDraw) return;
             if (!this.isDrawing) return;
             this.isDrawing = false;
-            // this.$store.commit('recsUpdate', this.Boxes[0].name, this.recs);
             this.inputText();
         },
         inputText() {
@@ -177,11 +156,6 @@ export default {
                 this.isWarning = true;
             } else {
                 this.isInputing = false;
-                // this.recs[this.recs.length - 1].name = this.$refs.rec_name.value;
-                // this.recs[this.recs.length - 1].canDelete = true;
-                // this.recs[this.recs.length - 1].canEdit = true;
-
-                //this.$store.state[this.boxName] = this.recs;
                 this.$store.commit('recsNameUpdate', {
                     type: this.Boxes[0].name,
                     name: this.$refs.rec_name.value,
