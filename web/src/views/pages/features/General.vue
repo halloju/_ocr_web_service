@@ -6,8 +6,8 @@
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
                     <el-breadcrumb-item >主要功能</el-breadcrumb-item>
-                    <el-breadcrumb-item >通用文件辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item >通用辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item >通用文件</el-breadcrumb-item>
+                    <el-breadcrumb-item >全文辨識</el-breadcrumb-item>
                 </el-breadcrumb>  
                 <br />
                 <!-- Step -->
