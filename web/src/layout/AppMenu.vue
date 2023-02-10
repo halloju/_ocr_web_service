@@ -14,12 +14,12 @@ const model = ref([
                     {
                         label: '全文辨識',
                         icon: 'pi pi-th-large',
-                        to: '/features/general'
+                        to: '/features/general/ocr'
                     },
                     {
                         label: '模板辨識',
                         icon: 'pi pi-list',
-                        to: '/features/model-list/person'
+                        to: '/features/general/model-list'
                     }
                 ]
             },
@@ -83,7 +83,7 @@ const model = ref([
                     {
                         label: '新增自定義模板',
                         icon: 'pi pi-file-edit',
-                        to: '/features/self-define/step/1'
+                        to: '/features/general/self-define/step/1'
                     },
                 ]
             },
