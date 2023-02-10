@@ -53,7 +53,8 @@ export default {
             isTransforming: false,
             isWarning: false,
             canDraw: true,
-            imageMode: false
+            imageMode: false,
+            warningMessage: ''
         };
     },
     watch: {
@@ -160,6 +161,10 @@ export default {
         },
         setRecName() {
             if (this.$refs.rec_name.value.length === 0) {
+                this.warningMessage = '請至少輸入一個文字，謝謝配合。';
+                this.isWarning = true;
+            } else if (this.recs.some((rec) => rec.name === this.$refs.rec_name.value)) {
+                this.warningMessage = '已有相同名稱，請重新輸入。';
                 this.isWarning = true;
             } else {
                 this.isInputting = false;
@@ -371,7 +376,7 @@ export default {
                 </div>
             </div>
             <div class="align-items-center justify-content-center font-bold text-white border-round m-4" style="min-width: 200px; min-height: 50px">
-                <InlineMessage v-if="isWarning">請至少輸入一個文字，謝謝配合。</InlineMessage>
+                <InlineMessage v-if="isWarning"> {{ this.warningMessage }} </InlineMessage>
             </div>
         </div>
     </div>
