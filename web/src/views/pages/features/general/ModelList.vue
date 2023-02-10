@@ -2,7 +2,22 @@
     <div class="grid">
         <div class="col-7">
             <div class="card" style="height: 850px; overflow-y: scroll">
-                <h2>個人模板檢視</h2>
+                 <!-- Breadcrumb -->
+                 <el-breadcrumb>
+                    <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
+                    <el-breadcrumb-item >主要功能</el-breadcrumb-item>
+                    <el-breadcrumb-item >通用辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item >模板辨識</el-breadcrumb-item>
+                </el-breadcrumb>  
+                <br />
+                <div class="flex justify-content-start flex-wrap card-container">
+                    <div class="flex align-items-center justify-content-center mt-1 mb-0 mr-2">
+                        <h2>模板檢視</h2>
+                    </div>
+                    <div class="flex align-items-center justify-content-center mt-1 mb-1">
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="createTemplate" :disabled="disableUpload"> ＋新增 </el-button>
+                    </div>
+                </div>
                 <el-table :data="formattedTableData" style="width: 100%">
                     <el-table-column :prop="item.prop" :label="item.label" v-for="(item, index) in tableHeader" :key="item.prop" :width="item.width">
                         <template #default="scope">
@@ -243,6 +258,9 @@ export default {
         insertBefore(index) {
             header.editable = true;
             this.tableHeader.splice(index, 0, header);
+        },
+        createTemplate() {
+            this.$router.push({path:'/features/general/self-define/step/1'})
         }
     }
 };
