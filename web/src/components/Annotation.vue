@@ -1,428 +1,409 @@
-<template>
-  <div :id="containerId" class="pa-container" :style="{width: width + 'px', height: height + 'px'}">
-      <div class="pa-canvas">
-      <div class="pa-controls">
-          <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
-          <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
-          <hr />
-          <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-          <a href="#" @click.prevent="addRectangle" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-      </div>
-      <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-  
-      <v-stage :config="{
-          width: stageSize.width,
-          height: stageSize.height,
-          scaleX: scale,
-          scaleY: scale,
-          draggable: true
-      }" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent"
-          @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
-          <v-layer ref="background">
-            <v-image :config="{
-                image: image,
-                stroke: 'black'
-                }" />
-          </v-layer>
-          <v-layer ref="items">
-          <template v-for="shape in shapes">
-              <v-rect v-if="shape.type === 'rect'" :config="shape" :key="shape.name"
-                      @dragend="handleDragEnd($event, shape)" @transformend="handleTransform($event, shape)"
-                      @mouseenter="handleMouseEnter(shape.name)" @mouseleave="handleMouseLeave"
-                      />
-              <v-text :config="
-                        { text: shape.annotation.title, fontSize: 30, 
-                        x: Math.min(shape.x, shape.x + shape.width),
-                        y: Math.min(shape.y, shape.y + shape.height)
-                        }" />
-          </template>
-          <v-transformer ref="transformer" :rotateEnabled="false" v-if="editMode"/>
-          </v-layer>
-      </v-stage>
-  
-      <loader v-if="isLoading" />
-  
-      <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
-      </div>
-      <div class="pa-infobar">
-      <side-bar-entry v-for="shape in shapes" :key="shape.name" :shape="shape" :edit-mode="editMode" :justShow="justShow"
-                      :selected-shape-name="selectedShapeName" :current-hover-shape="currentHoverShape"
-                      v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
-                      v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
-                      v-on:sidebar-entry-delete="deleteShape($event)"
-                      v-on:sidebar-entry-save="formSubmitted($event)"/>
-      </div>
-  </div>
-  </template>
-  
 <script>
 import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';
 import SideBarEntry from '@/components/SideBarEntry.vue';
-
 export default {
-components: {
-    SideBarEntry,
-    Icon,
-    Loader
-},
-props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow'],
-data () {
-    return {
-    image: null,
-    stageSize: {
-        width: null,
-        height: null
+    components: {
+        SideBarEntry,
+        Icon,
+        Loader
     },
-    scale: 1, // current scale
-    shapes: [], // shape container
-    selectedShapeName: '', // currently selected shape
-    currentHoverShape: '', // hovering over certain shape
-    isLoading: true, // loading image?
-    isShapesVisible: true, // show shapes?
-    isAddingPolygon: false, // currently in polygon add mode?
-    polygonPoints: [],
-    polygonAddShapes: [],
-    callback: undefined, // actual callback function
-    formData: {
-        title: '',
-        text: '',
-        linkTitle: '',
-        link: ''
-    }
-    };
-},
-computed: {
-    polygonPointsConfig () {
-    return {
-        points: this.polygonPoints,
-        ...this.getBaseShapeForPolygon(),
-        closed: true
-    };
-    }
-},
-// created live cycle hook
-created () {
-    // set defaults
-    this.stageSize.width = parseInt(this.width) / 3 * 2 - 2; // - 2 for border
-    this.stageSize.height = parseInt(this.height);
-
-    if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
-    if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
-
-    // load image
-    const image = new window.Image();
-    image.src = this.imageSrc;
-    image.onload = () => {
-    // set image only when it is loaded
-    this.image = image;
-
-    // adapt initial scale to fit canvas
-    this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
-    // loading finished
-    this.isLoading = false;
-    };
-
-    // define callback function
-    this.callback = this.dataCallback &&
-    typeof eval(this.dataCallback) && // eslint-disable-line no-eval
-    eval(this.dataCallback); // eslint-disable-line no-eval
-},
-mounted () {
-    document.addEventListener('keydown', this.handleKeyEvent);
-    // try to load from local storage or local data
-    this.load();
-},
-beforeDestroy () {
-    document.removeEventListener('keydown', this.handleKeyEvent);
-},
-methods: {
-    // handle transformation of elements
-    handleStageMouseDown (e) {
-    // adding polygon shape?
-    if (this.isAddingPolygon) {
-        e.evt.preventDefault();
-        e.evt.stopPropagation();
-        e.evt.stopImmediatePropagation();
-
-        // right mouse button deletes last point
-        if (e.evt.button === 2) this.removePolygonPoint();
-        else if (e.evt.detail === 1) this.addPolygonPoint(); // ignore double clicks
-
-        return; // no further stuff
-    }
-
-    // only handle left mouse button
-    if (e.evt && e.evt.button !== 0) return;
-
-    // in edit mode?
-    if (this.editMode) {
-        // edit mode only
-        // clicked on stage - clear selection
-        if (e.target === e.target.getStage()) {
-        this.selectedShapeName = '';
-        this.updateTransformer();
-        return;
+    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow'],
+    data() {
+        return {
+            image: null,
+            stageSize: {
+                width: null,
+                height: null
+            },
+            scale: 1, // current scale
+            shapes: [], // shape container
+            selectedShapeName: '', // currently selected shape
+            currentHoverShape: '', // hovering over certain shape
+            isLoading: true, // loading image?
+            isShapesVisible: true, // show shapes?
+            isAddingPolygon: false, // currently in polygon add mode?
+            polygonPoints: [],
+            polygonAddShapes: [],
+            callback: undefined, // actual callback function
+            formData: {
+                title: '',
+                text: '',
+                linkTitle: '',
+                link: ''
+            }
+        };
+    },
+    computed: {
+        polygonPointsConfig() {
+            return {
+                points: this.polygonPoints,
+                ...this.getBaseShapeForPolygon(),
+                closed: true
+            };
         }
+    },
+    // created live cycle hook
+    created() {
+        // set defaults
+        this.stageSize.width = (parseInt(this.width) / 3) * 2 - 2; // - 2 for border
+        this.stageSize.height = parseInt(this.height);
+        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
+        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
+        // load image
+        const image = new window.Image();
+        image.src = this.imageSrc;
+        image.onload = () => {
+            // set image only when it is loaded
+            this.image = image;
+            // adapt initial scale to fit canvas
+            this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
+            // loading finished
+            this.isLoading = false;
+        };
+        // define callback function
+        this.callback =
+            this.dataCallback &&
+            typeof eval(this.dataCallback) && // eslint-disable-line no-eval
+            eval(this.dataCallback); // eslint-disable-line no-eval
+    },
+    mounted() {
+        document.addEventListener('keydown', this.handleKeyEvent);
+        // try to load from local storage or local data
+        this.load();
+    },
+    beforeUnmount() {
+        document.removeEventListener('keydown', this.handleKeyEvent);
+    },
+    methods: {
+        // handle transformation of elements
+        handleStageMouseDown(e) {
+            // adding polygon shape?
+            if (this.isAddingPolygon) {
+                e.evt.preventDefault();
+                e.evt.stopPropagation();
+                e.evt.stopImmediatePropagation();
+                // right mouse button deletes last point
+                if (e.evt.button === 2) this.removePolygonPoint();
+                else if (e.evt.detail === 1) this.addPolygonPoint(); // ignore double clicks
+                return; // no further stuff
+            }
+            // only handle left mouse button
+            if (e.evt && e.evt.button !== 0) return;
+            // in edit mode?
+            if (this.editMode) {
+                // edit mode only
+                // clicked on stage - clear selection
+                if (e.target === e.target.getStage()) {
+                    this.selectedShapeName = '';
+                    this.updateTransformer();
+                    return;
+                }
+                // clicked on transformer - do nothing
+                const clickedOnTransformer = e.target.getParent().className === 'Transformer';
+                if (clickedOnTransformer) {
+                    return;
+                }
+            }
+            // find clicked shape by its name
+            const name = e.target.name();
+            const shape = this.shapes.find((r) => r.name === name);
+            if (shape) {
+                this.selectedShapeName = name;
+            } else {
+                this.selectedShapeName = '';
+            }
+            if (this.editMode) {
+                this.updateTransformer();
+            }
+        },
+        updateTransformer() {
+            if (!this.editMode) return; // edit mode only
+            // here we need to manually attach or detach Transformer node
+            const transformerNode = this.$refs.transformer.getStage();
+            const stage = transformerNode.getStage();
+            const { selectedShapeName } = this;
+            const selectedNode = stage.findOne('.' + selectedShapeName);
+            // do nothing if selected node is already attached
+            if (selectedNode === transformerNode.node()) {
+                return;
+            }
+            if (selectedNode) {
+                // attach to another node
+                transformerNode.attachTo(selectedNode);
+            } else {
+                // remove transformer
+                transformerNode.detach();
+            }
+            transformerNode.getLayer().batchDraw();
+        },
+        cancelEvent(e) {
+            e.evt.preventDefault();
+        },
+        addRectangle() {
+            if (this.isAddingPolygon) return;
+            this.shapes.push({
+                ...this.getBaseShape('rect'),
+                x: 80 / this.scale,
+                y: 50 / this.scale,
+                width: 200 / this.scale,
+                height: 200 / this.scale
+            });
+            // call update
+            this.shapesUpdated();
+        },
 
-        // clicked on transformer - do nothing
-        const clickedOnTransformer =
-        e.target.getParent().className === 'Transformer';
-        if (clickedOnTransformer) {
-        return;
+        getBaseShape(type) {
+            return {
+                type: type,
+                name: 'shape-' + new Date().valueOf(),
+                fill: '#b0c4de',
+                opacity: 0.5,
+                stroke: '#0000ff',
+                draggable: true,
+                strokeWidth: 2,
+                strokeScaleEnabled: false,
+                annotation: {
+                    title: '',
+                    text: '',
+                    linkTitle: '',
+                    link: ''
+                }
+            };
+        },
+        // delete shape
+        deleteShape(name) {
+            const idx = this.shapes.findIndex((r) => r.name === name);
+            if (idx >= 0) {
+                if (name === this.selectedShapeName) {
+                    this.selectedShapeName = '';
+                    this.updateTransformer();
+                }
+                this.shapes.splice(idx, 1);
+                // call update
+                this.shapesUpdated();
+            }
+        },
+        // handle key events
+        handleKeyEvent(event) {
+            // shape selected?
+            if (this.editMode && this.selectedShapeName) {
+                // delete key pressed?
+                if (event.key === 'Delete') this.deleteShape(this.selectedShapeName);
+            }
+            // TODO only if focued
+            /* if (!this.selectedShapeName) {
+          if (event.key === '+') this.changeScale(0.1);
+      } */
+        },
+        // handle scaling of canvas
+        handleScroll(e) {
+            if (e.evt) {
+                const event = e.evt;
+                event.preventDefault();
+                // Normalize wheel to +1 or -1.
+                const wheel = event.deltaY < 0 ? 1 : -1;
+                // calculate scale
+                this.changeScale(wheel * 0.02);
+            }
+        },
+        changeScale(diff) {
+            let scale = this.scale + diff;
+            // minimum and maximum
+            if (scale < 0.1) scale = 0.1;
+            if (scale > 5) scale = 5;
+            // TODO: easing or timer - https://konvajs.org/docs/tweens/Common_Easings.html
+            this.scale = scale;
+        },
+        // handle manipulation events
+        handleDragEnd(event, shape) {
+            shape.x = event.currentTarget.attrs.x;
+            shape.y = event.currentTarget.attrs.y;
+            // call update
+            this.shapesUpdated();
+        },
+        // handleDragBond (event, shape) {
+        //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
+        //   if (event.currentTarget.attrs.x < 0) {
+        //     event.target.x(0)
+        //   }
+        //   if (event.currentTarget.attrs.y < 0) {
+        //     event.target.y(0)
+        //   }
+        //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
+        //     event.target.x(this.image.width - shape.width * shape.scaleX)
+        //   }
+        //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
+        //     event.target.y(this.image.height - shape.height * shape.scaleY)
+        //   }
+        //   // call update
+        //   this.shapesUpdated();
+        // },
+        handleTransform(event, shape) {
+            console.log(shape.width, shape.height);
+            shape.scaleX = event.currentTarget.attrs.scaleX;
+            shape.scaleY = event.currentTarget.attrs.scaleY;
+            shape.x = event.currentTarget.attrs.x;
+            shape.y = event.currentTarget.attrs.y;
+            // call update
+            this.shapesUpdated();
+        },
+        // handle show stuff
+        handleMouseEnter(name) {
+            if (!this.isAddingPolygon) {
+                this.$refs.stage.getStage().container().style.cursor = 'pointer';
+                this.currentHoverShape = name;
+            }
+        },
+        handleMouseLeave() {
+            if (!this.isAddingPolygon) {
+                this.$refs.stage.getStage().container().style.cursor = 'default';
+                this.currentHoverShape = '';
+            }
+        },
+        handleGlobalMouseEnter() {
+            if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'crosshair';
+        },
+        handleGlobalMouseLeave() {
+            if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'default';
+        },
+        handleSideBarMouseEnter(name) {
+            if (!this.isAddingPolygon) {
+                const idx = this.shapes.findIndex((r) => r.name === name);
+                if (idx >= 0) {
+                    this.shapes[idx].stroke = '#c00';
+                    this.shapes[idx].fill = '#dec4b0';
+                }
+            }
+        },
+        handleSideBarMouseLeave(name) {
+            if (!this.isAddingPolygon) {
+                const idx = this.shapes.findIndex((r) => r.name === name);
+                if (idx >= 0) {
+                    this.shapes[idx].stroke = '#00f';
+                    this.shapes[idx].fill = '#b0c4de';
+                }
+            }
+        },
+        formSubmitted(name) {
+            // save correct color
+            const idx = this.shapes.findIndex((r) => r.name === name);
+            if (idx >= 0) {
+                this.shapes[idx].stroke = '#00f';
+                this.shapes[idx].fill = '#b0c4de';
+            }
+            // callback/persist
+            this.shapesUpdated();
+        },
+        // toggle shapes shown or not
+        toggleShowShapes() {
+            // toggle
+            this.$refs.items.getStage().canvas._canvas.style.opacity = this.isShapesVisible ? '0' : '1';
+            // TODO: fade animation
+            this.isShapesVisible = !this.isShapesVisible;
+        },
+        // callback on update
+        shapesUpdated() {
+            if (this.callback && typeof this.callback === 'function') {
+                this.callback(this.shapes, this.image_cv_id);
+            }
+            // save to local storage, if defined
+            if (this.localStorageKey) {
+                localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
+            }
+        },
+        load() {
+            if (this.initialDataId) {
+                const node = document.getElementById(this.initialDataId);
+                if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
+            } else if (this.initialData && this.initialData.length > 0) {
+                this.shapes = JSON.parse(this.initialData);
+            } else if (this.localStorageKey) {
+                const data = localStorage.getItem(this.localStorageKey) || '[]';
+                this.shapes = JSON.parse(data);
+            }
+            // if we only show data, remove draggable from it
+            if (!this.editMode) {
+                this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
+            }
         }
     }
-
-    // find clicked shape by its name
-    const name = e.target.name();
-    const shape = this.shapes.find(r => r.name === name);
-    if (shape) {
-        this.selectedShapeName = name;
-    } else {
-        this.selectedShapeName = '';
-    }
-
-    if (this.editMode) {
-        this.updateTransformer();
-    }
-    },
-    updateTransformer () {
-    if (!this.editMode) return; // edit mode only
-
-    // here we need to manually attach or detach Transformer node
-    const transformerNode = this.$refs.transformer.getStage();
-    const stage = transformerNode.getStage();
-    const { selectedShapeName } = this;
-
-    const selectedNode = stage.findOne('.' + selectedShapeName);
-    // do nothing if selected node is already attached
-    if (selectedNode === transformerNode.node()) {
-        return;
-    }
-
-    if (selectedNode) {
-        // attach to another node
-        transformerNode.attachTo(selectedNode);
-    } else {
-        // remove transformer
-        transformerNode.detach();
-    }
-    transformerNode.getLayer().batchDraw();
-    },
-    cancelEvent (e) {
-    e.evt.preventDefault();
-    },
-
-    addRectangle () {
-    if (this.isAddingPolygon) return;
-
-    this.shapes.push({
-        ...this.getBaseShape('rect'),
-        x: 80 / this.scale,
-        y: 50 / this.scale,
-        width: 200 / this.scale,
-        height: 200 / this.scale
-    });
-
-    // call update
-    this.shapesUpdated();
-    },
-  
-    getBaseShape (type) {
-    return {
-          type: type,
-          name: 'shape-' + (new Date()).valueOf(),
-          fill: '#b0c4de',
-          opacity: 0.5,
-          stroke: '#0000ff',
-          draggable: true,
-          strokeWidth: 2,
-          strokeScaleEnabled: false,
-          annotation: {
-          title: '',
-          text: '',
-          linkTitle: '',
-          link: ''
-        }
-    };
-    },
-
-    // delete shape
-    deleteShape (name) {
-    const idx = this.shapes.findIndex(r => r.name === name);
-    if (idx >= 0) {
-        if (name === this.selectedShapeName) {
-        this.selectedShapeName = '';
-        this.updateTransformer();
-        }
-
-        this.shapes.splice(idx, 1);
-
-        // call update
-        this.shapesUpdated();
-    }
-    },
-
-    // handle key events
-    handleKeyEvent (event) {
-    // shape selected?
-    if (this.editMode && this.selectedShapeName) {
-        // delete key pressed?
-        if (event.key === 'Delete') this.deleteShape(this.selectedShapeName);
-    }
-    // TODO only if focued
-    /* if (!this.selectedShapeName) {
-        if (event.key === '+') this.changeScale(0.1);
-    } */
-    },
-
-    // handle scaling of canvas
-    handleScroll (e) {
-    if (e.evt) {
-        const event = e.evt;
-        event.preventDefault();
-
-        // Normalize wheel to +1 or -1.
-        const wheel = event.deltaY < 0 ? 1 : -1;
-
-        // calculate scale
-        this.changeScale(wheel * 0.02);
-    }
-    },
-    changeScale (diff) {
-    let scale = this.scale + diff;
-
-    // minimum and maximum
-    if (scale < 0.1) scale = 0.1;
-    if (scale > 5) scale = 5;
-
-    // TODO: easing or timer - https://konvajs.org/docs/tweens/Common_Easings.html
-    this.scale = scale;
-    },
-
-    // handle manipulation events
-    handleDragEnd (event, shape) {
-      shape.x = event.currentTarget.attrs.x;
-      shape.y = event.currentTarget.attrs.y;
-      // call update
-      this.shapesUpdated();
-    },
-    // handleDragBond (event, shape) {
-    //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
-    //   if (event.currentTarget.attrs.x < 0) {
-    //     event.target.x(0)
-    //   } 
-    //   if (event.currentTarget.attrs.y < 0) {
-    //     event.target.y(0)
-    //   }
-    //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
-    //     event.target.x(this.image.width - shape.width * shape.scaleX)
-    //   }
-    //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
-    //     event.target.y(this.image.height - shape.height * shape.scaleY)
-    //   }
-    //   // call update
-    //   this.shapesUpdated();
-    // },
-    handleTransform (event, shape) {
-      console.log(shape.width, shape.height)
-      shape.scaleX = event.currentTarget.attrs.scaleX;
-      shape.scaleY = event.currentTarget.attrs.scaleY;
-      shape.x = event.currentTarget.attrs.x;
-      shape.y = event.currentTarget.attrs.y;
-
-      // call update
-      this.shapesUpdated();
-    },
-
-    // handle show stuff
-    handleMouseEnter (name) {
-    if (!this.isAddingPolygon) {
-        this.$refs.stage.getStage().container().style.cursor = 'pointer';
-        this.currentHoverShape = name;
-    }
-    },
-    handleMouseLeave () {
-    if (!this.isAddingPolygon) {
-        this.$refs.stage.getStage().container().style.cursor = 'default';
-        this.currentHoverShape = '';
-    }
-    },
-    handleGlobalMouseEnter () {
-    if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'crosshair';
-    },
-    handleGlobalMouseLeave () {
-    if (this.isAddingPolygon) this.$refs.stage.getStage().container().style.cursor = 'default';
-    },
-    handleSideBarMouseEnter (name) {
-    if (!this.isAddingPolygon) {
-        const idx = this.shapes.findIndex(r => r.name === name);
-        if (idx >= 0) {
-        this.shapes[idx].stroke = '#c00';
-        this.shapes[idx].fill = '#dec4b0';
-        }
-    }
-    },
-    handleSideBarMouseLeave (name) {
-    if (!this.isAddingPolygon) {
-        const idx = this.shapes.findIndex(r => r.name === name);
-        if (idx >= 0) {
-        this.shapes[idx].stroke = '#00f';
-        this.shapes[idx].fill = '#b0c4de';
-        }
-    }
-    },
-
-    formSubmitted (name) {
-    // save correct color
-    const idx = this.shapes.findIndex(r => r.name === name);
-    if (idx >= 0) {
-        this.shapes[idx].stroke = '#00f';
-        this.shapes[idx].fill = '#b0c4de';
-    }
-
-    // callback/persist
-    this.shapesUpdated();
-    },
-
-    // toggle shapes shown or not
-    toggleShowShapes () {
-    // toggle
-    this.$refs.items.getStage().canvas._canvas.style.opacity = this.isShapesVisible ? '0' : '1';
-    // TODO: fade animation
-    this.isShapesVisible = !this.isShapesVisible;
-    },
-
-    // callback on update
-    shapesUpdated () {
-    if (this.callback && typeof this.callback === 'function') {
-        this.callback(this.shapes, this.image_cv_id);
-    }
-
-    // save to local storage, if defined
-    if (this.localStorageKey) {
-        localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
-    }
-    },
-    load () {
-    if (this.initialDataId) {
-        const node = document.getElementById(this.initialDataId);
-        if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
-    } else if (this.initialData && this.initialData.length > 0) {
-        this.shapes = JSON.parse(this.initialData);
-    } else if (this.localStorageKey) {
-        const data = localStorage.getItem(this.localStorageKey) || '[]';
-        this.shapes = JSON.parse(data);
-    }
-
-    // if we only show data, remove draggable from it
-    if (!this.editMode) {
-        this.shapes.forEach(shape => shape.draggable && delete shape.draggable);
-    }
-    }
-}
 };
 </script>
+
+<template>
+    <div :id="containerId" class="pa-container" :style="{ width: width + 'px', height: height + 'px' }">
+        <div class="pa-canvas">
+            <div class="pa-controls">
+                <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
+                <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
+                <hr />
+                <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
+                <a href="#" @click.prevent="addRectangle" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+            </div>
+            <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
+
+            <v-stage
+                :config="{
+                    width: stageSize.width,
+                    height: stageSize.height,
+                    scaleX: scale,
+                    scaleY: scale,
+                    draggable: true
+                }"
+                @mousedown="handleStageMouseDown"
+                @contextmenu="cancelEvent"
+                @mouseenter="handleGlobalMouseEnter"
+                @mouseleave="handleGlobalMouseLeave"
+                @wheel="handleScroll"
+                :ref="'stage'"
+            >
+                <v-layer ref="background">
+                    <v-image
+                        :config="{
+                            image: image,
+                            stroke: 'black'
+                        }"
+                    />
+                </v-layer>
+                <v-layer ref="items">
+                    <template v-for="shape in shapes">
+                        <v-rect
+                            v-if="shape.type === 'rect'"
+                            :config="shape"
+                            :key="shape.name"
+                            @dragend="handleDragEnd($event, shape)"
+                            @transformend="handleTransform($event, shape)"
+                            @mouseenter="handleMouseEnter(shape.name)"
+                            @mouseleave="handleMouseLeave"
+                        />
+                        <v-text :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                    </template>
+                    <v-transformer ref="transformer" :rotateEnabled="false" v-if="editMode" />
+                </v-layer>
+            </v-stage>
+
+            <loader v-if="isLoading" />
+
+            <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
+        </div>
+        <div class="pa-infobar">
+            <side-bar-entry
+                v-for="shape in shapes"
+                :key="shape.name"
+                :shape="shape"
+                :edit-mode="editMode"
+                :justShow="justShow"
+                :selected-shape-name="selectedShapeName"
+                :current-hover-shape="currentHoverShape"
+                v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
+                v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
+                v-on:sidebar-entry-delete="deleteShape($event)"
+                v-on:sidebar-entry-save="formSubmitted($event)"
+            />
+        </div>
+    </div>
+</template>
 
 <style lang="sass">
 .pa-container
@@ -430,12 +411,10 @@ methods: {
   display: grid
   grid-template-columns: 2fr 1fr
   overflow: hidden
-
 .pa-canvas
   border: 1px solid #ccc
   position: relative
   overflow: hidden
-
 .pa-controls
   position: absolute
   z-index: 100
@@ -445,17 +424,14 @@ methods: {
   top: 1em
   border: 1px solid #333
   border-radius: 0.5em
-
   a
     color: #000
     display: block
     padding: 0.2em
-
   hr
     color: #000
     padding: 0
     margin: 0.1em 0 0.3em 0
-
 .pa-polygon-hint
   position: absolute
   bottom: 1em
@@ -465,11 +441,9 @@ methods: {
   padding: 0.5em
   border-radius: 0.5em
   font-size: 90%
-
 .pa-infobar
   margin-left: 5px
   overflow-y: scroll
-
 // Loader component
 .pa-loader
   position: absolute
@@ -480,14 +454,12 @@ methods: {
   height: 100%
   background-color: rgb(0,0,0)
   background-color: rgba(0,0,0,0.4)
-
 // adapted from https://loading.io/css/
 .lds-ring
   display: inline-block
   position: relative
   width: 100%
   height: 100%
-
 .lds-ring div
   box-sizing: border-box
   display: block
@@ -501,33 +473,25 @@ methods: {
   border-radius: 50%
   animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite
   border-color: #fff transparent transparent transparent
-
 .lds-ring div:nth-child(1)
   animation-delay: -0.45s
-
 .lds-ring div:nth-child(2)
   animation-delay: -0.3s
-
 .lds-ring div:nth-child(3)
   animation-delay: -0.15s
-
 @keyframes lds-ring
   0%
     transform: rotate(0deg)
-
   100%
     transform: rotate(360deg)
-
 // Side Bar Entry
 .pa-side-bar-entry
   &.is-hover-target
     .pa-accordion
       background-color: #efc4b0
-
   &.is-selected-target
     .pa-accordion
       background-color: #efc4b0
-
 .pa-accordion
   background-color: #eee
   color: #444
@@ -539,27 +503,21 @@ methods: {
   outline: none
   transition: 0.4s
   margin-bottom: 2px
-
   &.is-active, &:hover
     background-color: #ccc
-
 .pa-side-bar-title
   vertical-align: top
   padding-left: 5px
-
 .pa-side-bar-icons
   float: right
-
 .pa-annotation-text
   padding: 5px
-
 .pa-panel
   padding: 0 18px
   background-color: white
   max-height: 0
   overflow: hidden
   transition: max-height 0.2s ease-out
-
 .pa-annotation-link
   display: block
   text-align: center
@@ -570,38 +528,30 @@ methods: {
   border: 0
   margin: 1em 0
   transition: background 0.5s ease-out
-
   &:hover, &:focus
     background: gold
-
 .pa-annotation-form
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
   grid-template-columns: auto 1fr
   grid-gap: 1em
   padding: 10px 0
-
   label
     grid-column: 1 / 2
     text-align: right
-
   button
     grid-column: 2 / 3
     background: lightgrey
     padding: 0.7em
     border: 0
-
     &:hover
       background: gold
-
   input, textarea
     grid-column: 2 / 3
     background: #fff
     border: 1px solid #9c9c9c
-
     &:focus
       outline: 3px solid gold
-
   textarea
     height: 10em
 </style>
