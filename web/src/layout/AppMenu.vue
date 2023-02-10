@@ -8,16 +8,69 @@ const model = ref([
         label: '主要功能',
         items: [
             {
-                label: '通用文件辨識',
+                label: '通用辨識',
                 icon: 'pi pi-th-large',
                 items: [
                     {
-                        label: '通用辨識',
+                        label: '全文辨識',
                         icon: 'pi pi-th-large',
                         to: '/features/general'
                     },
                     {
-                        label: 'TEST',
+                        label: '模板辨識',
+                        icon: 'pi pi-list',
+                        to: '/features/model-list/person'
+                    }
+                ]
+            },
+            {
+                label: '人證辨識',
+                icon: 'pi pi-users',
+                items: [
+                    {
+                        label: '身份證辨識',
+                        icon: 'pi pi-id-card'
+                    },
+                    {
+                        label: '駕照辨識',
+                        icon: 'pi pi-car'
+                    },
+                    {
+                        label: '第二證件',
+                        icon: 'pi pi-credit-card'
+                    },
+                ]
+            },
+            {
+                label: '財證辨識',
+                icon: 'pi pi-dollar',
+                items: [
+                    {
+                        label: '所得清單辨識',
+                        icon: 'pi pi-id-card'
+                    },
+                    {
+                        label: '扣繳憑單辨識',
+                        icon: 'pi pi-envelope'
+                    },
+                ]
+            },
+            {
+                label: '檔案轉換',
+                icon: 'pi pi-file',
+                items: [
+                    {
+                        label: 'PDF to Image',
+                        icon: 'pi pi-images'
+                    },
+                ]
+            },
+            {
+                label: '測試區',
+                icon: 'pi pi-star-fill',
+                items: [
+                    {
+                        label: '標注圖片',
                         icon: 'pi pi-th-large',
                         to: '/features/test'
                     }
@@ -32,34 +85,8 @@ const model = ref([
                         icon: 'pi pi-file-edit',
                         to: '/features/self-define/step/1'
                     },
-                    {
-                        label: '模板列表',
-                        icon: 'pi pi-list',
-                        items: [
-                            { label: '個人上傳', icon: 'pi pi-user', to: '/features/model-list/person' },
-                            { label: '公開', icon: 'pi pi-file', to: '/features/model-list/public' }
-                        ]
-                    }
                 ]
             },
-            {
-                label: '特殊文件識別',
-                icon: 'pi pi-star-fill',
-                items: [
-                    {
-                        label: '身份證',
-                        icon: 'pi pi-id-card'
-                    },
-                    {
-                        label: '第二證件',
-                        icon: 'pi pi-credit-card'
-                    },
-                    {
-                        label: '存摺',
-                        icon: 'pi pi-envelope'
-                    }
-                ]
-            }
         ]
     },
     {
