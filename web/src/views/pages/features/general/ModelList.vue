@@ -31,10 +31,11 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="100px">
+                    <el-table-column label="操作" width="200px">
                         <template #default="scope">
-                            <!-- <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
-                            <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button> -->
+                            <!-- <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button> -->
+                            <!-- <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button> -->
+                            <el-button size="big" type="success" @click="">辨識</el-button>
                             <el-button size="big" type="info" @click="handleLook(scope.row.template_id, this.myModel.code)">檢視</el-button>
                             <!-- <el-button size="big" type="danger" @click="handleDelete(scope.$index)">刪除</el-button> -->
                         </template>
