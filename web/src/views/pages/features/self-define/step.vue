@@ -65,7 +65,7 @@ export default {
                 return;
             }
             const nextStep = this.step + 1;
-            this.$router.push({ path: `/features/self-define/step/${nextStep}` });
+            this.$router.push({ path: `/features/general/self-define/step/${nextStep}` });
         },
         upload() {
             const image = new window.Image();

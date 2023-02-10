@@ -12,23 +12,23 @@ export default {
             nestedRouteItems: [
                 {
                     label: '模板圖檔上傳',
-                    to: '/features/self-define/step/1'
+                    to: '/features/general/self-define/step/1'
                 },
                 {
                     label: '文字位置標註',
-                    to: '/features/self-define/step/2'
+                    to: '/features/general/self-define/step/2'
                 },
                 {
                     label: '方塊位置標註',
-                    to: '/features/self-define/step/3'
+                    to: '/features/general/self-define/step/3'
                 },
                 {
                     label: '遮罩位置標註',
-                    to: '/features/self-define/step/4'
+                    to: '/features/general/self-define/step/4'
                 },
                 {
                     label: '確認',
-                    to: '/features/self-define/step/5'
+                    to: '/features/general/self-define/step/5'
                 }
             ],
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         next() {
-            this.$router.push({ path: '/features/self-define/step/2' });
+            this.$router.push({ path: '/features/general/self-define/step/2' });
         },
         getFiles(val) {
             this.myFiles = val;
