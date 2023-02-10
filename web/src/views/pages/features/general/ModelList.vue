@@ -258,6 +258,9 @@ export default {
         insertBefore(index) {
             header.editable = true;
             this.tableHeader.splice(index, 0, header);
+        },
+        createTemplate() {
+            this.$router.push({path:'/features/general/self-define/step/1'})
         }
     }
 };

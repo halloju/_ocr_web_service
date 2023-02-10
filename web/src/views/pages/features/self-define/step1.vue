@@ -34,9 +34,8 @@ export default {
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
             breadcrumbItems: [
                 { label: '主要功能', to: '#' },
-                { label: '自定義模板', to: '#' },
+                { label: '模板辨識', to: '/features/general/model-list' },
                 { label: '新增自定義模板', to: '#' },
-                { label: '模板圖檔上傳', to: '#' }
             ],
             switchValue: false
         };

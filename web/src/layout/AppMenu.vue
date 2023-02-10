@@ -76,17 +76,6 @@ const model = ref([
                     }
                 ]
             },
-            {
-                label: '自定義模板',
-                icon: 'pi pi-book',
-                items: [
-                    {
-                        label: '新增自定義模板',
-                        icon: 'pi pi-file-edit',
-                        to: '/features/general/self-define/step/1'
-                    },
-                ]
-            },
         ]
     },
     {
