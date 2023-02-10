@@ -3,6 +3,7 @@ import Box from '@/components/Box.vue';
 import BoxCard from '@/components/BoxCard.vue';
 import axios from 'axios';
 import { mapState } from 'vuex';
+import { ElMessageBox } from 'element-plus'
 
 export default {
     components: {
@@ -84,6 +85,13 @@ export default {
                 });
             }
 
+            if (this.boxes.length === 0) {
+                this.$message({
+                    message: '請至少標註一個方塊',
+                    type: 'warning'
+                });
+                return;
+            }
             axios
                 .post('/template/create', {
                     user_id: 12345,
@@ -95,25 +103,39 @@ export default {
                 })
                 .then((res) => {
                     if (res.status === 200) {
-                        this.$toast.add({
-                            severity: 'success',
-                            summary: '成功',
-                            detail: '新增成功',
-                            life: 3000
+                        ElMessageBox.confirm('', '新增成功', {
+                            confirmButtonText: '確定',
+                            type: 'success',
+                            center: true,
+                            showclose: false,
+                            showCancelButton: false,
+                            closeOnClickModal: false,
+                            roundButton: true
                         });
                         this.clearState();
                         this.$router.push({ path: '/features/self-define/step/1' });
                     } else {
-                        this.$toast.add({
-                            severity: 'error',
-                            summary: '失敗',
-                            detail: '新增失敗',
-                            life: 3000
+                        ElMessageBox.confirm('', '新增失敗', {
+                            confirmButtonText: '確定',
+                            type: 'error',
+                            center: true,
+                            showclose: false,
+                            showCancelButton: false,
+                            closeOnClickModal: false,
+                            roundButton: true
                         });
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    ElMessageBox.confirm(err, '新增失敗', {
+                        confirmButtonText: '確定',
+                        type: 'error',
+                        center: true,
+                        showclose: false,
+                        showCancelButton: false,
+                        closeOnClickModal: false,
+                        roundButton: true
+                    });
                 });
         },
         isFinalStep() {
