@@ -9,7 +9,8 @@ export default {
         return {
             selectedLang: null,
             languages: [
-                { name: '繁體中文', code: 'Chinese' },
+                { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
+                { name: '英數字', code: 'dbnet_v0+en_epoch_v0' }
             ],
             nestedRouteItems: [
                 {
@@ -65,22 +66,16 @@ export default {
             responseData['base64Image'] = base64Image;
             responseData['fileName'] = this.fileList[0].name;
             // 打 API
-            axios.post("/ocr/gpocr", {
-                                "image": base64Image,
-                                "image_complexity": this.image_complexity,
-                                "language": this.selectedLang.code,
-                            })
-                            .then( (response) =>
-                               {
-                                responseData['ocr_results'] = response.data.ocr_results;
-                                responseData['image_cv_id'] = response.data.image_cv_id;
-                                generalImageResponseList.push(responseData)
-                                })
-                            .catch( (error) => {
-                                console.log(error)
-                                if(error.code === 'ERR_NETWORK'){
-                                    this.status = 'network';
-                                }
+            axios
+                .post('/ocr/gp_ocr', {
+                    image: base64Image,
+                    image_complexity: this.image_complexity,
+                    model_name: this.selectedLang.code
+                })
+                .then((response) => {
+                    responseData['ocr_results'] = response.data.ocr_results;
+                    responseData['image_cv_id'] = response.data.image_cv_id;
+                    generalImageResponseList.push(responseData);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -98,16 +93,18 @@ export default {
                 this.$store.commit('generalImageResponse', generalImageResponseList);
                 const api_time = (end_time - start_time) / 1000;
                 this.$store.commit('generalExecuteTime', api_time);
-                // 下一步
-                this.$emit('nextStepEmit', 2)
-                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code)
-                loading.close()
-            }, 2000)
+                if (this.fileList.length > 1) {
+                    this.$emit('nextStepEmit', 2);
+                } else {
+                    this.$emit('nextStepEmit', 3);
+                }
+                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
+                loading.close();
+            }, 2000);
         },
         fileChange(file, fileList) {
-            const isIMAGE = file.type === 'image/jpeg'||'image/png';
-            const isLt1M = file.size / 1024 / 1024 < 1;
-
+            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
+            const isLt8M = file.size / 1024 / 1024 < 8;
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
                 fileList.pop();
@@ -118,8 +115,7 @@ export default {
                 fileList.pop();
                 return false;
             }
-
-            if (isIMAGE&&isLt1M) {
+            if (isIMAGE && isLt8M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;

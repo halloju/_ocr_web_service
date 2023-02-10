@@ -1,170 +1,16 @@
-<template>
-    <div class="grid p-fluid">
-        <div class="col-12" >
-            <div class="card" style="overflow-x:scroll;overflow-y:scroll;">
-                <h5>我們先看第一張圖片辨識的狀況</h5>
-                <Annotation
-                    containerId="my-pic-annotation-output"
-                    :editMode="false"
-                    :imageSrc="imageSrc"
-                    :width="width"
-                    :height="height"
-                    dataCallback=""
-                    :initialData="getShapeData"
-                    :initialDataId="initialDataId"
-                    :justShow="true"
-                ></Annotation>
-                <h5>我已確認單張結果，包含以上所有要項</h5>
-                <el-switch
-                    v-model="switchValue"
-                    inline-prompt
-                    active-text="是"
-                    inactive-text="否"
-                    style="width: 150px"
-                />
-                <br>
-                <el-button type="primary" style="width: 150px" class="mr-2 mb-2" @click="submit" :disabled="!switchValue">  開始辨識全部檔案 </el-button>
-                <el-button type="danger" style="width: 150px" class="mr-2 mb-2 pi pi-upload" @click="back"> 重新上傳 </el-button>
-                <!-- Progress Bar -->
-                <el-progress 
-                    v-show="submitClick"
-                    :text-inside="true"
-                    :stroke-width="24"
-                    :percentage="uploadPercentage"
-                    status="success"
-                    color="#3b82f6"
-                />
-            </div>
-        </div>
-    </div>
-</template>
-<script>
-import axios from 'axios';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { ElLoading } from 'element-plus';
-
-export default {
-    components: {},
-    name: 'General2',
-    data() {
-        return {
-            // 前一步驟上傳的圖檔
-            firstImage: this.$store.state.general_upload_image[0],
-            allImage: this.$store.state.general_upload_image,
-            regData: this.$store.state.general_upload_res.data.ocr_results,
-            uploadPercentage: 0,
-            isDownload: false,
-            switchValue: false,
-            switchButton: false,
-            selectButtonValue: { name: '詳細資訊' },
-            selectButtonValues: [{ name: '詳細資訊' }, { name: '文字' }],
-            activeTab: 'first'
-        };
-    },
-    watch: {
-        selectButtonValue: function (newVal) {
-            if (newVal.name === '詳細資訊') {
-                this.switchButton = false;
-            } else {
-                this.switchButton = true;
-            }
-        }
-    },
-    computed: {
-        getFile() {
-            this.firstImage = this.$store.state.general_upload_image[0];
-            return this.firstImage;
-        }
-    },
-    methods: {
-        copyText() {
-            const range = document.createRange();
-            range.selectNode(this.$refs.message);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            document.execCommand('copy');
-        },
-        submit() {
-            const start_time = new Date().getTime();
-            const imageLen = this.allImage.length;
-            const stepPercentage = 100 / imageLen;
-            const generalImageResponseList = [];
-            for (let i = 0; i < imageLen; i++) {
-                // 前綴拿掉
-                const base64Image = this.allImage[i].reader.split(',')[1];
-                // 一張一張打
-                axios
-                    .post('/ocr/gpocr', {
-                        image: base64Image,
-                        image_complexity: 'medium',
-                        language: 'Chinese'
-                    })
-                    .then((response) => {
-                        console.log(JSON.stringify(response.data.ocr_results));
-                        generalImageResponseList.push(response.data);
-                        this.uploadPercentage = this.uploadPercentage + stepPercentage;
-                        count = count + 1;
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        if (error.code === 'ERR_NETWORK') {
-                            this.status = 'network';
-                        }
-                    });
-            }
-            const end_time = new Date().getTime();
-            const loading = ElLoading.service({
-                lock: true,
-                text: 'Loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            setTimeout(() => {
-                this.$store.commit('generalImageResponse', generalImageResponseList);
-                const api_time = (end_time - start_time) / 1000;
-                this.$store.commit('generalExecuteTime', api_time);
-                this.$emit('nextStepEmit', 3);
-                loading.close();
-            }, 2000);
-        },
-        back() {
-            ElMessageBox.confirm('本次辨識結果將不保留，請問是否要繼續？', '警告', {
-                confirmButtonText: '確定',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-            })
-                .then(() => {
-                    ElMessage({
-                        type: 'success',
-                        message: '回到圖檔上傳'
-                    });
-                    this.$emit('nextStepEmit', 1);
-                })
-                .catch(() => {
-                    ElMessage({
-                        type: 'info',
-                        message: '操作取消'
-                    });
-                });
-        }
-    }
-};
-</script>
 <script>
 import axios from 'axios';
 import Annotation from '@/components/Annotation.vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { ElLoading } from 'element-plus';
-
 export default {
     components: {
         Annotation
     },
     name: 'General2',
-    props:{
+    props: {
         image_complexity: String,
-        selectedLang: String,
+        selectedLang: String
     },
     data() {
         return {
@@ -251,7 +97,6 @@ export default {
             const imageLen = this.allImage.length;
             const stepPercentage = 100 / imageLen;
             const generalImageResponseList = [];
-
             for (let i = 0; i < imageLen; i++) {
                 // 準備 responseData
                 const responseData = {};
@@ -260,24 +105,24 @@ export default {
                 responseData['base64Image'] = base64Image;
                 responseData['fileName'] = fileName;
                 // 一張一張打
-                axios.post("/ocr/gp_ocr", {
-                                "image": base64Image,
-                                "image_complexity": this.image_complexity,
-                                "model_name": this.selectedLang,
-                            })
-                            .then( (response) =>
-                               {
-                                responseData['ocr_results'] = response.data.ocr_results;
-                                responseData['image_cv_id'] = response.data.image_cv_id;
-                                generalImageResponseList.push(responseData)
-                                this.uploadPercentage = (this.uploadPercentage + stepPercentage).toFixed(2);
-                                })
-                            .catch( (error) => {
-                                console.log(error)
-                                if(error.code === 'ERR_NETWORK'){
-                                    this.status = 'network';
-                                }
-                })
+                axios
+                    .post('/ocr/gp_ocr', {
+                        image: base64Image,
+                        image_complexity: this.image_complexity,
+                        model_name: this.selectedLang
+                    })
+                    .then((response) => {
+                        responseData['ocr_results'] = response.data.ocr_results;
+                        responseData['image_cv_id'] = response.data.image_cv_id;
+                        generalImageResponseList.push(responseData);
+                        this.uploadPercentage = (this.uploadPercentage + stepPercentage).toFixed(2);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        if (error.code === 'ERR_NETWORK') {
+                            this.status = 'network';
+                        }
+                    });
             }
             const end_time = new Date().getTime();
             const loading = ElLoading.service({
@@ -311,10 +156,10 @@ export default {
                 .catch(() => {
                     ElMessage({
                         type: 'info',
-                        message: '操作取消',
-                    })
-                })
-        },
+                        message: '操作取消'
+                    });
+                });
+        }
     }
 };
 </script>
@@ -323,7 +168,7 @@ export default {
         <div class="col-12">
             <div class="card" style="overflow-x: scroll; overflow-y: scroll">
                 <h5>我們先看第一張圖片辨識的狀況</h5>
-                <Annotation containerId="my-pic-annotation-output" :editMode="false" :imageSrc="imageSrc" :width="width" :height="height" dataCallback="" :initialData="getShapeData" :initialDataId="initialDataId"></Annotation>
+                <Annotation containerId="my-pic-annotation-output" :editMode="false" :imageSrc="imageSrc" :width="width" :height="height" dataCallback="" :initialData="getShapeData" :initialDataId="initialDataId" :justShow="true"></Annotation>
                 <h5>我已確認單張結果，包含以上所有要項</h5>
                 <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" style="width: 150px" />
                 <br />
