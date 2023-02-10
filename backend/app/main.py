@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import CustomException, exception_handler
-from app.routers import db, docs
+from app.routers import docs
 from app.routers.ocr import gp_ocr, template_ocr
 from app.routers.template_crud import create, read, update, delete
 
