@@ -17,7 +17,8 @@ export default {
         };
         this.canDraw = this.Boxes.length <= 1;
         this.$nextTick(() => {
-            this.updateStageConfig();
+            //this.updateStageConfig();
+            this.resizeImage();
             let Recs = this.$refs.image
                 .getNode()
                 .getParent()
@@ -317,6 +318,22 @@ export default {
                 y: (this.$refs.img_block.clientHeight - this.image.height) / 2,
                 width: this.$refs.img_block.clientWidth,
                 height: this.$refs.img_block.clientHeight
+            };
+        },
+        resizeImage() {
+            console.log('resizeImage');
+            const stage = this.$refs.stage.getNode();
+            if (this.image.width > stage.width() || this.image.height > stage.height()) {
+                let scale = Math.min(stage.width() / this.image.width, stage.height() / this.image.height);
+                // scale the image to fit the stage
+                this.image.width = this.image.width * scale;
+                this.image.height = this.image.height * scale;
+            }
+            this.stageConfig = {
+                x: 0,
+                y: 0,
+                width: this.image.width,
+                height: this.image.height
             };
         }
     },
