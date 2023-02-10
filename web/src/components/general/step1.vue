@@ -1,58 +1,7 @@
-<template>
-    <div class="grid p-fluid">
-        <div class="col-12 md:col-9">
-            <div class="card">
-                <el-upload :file-list="fileList" 
-                           list-type="picture-card" 
-                           :on-change="fileChange" 
-                           :on-remove="handleRemove" 
-                           multiple
-                           :auto-upload="false"
-                           :on-preview="handlePictureCardPreview"
-                           accept="image/*">
-                    <el-icon><Plus /></el-icon>
-                </el-upload>
-                <el-dialog v-model="dialogVisible" :width="dialogWidth">
-                    <img :src="dialogImageUrl" alt="Preview Image" @load="onLoadImg" :width="imgWidth" />
-                </el-dialog>
-            </div>
-        </div>
-        <div class="col-12 md:col-3">
-            <div class="card">
-                <div class="flex flex-column flex-wrap">
-                    <div class="flex justify-content-start mb-1">
-                        <h5>選擇語言</h5>
-                    </div>
-                    <div class="flex justify-content-start mb-5">
-                        <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <h5>使用高精準度模型</h5>
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <p>注意：當您使用高精準模型時耗時會較久</p>
-                    </div>
-                    <div class="flex justify-content-start mb-5">
-                        <el-switch
-                            v-model="switchValue"
-                            inline-prompt
-                            active-text="是"
-                            inactive-text="否"
-                        />
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script>
-import axios from "axios"
-import { ElLoading } from 'element-plus'
-    
+import axios from 'axios';
+import { ElLoading } from 'element-plus';
+
 export default {
     name: 'GeneralUploadImage',
     props: ['nextStepEmit'],
@@ -61,7 +10,7 @@ export default {
             selectedLang: null,
             languages: [
                 { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
-                { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' },
+                { name: '英數字', code: 'dbnet_v0+en_epoch_v0' }
             ],
             nestedRouteItems: [
                 {
@@ -86,12 +35,12 @@ export default {
             fileList: [],
             dialogVisible: false,
             imaWidth: '',
-            dialogWidth: '',
+            dialogWidth: ''
         };
     },
     watch: {
-        switchValue: function(newVal){
-            if (newVal){
+        switchValue: function (newVal) {
+            if (newVal) {
                 this.image_complexity = 'high';
             } else {
                 this.image_complexity = 'medium';
@@ -100,82 +49,80 @@ export default {
     },
     computed: {
         disableUpload() {
-            if (this.fileList.length === 0 | this.selectedLang===null) {
+            if ((this.fileList.length === 0) | (this.selectedLang === null)) {
                 return true;
             } else {
                 return false;
             }
-        },
+        }
     },
     methods: {
         submit() {
             this.$store.commit('generalImageUpdate', this.fileList); // all image
             const start_time = new Date().getTime();
-            const generalImageResponseList = []
-            const responseData = {}
+            const generalImageResponseList = [];
+            const responseData = {};
             const base64Image = this.fileList[0].reader.split(',')[1];
             responseData['base64Image'] = base64Image;
             responseData['fileName'] = this.fileList[0].name;
             // 打 API
-            axios.post("/ocr/gp_ocr", {
-                                "image": base64Image,
-                                "image_complexity": this.image_complexity,
-                                "model_name": this.selectedLang.code,
-                            })
-                            .then( (response) =>
-                               {
-                                responseData['ocr_results'] = response.data.ocr_results;
-                                responseData['image_cv_id'] = response.data.image_cv_id;
-                                generalImageResponseList.push(responseData)
-                                })
-                            .catch( (error) => {
-                                console.log(error)
-                                if(error.code === 'ERR_NETWORK'){
-                                    this.status = 'network';
-                                }
+            axios
+                .post('/ocr/gp_ocr', {
+                    image: base64Image,
+                    image_complexity: this.image_complexity,
+                    model_name: this.selectedLang.code
                 })
+                .then((response) => {
+                    responseData['ocr_results'] = response.data.ocr_results;
+                    responseData['image_cv_id'] = response.data.image_cv_id;
+                    generalImageResponseList.push(responseData);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    if (error.code === 'ERR_NETWORK') {
+                        this.status = 'network';
+                    }
+                });
             const end_time = new Date().getTime();
             const loading = ElLoading.service({
-                        lock: true,
-                        text: 'Loading',
-                        background: 'rgba(0, 0, 0, 0.7)',
-                    })
-            setTimeout(()=>{
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            setTimeout(() => {
                 this.$store.commit('generalImageResponse', generalImageResponseList);
-                const api_time = (end_time - start_time) / 1000 ;
+                const api_time = (end_time - start_time) / 1000;
                 this.$store.commit('generalExecuteTime', api_time);
                 if (this.fileList.length > 1) {
-                    this.$emit('nextStepEmit', 2)
+                    this.$emit('nextStepEmit', 2);
                 } else {
-                    this.$emit('nextStepEmit', 3)
+                    this.$emit('nextStepEmit', 3);
                 }
-                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code)
-                loading.close()
-            }, 2000)
+                this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
+                loading.close();
+            }, 2000);
         },
         fileChange(file, fileList) {
-            const isIMAGE = file.type === 'image/jpeg'||'image/png';
+            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
             const isLt8M = file.size / 1024 / 1024 < 8;
-
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
-                fileList.pop()
+                fileList.pop();
                 return false;
             }
             if (!isLt8M) {
                 this.$message.error('上傳圖案大小不能超過 8 MB!');
-                fileList.pop()
+                fileList.pop();
                 return false;
             }
-
-            if (isIMAGE&&isLt8M) {
+            if (isIMAGE && isLt8M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
                     file.reader = f.target.result;
                 };
                 reader.readAsDataURL(file.raw);
-                this.fileList.push(file)
+                this.fileList.push(file);
             }
         },
         handleRemove(file) {
@@ -209,3 +156,42 @@ export default {
     }
 };
 </script>
+
+<template>
+    <div class="grid p-fluid">
+        <div class="col-12 md:col-9">
+            <div class="card">
+                <el-upload :file-list="fileList" list-type="picture-card" :on-change="fileChange" :on-remove="handleRemove" multiple :auto-upload="false" :on-preview="handlePictureCardPreview" accept="image/*">
+                    <el-icon><Plus /></el-icon>
+                </el-upload>
+                <el-dialog v-model="dialogVisible" :width="dialogWidth">
+                    <img :src="dialogImageUrl" alt="Preview Image" @load="onLoadImg" :width="imgWidth" />
+                </el-dialog>
+            </div>
+        </div>
+        <div class="col-12 md:col-3">
+            <div class="card">
+                <div class="flex flex-column flex-wrap">
+                    <div class="flex justify-content-start mb-1">
+                        <h5>選擇語言</h5>
+                    </div>
+                    <div class="flex justify-content-start mb-5">
+                        <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
+                    </div>
+                    <div class="flex justify-content-start mb-1">
+                        <h5>使用高精準度模型</h5>
+                    </div>
+                    <div class="flex justify-content-start mb-1">
+                        <p>注意：當您使用高精準模型時耗時會較久</p>
+                    </div>
+                    <div class="flex justify-content-start mb-5">
+                        <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" />
+                    </div>
+                    <div class="flex justify-content-start mb-1">
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

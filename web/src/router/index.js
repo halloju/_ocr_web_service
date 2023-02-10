@@ -38,13 +38,13 @@ const router = createRouter({
                 {
                     path: '/features/self-define/step/3',
                     component: () => import('@/views/pages/features/self-define/step.vue'),
-                    props: { Boxes: [{ name: 'box', title: '核取方塊位置', step: 3, fillColor: { r: 0, g: 0, b: 255, a: 0.5 } }],
+                    props: { Boxes: [{ name: 'box', title: '核取方塊位置', step: 3, fillColor: { r: 0, g: 0, b: 255, a: 0.5 }, isShapeVisible: true }],
                              step: 3, pageTitle: '方塊位置', pageDesc: '請選擇方塊辨識位置' }
                 },  
                 {
                     path: '/features/self-define/step/4',
                     component: () => import('@/views/pages/features/self-define/step.vue'),
-                    props: { Boxes: [{ name: 'mask', title: '遮罩位置', step: 4, fillColor: { r: 0, g: 0, b: 0, a: 0.5 } }],
+                    props: { Boxes: [{ name: 'mask', title: '遮罩位置', step: 4, fillColor: { r: 0, g: 0, b: 0, a: 0.5 }, isShapeVisible: true }],
                              step: 4, pageTitle: '遮罩位置', pageDesc: '請選擇遮罩位置' }
                 },
                 {
@@ -60,7 +60,8 @@ const router = createRouter({
                                     g: 255,
                                     b: 0,
                                     a: 0.5
-                                }
+                                },
+                                isShapeVisible: true
                             },
                             {
                                 name: 'box',
@@ -70,7 +71,19 @@ const router = createRouter({
                                     g: 0,
                                     b: 255,
                                     a: 0.5
-                                }
+                                },
+                                isShapeVisible: true
+                            },
+                            {
+                                name: 'mask',
+                                title: '遮罩位置',
+                                fillColor: {
+                                    r: 0,
+                                    g: 0,
+                                    b: 0,
+                                    a: 0.5
+                                },
+                                isShapeVisible: true
                             }
                         ],
                         step: 5

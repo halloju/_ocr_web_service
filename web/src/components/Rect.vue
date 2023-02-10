@@ -1,19 +1,15 @@
 <script scope>
+import { mapState } from 'vuex';
+
 export default {
     name: 'Rect',
     components: {},
-    computed: {
-        recs() {
-            return this.$store.state[this.boxName];
-        }
-    },
     methods: {
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
-            // const transformer = e.target.getTransform();
-            // const next = transformer.point({ x: 0, y: 0 });
+            this.handleDragBond(e);
 
             rect.startPointX = e.target.x();
             rect.startPointY = e.target.y();
@@ -23,6 +19,7 @@ export default {
             rect.endPointY = e.target.y() + rect.height * rect.scaleY;
         },
         handleDragEnd(e) {
+            e.cancelBubble = true;
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
             const pos = e.target.getPosition();
             // update the state
@@ -30,6 +27,24 @@ export default {
             rect.startPointY = pos.y;
             rect.endPointX = pos.x + rect.width * rect.scaleX;
             rect.endPointY = pos.y + rect.height * rect.scaleY;
+        },
+        handleDragBond(e) {
+            console.log(e.target);
+            const rect = this.recs.find((r) => r.name === e.target.attrs.name);
+            const pos = e.target.getPosition();
+
+            if (pos.x < 0) {
+                e.target.x(0);
+            }
+            if (pos.y < 0) {
+                e.target.y(0);
+            }
+            if (pos.x + rect.width * rect.scaleX > this.imageAttrs.width) {
+                e.target.x(this.imageAttrs.width - rect.width * rect.scaleX);
+            }
+            if (pos.y + rect.height * rect.scaleY > this.imageAttrs.height) {
+                e.target.y(this.imageAttrs.height - rect.height * rect.scaleY);
+            }
         }
     },
     props: {
@@ -47,7 +62,38 @@ export default {
                     a: 0.3
                 };
             }
+        },
+        imageAttrs: {
+            type: Object,
+            default() {
+                return {
+                    width: 0,
+                    height: 0
+                };
+            }
+        },
+        isShapesVisible: {
+            type: Boolean,
+            default: true
         }
+    },
+    watch: {
+        isShapesVisible() {
+            this.opacity = this.isShapesVisible ? '.5' : '0';
+            this.textOpacity = this.isShapesVisible ? '1' : '0';
+        }
+    },
+    computed: {
+        ...mapState(['selfDefinedRecs']),
+        recs() {
+            return this.selfDefinedRecs[this.boxName];
+        }
+    },
+    data() {
+        return {
+            opacity: 0.5,
+            textOpacity: 1
+        };
     }
 };
 </script>
@@ -60,16 +106,22 @@ export default {
         :config="{
             width: Math.abs(rec.width),
             height: Math.abs(rec.height),
-            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.fillColor.a})`,
-            stroke: 'rgb(20,20,200,1)',
+            fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.opacity})`,
+            stroke: `rgb(20,20,200,${this.opacity})`,
             strokeWidth: 0.5,
             x: Math.min(rec.startPointX, rec.startPointX + rec.width),
             y: Math.min(rec.startPointY, rec.startPointY + rec.height)
         }"
-        draggable="true"
+        draggable="false"
         @transformend="handleTransformEnd"
         @dragend="handleDragEnd"
+        @dragmove="handleDragBond"
     >
     </v-rect>
-    <v-text v-for="(rec, index) in recs" :config="{ text: `No.` + index + `\n要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height) }" />
+    <v-text
+        v-for="(rec, index) in recs"
+        :key="index"
+        :name="rec.name"
+        :config="{ text: `要項名稱：` + rec.name, fontSize: 13, x: Math.min(rec.startPointX, rec.startPointX + rec.width), y: Math.min(rec.startPointY, rec.startPointY + rec.height), opacity: this.textOpacity }"
+    />
 </template>

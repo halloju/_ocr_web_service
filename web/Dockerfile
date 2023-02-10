@@ -1,9 +1,32 @@
-FROM node:16-alpine
+FROM node:14-alpine
 # 設置項目目錄
 WORKDIR /app
 # 安裝項目依賴
-COPY package.json .
-COPY package-lock.json .
-RUN npm install
+COPY package*.json /app
+
+RUN npm config set unsafe-perm true
+
+RUN npm install --force
+
+COPY . /app
+
+RUN chown -R node:node /app/node_modules
+
+USER node
 # 運行
 CMD ["npm", "run", "dev"]
+
+# # build stage
+# FROM node:16-alpine as build-stage
+# WORKDIR /app
+# COPY package*.json ./
+# RUN npm install
+# COPY . .
+# RUN chown -R node:node /app/node_modules
+# RUN npm run build
+
+# # production stage
+# FROM nginx:1.15-alpine as production-stage
+# COPY --from=build-stage /app/dist /usr/share/nginx/html
+# COPY nginx.conf /etc/nginx/conf.d
+# CMD ["nginx", "-g", "daemon off;"]
