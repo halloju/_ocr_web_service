@@ -23,6 +23,13 @@ export default {
     computed: {
         getClasses() {
             return { isDragging: this.isDragging };
+        },
+        showFileSize() {
+            if (this.filesize === undefined) {
+                return 0
+            } else {
+                return Number(this.filesize).toFixed(2)
+            }
         }
         // fileLimit() {
         //   if (this.filesize && this.filesize >= 1) {
@@ -151,7 +158,7 @@ export default {
         <div class="col-12 text-center" v-if="isOK && !wrongFile">
             <Image v-if="imageSource" :src="imageSource" alt="Image" width="500" preview />
             <p class="mb-0 text-left">檔案名稱： {{ filename }}</p>
-            <p class="mb-0 text-left">檔案大小： {{ Number(filesize).toFixed(2) }}KB</p>
+            <p class="mb-0 text-left">檔案大小： {{ showFileSize }} KB</p>
         </div>
         <div class="my-content flex justify-content-center align-items-center" v-if="wrongFile" style="color: black; height: 500px; font-size: 25px">請上傳正確檔案格式</div>
         <div class="my-content flex justify-content-center align-items-center" v-if="!isOK && !wrongFile" style="color: black; height: 500px; font-size: 25px">請拖曳圖片</div>
