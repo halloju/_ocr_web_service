@@ -26,20 +26,11 @@ export default {
         },
         showFileSize() {
             if (this.filesize === undefined) {
-                return 0
+                return 0;
             } else {
-                return Number(this.filesize).toFixed(2)
+                return Number(this.filesize).toFixed(2);
             }
         }
-        // fileLimit() {
-        //   if (this.filesize && this.filesize >= 1) {
-        //     this.isOK = false;
-        //     return true
-        //     }
-        //   else {
-        //     return false
-        //   }
-        // }
     },
     watch: {
         isOK: {

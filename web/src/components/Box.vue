@@ -88,7 +88,7 @@ export default {
             if (event.target.className === 'Rect' || event.target.className === 'Text') {
                 this.isTransforming = true;
                 this.$emit('update:isEditing', true);
-                // // clicked on transformer - do nothing
+                // clicked on transformer - do nothing
                 const clickedOnTransformer = event.target.getParent().className === 'Transformer';
                 if (clickedOnTransformer) {
                     return;
@@ -321,7 +321,6 @@ export default {
             };
         },
         resizeImage() {
-            console.log('resizeImage');
             const stage = this.$refs.stage.getNode();
             if (this.image.width > stage.width() || this.image.height > stage.height()) {
                 let scale = Math.min(stage.width() / this.image.width, stage.height() / this.image.height);

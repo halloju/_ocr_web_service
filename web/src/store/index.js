@@ -24,11 +24,20 @@ const store = new Vuex.Store({
             state.selfDefinedRecs[payload.type][index].canEdit = payload.canEdit;
         },
         recsSizeUpdate: function (state, payload) {
-            let index = state.selfDefinedRecs[payload.type].length - 1;
+            let index = payload.data.index ? payload.data.index : state.selfDefinedRecs[payload.type].length - 1;
             state.selfDefinedRecs[payload.type][index].width = payload.data.width;
             state.selfDefinedRecs[payload.type][index].height = payload.data.height;
             state.selfDefinedRecs[payload.type][index].endPointX = payload.data.endPointX;
             state.selfDefinedRecs[payload.type][index].endPointY = payload.data.endPointY;
+        },
+        recsScaleUpdate: function (state, payload) {
+            let index = payload.data.index ? payload.data.index : state.selfDefinedRecs[payload.type].length - 1;
+            state.selfDefinedRecs[payload.type][index].scaleX = payload.data.scaleX;
+            state.selfDefinedRecs[payload.type][index].scaleY = payload.data.scaleY;
+            state.selfDefinedRecs[payload.type][index].endPointX = payload.data.endPointX;
+            state.selfDefinedRecs[payload.type][index].endPointY = payload.data.endPointY;
+            state.selfDefinedRecs[payload.type][index].startPointX = payload.data.startPointX;
+            state.selfDefinedRecs[payload.type][index].startPointY = payload.data.startPointY;
         },
         recsDelete: function (state, payload) {
             state.selfDefinedRecs[payload.type].splice(payload.index, 1);
