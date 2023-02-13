@@ -31,12 +31,6 @@ export default {
                     to: '/features/general/self-define/step/5'
                 }
             ],
-            breadcrumbHome: { icon: 'pi pi-home', to: '/' },
-            breadcrumbItems: [
-                { label: '主要功能', to: '#' },
-                { label: '模板辨識', to: '/features/general/model-list' },
-                { label: '新增自定義模板', to: '#' },
-            ],
             switchValue: false
         };
     },
@@ -58,7 +52,11 @@ export default {
         <div class="col-12">
             <div class="card card-w-title">
                 <!-- Breadcrumb -->
-                <Breadcrumb :home="breadcrumbHome" :model="breadcrumbItems" style="border-width: 0px" />
+                <el-breadcrumb>
+                    <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{name: 'Model-List'}">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item >新增模板</el-breadcrumb-item>
+                </el-breadcrumb>
                 <br />
                 <!-- Step -->
                 <Steps :model="nestedRouteItems" :readonly="true" />

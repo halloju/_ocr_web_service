@@ -20,6 +20,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/general/GeneralOCR.vue')
                 },
                 {
+                    path: '/features/general/template',
+                    name: 'TemplateOCR',
+                    component: () => import('@/views/pages/features/general/TemplateOCR.vue')
+                },
+                {
                     path: '/features/general/model-list',
                     name: 'Model-List',
                     component: () => import('@/views/pages/features/general/ModelList.vue')

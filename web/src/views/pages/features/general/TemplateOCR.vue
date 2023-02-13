@@ -5,7 +5,8 @@
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item >全文辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{name: 'Model-List'}" >模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item >選擇模板</el-breadcrumb-item>
                 </el-breadcrumb>  
                 <br />
                 <!-- Step -->
