@@ -15,9 +15,5 @@ COPY ./app /code/app
 
 COPY gunicorn.conf.py /code/gunicorn.conf.py
 
-COPY alembic.ini /code/alembic.ini
-
-COPY migrations /code/migrations
-
 COPY .env.dev /code/.env.dev
 
