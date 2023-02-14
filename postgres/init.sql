@@ -1,5 +1,19 @@
 CREATE SCHEMA if_gp_ocr;
 
+CREATE TABLE IF NOT EXISTS if_gp_ocr.user(
+    user_id VARCHAR(5) PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    enable BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp
+);
+
+CREATE TABLE IF NOT EXISTS if_gp_ocr.login_hist(
+    id  SERIAL PRIMARY KEY,
+    user_id VARCHAR(5) REFERENCES if_gp_ocr.user(user_id),
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp
+);
 
 CREATE TABLE IF NOT EXISTS if_gp_ocr.template_info(
     template_id VARCHAR(19) PRIMARY KEY,
