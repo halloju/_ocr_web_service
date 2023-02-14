@@ -10,7 +10,7 @@ router = APIRouter()
 def custom_swagger_ui_html():
     return get_swagger_ui_html(
         openapi_url="openapi.json",
-        title="Web Backend",
+        title="MLaaS",
         swagger_js_url="/static/js/swagger-ui-bundle.js",
         swagger_css_url="/static/css/swagger-ui.css",
         swagger_favicon_url="/static/images/esun.png",

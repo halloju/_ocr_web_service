@@ -9,7 +9,7 @@ from app.routers.template_crud import create, read, update, delete
 
 def get_application():
     app = FastAPI(docs_url=None,
-                  title="Web Backend")
+                  title="MLaaS")
 
     origins = ["*"]
 
