@@ -1,15 +1,43 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from aioredis import create_redis_pool, Redis
 from app.exceptions import CustomException, exception_handler
 from app.routers import docs
 from app.routers.ocr import gp_ocr, template_ocr
 from app.routers.template_crud import create, read, update, delete
+from dotenv import load_dotenv
+import os
 
+load_dotenv(".env.dev")
+
+def register_redis(app: FastAPI) -> None:
+    """
+    把redis挂载到app对象上面
+    :param app:
+    :return:
+    """
+
+    @app.on_event('startup')
+    async def startup_event():
+        """
+        Get Redis Connection
+        :return:
+        """
+        app.state.redis = await create_redis_pool(os.getenv("LOCAL_REDIS_URL"))
+
+    @app.on_event('shutdown')
+    async def shutdown_event():
+        """
+        Close Redis Connection
+        :return:
+        """
+        app.state.redis.close()
+        await app.state.redis.wait_closed()
 
 def get_application():
     app = FastAPI(docs_url=None,
-                  title="Web Backend")
+                  title="Backend")
 
     origins = ["*"]
 
@@ -57,6 +85,7 @@ def get_application():
     )
 
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    register_redis(app)
     return app
 
 app = get_application()

@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
 
 
@@ -9,11 +9,11 @@ with open(filepath, 'r') as f:
 
 
 class GpocrRequest(BaseModel):
-    image: StrictStr = Field(
-        title='base64 字串的影像',
+    image: Dict[str, StrictStr] = Field(
+        title='多張影像的 base64 字串',
         description='''
         ''',
-        example=img_base64_string
+        example={"id1": img_base64_string, "id2": img_base64_string}
     )
     image_complexity: Optional[StrictStr] = Field(
         default='medium',
@@ -59,6 +59,56 @@ class GpocrRequest(BaseModel):
             raise ValueError("model_name 格式為: det_model+rec_model")
         return v
 
+class GpocrRequest2(BaseModel):
+    image: List[str] = Field(
+        title='多張影像的 image id (Redis)',
+        description='''
+        ''',
+        example=["id1", "id2"]
+    )
+    image_complexity: Optional[StrictStr] = Field(
+        default='medium',
+        title='影像複雜度',
+        description='''
+        中等："medium"
+        高："high"
+        ''',
+        example='medium'
+    )
+    model_name: Optional[StrictStr] = Field(
+        default='dbnet_v0+cht_ppocr_v1',
+        title='文字辨識模型名稱',
+        description='''
+        格式為: det_model+rec_model
+        e.g., dbnet_v0+cht_ppocr_v1
+
+        目前可使用的detection模型:
+        dbnet_v0(中文＋英文模型)
+
+        目前可使用的recognition模型:
+        cht_ppocr_v1(繁體中文模型)
+        en_ppocr_v0(英文模型)
+        ''',
+        example='dbnet_v0+cht_ppocr_v1'
+    )
+
+    @validator("image", allow_reuse=True)
+    def image_check(cls, v):
+        if v == '':
+            raise ValueError("影像不得為空字串")
+        return v
+
+    @validator("image_complexity", allow_reuse=True)
+    def image_complexity_check(cls, v):
+        if v not in ['medium', 'high']:
+            raise ValueError("影像複雜度僅可為 medium 或 high")
+        return v
+
+    @validator("model_name", allow_reuse=True)
+    def model_name_check(cls, v):
+        if len(v.split("+")) != 2:
+            raise ValueError("model_name 格式為: det_model+rec_model")
+        return v
 
 class OcrPredict(BaseModel, extra=Extra.forbid):
     points: List = Field(
