@@ -18,6 +18,7 @@ const header = {
     editable: false,
     type: 'input'
 };
+
 export default {
     name: 'public',
     components: {
