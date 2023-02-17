@@ -6,32 +6,47 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.services.template_crud import read as service_read
-from app.schema.template_crud.read import GetAvailableTemplatesResponse
-from app.schema.template_crud.read import GetTemplateDetailResponse
+from app.schema.template_crud.read import GetAvailableTemplatesResponse, GetAvailableTemplatesRequest
+from app.schema.template_crud.read import GetTemplateDetailResponse, GetTemplateDetailRequest
+from app.forms.template_crud.read import GetAvailableTemplatesForm, GetTemplateDetailForm
 
 
 router = APIRouter()
 
 
-@router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(user_id: str, is_public: bool, db: Session = Depends(get_db)):
+@router.post("/get_available_templates", response_model=GetAvailableTemplatesResponse)
+def get_available_templates(request: GetAvailableTemplatesRequest, db: Session = Depends(get_db)):
     '''
     取得該 user_id 可用的 template 清單
     '''
-    available_templates = service_read.get_available_templates(db, user_id, is_public)
-    return GetAvailableTemplatesResponse(
-        available_templates=available_templates
-    )
+    form = GetTemplateDetailForm(request)
+    await form.load_data()
+    if await form.is_valid():
+        template = GetTemplateDetailRequest(
+            template_id=form.user_id
+            )
+        available_templates = service_read.get_available_templates(template, db)
+        return GetAvailableTemplatesResponse(
+            available_templates=available_templates
+        )
+    raise CustomException(status_code=400, message=form.errors)
 
 
-@router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str, db: Session = Depends(get_db)):
+@router.post("/get_template_detail", response_model=GetTemplateDetailResponse)
+def get_template_detail(request: GetTemplateDetailRequest, db: Session = Depends(get_db)):
     '''
     取得該 template 的細節
     '''
-    image, template_detail = service_read.get_template_detail(db, template_id)
-    return GetTemplateDetailResponse(
-        image=image,
-        template_name=template_detail['template_name'],
-        bbox=template_detail['bbox']
-    )
+    form = GetTemplateDetailForm(request)
+    await form.load_data()
+    if await form.is_valid():
+        template = GetTemplateDetailRequest(
+            template_id=form.template_id
+            )
+        image, template_detail = service_read.get_template_detail(template, db)
+        return GetTemplateDetailResponse(
+            image=image,
+            template_name=template_detail['template_name'],
+            bbox=template_detail['bbox']
+        )
+    raise CustomException(status_code=400, message=form.errors)
