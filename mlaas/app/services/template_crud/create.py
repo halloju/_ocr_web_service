@@ -44,7 +44,7 @@ def create_template(template, db: Session):
             template_id=template_id,
             user_id=template.user_id,
             template_name=template.template_name,
-            bbox=template.bbox,
+            points_list=template.points_list,
             updated_at=today,
             is_public=template.is_public,
             is_no_ttl=template.is_no_ttl
