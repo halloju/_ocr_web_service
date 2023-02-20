@@ -24,9 +24,12 @@ async def update_template(request: UpdateTemplateRequest, db: Session = Depends(
         template = UpdateTemplateRequest(
             user_id=form.user_id,
             template_id=form.template_id,
-            bbox=form.bbox,
+            points_list=form.points_list,
             template_name=form.template_name
             )
         new_template_id = service_update.update_template(template=template, db=db)
-        return UpdateTemplateResponse(template_id=new_template_id)
+        return UpdateTemplateResponse(
+            template_id=new_template_id,
+            status_code='0000',
+            status_msg='OK')
     raise CustomException(status_code=400, message=form.errors)

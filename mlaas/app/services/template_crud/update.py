@@ -6,6 +6,7 @@ from app.services import minio
 from io import BytesIO
 from copy import deepcopy
 from datetime import datetime
+from fastapi.encoders import jsonable_encoder
 import logging
 import pytz
 
@@ -24,7 +25,7 @@ def update_template(template, db: Session):
             template_id=new_template_id,
             user_id=template.user_id,
             template_name=template.template_name,
-            bbox=template.bbox,
+            points_list=jsonable_encoder(template.points_list),
             updated_at=today,
             is_public=record.is_public,
             is_no_ttl=record.is_no_ttl
@@ -53,3 +54,6 @@ def update_template(template, db: Session):
     except OperationalError as e:
         logger.error("update template db error:{}".format(e))
         raise CustomException(status_code=424, message="[DB Error] 請聯絡管理者")
+    except Exception as e:
+        logger.error("error: {}".format(e))
+        raise CustomException(status_code=424, message=f"查無此 template_id: {template_id}")

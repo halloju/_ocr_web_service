@@ -25,5 +25,8 @@ async def delete_template(request: DeleteTemplateRequest, db: Session = Depends(
             template_id=form.template_id
             )
         template_id = service_delete.delete_template(template=template, db=db)
-        return DeleteTemplateResponse()
+        return DeleteTemplateResponse(
+            status_code='0000',
+            status_msg='OK'
+        )
     raise CustomException(status_code=400, message=form.errors)

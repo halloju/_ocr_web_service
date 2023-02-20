@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictStr, conlist
+from pydantic import BaseModel, Field, StrictStr, conlist, Extra
 from datetime import datetime
 
 

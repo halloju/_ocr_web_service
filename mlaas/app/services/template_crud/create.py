@@ -1,6 +1,7 @@
 from app.models.template_info import TemplateInfo
 from app.exceptions import CustomException
 from app.services import minio
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 import base64
@@ -44,7 +45,7 @@ def create_template(template, db: Session):
             template_id=template_id,
             user_id=template.user_id,
             template_name=template.template_name,
-            points_list=template.points_list,
+            points_list=jsonable_encoder(template.points_list),
             updated_at=today,
             is_public=template.is_public,
             is_no_ttl=template.is_no_ttl

@@ -32,6 +32,8 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
             )
         template_id = service_create.create_template(template=template, db=db)
         return CreateTemplateResponse(
-            template_id=template_id
+            template_id=template_id,
+            status_code='0000',
+            status_msg='OK'
         )
     raise CustomException(status_code=400, message=form.errors)

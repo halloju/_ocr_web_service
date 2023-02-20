@@ -26,6 +26,8 @@ async def gp_ocr(request: GpocrRequest, db: Session = Depends(get_db)):
         image_cv_id, ocr_results = service_gp_ocr(ocr_image_info=ocr_image_info, db=db)
         return GpocrResponse(
             image_cv_id=image_cv_id,
-            ocr_results=ocr_results
+            ocr_results=ocr_results,
+            status_code='0000',
+            status_msg='OK'
         )
     raise CustomException(status_code=400, message=form.errors)

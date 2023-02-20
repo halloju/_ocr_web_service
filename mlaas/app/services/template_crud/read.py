@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 import base64
 import logging
 from minio.error import S3Error
+from fastapi.encoders import jsonable_encoder
 
 
 logger = logging.getLogger(__name__)
@@ -50,11 +51,18 @@ def get_template_detail(template, db: Session):
         # Step 2. 從 DB 拉座標點等資訊
         template_detail = db.query(
             TemplateInfo.template_name,
-            TemplateInfo.bbox).filter(TemplateInfo.template_id == template_id)
-        print(f'template_detail: {template_detail}')
+            TemplateInfo.points_list,
+            TemplateInfo.updated_at).filter(TemplateInfo.template_id == template_id)
         if not template_detail.first():
             raise CustomException(status_code=400, message="template_detail is not found")
-        return image_base64, template_detail.first()
+        detail_dict = jsonable_encoder(template_detail.first())
+        template_detail = {
+            "image": image_base64,
+            "points_list": detail_dict["points_list"],
+            "template_name": detail_dict["template_name"],
+            "updated_at": detail_dict["updated_at"]
+        }
+        return template_detail
     except Exception as e:
         logger.error("error: {}".format(e))
         raise CustomException(status_code=424, message=f"查無此 template_id: {template_id}")

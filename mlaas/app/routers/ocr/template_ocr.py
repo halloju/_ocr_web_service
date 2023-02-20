@@ -29,6 +29,8 @@ async def template_ocr(request: TemplateocrRequest, db: Session = Depends(get_db
         image_cv_id, ocr_results = service_template_ocr(template_ocr_info=template_ocr_info, db=db)
         return TemplateocrResponse(
             image_cv_id=image_cv_id,
-            ocr_results=ocr_results
+            ocr_results=ocr_results,
+            status_code='0000',
+            status_msg='OK'
         )
     raise CustomException(status_code=400, message=form.errors)

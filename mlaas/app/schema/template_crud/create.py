@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictStr, conlist
+from pydantic import BaseModel, Field, StrictStr, conlist, Extra
 
 
 filepath = os.path.join(os.getcwd(), "app", "image-base64-string.txt")
@@ -19,7 +19,6 @@ class PointDict(BaseModel, extra=Extra.forbid):
         example='text'
     )
     tag: Optional[StrictStr] = Field(
-        ...,
         title='框的類型',
         example='姓名'
     )
@@ -27,6 +26,8 @@ class PointDict(BaseModel, extra=Extra.forbid):
         title='框的點位',
         example=[[0, 0], [100, 0], [100, 100], [0, 100]]
     )
+
+
 
 
 class CreateTemplateRequest(BaseModel):

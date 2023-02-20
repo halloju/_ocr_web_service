@@ -15,25 +15,27 @@ router = APIRouter()
 
 
 @router.post("/get_available_templates", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(request: GetAvailableTemplatesRequest, db: Session = Depends(get_db)):
+async def get_available_templates(request: GetAvailableTemplatesRequest, db: Session = Depends(get_db)):
     '''
     取得該 user_id 可用的 template 清單
     '''
-    form = GetTemplateDetailForm(request)
+    form = GetAvailableTemplatesForm(request)
     await form.load_data()
     if await form.is_valid():
-        template = GetTemplateDetailRequest(
-            template_id=form.user_id
+        template = GetAvailableTemplatesRequest(
+            user_id=form.user_id
             )
         available_templates = service_read.get_available_templates(template, db)
         return GetAvailableTemplatesResponse(
-            available_templates=available_templates
+            template_infos=available_templates,
+            status_code='0000',
+            status_msg='OK'
         )
     raise CustomException(status_code=400, message=form.errors)
 
 
 @router.post("/get_template_detail", response_model=GetTemplateDetailResponse)
-def get_template_detail(request: GetTemplateDetailRequest, db: Session = Depends(get_db)):
+async def get_template_detail(request: GetTemplateDetailRequest, db: Session = Depends(get_db)):
     '''
     取得該 template 的細節
     '''
@@ -43,10 +45,11 @@ def get_template_detail(request: GetTemplateDetailRequest, db: Session = Depends
         template = GetTemplateDetailRequest(
             template_id=form.template_id
             )
-        image, template_detail = service_read.get_template_detail(template, db)
+        template_detail = service_read.get_template_detail(template, db)
+        print(template_detail)
         return GetTemplateDetailResponse(
-            image=image,
-            template_name=template_detail['template_name'],
-            bbox=template_detail['bbox']
+            template_detail=template_detail,
+            status_code='0000',
+            status_msg='OK'
         )
     raise CustomException(status_code=400, message=form.errors)
