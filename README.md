@@ -9,20 +9,12 @@
 | Team Lead | 蔡根元、李杰恩 |
 | Tech Lead | 劉軒彤 |
 
-## 安裝 Docker Engine
-[Link](https://www.docker.com/products/docker-desktop/)
-
-## 本機起服務
-```
-1. docker-compose up -d
-2. 在瀏覽器網址輸入 localhost:5000/docs 開啟 API 文件
-3. 在瀏覽器網址輸入 localhost 可查看網頁
-```
 ## Components
 * 查看各個服務元件
-```
-docker ps -a
-```
+
+- 1. Web: http://localhost/
+- 2. Backend: http://localhost:5000/docs#/
+- 3. MLaaS: http://localhost:7777/docs#/
 
 * 查看錯誤訊息
 ```

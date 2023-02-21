@@ -14,3 +14,6 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY ./app /code/app
 
 COPY gunicorn.conf.py /code/gunicorn.conf.py
+
+COPY .env.dev /code/.env.dev
+
