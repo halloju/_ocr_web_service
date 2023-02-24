@@ -36,11 +36,11 @@ class DefaultOutput(BaseModel):
 
 
 # API final input / output schema generator
-def mlaas_item_generator(settings, api_inputs, api_outputs):
+def mlaas_item_generator(name, api_inputs, api_outputs):
     """ Generator api input / output model class.
 
     Args:
-      - settings: proj_info
+      - name: action_name
       - project_inputs: proj input model class
       - project_outputs: proj output model class
 
@@ -49,23 +49,15 @@ def mlaas_item_generator(settings, api_inputs, api_outputs):
       - mlaas_output: mlaas output final model class
 
     """
-    @classmethod
-    def as_form(
-        cls,
-        business_unit: str = Form(...),
-        request_id: str = Form(...),
-        inputs: api_inputs = Form(...)
-    ):
-        return cls(business_unit=business_unit, request_id=request_id, inputs=inputs)
+
     mlaas_input = create_model(
-        settings.action.title() + settings.api_version.title() + 'MlaasInput',
+        name + 'MlaasInput',
         inputs=(api_inputs, ...),
         __base__=DefaultInput
     )
-    if settings.content_type == 'multipart/form-data':
-        mlaas_input.as_form = as_form
+
     mlaas_output = create_model(
-        settings.action.title() + settings.api_version.title() + 'MlaasOutput',
+        name + 'MlaasOutput',
         outputs=(api_outputs, ...),
         __base__=DefaultOutput
     )

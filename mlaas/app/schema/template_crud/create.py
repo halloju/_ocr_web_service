@@ -2,7 +2,6 @@ import os
 from typing import List, Optional
 from pydantic import BaseModel, Field, StrictStr, conlist, Extra
 
-
 filepath = os.path.join(os.getcwd(), "app", "image-base64-string.txt")
 with open(filepath, 'r') as f:
     img_base64_string = f.read()
