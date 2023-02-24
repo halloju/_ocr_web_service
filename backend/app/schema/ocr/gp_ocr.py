@@ -8,37 +8,18 @@ with open(filepath, 'r') as f:
     img_base64_string = f.read()
 
 
-class GpocrRequest(BaseModel):
-    image: Dict[str, StrictStr] = Field(
-        title='多張影像的 base64 字串',
+class GpocrUpload(BaseModel):
+    image: str = Field(
+        title='base64 字串的影像',
         description='''
         ''',
-        example={"id1": img_base64_string, "id2": img_base64_string}
+        example=img_base64_string
     )
-    image_complexity: Optional[StrictStr] = Field(
-        default='medium',
-        title='影像複雜度',
+    image_id: str = Field(
+        title="image id",
         description='''
-        中等："medium"
-        高："high"
         ''',
-        example='medium'
-    )
-    model_name: Optional[StrictStr] = Field(
-        default='dbnet_v0+cht_ppocr_v1',
-        title='文字辨識模型名稱',
-        description='''
-        格式為: det_model+rec_model
-        e.g., dbnet_v0+cht_ppocr_v1
-
-        目前可使用的detection模型:
-        dbnet_v0(中文＋英文模型)
-
-        目前可使用的recognition模型:
-        cht_ppocr_v1(繁體中文模型)
-        en_ppocr_v0(英文模型)
-        ''',
-        example='dbnet_v0+cht_ppocr_v1'
+        example="id1"
     )
 
     @validator("image", allow_reuse=True)
@@ -47,21 +28,9 @@ class GpocrRequest(BaseModel):
             raise ValueError("影像不得為空字串")
         return v
 
-    @validator("image_complexity", allow_reuse=True)
-    def image_complexity_check(cls, v):
-        if v not in ['medium', 'high']:
-            raise ValueError("影像複雜度僅可為 medium 或 high")
-        return v
-
-    @validator("model_name", allow_reuse=True)
-    def model_name_check(cls, v):
-        if len(v.split("+")) != 2:
-            raise ValueError("model_name 格式為: det_model+rec_model")
-        return v
-
-class GpocrRequest2(BaseModel):
-    image: List[str] = Field(
-        title='多張影像的 image id (Redis)',
+class GpocrPredict(BaseModel):
+    imageList: List[str] = Field(
+        title='單張或多張影像的 image id (Redis)',
         description='''
         ''',
         example=["id1", "id2"]
@@ -92,7 +61,7 @@ class GpocrRequest2(BaseModel):
         example='dbnet_v0+cht_ppocr_v1'
     )
 
-    @validator("image", allow_reuse=True)
+    @validator("imageList", allow_reuse=True)
     def image_check(cls, v):
         if v == '':
             raise ValueError("影像不得為空字串")
