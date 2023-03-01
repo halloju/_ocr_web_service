@@ -16,7 +16,7 @@ celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://lo
 class PredictTask(Task):
     def __init__(self):
         super().__init__()
-        self.url = os.environ.get("MLAAS_URL", "http://localhost:7777/ocr/gp_ocr")
+        self.url = os.environ.get("MLAAS_URL", "http://mlaas:7777/ocr/gp_ocr")
         
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -25,24 +25,25 @@ class PredictTask(Task):
         try:
             encoded_data = celery.backend.get(image_id)
             # Process the image using the ML model
-            data_pred = requests.post(self.url, data={
-                "image": encoded_data,
-                "image_complexity": "medium",
-                "model_name": "dbnet_v0+cht_ppocr_v1"}).json()
-
+            data_pred = requests.post(self.url, json = {
+                "business_unit": "C170",
+                "request_id": "QAZWSXEDC",
+                "inputs": {
+                        "image": encoded_data.decode("utf-8"),
+                        "image_complexity": "medium",
+                        "model_name": "dbnet_v0+cht_ppocr_v1"
+                    }
+                })
             # Return the prediction result
             return {'status': 'SUCCESS', 'result': data_pred}
         except Exception as ex:
-            logging.error(ex)
-            raise ex
-            # try:
-            #     logging.error(ex)
-            #     raise
-            #     # Retry the task in 2 seconds if it fails
-            #     self.retry(countdown=2)
-            # except MaxRetriesExceededError as ex:
-            #     # Return a failure result if the maximum number of retries is reached
-            #     return {'status': 'FAIL', 'result': 'max retries achieved'}
+            try:
+                logging.error(ex)
+                # Retry the task in 2 seconds if it fails
+                self.retry(countdown=2)
+            except MaxRetriesExceededError as ex:
+                # Return a failure result if the maximum number of retries is reached
+                return {'status': 'FAIL', 'result': 'max retries achieved'}
     
 @celery.task(name="create_task")
 def create_task(task_type):
@@ -75,16 +76,14 @@ def get_from_redis(task_id):
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
 def predict_image(self, image_id):
     try:
-        # encoded_data = celery.backend.get(image_id)
-        # logging.info(f"Predicting image {image_id}...")
         response = self.predict(image_id)
-        logging.info(f"Prediction result: {response}")
-        data_pred = response.json()
+        if response['result'].json()['outputs']['status_msg'] == 'OK':
+            data_pred = str(response['result'].json()['outputs']['ocr_results'])
+        else:
+            data_pred = str(response['result'].json()['outputs']['status_msg'])
         return {'status': 'SUCCESS', 'result': data_pred}
     except Exception as ex:
-        logging.error(ex)
-        raise ex
-        # try:
-        #     self.retry(countdown=2)
-        # except MaxRetriesExceededError as ex:
-        #     return {'status': 'FAIL', 'result': 'max retried achieved'}
+        try:
+            self.retry(countdown=2)
+        except MaxRetriesExceededError as ex:
+            return {'status': 'FAIL', 'result': 'max retried achieved'}
