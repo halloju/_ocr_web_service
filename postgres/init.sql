@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS if_gp_ocr.template_info(
     template_id VARCHAR(19) PRIMARY KEY,
     user_id VARCHAR(5) NOT NULL,
     template_name VARCHAR,
-    bbox JSON[],
+    points_list JSON[],
     is_no_ttl BOOLEAN DEFAULT FALSE,
     is_public BOOLEAN DEFAULT FALSE,
     updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp 
