@@ -1,6 +1,19 @@
 version: '3'
 
 services:
+    db:
+        container_name: db
+        image: postgres:14
+        restart: always
+        environment:
+          - POSTGRES_DATABASE=postgres
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+          - TZ=Asia/Taipei
+        volumes:
+          - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+          - 5432:5432
     minio:
         container_name: minio
         image: minio/minio
@@ -63,19 +76,6 @@ services:
         depends_on:
           - backend
           - web
-    db:
-        container_name: db
-        image: postgres:14
-        restart: always
-        environment:
-          - POSTGRES_DATABASE=postgres
-          - POSTGRES_USER=postgres
-          - POSTGRES_PASSWORD=postgres
-          - TZ=Asia/Taipei
-        volumes:
-          - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-        ports:
-          - 5432:5432
     redis:
         container_name: redis
         image: "redis:alpine"
@@ -90,7 +90,7 @@ services:
     worker:
       container_name: worker
       build: ./backend
-      command: celery worker --app=worker.celery --loglevel=info --logfile=logs/celery.log
+      command: celery worker --app=worker.celery
       volumes:
         - ./backend:/usr/src/app
       environment:
