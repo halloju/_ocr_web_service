@@ -13,7 +13,7 @@ load_dotenv(".env.dev")
 
 def register_redis(app: FastAPI) -> None:
     """
-    把redis挂载到app对象上面
+    把 redis 掛載到 app 上面
     :param app:
     :return:
     """
