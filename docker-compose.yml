@@ -64,7 +64,7 @@ services:
           - backend
           - web
     db:
-        container_name: postgres
+        container_name: db
         image: postgres:14
         restart: always
         environment:
