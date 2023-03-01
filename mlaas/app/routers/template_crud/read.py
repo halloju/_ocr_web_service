@@ -6,32 +6,92 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.services.template_crud import read as service_read
-from app.schema.template_crud.read import GetAvailableTemplatesResponse
-from app.schema.template_crud.read import GetTemplateDetailResponse
+from app.schema.template_crud.read import GetAvailableTemplatesResponse, GetAvailableTemplatesRequest
+from app.schema.template_crud.read import GetTemplateDetailResponse, GetTemplateDetailRequest
+from app.forms.template_crud.read import GetAvailableTemplatesForm, GetTemplateDetailForm
 
+from app.router_schema import mlaas_item_generator
+from fastapi.encoders import jsonable_encoder
+from app.route_utils import get_output_template
+from copy import deepcopy
+import uuid
+import time
 
 router = APIRouter()
 
+available_Input, available_Output = mlaas_item_generator('GetAvailableTemplates', GetAvailableTemplatesRequest, GetAvailableTemplatesResponse)
 
-@router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(user_id: str, is_public: bool, db: Session = Depends(get_db)):
+detail_Input, detail_Output = mlaas_item_generator('GetTemplateDetail', GetTemplateDetailRequest, GetTemplateDetailResponse)
+
+
+@router.post("/get_available_templates", response_model=available_Output)
+async def get_available_templates(request: available_Input, db: Session = Depends(get_db)):
     '''
     取得該 user_id 可用的 template 清單
     '''
-    available_templates = service_read.get_available_templates(db, user_id, is_public)
-    return GetAvailableTemplatesResponse(
-        available_templates=available_templates
+
+    start_time = time.time()
+    req_data = jsonable_encoder(request)
+    trace_id = str(uuid.uuid4())
+    output_template = get_output_template()
+    output = deepcopy(output_template)
+    output.update(
+        business_unit=req_data['business_unit'],
+        request_id=req_data['request_id'],
+        trace_id=trace_id,
+        request_time=start_time
     )
+    data = GetAvailableTemplatesRequest(**req_data['inputs'])
+    form = GetAvailableTemplatesForm(data)
+    await form.load_data()
+    if await form.is_valid():
+        template = GetAvailableTemplatesRequest(
+            user_id=form.user_id
+            )
+        available_templates = service_read.get_available_templates(template, db)
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': '0000',
+            'status_msg': 'OK',
+            'template_infos': available_templates
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return available_Output(**output)
+    raise CustomException(status_code=400, message=form.errors)
 
 
-@router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str, db: Session = Depends(get_db)):
+@router.post("/get_template_detail", response_model=detail_Output)
+async def get_template_detail(request: detail_Input, db: Session = Depends(get_db)):
     '''
     取得該 template 的細節
     '''
-    image, template_detail = service_read.get_template_detail(db, template_id)
-    return GetTemplateDetailResponse(
-        image=image,
-        template_name=template_detail['template_name'],
-        bbox=template_detail['bbox']
+    start_time = time.time()
+    req_data = jsonable_encoder(request)
+    trace_id = str(uuid.uuid4())
+    output_template = get_output_template()
+    output = deepcopy(output_template)
+    output.update(
+        business_unit=req_data['business_unit'],
+        request_id=req_data['request_id'],
+        trace_id=trace_id,
+        request_time=start_time
     )
+    data = GetTemplateDetailRequest(**req_data['inputs'])
+    form = GetTemplateDetailForm(data)
+    await form.load_data()
+    if await form.is_valid():
+        template = GetTemplateDetailRequest(
+            template_id=form.template_id
+            )
+        template_detail = service_read.get_template_detail(template, db)
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': '0000',
+            'status_msg': 'OK',
+            'template_detail': template_detail
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return detail_Output(**output)
+    raise CustomException(status_code=400, message=form.errors)

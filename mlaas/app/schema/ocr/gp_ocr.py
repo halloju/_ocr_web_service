@@ -80,6 +80,25 @@ class OcrPredict(BaseModel, extra=Extra.forbid):
 
 
 class GpocrResponse(BaseModel):
+    status_code: StrictStr = Field(
+        title='服務狀態碼',
+        description='''
+        同 apihub
+        ''',
+        example='0000'
+    )
+    status_msg: StrictStr = Field(
+        title='服務狀態內容',
+        description='''
+        同 apihub
+        ''',
+        example='OK'
+    )
+    err_detail: Optional[dict] = Field(
+        title='錯誤訊息',
+        description='''
+        '''
+    )
     image_cv_id: StrictStr = Field(
         title='影像註冊的 key 值',
         description='''

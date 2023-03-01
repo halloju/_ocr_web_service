@@ -8,15 +8,21 @@ export default {
         handleTransformEnd(e) {
             // shape is transformed, let us save new attrs back to the node
             // find element in our state
-            const rect = this.recs.find((r) => r.name === e.target.attrs.name);
+            const rect = this.recs.find((obj) => obj.name === e.target.attrs.name);
+            const index = this.recs.findIndex((obj) => obj.name === e.target.attrs.name);
             this.handleDragBond(e);
-
+            // update the state
             rect.startPointX = e.target.x();
             rect.startPointY = e.target.y();
             rect.scaleX = e.target.attrs.scaleX;
             rect.scaleY = e.target.attrs.scaleY;
             rect.endPointX = e.target.x() + rect.width * rect.scaleX;
             rect.endPointY = e.target.y() + rect.height * rect.scaleY;
+
+            this.$store.commit('recsScaleUpdate', {
+                type: this.boxName,
+                data: { ...rect, index }
+            });
         },
         handleDragEnd(e) {
             e.cancelBubble = true;
@@ -29,7 +35,6 @@ export default {
             rect.endPointY = pos.y + rect.height * rect.scaleY;
         },
         handleDragBond(e) {
-            console.log(e.target);
             const rect = this.recs.find((r) => r.name === e.target.attrs.name);
             const pos = e.target.getPosition();
 
@@ -106,6 +111,8 @@ export default {
         :config="{
             width: Math.abs(rec.width),
             height: Math.abs(rec.height),
+            scaleX: rec.scaleX,
+            scaleY: rec.scaleY,
             fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.opacity})`,
             stroke: `rgb(20,20,200,${this.opacity})`,
             strokeWidth: 0.5,
