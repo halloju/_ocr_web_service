@@ -67,7 +67,7 @@ class GetAvailableTemplatesResponse(BaseModel):
         description='''
         '''
     )
-    template_infos: Optional[List[AvailableTemplates]] = Field(..., title="user_id 可取用的 template", example=[])
+    template_infos: Optional[List[AvailableTemplates]] = Field(title="user_id 可取用的 template", example=[])
 
 class GetTemplateDetailResponse(BaseModel):
     status_code: StrictStr = Field(

@@ -1,3 +1,5 @@
+from app.router_schema import DefaultOutput as MlaasHttpOutput
+
 # http response description
 http_responses = {
     401: {

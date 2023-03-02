@@ -54,4 +54,4 @@ class UpdateTemplateResponse(BaseModel):
         description='''
         '''
     )
-    template_id: str = Field(..., title="範本影像編號", example="1352020220930134411")
+    template_id: Optional[str] = Field(title="範本影像編號", example="1352020220930134411")

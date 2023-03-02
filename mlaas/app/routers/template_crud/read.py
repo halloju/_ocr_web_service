@@ -9,7 +9,7 @@ from app.services.template_crud import read as service_read
 from app.schema.template_crud.read import GetAvailableTemplatesResponse, GetAvailableTemplatesRequest
 from app.schema.template_crud.read import GetTemplateDetailResponse, GetTemplateDetailRequest
 from app.forms.template_crud.read import GetAvailableTemplatesForm, GetTemplateDetailForm
-
+from app.api_config import http_responses
 from app.router_schema import mlaas_item_generator
 from fastapi.encoders import jsonable_encoder
 from app.route_utils import get_output_template
@@ -24,7 +24,7 @@ available_Input, available_Output = mlaas_item_generator('GetAvailableTemplates'
 detail_Input, detail_Output = mlaas_item_generator('GetTemplateDetail', GetTemplateDetailRequest, GetTemplateDetailResponse)
 
 
-@router.post("/get_available_templates", response_model=available_Output)
+@router.post("/get_available_templates", response_model=available_Output, responses=http_responses)
 async def get_available_templates(request: available_Input, db: Session = Depends(get_db)):
     '''
     取得該 user_id 可用的 template 清單
@@ -41,8 +41,22 @@ async def get_available_templates(request: available_Input, db: Session = Depend
         trace_id=trace_id,
         request_time=start_time
     )
+    status_dict = {
+        '0001': 'code error',
+    }
+    if req_data['request_id'] in status_dict:
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': req_data['request_id'],
+            'status_msg': status_dict[req_data['request_id']]
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return available_Output(**output)
+
     data = GetAvailableTemplatesRequest(**req_data['inputs'])
     form = GetAvailableTemplatesForm(data)
+    
     await form.load_data()
     if await form.is_valid():
         template = GetAvailableTemplatesRequest(
@@ -58,10 +72,10 @@ async def get_available_templates(request: available_Input, db: Session = Depend
         }
         output.update(response_time=end_time, duration_time=duration_time, outputs=result)
         return available_Output(**output)
-    raise CustomException(status_code=400, message=form.errors)
+    raise CustomException(status_code=401, message=form.errors)
 
 
-@router.post("/get_template_detail", response_model=detail_Output)
+@router.post("/get_template_detail", response_model=detail_Output, responses=http_responses)
 async def get_template_detail(request: detail_Input, db: Session = Depends(get_db)):
     '''
     取得該 template 的細節
@@ -77,6 +91,21 @@ async def get_template_detail(request: detail_Input, db: Session = Depends(get_d
         trace_id=trace_id,
         request_time=start_time
     )
+    
+    status_dict = {
+        '0001': 'code error',
+        '5407': 'template_id not exist'
+    }
+    if req_data['request_id'] in status_dict:
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': req_data['request_id'],
+            'status_msg': status_dict[req_data['request_id']]
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return detail_Output(**output)
+    
     data = GetTemplateDetailRequest(**req_data['inputs'])
     form = GetTemplateDetailForm(data)
     await form.load_data()
@@ -94,4 +123,4 @@ async def get_template_detail(request: detail_Input, db: Session = Depends(get_d
         }
         output.update(response_time=end_time, duration_time=duration_time, outputs=result)
         return detail_Output(**output)
-    raise CustomException(status_code=400, message=form.errors)
+    raise CustomException(status_code=401, message=form.errors)

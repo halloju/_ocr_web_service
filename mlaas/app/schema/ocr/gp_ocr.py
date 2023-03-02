@@ -105,10 +105,10 @@ class GpocrResponse(BaseModel):
         description='''
         '''
     )
-    image_cv_id: StrictStr = Field(
+    image_cv_id: Optional[StrictStr] = Field(
         title='影像註冊的 key 值',
         description='''
         ''',
         example='2022/09/20/19/30/438ffd10-1090-4687-be84-8f6c36be463a'
     )
-    ocr_results: List[OcrPredict]
+    ocr_results: Optional[List[OcrPredict]]

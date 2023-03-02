@@ -14,6 +14,7 @@ from app.schema.ocr.template_ocr import TemplateocrResponse
 from app.router_schema import mlaas_item_generator
 from fastapi.encoders import jsonable_encoder
 from app.route_utils import get_output_template
+from app.api_config import http_responses
 from copy import deepcopy
 import uuid
 import time
@@ -23,7 +24,7 @@ router = APIRouter()
 Input, Output = mlaas_item_generator('Templateocr', TemplateocrRequest, TemplateocrResponse)
 
 
-@router.post("/template_ocr", response_model=Output)
+@router.post("/template_ocr", response_model=Output, responses=http_responses)
 async def template_ocr(request: Input, db: Session = Depends(get_db)):
     '''
     將 image 影像上傳至 MinIO, 並進行模板辨識，將辨識結果存入 db
@@ -39,7 +40,22 @@ async def template_ocr(request: Input, db: Session = Depends(get_db)):
         trace_id=trace_id,
         request_time=start_time
     )
-    # data = full_data['inputs']
+    status_dict = {
+        '0001': 'code error',
+        '5401': 'unique violation',
+        '5402': 'image type error',
+        '5407': 'template_id not exist'
+    }
+    if req_data['request_id'] in status_dict:
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': req_data['request_id'],
+            'status_msg': status_dict[req_data['request_id']]
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return Output(**output)
+    
     data = TemplateocrRequest(**req_data['inputs'])
     form = TemplateocrForm(data)
     await form.load_data()
@@ -60,4 +76,4 @@ async def template_ocr(request: Input, db: Session = Depends(get_db)):
         }
         output.update(response_time=end_time, duration_time=duration_time, outputs=result)
         return Output(**output)
-    raise CustomException(status_code=400, message=form.errors)
+    raise CustomException(status_code=401, message=form.errors)
