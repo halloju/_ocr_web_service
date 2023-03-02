@@ -49,14 +49,24 @@ class GetAvailableTemplatesResponse(BaseModel):
     status_code: StrictStr = Field(
         title='服務狀態碼',
         description='''
+<<<<<<< HEAD
         同 apihub
+=======
+        API 服務正常："0000"
+        程式碼錯誤："0001"
+>>>>>>> c6826852b1a3a549675ab6f1b166abe66201d48f
         ''',
         example='0000'
     )
     status_msg: StrictStr = Field(
         title='服務狀態內容',
         description='''
+<<<<<<< HEAD
         同 apihub
+=======
+        API 服務正常："OK"
+        程式碼錯誤："code error"
+>>>>>>> c6826852b1a3a549675ab6f1b166abe66201d48f
         ''',
         example='OK'
     )
@@ -71,14 +81,26 @@ class GetTemplateDetailResponse(BaseModel):
     status_code: StrictStr = Field(
         title='服務狀態碼',
         description='''
+<<<<<<< HEAD
         同 apihub
+=======
+        API 服務正常："0000"
+        程式碼錯誤："0001"
+        template_id 不存在: "5407"
+>>>>>>> c6826852b1a3a549675ab6f1b166abe66201d48f
         ''',
         example='0000'
     )
     status_msg: StrictStr = Field(
         title='服務狀態內容',
         description='''
+<<<<<<< HEAD
         同 apihub
+=======
+        API 服務正常："OK"
+        程式碼錯誤："code error"
+        template_id 不存在:: "template_id not exist"
+>>>>>>> c6826852b1a3a549675ab6f1b166abe66201d48f
         ''',
         example='OK'
     )
