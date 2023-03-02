@@ -8,7 +8,7 @@ class TemplateInfo(Base):
     template_id = Column(String, primary_key=True, nullable=False)
     user_id = Column(String, nullable=False)
     template_name = Column(String, nullable=False)
-    bbox = Column(ARRAY(JSON(String)), nullable=False)
+    points_list = Column(ARRAY(JSON(String)), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     is_public = Column(Boolean, nullable=False)
     is_no_ttl = Column(Boolean, nullable=False)

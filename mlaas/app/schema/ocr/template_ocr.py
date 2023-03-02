@@ -54,6 +54,7 @@ class TemplateocrRequest(BaseModel):
 
 
 class OcrPredict(BaseModel, extra=Extra.forbid):
+    
     points: List = Field(
         title='文字區域的點位',
         example=[[1, 2], [1, 3], [1, 5], [1, 8]]
@@ -72,6 +73,25 @@ class OcrPredict(BaseModel, extra=Extra.forbid):
 
 
 class TemplateocrResponse(BaseModel):
+    status_code: StrictStr = Field(
+        title='服務狀態碼',
+        description='''
+        同 apihub
+        ''',
+        example='0000'
+    )
+    status_msg: StrictStr = Field(
+        title='服務狀態內容',
+        description='''
+        同 apihub
+        ''',
+        example='OK'
+    )
+    err_detail: Optional[dict] = Field(
+        title='錯誤訊息',
+        description='''
+        '''
+    )
     image_cv_id: StrictStr = Field(
         title='影像註冊的 key 值',
         description='''
