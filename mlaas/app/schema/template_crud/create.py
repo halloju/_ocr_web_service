@@ -41,14 +41,20 @@ class CreateTemplateResponse(BaseModel):
     status_code: StrictStr = Field(
         title='服務狀態碼',
         description='''
-        同 apihub
+        API 服務正常："0000"
+        程式碼錯誤："0001"
+        重複 template ID: "5401"
+        圖檔格式錯誤: "5402"
         ''',
         example='0000'
     )
     status_msg: StrictStr = Field(
         title='服務狀態內容',
         description='''
-        同 apihub
+        API 服務正常："OK"
+        程式碼錯誤："code error"
+        重複 template ID: "unique violation"
+        圖檔格式錯誤: "image type error"
         ''',
         example='OK'
     )
