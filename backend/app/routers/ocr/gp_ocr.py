@@ -73,6 +73,13 @@ async def get_images(request: Request, image_ids: List[str]):
 
     return images_dict
 
+@router.get("/get_image/{image_id}")
+async def get_images(image_id: str, request: Request):
+    # Get the Redis connection from the app state
+    redis = request.app.state.redis
+    image_string = await redis.get(image_id)
+    return JSONResponse(status_code=200, content={'image_string': image_string})
+
 # 這個好像會亂碼ＱＱ
 @router.post("/get_images2")
 async def get_images(request: Request, image_ids: List[str]):
@@ -111,16 +118,14 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
                 await request.app.state.redis.set(image_id, encoded_data)
                 # Set an expiration time of 1 day (86400 seconds) for the key
                 await request.app.state.redis.expire(image_id, 86400)
-                logging.debug(f'save image: {image_id}')
                 
-
                 # start task prediction
                 task_id = predict_image.delay(image_id)
-                tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/result/{task_id}'})
+                tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
                 logging.info(ex)
-                tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/result/{task_id}'})
+                tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=202, content=tasks)
     except Exception as ex:
         logging.info(ex)

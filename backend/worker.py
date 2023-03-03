@@ -35,15 +35,11 @@ class PredictTask(Task):
                     }
                 })
             # Return the prediction result
-            return {'status': 'SUCCESS', 'result': data_pred}
+            return data_pred.json()
         except Exception as ex:
-            try:
-                logging.error(ex)
-                # Retry the task in 2 seconds if it fails
-                self.retry(countdown=2)
-            except MaxRetriesExceededError as ex:
-                # Return a failure result if the maximum number of retries is reached
-                return {'status': 'FAIL', 'result': 'max retries achieved'}
+            logging.error(ex)
+            raise ex
+                
     
 @celery.task(name="create_task")
 def create_task(task_type):
@@ -77,13 +73,14 @@ def get_from_redis(task_id):
 def predict_image(self, image_id):
     try:
         response = self.predict(image_id)
-        if response['result'].json()['outputs']['status_msg'] == 'OK':
-            data_pred = str(response['result'].json()['outputs']['ocr_results'])
+        if response['outputs']['status_msg'] == 'OK':
+            data_pred = str(response['outputs']['ocr_results'])
         else:
-            data_pred = str(response['result'].json()['outputs']['status_msg'])
+            data_pred = str(response['outputs']['status_msg'])
         return {'status': 'SUCCESS', 'result': data_pred}
     except Exception as ex:
-        try:
-            self.retry(countdown=2)
-        except MaxRetriesExceededError as ex:
-            return {'status': 'FAIL', 'result': 'max retried achieved'}
+        logging.error(ex)
+        # try:
+        #     self.retry(countdown=2)
+        # except MaxRetriesExceededError as e:
+        #     return {'status': 'FAIL', 'result': 'max retried achieved'}

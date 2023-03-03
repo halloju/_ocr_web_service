@@ -66,16 +66,20 @@ export default {
             responseData['base64Image'] = base64Image;
             responseData['fileName'] = this.fileList[0].name;
             // 打 API
+            const formData = new FormData();
+            this.fileList.forEach((file) => {
+                formData.append('files', file.raw);
+            });
             axios
-                .post('/ocr/gp_ocr', {
-                    image: base64Image,
-                    image_complexity: this.image_complexity,
-                    model_name: this.selectedLang.code
+                .post('/ocr/predict_images', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 })
                 .then((response) => {
-                    responseData['ocr_results'] = response.data.ocr_results;
-                    responseData['image_cv_id'] = response.data.image_cv_id;
-                    generalImageResponseList.push(responseData);
+                    // responseData['ocr_results'] = response.data.ocr_results;
+                    // responseData['image_cv_id'] = response.data.image_cv_id;
+                    generalImageResponseList.push(...response.data);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -93,18 +97,19 @@ export default {
                 this.$store.commit('generalImageResponse', generalImageResponseList);
                 const api_time = (end_time - start_time) / 1000;
                 this.$store.commit('generalExecuteTime', api_time);
-                if (this.fileList.length > 1) {
-                    this.$emit('nextStepEmit', 2);
-                } else {
-                    this.$emit('nextStepEmit', 3);
-                }
+                this.$emit('nextStepEmit', 3);
+                // if (this.fileList.length > 1) {
+                //     this.$emit('nextStepEmit', 2);
+                // } else {
+                //     this.$emit('nextStepEmit', 3);
+                // }
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
             }, 2000);
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';
-            const isLt8M = file.size / 1024 / 1024 < 8;
+            const isLt8M = file.size / 1024 / 1024 < 5;
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
                 fileList.pop();

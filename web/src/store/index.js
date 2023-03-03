@@ -67,6 +67,12 @@ const store = new Vuex.Store({
         },
         generalExecuteTime: function (state, payload) {
             state.general_execute_time = payload;
+        },
+        generalImageOcrStatus: function (state, payload) {
+            state.general_upload_res[payload.item].ocr_status = payload.ocr_status;
+        },
+        generalImageOcrResults: function (state, payload) {
+            state.general_upload_res[payload.item].ocr_results = payload.ocr_results;
         }
     }
 });

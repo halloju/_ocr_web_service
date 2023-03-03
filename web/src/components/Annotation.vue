@@ -70,6 +70,7 @@ export default {
     mounted() {
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
+        console.log('initialData', this.initialData);
         this.load();
     },
     beforeUnmount() {

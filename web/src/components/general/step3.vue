@@ -1,8 +1,10 @@
 <script>
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
+import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import * as XLSX from 'xlsx/xlsx.mjs';
+import { mapState } from 'vuex';
 export default {
     components: {
         Annotation
@@ -21,7 +23,7 @@ export default {
             initialDataId: null,
             // 下方
             isDownload: false,
-            resData: this.$store.state.general_upload_res,
+            // general_upload_res: this.$store.state.general_upload_res,
             general_execute_time: this.$store.state.general_execute_time,
             Download: Download,
             Back: Back,
@@ -33,52 +35,96 @@ export default {
         getExcel() {
             this.excelData = [];
             this.tableData = [];
-            for (let i = 0; i < this.resData.length; i++) {
+            for (let i = 0; i < this.general_upload_res.length; i++) {
                 this.excelData.push({
-                    filename: this.resData[i].fileName,
-                    image_cv_id: this.resData[i].image_cv_id,
-                    ocr_results: JSON.stringify(this.resData[i].ocr_results)
+                    filename: this.general_upload_res[i].fileName,
+                    image_cv_id: this.general_upload_res[i].image_cv_id,
+                    ocr_results: JSON.stringify(this.general_upload_res[i].ocr_results)
                 });
                 this.tableData.push({
-                    filename: this.resData[i].fileName,
-                    ocr_results: JSON.stringify(this.resData[i].ocr_results),
-                    image: `data:image/png;base64, ` + this.resData[i].base64Image
+                    filename: this.general_upload_res[i].fileName,
+                    ocr_results: JSON.stringify(this.general_upload_res[i].ocr_results),
+                    image: `data:image/png;base64, ` + this.general_upload_res[i].base64Image
                 });
             }
             return this.tableData;
-        }
+        },
+        ...mapState(['general_upload_res'])
     },
     methods: {
         callback(data, image_cv_id) {
-            for (let i = 0; i < this.resData.length; i++) {
-                if (image_cv_id === this.resData[i].image_cv_id) {
-                    for (let j = 0; j < this.resData[i].ocr_results.length; j++) {
-                        this.resData[i].ocr_results[j].text = data[j].annotation.text;
+            for (let i = 0; i < this.general_upload_res.length; i++) {
+                if (image_cv_id === this.general_upload_res[i].image_cv_id) {
+                    for (let j = 0; j < this.general_upload_res[i].ocr_results.length; j++) {
+                        this.general_upload_res[i].ocr_results[j].text = data[j].annotation.text;
                     }
                     break;
                 }
             }
-            console.log(this.resData);
+            console.log(this.general_upload_res);
         },
         getImage(item) {
-            let ImageSrc = 'data:image/png;base64,' + this.resData[item - 1].base64Image;
-            return ImageSrc;
+            axios.get(`http://localhost:5000/ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
+                console.log('getImage', res);
+                if (res.status === 200) {
+                    let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
+                    return ImageSrc;
+                } else {
+                    ElMessage({
+                        message: '辨識中，請稍後',
+                        type: 'warning'
+                    });
+                }
+            });
         },
-        getShapeData(item) {
+        getOcrStatus(item) {
+            axios.get(`http://localhost:5000/ocr/status/${this.general_upload_res[item - 1].task_id}`).then((res) => {
+                if (res.data.status === 'SUCCESS') {
+                    this.getOcrResults(item);
+                }
+            });
+        },
+        getOcrResults(item) {
+            axios.get(`http://localhost:5000/ocr/result/${this.general_upload_res[item - 1].task_id}`).then((res) => {
+                if (res.data.status === 'SUCCESS') {
+                    this.$store.commit('generalImageOcrResults', { item: item - 1, ocr_results: res.data.result });
+                } else {
+                    ElMessage({
+                        message: '辨識失敗',
+                        type: 'warning'
+                    });
+                }
+                this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: res.data.status });
+            });
+        },
+        async waitUntilOcrComplete(item) {
+            const ocrStatus = this.general_upload_res[item - 1].ocr_status;
+            if (ocrStatus === 'SUCCESS' || ocrStatus === 'FAIL') {
+                return;
+            }
+            await this.getOcrStatus(item);
+            setTimeout(this.waitUntilOcrComplete.bind(this, item), 5000);
+        },
+        async getShapeData(item) {
+            console.log('getShapeData', item);
+            await this.waitUntilOcrComplete(item);
             let myShapes = [];
-            let regData = this.$store.state.general_upload_res[item - 1].ocr_results;
-            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_cv_id);
+            let regData = JSON.parse(this.general_upload_res[item - 1].ocr_results.replace(/'/g, '"')); //last one
+            // let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
             regData.forEach(function (element, index) {
+                console.log(element);
                 var label = Object.values(element);
+                console.log(label);
                 var points = Object.values(label[0]);
                 var myContent = label[1];
                 var label_x = points[0][0];
                 var label_y = points[0][1];
                 var label_width = points[1][0] - label_x;
                 var label_height = points[2][1] - label_y;
+                var image_cv_id = regData.image_cv_id;
                 myShapes.push({
                     type: 'rect',
-                    name: image_cv_id + index,
+                    name: image_cv_id,
                     fill: '#b0c4de',
                     opacity: 0.5,
                     stroke: '#0ff',
@@ -149,12 +195,12 @@ export default {
                                     <el-button class="my-button" type="primary" :icon="Download" circle @click="downloadFile"></el-button>
                                 </el-tooltip>
                             </div>
-                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ this.resData.length }} 張，共耗時 {{ general_execute_time }} 秒</div>
+                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ this.general_upload_res.length }} 張，共耗時 {{ general_execute_time }} 秒</div>
                         </div>
                     </div>
                     <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                         <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside">
-                            <el-carousel-item v-for="item in this.resData.length" :key="item" style="overflow: scroll">
+                            <el-carousel-item v-for="item in this.general_upload_res.length" :key="item" style="overflow: scroll">
                                 <h3>第 {{ item }} 張</h3>
                                 <Annotation
                                     containerId="my-pic-annotation-output"
@@ -166,7 +212,7 @@ export default {
                                     :dataCallback="callback"
                                     :initialData="getShapeData(item)"
                                     :initialDataId="initialDataId"
-                                    :image_cv_id="this.resData[item - 1].image_cv_id"
+                                    :image_cv_id="this.general_upload_res[item - 1].image_cv_id"
                                 ></Annotation>
                             </el-carousel-item>
                         </el-carousel>
