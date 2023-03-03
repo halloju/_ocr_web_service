@@ -28,7 +28,8 @@ export default {
             Download: Download,
             Back: Back,
             excelData: [],
-            tableData: []
+            tableData: [],
+            reloadAnnotator: new Array(this.$store.state.general_upload_res.length).fill(false)
         };
     },
     computed: {
@@ -54,7 +55,7 @@ export default {
     methods: {
         callback(data, image_cv_id) {
             for (let i = 0; i < this.general_upload_res.length; i++) {
-                if (image_cv_id === this.general_upload_res[i].image_cv_id) {
+                if (image_cv_id === this.general_upload_res[i].image_id) {
                     for (let j = 0; j < this.general_upload_res[i].ocr_results.length; j++) {
                         this.general_upload_res[i].ocr_results[j].text = data[j].annotation.text;
                     }
@@ -97,31 +98,28 @@ export default {
                 this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: res.data.status });
             });
         },
-        async waitUntilOcrComplete(item) {
+        waitUntilOcrComplete(item) {
             const ocrStatus = this.general_upload_res[item - 1].ocr_status;
             if (ocrStatus === 'SUCCESS' || ocrStatus === 'FAIL') {
                 return;
             }
-            await this.getOcrStatus(item);
+            this.getOcrStatus(item);
             setTimeout(this.waitUntilOcrComplete.bind(this, item), 5000);
         },
-        async getShapeData(item) {
-            console.log('getShapeData', item);
-            await this.waitUntilOcrComplete(item);
+        getShapeData(item) {
+            this.waitUntilOcrComplete(item);
             let myShapes = [];
             let regData = JSON.parse(this.general_upload_res[item - 1].ocr_results.replace(/'/g, '"')); //last one
             // let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
             regData.forEach(function (element, index) {
-                console.log(element);
                 var label = Object.values(element);
-                console.log(label);
                 var points = Object.values(label[0]);
                 var myContent = label[1];
                 var label_x = points[0][0];
                 var label_y = points[0][1];
                 var label_width = points[1][0] - label_x;
                 var label_height = points[2][1] - label_y;
-                var image_cv_id = regData.image_cv_id;
+                var image_cv_id = label[2];
                 myShapes.push({
                     type: 'rect',
                     name: image_cv_id,
@@ -143,7 +141,8 @@ export default {
                     height: label_height
                 });
             });
-            return JSON.stringify(myShapes);
+            this.reloadAnnotator[item - 1] = true;
+            return myShapes;
         },
         back() {
             ElMessageBox.confirm('本次辨識結果將不保留，請問是否要繼續？', '警告', {
@@ -200,19 +199,19 @@ export default {
                     </div>
                     <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                         <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside">
-                            <el-carousel-item v-for="item in this.general_upload_res.length" :key="item" style="overflow: scroll">
+                            <el-carousel-item v-for="item in items" :key="item" style="overflow: scroll">
                                 <h3>第 {{ item }} 張</h3>
                                 <Annotation
                                     containerId="my-pic-annotation-output"
                                     :editMode="false"
                                     :language="en"
-                                    :imageSrc="getImage(item)"
                                     :width="width"
                                     :height="height"
                                     :dataCallback="callback"
                                     :initialData="getShapeData(item)"
                                     :initialDataId="initialDataId"
-                                    :image_cv_id="this.general_upload_res[item - 1].image_cv_id"
+                                    :image_cv_id="this.general_upload_res[item - 1].image_id"
+                                    :key="reloadAnnotator[item - 1]"
                                 ></Annotation>
                             </el-carousel-item>
                         </el-carousel>

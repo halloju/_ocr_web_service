@@ -2,6 +2,8 @@
 import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';
 import SideBarEntry from '@/components/SideBarEntry.vue';
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
 export default {
     components: {
         SideBarEntry,
@@ -51,16 +53,27 @@ export default {
         if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
         if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
         // load image
-        const image = new window.Image();
-        image.src = this.imageSrc;
-        image.onload = () => {
-            // set image only when it is loaded
-            this.image = image;
-            // adapt initial scale to fit canvas
-            this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
-            // loading finished
-            this.isLoading = false;
-        };
+        console.log(this.image_cv_id);
+        axios.get(`http://localhost:5000/ocr/get_image/${this.image_cv_id}`).then((res) => {
+            if (res.status === 200) {
+                this.ImageSrc = 'data:image/png;base64,' + res.data.image_string;
+                const image = new window.Image();
+                image.src = this.ImageSrc;
+                image.onload = () => {
+                    // set image only when it is loaded
+                    this.image = image;
+                    // adapt initial scale to fit canvas
+                    this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
+                    // loading finished
+                    this.isLoading = false;
+                };
+            } else {
+                ElMessage({
+                    message: '辨識中，請稍後',
+                    type: 'warning'
+                });
+            }
+        });
         // define callback function
         this.callback =
             this.dataCallback &&
@@ -70,7 +83,6 @@ export default {
     mounted() {
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
-        console.log('initialData', this.initialData);
         this.load();
     },
     beforeUnmount() {
@@ -317,13 +329,15 @@ export default {
             if (this.initialDataId) {
                 const node = document.getElementById(this.initialDataId);
                 if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
-            } else if (this.initialData && this.initialData.length > 0) {
-                this.shapes = JSON.parse(this.initialData);
+            } else if (this.initialData) {
+                this.shapes = this.initialData;
             } else if (this.localStorageKey) {
                 const data = localStorage.getItem(this.localStorageKey) || '[]';
                 this.shapes = JSON.parse(data);
+                console.log('loaded from local storage');
             }
-            // if we only show data, remove draggable from it
+
+            //if we only show data, remove draggable from it
             if (!this.editMode) {
                 this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
             }
