@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
 from app.services.template_crud import update as service_update
-
+from app.api_config import http_responses
 
 from app.router_schema import mlaas_item_generator
 from fastapi.encoders import jsonable_encoder
@@ -23,7 +23,7 @@ router = APIRouter()
 Input, Output = mlaas_item_generator('UpdateTemplate', UpdateTemplateRequest, UpdateTemplateResponse)
 
 
-@router.post("/update_template", response_model=Output)
+@router.post("/update_template", response_model=Output, responses=http_responses)
 async def update_template(request: Input, db: Session = Depends(get_db)):
     '''
     將 Feature DB 中的 template 資訊更新
@@ -39,7 +39,21 @@ async def update_template(request: Input, db: Session = Depends(get_db)):
         trace_id=trace_id,
         request_time=start_time
     )
-    # data = full_data['inputs']
+    status_dict = {
+        '0001': 'code error',
+        '5407': 'template_id not exist',
+        '5415': 'parameter error'
+    }
+    if req_data['request_id'] in status_dict:
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': req_data['request_id'],
+            'status_msg': status_dict[req_data['request_id']]
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return Output(**output)
+    
     data = UpdateTemplateRequest(**req_data['inputs'])
     form = UpdateTemplateForm(data)
     await form.load_data()
@@ -60,4 +74,4 @@ async def update_template(request: Input, db: Session = Depends(get_db)):
         }
         output.update(response_time=end_time, duration_time=duration_time, outputs=result)
         return Output(**output)
-    raise CustomException(status_code=400, message=form.errors)
+    raise CustomException(status_code=401, message=form.errors)
