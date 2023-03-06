@@ -7,23 +7,6 @@ status_ok = {
     'status_msg': 'OK'
 }
 
-status_codeerror = {
-    'status_code': '0001',
-    'status_msg': 'code error'
-}
-
-status_dberror = {
-    'status_code': '0002',
-    'status_msg': 'DB error',
-    'err_detail': {'error_message': 'Feature DB error'}
-}
-
-status_minioerror = {
-    'status_code': '0002',
-    'status_msg': 'DB error',
-    'err_detail': {'error_message': 'MinIO error'}
-}
-
 status_uniqueviolation = {
     'status_code': '5401',
     'status_msg': 'unique violation',

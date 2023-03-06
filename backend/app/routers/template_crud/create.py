@@ -2,14 +2,17 @@ from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
+from fastapi.encoders import jsonable_encoder
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.schema.template_crud.create import CreateTemplateRequest
 from app.forms.template_crud.create import CreateTemplateForm
-from app.services.template_crud import create as service_create
 from app.schema.template_crud.create import CreateTemplateResponse
-
+from app.route_utils import get_user_id, call_mlaas_function, get_request_id
+from app.exceptions import MlaasRequestError
+from app import response_table
+import json
 
 router = APIRouter()
 
@@ -22,16 +25,32 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
     form = CreateTemplateForm(request)
     await form.load_data()
     if await form.is_valid():
-        template = CreateTemplateRequest(
-            user_id=form.user_id,
-            image=form.image,
-            bbox=form.bbox,
-            template_name=form.template_name,
-            is_public=form.is_public,
-            is_no_ttl=form.is_no_ttl
+        inputs = {
+            'user_id': get_user_id(),
+            'image': "",
+            'points_list': form.points_list,
+            'template_name': form.template_name,
+            'is_public': False,
+            'is_no_ttl': False
+        }
+        input_data = {
+            "business_unit": "C170",
+            "request_id": "111",
+            "inputs": jsonable_encoder(inputs)
+        }
+        outputs = call_mlaas_function(input_data, 'create_template')
+        status_code = outputs['outputs']['status_code']
+        if status_code == '0000':
+            print(outputs['outputs']['template_id'])
+            return CreateTemplateResponse(
+                template_id=outputs['outputs']['template_id'],
+                status_code='0000',
+                status_msg='OK'
             )
-        template_id = service_create.create_template(template=template, db=db)
-        return CreateTemplateResponse(
-            template_id=template_id
-        )
+        elif status_code == '5401':
+            raise MlaasRequestError(**response_table.status_uniqueviolation)
+        elif status_code == '5402':
+            raise MlaasRequestError(**response_table.status_image_type_error)
+        else:
+            raise MlaasRequestError(**response_table.status_mlaaserror)
     raise CustomException(status_code=400, message=form.errors)

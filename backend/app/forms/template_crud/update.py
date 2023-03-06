@@ -12,7 +12,7 @@ class UpdateTemplateForm:
     async def load_data(self):
         self.user_id = self.request.user_id
         self.template_id = self.request.template_id
-        self.bbox = self.request.bbox
+        self.points_list = self.request.points_list
         self.template_name = self.request.template_name
 
     async def is_valid(self):

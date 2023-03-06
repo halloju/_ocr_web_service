@@ -31,7 +31,7 @@
 
 ## 本機起服務
 ```
-1. docker-composer up -d
+1. docker-compose up -d
 2. 在瀏覽器網址輸入 localhost:5000/docs 開啟 API 文件
 ```
 

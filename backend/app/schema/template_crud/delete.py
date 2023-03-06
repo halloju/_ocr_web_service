@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictStr, conlist
 from datetime import datetime
+from typing import Optional
 
 
 class DeleteTemplateRequest(BaseModel):
