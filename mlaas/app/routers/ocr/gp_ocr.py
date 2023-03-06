@@ -18,6 +18,8 @@ from copy import deepcopy
 import uuid
 import time
 
+from app.api_config import http_responses
+
 
 Input, Output = mlaas_item_generator('Gpocr', GpocrRequest, GpocrResponse)
 
@@ -25,7 +27,7 @@ Input, Output = mlaas_item_generator('Gpocr', GpocrRequest, GpocrResponse)
 router = APIRouter()
 
 
-@router.post("/gp_ocr", response_model=Output)  # responses={},
+@router.post("/gp_ocr", response_model=Output, responses=http_responses)  # responses={},
 async def gp_ocr(request: Input, db: Session = Depends(get_db)):
     '''
     將 image 影像上傳至 MinIO, 並進行全文辨識，將辨識結果存入 db
@@ -41,7 +43,21 @@ async def gp_ocr(request: Input, db: Session = Depends(get_db)):
         trace_id=trace_id,
         request_time=start_time
     )
-    # data = full_data['inputs']
+    status_dict = {
+        '0001': 'code error',
+        '5401': 'unique violation',
+        '5402': 'image type error'
+    }
+    if req_data['request_id'] in status_dict:
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        result = {
+            'status_code': req_data['request_id'],
+            'status_msg': status_dict[req_data['request_id']]
+        }
+        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        return Output(**output)
+    
     data = GpocrRequest(**req_data['inputs'])
     form = GpocrForm(data)
     await form.load_data()
@@ -60,4 +76,4 @@ async def gp_ocr(request: Input, db: Session = Depends(get_db)):
         }
         output.update(response_time=end_time, duration_time=duration_time, outputs=result)
         return Output(**output)
-    raise CustomException(status_code=400, message=form.errors)
+    raise CustomException(status_code=401, message=form.errors)

@@ -10,14 +10,18 @@ class DeleteTemplateResponse(BaseModel):
     status_code: StrictStr = Field(
         title='服務狀態碼',
         description='''
-        同 apihub
+        API 服務正常："0000"
+        程式碼錯誤："0001"
+        template_id 不存在: "5407"
         ''',
         example='0000'
     )
     status_msg: StrictStr = Field(
         title='服務狀態內容',
         description='''
-        同 apihub
+        API 服務正常："OK"
+        程式碼錯誤："code error"
+        template_id 不存在: "template_id not exist"
         ''',
         example='OK'
     )
