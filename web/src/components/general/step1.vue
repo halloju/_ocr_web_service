@@ -12,16 +12,6 @@ export default {
                 { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
                 { name: '英數字', code: 'dbnet_v0+en_epoch_v0' }
             ],
-            nestedRouteItems: [
-                {
-                    label: '圖檔上傳',
-                    to: '/features/general'
-                },
-                {
-                    label: '單張結果確認',
-                    to: '/features/general/step2'
-                }
-            ],
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
             breadcrumbItems: [
                 { label: '主要功能', to: '#' },
@@ -67,6 +57,8 @@ export default {
             responseData['fileName'] = this.fileList[0].name;
             // 打 API
             const formData = new FormData();
+            formData.append('image_complexity', this.image_complexity);
+            formData.append('model_name', this.selectedLang.code);
             this.fileList.forEach((file) => {
                 formData.append('files', file.raw);
             });
@@ -77,8 +69,6 @@ export default {
                     }
                 })
                 .then((response) => {
-                    // responseData['ocr_results'] = response.data.ocr_results;
-                    // responseData['image_cv_id'] = response.data.image_cv_id;
                     generalImageResponseList.push(...response.data);
                 })
                 .catch((error) => {
