@@ -21,7 +21,7 @@ class PredictTask(Task):
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def predict(self, image_id):
+    def predict(self, image_id, image_complexity, model_name):
         try:
             encoded_data = celery.backend.get(image_id)
             # Process the image using the ML model
@@ -30,8 +30,8 @@ class PredictTask(Task):
                 "request_id": "QAZWSXEDC",
                 "inputs": {
                         "image": encoded_data.decode("utf-8"),
-                        "image_complexity": "medium",
-                        "model_name": "dbnet_v0+cht_ppocr_v1"
+                        "image_complexity": image_complexity,
+                        "model_name": model_name
                     }
                 })
             # Return the prediction result
@@ -70,9 +70,9 @@ def get_from_redis(task_id):
         return {'status': 'FAIL'}
 
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
-def predict_image(self, image_id):
+def predict_image(self, image_id, image_complexity, model_name):
     try:
-        response = self.predict(image_id)
+        response = self.predict(image_id, image_complexity, model_name)
         if response['outputs']['status_msg'] == 'OK':
             data_pred = str(response['outputs']['ocr_results'])
         else:
