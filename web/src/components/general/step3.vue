@@ -34,20 +34,15 @@ export default {
     },
     computed: {
         getExcel() {
-            this.excelData = [];
-            this.tableData = [];
-            for (let i = 0; i < this.general_upload_res.length; i++) {
-                this.excelData.push({
-                    filename: this.general_upload_res[i].fileName,
-                    image_cv_id: this.general_upload_res[i].image_cv_id,
-                    ocr_results: JSON.stringify(this.general_upload_res[i].ocr_results)
-                });
+            // this.excelData = [];
+            this.tableData.length = 0;
+            this.general_upload_res.forEach((item, index) => {
                 this.tableData.push({
-                    filename: this.general_upload_res[i].fileName,
-                    ocr_results: JSON.stringify(this.general_upload_res[i].ocr_results),
-                    image: `data:image/png;base64, ` + this.general_upload_res[i].base64Image
+                    task_id: item.task_id,
+                    ocr_status: item.ocr_status,
+                    image_id: item.image_id
                 });
-            }
+            });
             return this.tableData;
         },
         ...mapState(['general_upload_res'])
@@ -87,7 +82,7 @@ export default {
                     this.getOcrResults(item);
                 } else {
                     console.log('step4-3', item);
-                    this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: 'Pending' });
+                    this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: res.data.status });
                 }
             });
         },
@@ -105,16 +100,12 @@ export default {
                 this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: res.data.status });
             });
         },
-        waitUntilOcrComplete(item) {
-            console.log('step2', item);
-            const ocrStatus = this.general_upload_res[item - 1].ocr_status;
-            console.log('step2-1', ocrStatus);
-            if (ocrStatus === 'SUCCESS' || ocrStatus === 'FAIL') {
-                console.log('step5', item);
-                return true;
-            }
-            this.getOcrStatus(item);
-            return false;
+        waitUntilOcrComplete() {
+            this.general_upload_res
+                .filter((item) => item.ocr_status === 'PROCESSING')
+                .forEach((item, index) => {
+                    this.getOcrStatus(index);
+                });
         },
         getShapeData(item) {
             console.log('step1', item);
@@ -197,7 +188,15 @@ export default {
     },
     mounted() {
         console.log('generalImageOcrResults', this.general_upload_res);
-    }
+    },
+    created() {
+        this.excelData = this.general_upload_res.map((item) => {
+            return {
+                圖片名稱: item.image_name,
+                辨識結果: item.ocr_results
+            };
+        });
+    },
 };
 </script>
 
@@ -223,13 +222,13 @@ export default {
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                                 <el-table :data="getExcel" style="width: 100%">
-                                    <el-table-column label="圖片預覽" width="180">
+                                    <!-- <el-table-column label="圖片預覽" width="180">
                                         <template #default="scope">
-                                            <el-image style="width: 120px; height: 120px" :src="scope.row.image" :preview-src-list="[scope.row.image]" hide-on-click-modal="true" preview-teleported="true"> </el-image>
+                                            <el-image style="width: 120px; height: 120px" :src="scope.row.srcURL" :preview-src-list="[scope.row.srcURL]" hide-on-click-modal="true" preview-teleported="true"> </el-image>
                                         </template>
-                                    </el-table-column>
-                                    <el-table-column prop="filename" label="檔案名稱" sortable width="180" />
-                                    <el-table-column prop="ocr_results" label="辨識結果" width="700" />
+                                    </el-table-column> -->
+                                    <el-table-column prop="task_id" label="檔案名稱" sortable width="180" />
+                                    <el-table-column prop="ocr_status" label="辨識結果" width="700" />
                                 </el-table>
                             </div>
                         </div>
