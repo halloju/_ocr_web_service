@@ -84,6 +84,7 @@ export default {
                 background: 'rgba(0, 0, 0, 0.7)'
             });
             setTimeout(() => {
+                console.log('generalImageResponseList', generalImageResponseList);
                 this.$store.commit('generalImageResponse', generalImageResponseList);
                 const api_time = (end_time - start_time) / 1000;
                 this.$store.commit('generalExecuteTime', api_time);
