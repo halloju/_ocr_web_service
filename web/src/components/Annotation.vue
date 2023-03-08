@@ -47,6 +47,7 @@ export default {
     },
     // created live cycle hook
     created() {
+        console.log(this.image_cv_id);
         // set defaults
         this.stageSize.width = (parseInt(this.width) / 3) * 2 - 2; // - 2 for border
         this.stageSize.height = parseInt(this.height);
@@ -81,12 +82,16 @@ export default {
             eval(this.dataCallback); // eslint-disable-line no-eval
     },
     mounted() {
+        console.log('mounted');
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
     },
     beforeUnmount() {
         document.removeEventListener('keydown', this.handleKeyEvent);
+    },
+    beforeCreate() {
+        console.log('beforeCreate');
     },
     methods: {
         // handle transformation of elements
@@ -336,7 +341,7 @@ export default {
                 this.shapes = JSON.parse(data);
                 console.log('loaded from local storage');
             }
-
+            console.log('loaded', this.shapes);
             //if we only show data, remove draggable from it
             if (!this.editMode) {
                 this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);

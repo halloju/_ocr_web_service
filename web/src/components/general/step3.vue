@@ -79,13 +79,20 @@ export default {
             });
         },
         getOcrStatus(item) {
+            console.log('step4', item);
             axios.get(`http://localhost:5000/ocr/status/${this.general_upload_res[item - 1].task_id}`).then((res) => {
+                console.log('step4-1', res);
                 if (res.data.status === 'SUCCESS') {
+                    console.log('step4-2', item);
                     this.getOcrResults(item);
+                } else {
+                    console.log('step4-3', item);
+                    this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: 'Pending' });
                 }
             });
         },
         getOcrResults(item) {
+            console.log('step6', item);
             axios.get(`http://localhost:5000/ocr/result/${this.general_upload_res[item - 1].task_id}`).then((res) => {
                 if (res.data.status === 'SUCCESS') {
                     this.$store.commit('generalImageOcrResults', { item: item - 1, ocr_results: res.data.result });
@@ -99,17 +106,29 @@ export default {
             });
         },
         waitUntilOcrComplete(item) {
+            console.log('step2', item);
             const ocrStatus = this.general_upload_res[item - 1].ocr_status;
+            console.log('step2-1', ocrStatus);
             if (ocrStatus === 'SUCCESS' || ocrStatus === 'FAIL') {
-                return;
+                console.log('step5', item);
+                return true;
             }
             this.getOcrStatus(item);
-            setTimeout(this.waitUntilOcrComplete.bind(this, item), 5000);
+            return false;
         },
         getShapeData(item) {
-            this.waitUntilOcrComplete(item);
+            console.log('step1', item);
+            while (!this.waitUntilOcrComplete(item)) {
+                console.log('step2-2', item);
+                setTimeout(() => {
+                    console.log('step2-3', item);
+                    this.waitUntilOcrComplete(item);
+                }, 5000);
+            }
             let myShapes = [];
+            console.log('step3', this.general_upload_res[item - 1].ocr_results);
             let regData = JSON.parse(this.general_upload_res[item - 1].ocr_results.replace(/'/g, '"')); //last one
+            console.log('step4', regData);
             // let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
@@ -175,6 +194,9 @@ export default {
             };
             XLSX.writeFile(workBook, '通用辨識結果.xlsx');
         }
+    },
+    mounted() {
+        console.log('generalImageOcrResults', this.general_upload_res);
     }
 };
 </script>
@@ -197,9 +219,35 @@ export default {
                             <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ this.general_upload_res.length }} 張，共耗時 {{ general_execute_time }} 秒</div>
                         </div>
                     </div>
-                    <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-                        <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside">
-                            <el-carousel-item v-for="item in items" :key="item" style="overflow: scroll">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
+                                <el-table :data="getExcel" style="width: 100%">
+                                    <el-table-column label="圖片預覽" width="180">
+                                        <template #default="scope">
+                                            <el-image style="width: 120px; height: 120px" :src="scope.row.image" :preview-src-list="[scope.row.image]" hide-on-click-modal="true" preview-teleported="true"> </el-image>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="filename" label="檔案名稱" sortable width="180" />
+                                    <el-table-column prop="ocr_results" label="辨識結果" width="700" />
+                                </el-table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <Annotation
+                            containerId="my-pic-annotation-output"
+                            :editMode="false"
+                            :language="en"
+                            :width="width"
+                            :height="height"
+                            :dataCallback="callback"
+                            :initialData="getShapeData(1)"
+                            :initialDataId="initialDataId"
+                            :image_cv_id="this.general_upload_res[0].image_id"
+                            :key="reloadAnnotator[0]"
+                        ></Annotation> -->
+                    <!-- <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside"> -->
+                    <!-- <el-carousel-item v-for="item in items" :key="item" style="overflow: scroll">
                                 <h3>第 {{ item }} 張</h3>
                                 <Annotation
                                     containerId="my-pic-annotation-output"
@@ -213,13 +261,12 @@ export default {
                                     :image_cv_id="this.general_upload_res[item - 1].image_id"
                                     :key="reloadAnnotator[item - 1]"
                                 ></Annotation>
-                            </el-carousel-item>
-                        </el-carousel>
-                    </div>
+                            </el-carousel-item> -->
+                    <!-- </el-carousel> -->
                 </div>
             </div>
         </div>
-        <div class="col-12">
+        <!-- <div class="col-12">
             <div class="card">
                 <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                     <el-table :data="getExcel" style="width: 100%">
@@ -233,7 +280,7 @@ export default {
                     </el-table>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <style scoped>
