@@ -15,7 +15,7 @@ export default {
         return {
             // 上方
             containerId: 'my-pic-annotation',
-            imageSrc: Image,
+            imageSrc: "",
             imageResult: "",
             localStorageKey: 'storage',
             width: 1200,
@@ -115,8 +115,8 @@ export default {
             axios.get(`/ocr/result/${row.task_id}`).then((res) => {
                 if (res !== null) {
                     console.log(res.data.result)
-                    let test = this.getShapeData(res.data.result);
-                    console.log(test);
+                    this.initialData = this.getShapeData(res.data.result);
+                    console.log(this.initialData);
                 }
                 console.log("Success2")
             });
@@ -151,9 +151,9 @@ export default {
         },
         getShapeData(regData) {
             let myShapes = [];
-            regData = JSON.parse(regData);
-            console.log(typeof(regData))
-            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
+            regData = JSON.parse(regData.replace(/'/g, '"'));
+            console.log(regData);
+            console.log('hi')
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
@@ -184,8 +184,7 @@ export default {
                     height: label_height
                 });
             });
-            this.reloadAnnotator[item] = true;
-            return myShapes;
+            return JSON.stringify(myShapes);
         },
         back() {
             ElMessageBox.confirm('本次辨識結果將不保留，請問是否要繼續？', '警告', {
@@ -257,18 +256,20 @@ export default {
                                 </el-table>
                             </div>
                         </div>
-                        <Annotation
-                            containerId="my-pic-annotation-output"
-                            :imageSrc="imageSrc"
-                            :editMode="false"
-                            :language="en"
-                            :width="width"
-                            :height="height"
-                            dataCallback=""
-                            :initialData="initialData"
-                            initialDataId=""
-                            image_cv_id=""
-                        ></Annotation>
+                        <div v-if="imageSrc!==''">
+                            <Annotation
+                                containerId="my-pic-annotation-output"
+                                :imageSrc="imageSrc"
+                                :editMode="false"
+                                :language="en"
+                                :width="width"
+                                :height="height"
+                                dataCallback=""
+                                :initialData="initialData"
+                                initialDataId=""
+                                image_cv_id=""
+                            ></Annotation>
+                        </div>
                     </div>
                 </div>
             </div>

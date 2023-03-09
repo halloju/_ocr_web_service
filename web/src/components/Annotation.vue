@@ -110,7 +110,10 @@ export default {
     watch: {
         imageSrc() {
             this.loadImage();
-        }
+        },
+        initialData() {
+            this.load();
+        },
     },
     computed: {
         polygonPointsConfig() {
