@@ -10,6 +10,13 @@ from worker import predict_image
 
 router = APIRouter()
 
+@router.get("/get_image/{image_id}", summary="拉圖片")
+async def get_images(image_id: str, request: Request):
+    # Get the Redis connection from the app state
+    redis = request.app.state.redis
+    image_string = await redis.get(image_id)
+    return JSONResponse(status_code=200, content=image_string)
+
 @router.post("/predict_images", summary="全文辨識")
 async def process(request: Request, image_complexity: str = "medium", model_name: str = "dbnet_v0+cht_ppocr_v1", files: List[UploadFile] = File(...)):
     tasks = []

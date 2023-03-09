@@ -1,4 +1,5 @@
 <script>
+import Image from '@/assets/img/hero-img.png';
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import axios from 'axios';
@@ -13,7 +14,9 @@ export default {
     data() {
         return {
             // 上方
-            imageSrc: this.$store.state.general_upload_image[0].reader,
+            containerId: 'my-pic-annotation',
+            imageSrc: Image,
+            imageResult: "",
             localStorageKey: 'storage',
             width: 1200,
             height: 600,
@@ -45,6 +48,7 @@ export default {
                     isFinished: item.status === 'SUCCESS' ? true : false
                 });
             });
+            console.log(this.general_upload_res);
             return this.tableData;
         },
         ...mapState(['general_upload_res'])
@@ -98,6 +102,25 @@ export default {
                 this.reloadAnnotator = !this.reloadAnnotator;
             });
         },
+        handleButtonClick(row) {
+            console.log(row);
+            axios.get(`/ocr/get_image/${row.image_id}`).then((res) => {
+                if (res !== null) {
+                    this.imageSrc = 'data:image/png;base64,' + res.data;
+                } else {
+                    this.imageSrc = "";
+                }
+                console.log("Success")
+            });
+            axios.get(`/ocr/result/${row.task_id}`).then((res) => {
+                if (res !== null) {
+                    console.log(res.data.result)
+                    let test = this.getShapeData(res.data.result);
+                    console.log(test);
+                }
+                console.log("Success2")
+            });
+        },
         async pollForResult() {
             this.isRunning = true;
             while (this.isRunning) {
@@ -126,12 +149,11 @@ export default {
                 await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second before polling again
             }
         },
-        getShapeData(item) {
+        getShapeData(regData) {
             let myShapes = [];
-            console.log('step3', this.general_upload_res[item].ocr_results);
-            let regData = JSON.parse(this.general_upload_res[item].ocr_results.replace(/'/g, '"')); //last one
-            console.log('step4', regData);
-            // let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
+            regData = JSON.parse(regData);
+            console.log(typeof(regData))
+            let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
@@ -225,11 +247,6 @@ export default {
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                                 <el-table :data="getExcel" style="width: 100%" :key="isRunning">
-                                    <!-- <el-table-column label="圖片預覽" width="180">
-                                        <template #default="scope">
-                                            <el-image style="width: 120px; height: 120px" :src="scope.row.srcURL" :preview-src-list="[scope.row.srcURL]" hide-on-click-modal="true" preview-teleported="true"> </el-image>
-                                        </template>
-                                    </el-table-column> -->
                                     <el-table-column prop="task_id" label="任務" sortable width="180" />
                                     <el-table-column prop="status" label="辨識結果" width="180" />
                                     <el-table-column label="Action">
@@ -240,36 +257,19 @@ export default {
                                 </el-table>
                             </div>
                         </div>
-                    </div>
-                    <!-- <Annotation
+                        <Annotation
                             containerId="my-pic-annotation-output"
+                            :imageSrc="imageSrc"
                             :editMode="false"
                             :language="en"
                             :width="width"
                             :height="height"
-                            :dataCallback="callback"
-                            :initialData="getShapeData(1)"
-                            :initialDataId="initialDataId"
-                            :image_cv_id="this.general_upload_res[0].image_id"
-                            :key="reloadAnnotator[0]"
-                        ></Annotation> -->
-                    <!-- <el-carousel trigger="click" :autoplay="false" height="650px" indicator-position="outside"> -->
-                    <!-- <el-carousel-item v-for="item in items" :key="item" style="overflow: scroll">
-                                <h3>第 {{ item }} 張</h3>
-                                <Annotation
-                                    containerId="my-pic-annotation-output"
-                                    :editMode="false"
-                                    :language="en"
-                                    :width="width"
-                                    :height="height"
-                                    :dataCallback="callback"
-                                    :initialData="getShapeData(item)"
-                                    :initialDataId="initialDataId"
-                                    :image_cv_id="this.general_upload_res[item - 1].image_id"
-                                    :key="reloadAnnotator[item - 1]"
-                                ></Annotation>
-                            </el-carousel-item> -->
-                    <!-- </el-carousel> -->
+                            dataCallback=""
+                            :initialData="initialData"
+                            initialDataId=""
+                            image_cv_id=""
+                        ></Annotation>
+                    </div>
                 </div>
             </div>
         </div>
