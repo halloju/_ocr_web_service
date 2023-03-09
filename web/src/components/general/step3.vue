@@ -29,7 +29,8 @@ export default {
             Back: Back,
             excelData: [],
             tableData: [],
-            reloadAnnotator: new Array(this.$store.state.general_upload_res.length).fill(false)
+            reloadAnnotator: false,
+            isRunning: false
         };
     },
     computed: {
@@ -39,8 +40,9 @@ export default {
             this.general_upload_res.forEach((item, index) => {
                 this.tableData.push({
                     task_id: item.task_id,
-                    ocr_status: item.ocr_status,
-                    image_id: item.image_id
+                    status: item.status,
+                    image_id: item.image_id,
+                    isFinished: item.status === 'SUCCESS' ? true : false
                 });
             });
             return this.tableData;
@@ -73,52 +75,61 @@ export default {
                 }
             });
         },
-        getOcrStatus(item) {
-            console.log('step4', item);
-            axios.get(`http://localhost:5000/ocr/status/${this.general_upload_res[item - 1].task_id}`).then((res) => {
-                console.log('step4-1', res);
+        async getOcrStatus(item) {
+            axios.get(`http://localhost:5000/ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
                 if (res.data.status === 'SUCCESS') {
-                    console.log('step4-2', item);
-                    this.getOcrResults(item);
+                    await this.getOcrResults(item);
                 } else {
-                    console.log('step4-3', item);
-                    this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: res.data.status });
+                    this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
                 }
             });
         },
-        getOcrResults(item) {
-            console.log('step6', item);
-            axios.get(`http://localhost:5000/ocr/result/${this.general_upload_res[item - 1].task_id}`).then((res) => {
+        async getOcrResults(item) {
+            axios.get(`http://localhost:5000/ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
                 if (res.data.status === 'SUCCESS') {
-                    this.$store.commit('generalImageOcrResults', { item: item - 1, ocr_results: res.data.result });
+                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result });
                 } else {
                     ElMessage({
                         message: '辨識失敗',
                         type: 'warning'
                     });
                 }
-                this.$store.commit('generalImageOcrStatus', { item: item - 1, ocr_status: res.data.status });
+                this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
+                this.reloadAnnotator = !this.reloadAnnotator;
             });
         },
-        waitUntilOcrComplete() {
-            this.general_upload_res
-                .filter((item) => item.ocr_status === 'PROCESSING')
-                .forEach((item, index) => {
-                    this.getOcrStatus(index);
-                });
+        async pollForResult() {
+            this.isRunning = true;
+            while (this.isRunning) {
+                const response = await this.getOcrStatus();
+                const data = await response.json();
+                if (data.isDone) {
+                    this.result = data.result;
+                    this.isRunning = false;
+                    break;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second before polling again
+            }
+        },
+        async waitUntilOcrComplete() {
+            this.isRunning = true;
+            while (this.isRunning) {
+                this.general_upload_res
+                    .filter((item) => item.status === 'PROCESSING')
+                    .forEach(async (item, index) => {
+                        await this.getOcrStatus(index);
+                    });
+                if (this.general_upload_res.filter((item) => item.status === 'PROCESSING').length === 0) {
+                    this.isRunning = false;
+                    break;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second before polling again
+            }
         },
         getShapeData(item) {
-            console.log('step1', item);
-            while (!this.waitUntilOcrComplete(item)) {
-                console.log('step2-2', item);
-                setTimeout(() => {
-                    console.log('step2-3', item);
-                    this.waitUntilOcrComplete(item);
-                }, 5000);
-            }
             let myShapes = [];
-            console.log('step3', this.general_upload_res[item - 1].ocr_results);
-            let regData = JSON.parse(this.general_upload_res[item - 1].ocr_results.replace(/'/g, '"')); //last one
+            console.log('step3', this.general_upload_res[item].ocr_results);
+            let regData = JSON.parse(this.general_upload_res[item].ocr_results.replace(/'/g, '"')); //last one
             console.log('step4', regData);
             // let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
             regData.forEach(function (element, index) {
@@ -151,7 +162,7 @@ export default {
                     height: label_height
                 });
             });
-            this.reloadAnnotator[item - 1] = true;
+            this.reloadAnnotator[item] = true;
             return myShapes;
         },
         back() {
@@ -186,17 +197,9 @@ export default {
             XLSX.writeFile(workBook, '通用辨識結果.xlsx');
         }
     },
-    mounted() {
-        console.log('generalImageOcrResults', this.general_upload_res);
-    },
     created() {
-        this.excelData = this.general_upload_res.map((item) => {
-            return {
-                圖片名稱: item.image_name,
-                辨識結果: item.ocr_results
-            };
-        });
-    },
+        this.waitUntilOcrComplete();
+    }
 };
 </script>
 
@@ -221,14 +224,19 @@ export default {
                     <div class="col-12">
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-                                <el-table :data="getExcel" style="width: 100%">
+                                <el-table :data="getExcel" style="width: 100%" :key="isRunning">
                                     <!-- <el-table-column label="圖片預覽" width="180">
                                         <template #default="scope">
                                             <el-image style="width: 120px; height: 120px" :src="scope.row.srcURL" :preview-src-list="[scope.row.srcURL]" hide-on-click-modal="true" preview-teleported="true"> </el-image>
                                         </template>
                                     </el-table-column> -->
-                                    <el-table-column prop="task_id" label="檔案名稱" sortable width="180" />
-                                    <el-table-column prop="ocr_status" label="辨識結果" width="700" />
+                                    <el-table-column prop="task_id" label="任務" sortable width="180" />
+                                    <el-table-column prop="status" label="辨識結果" width="180" />
+                                    <el-table-column label="Action">
+                                        <template v-slot="scope">
+                                            <el-button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)">View</el-button>
+                                        </template>
+                                    </el-table-column>
                                 </el-table>
                             </div>
                         </div>

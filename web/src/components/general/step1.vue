@@ -71,7 +71,7 @@ export default {
                 formData.append('files', file.raw);
             });
             axios
-                .post('/ocr/predict_images', formData, {
+                .post(`/ocr/predict_images?image_complexity=${this.image_complexity}&model_name=dbnet_v0%2Bcht_ppocr_v1`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -94,19 +94,13 @@ export default {
                 background: 'rgba(0, 0, 0, 0.7)'
             });
             setTimeout(() => {
-                console.log('generalImageResponseList', generalImageResponseList);
                 this.$store.commit('generalImageResponse', generalImageResponseList);
                 const api_time = (end_time - start_time) / 1000;
                 this.$store.commit('generalExecuteTime', api_time);
-                this.$emit('nextStepEmit', 3);
-                // if (this.fileList.length > 1) {
-                //     this.$emit('nextStepEmit', 2);
-                // } else {
-                //     this.$emit('nextStepEmit', 3);
-                // }
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
-            }, 2000);
+                this.$emit('nextStepEmit', 3);
+            }, 1000);
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';
