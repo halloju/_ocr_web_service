@@ -16,7 +16,7 @@ export default {
             // 上方
             containerId: 'my-pic-annotation',
             imageSrc: Image,
-            imageResult: "",
+            imageResult: '',
             localStorageKey: 'storage',
             width: 1200,
             height: 600,
@@ -33,7 +33,8 @@ export default {
             excelData: [],
             tableData: [],
             reloadAnnotator: false,
-            isRunning: false
+            isRunning: false,
+            finishedStatus: ['SUCCESS', 'FAIL']
         };
     },
     computed: {
@@ -108,41 +109,28 @@ export default {
                 if (res !== null) {
                     this.imageSrc = 'data:image/png;base64,' + res.data;
                 } else {
-                    this.imageSrc = "";
+                    this.imageSrc = '';
                 }
-                console.log("Success")
+                console.log('Success');
             });
             axios.get(`/ocr/result/${row.task_id}`).then((res) => {
                 if (res !== null) {
-                    console.log(res.data.result)
+                    console.log(res.data.result);
                     let test = this.getShapeData(res.data.result);
                     console.log(test);
                 }
-                console.log("Success2")
+                console.log('Success2');
             });
-        },
-        async pollForResult() {
-            this.isRunning = true;
-            while (this.isRunning) {
-                const response = await this.getOcrStatus();
-                const data = await response.json();
-                if (data.isDone) {
-                    this.result = data.result;
-                    this.isRunning = false;
-                    break;
-                }
-                await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second before polling again
-            }
         },
         async waitUntilOcrComplete() {
             this.isRunning = true;
             while (this.isRunning) {
                 this.general_upload_res
-                    .filter((item) => item.status === 'PROCESSING')
+                    .filter((item) => this.finishedStatus.includes(item.status) === false)
                     .forEach(async (item, index) => {
                         await this.getOcrStatus(index);
                     });
-                if (this.general_upload_res.filter((item) => item.status === 'PROCESSING').length === 0) {
+                if (this.general_upload_res.filter((item) => this.finishedStatus.includes(item.status) === false).length === 0) {
                     this.isRunning = false;
                     break;
                 }
@@ -152,7 +140,7 @@ export default {
         getShapeData(regData) {
             let myShapes = [];
             regData = JSON.parse(regData);
-            console.log(typeof(regData))
+            console.log(typeof regData);
             let image_cv_id = JSON.stringify(this.$store.state.general_upload_res[item - 1].image_id);
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
@@ -257,18 +245,7 @@ export default {
                                 </el-table>
                             </div>
                         </div>
-                        <Annotation
-                            containerId="my-pic-annotation-output"
-                            :imageSrc="imageSrc"
-                            :editMode="false"
-                            :language="en"
-                            :width="width"
-                            :height="height"
-                            dataCallback=""
-                            :initialData="initialData"
-                            initialDataId=""
-                            image_cv_id=""
-                        ></Annotation>
+                        <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :language="en" :width="width" :height="height" dataCallback="" :initialData="initialData" initialDataId="" image_cv_id=""></Annotation>
                     </div>
                 </div>
             </div>
