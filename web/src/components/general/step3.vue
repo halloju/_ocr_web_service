@@ -15,8 +15,8 @@ export default {
         return {
             // 上方
             containerId: 'my-pic-annotation',
-            imageSrc: "",
-            imageResult: "",
+            imageSrc: Image,
+            imageResult: '',
             localStorageKey: 'storage',
             width: 1200,
             height: 600,
@@ -32,7 +32,8 @@ export default {
             excelData: [],
             tableData: [],
             reloadAnnotator: false,
-            isRunning: false
+            isRunning: false,
+            finishedStatus: ['SUCCESS', 'FAIL']
         };
     },
     computed: {
@@ -107,41 +108,28 @@ export default {
                 if (res !== null) {
                     this.imageSrc = 'data:image/png;base64,' + res.data;
                 } else {
-                    this.imageSrc = "";
+                    this.imageSrc = '';
                 }
-                console.log("Success")
+                console.log('Success');
             });
             axios.get(`/ocr/result/${row.task_id}`).then((res) => {
                 if (res !== null) {
-                    console.log(res.data.result)
-                    this.initialData = this.getShapeData(res.data.result);
-                    console.log(this.initialData);
+                    console.log(res.data.result);
+                    let test = this.getShapeData(res.data.result);
+                    console.log(test);
                 }
-                console.log("Success2")
+                console.log('Success2');
             });
-        },
-        async pollForResult() {
-            this.isRunning = true;
-            while (this.isRunning) {
-                const response = await this.getOcrStatus();
-                const data = await response.json();
-                if (data.isDone) {
-                    this.result = data.result;
-                    this.isRunning = false;
-                    break;
-                }
-                await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second before polling again
-            }
         },
         async waitUntilOcrComplete() {
             this.isRunning = true;
             while (this.isRunning) {
                 this.general_upload_res
-                    .filter((item) => item.status === 'PROCESSING')
+                    .filter((item) => this.finishedStatus.includes(item.status) === false)
                     .forEach(async (item, index) => {
                         await this.getOcrStatus(index);
                     });
-                if (this.general_upload_res.filter((item) => item.status === 'PROCESSING').length === 0) {
+                if (this.general_upload_res.filter((item) => this.finishedStatus.includes(item.status) === false).length === 0) {
                     this.isRunning = false;
                     break;
                 }
@@ -150,6 +138,7 @@ export default {
         },
         getShapeData(regData) {
             let myShapes = [];
+            // 使用正規表達式將 regData 中的所有 ' 符號替換為 " 符號
             regData = JSON.parse(regData.replace(/'/g, '"'));
             console.log(regData);
             console.log('hi')
@@ -245,7 +234,7 @@ export default {
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                                 <el-table :data="getExcel" style="width: 100%" :key="isRunning">
-                                    <el-table-column prop="task_id" label="任務" sortable width="180" />
+                                    <el-table-column prop="task_id" label="任務" sortable width="350" />
                                     <el-table-column prop="status" label="辨識結果" width="180" />
                                     <el-table-column label="Action">
                                         <template v-slot="scope">
