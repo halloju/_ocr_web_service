@@ -1,5 +1,4 @@
 <script>
-import Image from '@/assets/img/hero-img.png';
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import axios from 'axios';
@@ -15,7 +14,7 @@ export default {
         return {
             // 上方
             containerId: 'my-pic-annotation',
-            imageSrc: Image,
+            imageSrc: null,
             imageResult: '',
             localStorageKey: 'storage',
             width: 1200,
@@ -103,22 +102,18 @@ export default {
             });
         },
         handleButtonClick(row) {
-            console.log(row);
             axios.get(`/ocr/get_image/${row.image_id}`).then((res) => {
                 if (res !== null) {
                     this.imageSrc = 'data:image/png;base64,' + res.data;
                 } else {
                     this.imageSrc = '';
                 }
-                console.log('Success');
             });
             axios.get(`/ocr/result/${row.task_id}`).then((res) => {
                 if (res !== null) {
                     console.log(res.data.result);
-                    let test = this.getShapeData(res.data.result);
-                    console.log(test);
+                    this.initialData = this.getShapeData(res.data.result);
                 }
-                console.log('Success2');
             });
         },
         async waitUntilOcrComplete() {
@@ -140,8 +135,6 @@ export default {
             let myShapes = [];
             // 使用正規表達式將 regData 中的所有 ' 符號替換為 " 符號
             regData = JSON.parse(regData.replace(/'/g, '"'));
-            console.log(regData);
-            console.log('hi')
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
@@ -244,7 +237,7 @@ export default {
                                 </el-table>
                             </div>
                         </div>
-                        <div v-if="imageSrc!==''">
+                        <div v-if="imageSrc!==null">
                             <Annotation
                                 containerId="my-pic-annotation-output"
                                 :imageSrc="imageSrc"
