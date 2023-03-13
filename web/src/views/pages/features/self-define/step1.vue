@@ -1,5 +1,6 @@
 <script>
 import UploadImage from '@/components/UploadImage.vue';
+import { ElMessage } from 'element-plus';
 
 export default {
     components: {
@@ -31,7 +32,8 @@ export default {
                     to: '/features/general/self-define/step/5'
                 }
             ],
-            switchValue: false
+            switchValue: false,
+            isFileUploaded: false
         };
     },
     methods: {
@@ -46,24 +48,32 @@ export default {
         },
         handleFileInputChange(event) {
             let file = event.target.files[0];
-            console.log('File uploaded:', file);
             if (file && file.type === 'application/json') {
                 let reader = new FileReader();
                 reader.onload = () => {
                     try {
                         let data = JSON.parse(reader.result);
+                        console.log(data);
                         if (data.image) {
-                            sessionStorage.imageSource = data.image;
-                            sessionStorage.filename = data.template_name;
-                            sessionStorage.filesize = data.image.length / 1024;
-                            console.log('Image stored in sessionStorage');
+                            sessionStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
+                            sessionStorage.setItem('filename', data.template_name);
+                            sessionStorage.setItem('filesize', data.image.length / 1024);
+                            this.isFileUploaded = !this.isFileUploaded;
                         }
                     } catch (error) {
                         console.error('Error parsing JSON data:', error);
                     }
                 };
                 reader.readAsText(file);
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: '請上傳正確的設定檔'
+                });
             }
+            this.$refs.fileInput.value = '';
+            console.log(sessionStorage.getItem('filename'));
+            console.log(this.isFileUploaded);
         }
     }
 };
@@ -104,10 +114,9 @@ export default {
         <div class="col-12">
             <div class="card">
                 <div class="col-2">
-                    <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
-                    <FileUpload mode="basic" name="demo[]" :auto="true" @complete="handleUploadComplete" chooseLabel="匯入設定檔" style="width: 12em; height: 4em" />
+                    <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" chooseLabel="匯入設定檔" style="width: 12em; height: 4em" />
                 </div>
-                <UploadImage :isUploaded="true" @updateStatus="Upload" />
+                <UploadImage :isUploaded="true" @updateStatus="Upload" :key="this.isFileUploaded" />
             </div>
         </div>
     </div>

@@ -1,7 +1,8 @@
 <script>
 export default {
     name: 'UploadImage',
-    mounted() {
+    created() {
+        console.log('created');
         if (sessionStorage.imageSource !== '') {
             this.isOK = true;
             this.imageSource = sessionStorage.imageSource;
@@ -145,11 +146,10 @@ export default {
             <label for="my-file">選擇圖檔</label>
         </Button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
-        <!-- <div class="my-content" v-if="fileLimit && !isOK" style="color: black;">請勿超過10MB</div> -->
         <div class="col-12 text-center" v-if="isOK && !wrongFile">
-            <Image v-if="imageSource" :src="imageSource" alt="Image" width="500" preview />
-            <p class="mb-0 text-left">檔案名稱： {{ filename }}</p>
-            <p class="mb-0 text-left">檔案大小： {{ showFileSize }} KB</p>
+            <Image v-if="this.imageSource" :src="this.imageSource" alt="Image" width="500" preview />
+            <p class="mb-0 text-left">檔案名稱： {{ this.filename }}</p>
+            <p class="mb-0 text-left">檔案大小： {{ this.showFileSize }} KB</p>
         </div>
         <div class="my-content flex justify-content-center align-items-center" v-if="wrongFile" style="color: black; height: 500px; font-size: 25px">請上傳正確檔案格式</div>
         <div class="my-content flex justify-content-center align-items-center" v-if="!isOK && !wrongFile" style="color: black; height: 500px; font-size: 25px">請拖曳圖片</div>
