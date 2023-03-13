@@ -144,6 +144,8 @@ export default {
     },
     methods: {
         loadImage() {
+            // reset scale to 1
+            this.scale = 1;
             const image = new window.Image();
             image.src = this.imageSrc;
             image.onload = () => {

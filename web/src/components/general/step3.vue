@@ -47,7 +47,6 @@ export default {
                     isFinished: item.status === 'SUCCESS' ? true : false
                 });
             });
-            console.log(this.general_upload_res);
             return this.tableData;
         },
         ...mapState(['general_upload_res'])
@@ -111,7 +110,6 @@ export default {
             });
             axios.get(`/ocr/result/${row.task_id}`).then((res) => {
                 if (res !== null) {
-                    console.log(res.data.result);
                     this.initialData = this.getShapeData(res.data.result);
                 }
             });

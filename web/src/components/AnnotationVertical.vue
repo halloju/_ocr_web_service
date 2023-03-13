@@ -344,6 +344,8 @@ export default {
             }
         },
         loadImage() {
+            // reset scale to 1
+            this.scale = 1;
             // load image
             const image = new window.Image();
             image.src = this.imageSrc;
