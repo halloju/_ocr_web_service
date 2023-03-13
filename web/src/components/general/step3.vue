@@ -229,11 +229,12 @@ export default {
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
                                 <el-table :data="getExcel" style="width: 100%" :key="isRunning">
-                                    <el-table-column prop="task_id" label="任務" sortable width="350" />
-                                    <el-table-column prop="status" label="辨識結果" width="180" />
-                                    <el-table-column label="Action">
+                                    <el-table-column prop="task_id" label="任務流水編" sortable width="350" />
+                                    <el-table-column prop="task_id" label="檔名" sortable width="350" />
+                                    <el-table-column prop="status" label="辨識狀態" width="180" />
+                                    <el-table-column label="動作">
                                         <template v-slot="scope">
-                                            <el-button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)">View</el-button>
+                                            <el-button type="primary" v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)" round>檢視</el-button>
                                         </template>
                                     </el-table-column>
                                 </el-table>
