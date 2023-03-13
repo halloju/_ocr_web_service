@@ -42,8 +42,14 @@ export default {
     },
     computed: {
         getTaskData() {
+            this.excelData = [];
             this.tableData = [];
             this.general_upload_res.forEach((item, index) => {
+                this.excelData.push({
+                    filename: item.file_name,
+                    image_id: item.image_id,
+                    ocr_results: item.ocr_results
+                });
                 this.tableData.push({
                     num: index + 1 ,
                     task_id: item.task_id,
@@ -143,10 +149,10 @@ export default {
                     this.isRunning = false;
                     break;
                 }
-                await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2 seconds before polling again
+                await new Promise(resolve => setTimeout(resolve, 3000)); // wait 2 seconds before polling again
                 count++;
-                if (count === 3) break;
-                console.log(count);
+                // 這個數字太小可能也跑不完？感覺要衡量一下
+                if (count === 30) break;
             }
         },
         getShapeData(regData) {
