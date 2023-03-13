@@ -2,10 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import CustomException, exception_handler
+from app.exceptions import MlaasRequestError, mlaas_request_handler
 from app.routers import docs
 from app.routers.ocr import gp_ocr, template_ocr
 from app.routers.image_tools import pdf_transform
 from app.routers.template_crud import create, read, update, delete
+from app.api_config import http_responses
 
 
 def get_application():
@@ -23,6 +25,7 @@ def get_application():
     )
 
     app.add_exception_handler(CustomException, exception_handler)
+    app.add_exception_handler(MlaasRequestError, mlaas_request_handler)
 
     app.include_router(docs.router)
 
@@ -30,21 +33,25 @@ def get_application():
         create.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        responses=http_responses
     )
     app.include_router(
         read.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        responses=http_responses
     )
     app.include_router(
         update.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        responses=http_responses
     )
     app.include_router(
         delete.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        responses=http_responses
     )
     app.include_router(
         gp_ocr.router,

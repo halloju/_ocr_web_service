@@ -24,3 +24,8 @@ def exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code, content={"error": True, "msg": exc.message}
     )
+
+def mlaas_request_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code, content={"mlaas_code": exc.mlaas_code, "msg": exc.message}
+    )

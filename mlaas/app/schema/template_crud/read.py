@@ -84,7 +84,7 @@ class GetTemplateDetailResponse(BaseModel):
         description='''
         API 服務正常："OK"
         程式碼錯誤："code error"
-        template_id 不存在:: "template_id not exist"
+        template_id 不存在: "template_id not exist"
         ''',
         example='OK'
     )
