@@ -12,7 +12,7 @@ export default {
     name: 'General3',
     data() {
         return {
-            // 上方
+            // 下方
             containerId: 'my-pic-annotation',
             imageSrc: null,
             imageResult: '',
@@ -22,7 +22,7 @@ export default {
             dataCallback: '',
             initialData: '',
             initialDataId: null,
-            // 下方
+            // 上方
             isDownload: false,
             // general_upload_res: this.$store.state.general_upload_res,
             general_execute_time: this.$store.state.general_execute_time,
@@ -35,9 +35,13 @@ export default {
             finishedStatus: ['SUCCESS', 'FAIL']
         };
     },
+    watch: {
+        tableData(newTableData, oldTableData) {
+            console.debug(newTableData);
+        }
+    },
     computed: {
         getTaskData() {
-            console.log(this.general_upload_res);
             this.tableData = [];
             this.general_upload_res.forEach((item, index) => {
                 this.tableData.push({
