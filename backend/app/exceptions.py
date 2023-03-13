@@ -12,6 +12,13 @@ class ImageTypeError(Exception):
     """Image type validate error """
     pass
 
+class MlaasRequestError(HTTPException):
+    """mlaas request error """
+    def __init__(self, status_code: int = 500, status_msg: str = "") -> None:
+        super().__init__(status_code=500)
+        self.message = status_msg
+        self.mlaas_code = status_code
+
 
 def exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(

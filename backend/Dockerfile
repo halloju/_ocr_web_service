@@ -4,6 +4,7 @@ RUN apt-get update \
     && apt-get -y install libpq-dev gcc
 
 RUN apt-get -y install vim
+RUN apt-get install poppler-utils -y
 
 WORKDIR /code
 
