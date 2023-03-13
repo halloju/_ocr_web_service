@@ -95,12 +95,8 @@ export default {
             let user_id = '13520';
             let tableData = [];
             try {
-                const response = await axios.get('/template_crud/get_available_templates/' + user_id, {
-                    params: {
-                        is_public: false
-                    }
-                });
-                tableData = response['data']['available_templates'];
+                const response = await axios.get('/template_crud/get_available_templates/' + user_id);
+                tableData = response['data']['template_infos'];
                 return tableData;
             } catch (error) {
                 if (error.response.data.msg === 'available_templates are not found') {
@@ -116,10 +112,10 @@ export default {
             let myShapes = [];
             bbox.forEach(function (element, index) {
                 var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
-                var label_x = element['x_min'];
-                var label_y = element['y_min'];
-                var label_width = element['x_max'] - element['x_min'];
-                var label_height = element['y_max'] - element['y_min'];
+                var label_x = element['points'][0][0];
+                var label_y = element['points'][0][1];
+                var label_width = element['points'][1][0] - element['points'][0][0];
+                var label_height = element['points'][2][1] - element['points'][1][1];
                 myShapes.push({
                     type: 'rect',
                     name: template_id,
@@ -148,7 +144,7 @@ export default {
             try {
                 const response = await axios.get('/template_crud/get_template_detail/' + this.template_id);
                 this.template = response['data'];
-                let bbox = this.template.bbox.filter((item) => item.type === userType);
+                let bbox = this.template.points_list.filter((item) => item.type === userType);
                 this.initialData = this.generateTemplate(template_id, bbox);
                 this.imageSrc = 'data:image/png;base64,' + this.template.image;
             } catch (error) {
@@ -184,18 +180,18 @@ export default {
         },
         editTemplate() {
             this.$store.commit('recsClear');
-            this.template.bbox.forEach((box) => {
+            this.template.points_list.forEach((box) => {
                 this.$store.commit('recsUpdate', {
                     type: box.type,
                     data: {
-                        startPointX: box.x_min,
-                        startPointY: box.y_min,
-                        endPointX: box.x_max,
-                        endPointY: box.y_max,
+                        startPointX: box.points[0][0],
+                        startPointY: box.points[0][1],
+                        endPointX: box.points[2][0],
+                        endPointY: box.points[2][1],
                         scaleX: 1,
                         scaleY: 1,
-                        width: box.x_max - box.x_min,
-                        height: box.y_max - box.y_min,
+                        width: box.points[2][0] - box.points[0][0],
+                        height: box.points[2][1] - box.points[0][1],
                         canDelete: true,
                         canEdit: true,
                         canSave: false,
@@ -205,6 +201,18 @@ export default {
             });
             sessionStorage.imageSource = 'data:image/png;base64,' + this.template.image;
             this.$router.push({ path: '/features/general/self-define/step/2' });
+        },
+        downloadTemplate() {
+            let template_info_json = JSON.stringify(this.template);
+            let blob = new Blob([template_info_json], { type: 'text/plain;charset=utf-8' });
+            let url = URL.createObjectURL(blob);
+            let link = document.createElement('a');
+            link.href = url;
+            link.download = `${this.template.template_name}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
     }
 };
@@ -262,7 +270,7 @@ export default {
                         <SelectButton v-model="myModel" :options="models" optionLabel="name" @click="handleLook(this.template_id, this.myModel.code)" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
-                        <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="" />
+                        <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="downloadTemplate" />
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'編輯模版'" @click="editTemplate" />
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="" disabled="true" />
                     </div>
