@@ -116,17 +116,21 @@ export default {
         },
         async waitUntilOcrComplete() {
             this.isRunning = true;
+            let count = 0;
             while (this.isRunning) {
-                this.general_upload_res
-                    .filter((item) => this.finishedStatus.includes(item.status) === false)
-                    .forEach(async (item, index) => {
-                        await this.getOcrStatus(index);
-                    });
-                if (this.general_upload_res.filter((item) => this.finishedStatus.includes(item.status) === false).length === 0) {
+                const unfinishedItems = this.general_upload_res.filter(item => !this.finishedStatus.includes(item.status));
+                for (let i = 0; i < unfinishedItems.length; i++) {
+                    const item = unfinishedItems[i];
+                    await this.getOcrStatus(this.general_upload_res.indexOf(item));
+                }
+                if (unfinishedItems.length === 0) {
                     this.isRunning = false;
                     break;
                 }
-                await new Promise((resolve) => setTimeout(resolve, 1000)); // wait 1 second before polling again
+                await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2 seconds before polling again
+                count++;
+                if (count === 3) break;
+                console.log(count);
             }
         },
         getShapeData(regData) {
