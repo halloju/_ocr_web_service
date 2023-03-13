@@ -11,6 +11,7 @@ from io import BytesIO
 import logging
 import random
 import uuid
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -81,6 +82,7 @@ def gp_ocr(ocr_image_info, db: Session):
             db.add(insert_ocr_results)
             db.commit()
             db.refresh(insert_ocr_results)
+            time.sleep(5)
         return image_cv_id, ocr_results
     except OperationalError as e:
         logger.error("gpocr db error:{}".format(e))

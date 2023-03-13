@@ -48,7 +48,7 @@ export default {
     },
     methods: {
         submit() {
-            this.$store.commit('generalImageUpdate', this.fileList); // all image
+            // this.$store.commit('generalImageUpdate', this.fileList); // all image
             const start_time = new Date().getTime();
             const generalImageResponseList = [];
             const responseData = {};
@@ -94,18 +94,18 @@ export default {
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';
-            const isLt8M = file.size / 1024 / 1024 < 5;
+            const isLt5M = file.size / 1024 / 1024 < 5;
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
                 fileList.pop();
                 return false;
             }
-            if (!isLt8M) {
-                this.$message.error('上傳圖案大小不能超過 8 MB!');
+            if (!isLt5M) {
+                this.$message.error('上傳圖案大小不能超過 5 MB!');
                 fileList.pop();
                 return false;
             }
-            if (isIMAGE && isLt8M) {
+            if (isIMAGE && isLt5M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;

@@ -82,6 +82,7 @@ export default {
                 if (res.data.status === 'SUCCESS') {
                     await this.getOcrResults(item);
                 } else {
+                    console.log('getOcrResults', res.data.status);
                     this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
                 }
             });
@@ -89,6 +90,7 @@ export default {
         async getOcrResults(item) {
             axios.get(`http://localhost:5000/ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
                 if (res.data.status === 'SUCCESS') {
+                    console.log('getOcrResults', res.data.status);
                     this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result });
                 } else {
                     ElMessage({

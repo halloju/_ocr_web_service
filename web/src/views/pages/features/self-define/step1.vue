@@ -43,6 +43,27 @@ export default {
         },
         Upload(val) {
             this.isOK = val;
+        },
+        handleFileInputChange(event) {
+            let file = event.target.files[0];
+            console.log('File uploaded:', file);
+            if (file && file.type === 'application/json') {
+                let reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        let data = JSON.parse(reader.result);
+                        if (data.image) {
+                            sessionStorage.imageSource = data.image;
+                            sessionStorage.filename = data.template_name;
+                            sessionStorage.filesize = data.image.length / 1024;
+                            console.log('Image stored in sessionStorage');
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON data:', error);
+                    }
+                };
+                reader.readAsText(file);
+            }
         }
     }
 };
@@ -53,9 +74,9 @@ export default {
             <div class="card card-w-title">
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
-                    <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{name: 'Model-List'}">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item >新增模板</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item>新增模板</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
@@ -82,6 +103,10 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12">
             <div class="card">
+                <div class="col-2">
+                    <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
+                    <FileUpload mode="basic" name="demo[]" :auto="true" @complete="handleUploadComplete" chooseLabel="匯入設定檔" style="width: 12em; height: 4em" />
+                </div>
                 <UploadImage :isUploaded="true" @updateStatus="Upload" />
             </div>
         </div>
