@@ -33,7 +33,12 @@ async def process(request: Request, image_complexity: str = "medium", model_name
                 await request.app.state.redis.set(image_id, encoded_data)
                 # Set an expiration time of 1 day (86400 seconds) for the key
                 await request.app.state.redis.expire(image_id, 86400)
-                
+
+                # Store the file name in Redis using the image ID as the key
+                await request.app.state.redis.set(image_id + '_file_name', file.filename)
+                # Set an expiration time of 1 day (86400 seconds) for the key
+                await request.app.state.redis.expire(image_id + '_file_name', 86400)
+
                 # start task prediction
                 task_id = predict_image.delay(image_id, image_complexity, model_name)
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
@@ -53,15 +58,15 @@ async def result(task_id: str):
 
     # Task Not Ready
     if not task.ready():
-        return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': ''})
+        return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
 
     # Task done: return the value
     task_result = task.get()
     result = task_result.get('result')
-    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result})
+    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result, 'file_name': task_result.get('file_name')})
 
 
 @router.get('/status/{task_id}')
 async def status(task_id: str):
     task = AsyncResult(task_id)
-    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task.status, 'result': ''})
+    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})

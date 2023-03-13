@@ -73,6 +73,7 @@ const store = new Vuex.Store({
         },
         generalImageOcrResults: function (state, payload) {
             state.general_upload_res[payload.item].ocr_results = payload.ocr_results;
+            state.general_upload_res[payload.item].file_name = payload.file_name;
         }
     }
 });

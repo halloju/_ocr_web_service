@@ -77,10 +77,11 @@ def predict_image(self, image_id, image_complexity, model_name):
             data_pred = str(response['outputs']['ocr_results'])
         else:
             data_pred = str(response['outputs']['status_msg'])
-        return {'status': 'SUCCESS', 'result': data_pred}
+
+        # Get the file name from Redis using the image ID as the key
+        file_name = celery.backend.get(image_id + '_file_name').decode("utf-8")
+
+        return {'status': 'SUCCESS', 'result': data_pred, 'file_name': file_name}
+
     except Exception as ex:
         logging.error(ex)
-        # try:
-        #     self.retry(countdown=2)
-        # except MaxRetriesExceededError as e:
-        #     return {'status': 'FAIL', 'result': 'max retried achieved'}
