@@ -13,7 +13,7 @@ def call_mlaas_function(request, action: str):
     raise MlaasRequestError()
 
 def get_user_id() -> str:
-    return '13250'
+    return '13520'
 
 def get_request_id() -> str:
     return 'gpocr_system'

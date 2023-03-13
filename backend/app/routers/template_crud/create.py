@@ -27,7 +27,7 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
     if await form.is_valid():
         inputs = {
             'user_id': get_user_id(),
-            'image': "",
+            'image': form.image,
             'points_list': form.points_list,
             'template_name': form.template_name,
             'is_public': False,
