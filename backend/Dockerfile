@@ -1,9 +1,6 @@
 FROM python:3.9.5-slim-buster
 RUN apt-get update \
-    && apt-get -y install libpq-dev gcc
-
-RUN apt-get -y install vim
-RUN apt-get install poppler-utils -y
+    && apt-get -y install libpq-dev gcc vim poppler-utils
 
 # set work directory
 WORKDIR /usr/src/app
