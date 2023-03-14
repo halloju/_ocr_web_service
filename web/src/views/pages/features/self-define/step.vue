@@ -43,7 +43,10 @@ export default {
                 box: true,
                 mask: true
             },
-            isEditing: false
+            isEditing: false,
+            disableInput: false,
+            templateNameEdit: false,
+            input: this.$store.state.selfDefinedRecs.name
         };
     },
     mounted() {
@@ -62,8 +65,13 @@ export default {
             this.$router.push({ path: `/features/general/self-define/step/${nextStep}` });
         },
         upload() {
-            const image = new window.Image();
-            image.src = sessionStorage.imageSource;
+            if (this.input === '') {
+                this.$message({
+                    message: '請輸入模板名稱',
+                    type: 'warning'
+                });
+                return;
+            }
 
             for (let i = 0; i < this.boxNames.length; i++) {
                 this.selfDefinedRecs[this.boxNames[i]].forEach((box) => {
@@ -87,18 +95,37 @@ export default {
                 });
                 return;
             }
-            axios
-                .post('/template_crud/create_template', {
+
+            let body;
+            let action;
+            if (this.selfDefinedRecs.id === '') {
+                console.log('create');
+                const image = new window.Image();
+                image.src = sessionStorage.imageSource;
+                body = {
                     user_id: 12345,
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
                     points_list: this.boxes,
-                    template_name: '身分證',
+                    template_name: this.input,
                     is_public: false
-                })
+                };
+                action = 'create_template';
+            } else {
+                console.log('update');
+                body = {
+                    user_id: 12345,
+                    points_list: this.boxes,
+                    template_name: this.input,
+                    template_id: this.selfDefinedRecs.id
+                };
+                action = 'update_template';
+            }
+            axios
+                .post(`/template_crud/${action}`, body)
                 .then((res) => {
                     if (res.status === 200) {
-                        ElMessageBox.confirm('', '新增成功', {
+                        ElMessageBox.confirm('', '成功', {
                             confirmButtonText: '確定',
                             type: 'success',
                             center: true,
@@ -108,9 +135,9 @@ export default {
                             roundButton: true
                         });
                         this.clearState();
-                        this.$router.push({ path: '/features/general/self-define/step/1' });
+                        this.$router.push({ path: '/features/general/model-list' });
                     } else {
-                        ElMessageBox.confirm('', '新增失敗', {
+                        ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
                             center: true,
@@ -122,7 +149,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    ElMessageBox.confirm(err, '新增失敗', {
+                    ElMessageBox.confirm(err, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',
                         center: true,
@@ -151,10 +178,18 @@ export default {
         },
         update(isEditing) {
             this.isEditing = isEditing;
+        },
+        toggleEditSave() {
+            this.templateNameEdit = !this.templateNameEdit;
+            this.disableInput = !this.disableInput;
+            this.$store.commit('templateNameUpdate', this.input);
         }
     },
     computed: {
-        ...mapState(['selfDefinedRecs'])
+        ...mapState(['selfDefinedRecs']),
+        buttonText() {
+            return this.templateNameEdit ? '編輯' : '確認';
+        }
     },
     watch: {
         step() {
@@ -197,8 +232,21 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-2">
-                        <Button v-if="!this.isFinal" label=" 下一步" :class="{ 'pi pi-arrow-right p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
-                        <Button v-else label=" 提交" class="pi p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
+                        <el-button v-if="!this.isFinal" :class="{ 'pi pi-arrow-right p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em" type="primary"
+                            >下一步</el-button
+                        >
+                        <el-button
+                            v-else
+                            class="pi p-button-success"
+                            @click="upload"
+                            v-bind:class="{ 'p-disabled': !templateNameEdit }"
+                            v-bind:disabled="!templateNameEdit"
+                            v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''"
+                            style="width: 12em; height: 4em"
+                            type="primary"
+                        >
+                            提交
+                        </el-button>
                     </div>
                 </div>
                 <router-view />
@@ -208,6 +256,12 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
             <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" @update:isEditing="update" />
+            <div class="p-fluid" v-if="this.isFinal">
+                <div class="input-wrapper">
+                    <el-input v-model="this.input" placeholder="模板名稱" :disabled="disableInput" />
+                    <Button @click="toggleEditSave">{{ buttonText }}</Button>
+                </div>
+            </div>
         </div>
         <div class="col-12 md:col-4">
             <div class="card" style="overflow-x: scroll">
@@ -216,3 +270,41 @@ export default {
         </div>
     </div>
 </template>
+
+<style scoped>
+.input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper > * {
+    margin-right: 10px;
+}
+
+.tooltip:disabled::before {
+    content: 'Tooltip text';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tooltip:hover:disabled::before {
+    display: block;
+}
+
+.tooltip:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.el-button[disabled]:before {
+    content: attr(title);
+}
+</style>
