@@ -37,7 +37,7 @@ def register_redis(app: FastAPI) -> None:
 
 def get_application():
     app = FastAPI(docs_url=None,
-                  title="Backend")
+                  title="Web Backend")
 
     origins = ["*"]
 
