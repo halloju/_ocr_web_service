@@ -3,6 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 import PhotoService from '@/service/PhotoService';
 import AnnotationVertical from '@/components/AnnotationVertical.vue';
+import { ElMessageBox } from 'element-plus';
 
 const item = {
     name: '',
@@ -200,6 +201,8 @@ export default {
                 });
             });
             sessionStorage.imageSource = 'data:image/png;base64,' + this.template.image;
+            this.$store.commit('templateNameUpdate', this.template.template_name);
+            this.$store.commit('templateIdUpdate', this.template_id);
             this.$router.push({ path: '/features/general/self-define/step/2' });
         },
         downloadTemplate() {
@@ -213,6 +216,42 @@ export default {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
+        },
+        deleteTemplate() {
+            ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(async () => {
+                    try {
+                        const response = await axios.delete('/template_crud/delete_template/' + this.template_id);
+                        if (!response.error) {
+                            this.$message({
+                                type: 'success',
+                                message: '刪除成功!'
+                            });
+                            this.tableData = await this.getAvailableTemplate();
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: '刪除失敗!'
+                            });
+                        }
+                    } catch (error) {
+                        this.$message({
+                            type: 'error',
+                            message: '刪除失敗!'
+                        });
+                        return error;
+                    }
+                })
+                .catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消刪除'
+                    });
+                });
         }
     }
 };
@@ -251,11 +290,8 @@ export default {
                     </el-table-column>
                     <el-table-column label="操作" width="200px">
                         <template #default="scope">
-                            <!-- <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button> -->
-                            <!-- <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button> -->
                             <el-button class="mr-1" size="big" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="big" type="info" @click="handleLook(scope.row.template_id, this.myModel.code)">檢視</el-button>
-                            <!-- <el-button size="big" type="danger" @click="handleDelete(scope.$index)">刪除</el-button> -->
                         </template>
                     </el-table-column>
                 </el-table>
@@ -272,7 +308,7 @@ export default {
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
                         <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="downloadTemplate" />
                         <Button icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'編輯模版'" @click="editTemplate" />
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="" disabled="true" />
+                        <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="deleteTemplate" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                         <AnnotationVertical
