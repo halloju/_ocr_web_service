@@ -201,6 +201,8 @@ export default {
                 });
             });
             sessionStorage.imageSource = 'data:image/png;base64,' + this.template.image;
+            this.$store.commit('templateNameUpdate', this.template.template_name);
+            this.$store.commit('templateIdUpdate', this.template_id);
             this.$router.push({ path: '/features/general/self-define/step/2' });
         },
         downloadTemplate() {

@@ -65,8 +65,6 @@ export default {
             this.$router.push({ path: `/features/general/self-define/step/${nextStep}` });
         },
         upload() {
-            const image = new window.Image();
-            image.src = sessionStorage.imageSource;
             if (this.input === '') {
                 this.$message({
                     message: '請輸入模板名稱',
@@ -97,18 +95,37 @@ export default {
                 });
                 return;
             }
-            axios
-                .post('/template_crud/create_template', {
+
+            let body;
+            let action;
+            if (this.selfDefinedRecs.id === '') {
+                console.log('create');
+                const image = new window.Image();
+                image.src = sessionStorage.imageSource;
+                body = {
                     user_id: 12345,
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
                     points_list: this.boxes,
                     template_name: this.input,
                     is_public: false
-                })
+                };
+                action = 'create_template';
+            } else {
+                console.log('update');
+                body = {
+                    user_id: 12345,
+                    points_list: this.boxes,
+                    template_name: this.input,
+                    template_id: this.selfDefinedRecs.id
+                };
+                action = 'update_template';
+            }
+            axios
+                .post(`/template_crud/${action}`, body)
                 .then((res) => {
                     if (res.status === 200) {
-                        ElMessageBox.confirm('', '新增成功', {
+                        ElMessageBox.confirm('', '成功', {
                             confirmButtonText: '確定',
                             type: 'success',
                             center: true,
@@ -118,9 +135,9 @@ export default {
                             roundButton: true
                         });
                         this.clearState();
-                        this.$router.push({ path: '/features/general/self-define/step/1' });
+                        this.$router.push({ path: '/features/general/model-list' });
                     } else {
-                        ElMessageBox.confirm('', '新增失敗', {
+                        ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
                             center: true,
@@ -132,7 +149,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    ElMessageBox.confirm(err, '新增失敗', {
+                    ElMessageBox.confirm(err, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',
                         center: true,
