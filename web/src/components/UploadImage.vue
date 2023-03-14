@@ -73,6 +73,7 @@ export default {
                         sessionStorage.imageSource = this.imageSource;
                         sessionStorage.filename = this.filename;
                         sessionStorage.filesize = this.filesize;
+                        this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
                 } else {
@@ -104,6 +105,7 @@ export default {
                         sessionStorage.imageSource = this.imageSource;
                         sessionStorage.filename = this.filename;
                         sessionStorage.filesize = this.filesize;
+                        this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
                 } else {

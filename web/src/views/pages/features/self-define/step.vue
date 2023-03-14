@@ -43,7 +43,10 @@ export default {
                 box: true,
                 mask: true
             },
-            isEditing: false
+            isEditing: false,
+            disableInput: false,
+            templateNameEdit: false,
+            input: ''
         };
     },
     mounted() {
@@ -64,6 +67,13 @@ export default {
         upload() {
             const image = new window.Image();
             image.src = sessionStorage.imageSource;
+            if (this.input === '') {
+                this.$message({
+                    message: '請輸入模板名稱',
+                    type: 'warning'
+                });
+                return;
+            }
 
             for (let i = 0; i < this.boxNames.length; i++) {
                 this.selfDefinedRecs[this.boxNames[i]].forEach((box) => {
@@ -93,7 +103,7 @@ export default {
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
                     points_list: this.boxes,
-                    template_name: '身分證',
+                    template_name: this.input,
                     is_public: false
                 })
                 .then((res) => {
@@ -151,10 +161,22 @@ export default {
         },
         update(isEditing) {
             this.isEditing = isEditing;
+        },
+        setTemplateName(event) {
+            this.templateName = event.target.value;
+
+            this.$store.commit('setTemplateName', this.templateName);
+        },
+        toggleEditSave() {
+            this.templateNameEdit = !this.templateNameEdit;
+            this.disableInput = !this.disableInput;
         }
     },
     computed: {
-        ...mapState(['selfDefinedRecs'])
+        ...mapState(['selfDefinedRecs']),
+        buttonText() {
+            return this.templateNameEdit ? '編輯' : '確認';
+        }
     },
     watch: {
         step() {
@@ -197,8 +219,10 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-2">
-                        <Button v-if="!this.isFinal" label=" 下一步" :class="{ 'pi pi-arrow-right p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em"></Button>
-                        <Button v-else label=" 提交" class="pi p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em"></Button>
+                        <el-button v-if="!this.isFinal" :class="{ 'pi pi-arrow-right p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em" type="primary"
+                            >下一步</el-button
+                        >
+                        <el-button v-else class="pi p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em" :disabled="!this.templateNameEdit" type="primary">提交</el-button>
                     </div>
                 </div>
                 <router-view />
@@ -208,6 +232,12 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-8">
             <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" @update:isEditing="update" />
+            <div class="p-fluid" v-if="this.isFinal">
+                <div class="input-wrapper">
+                    <el-input v-model="input" placeholder="模板名稱" :disabled="disableInput" />
+                    <Button @click="toggleEditSave">{{ buttonText }}</Button>
+                </div>
+            </div>
         </div>
         <div class="col-12 md:col-4">
             <div class="card" style="overflow-x: scroll">
@@ -216,3 +246,14 @@ export default {
         </div>
     </div>
 </template>
+
+<style scoped>
+.input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper > * {
+    margin-right: 10px;
+}
+</style>
