@@ -165,6 +165,7 @@ export default {
                                     }
                                 });
                             });
+                            this.$store.commit('templateNameUpdate', data.template_name);
                             this.filename = data.template_name;
                             this.filesize = data.image.length / 1024;
                             this.imageSource = `data:image/jpeg;base64,${data.image}`;

@@ -46,7 +46,7 @@ export default {
             isEditing: false,
             disableInput: false,
             templateNameEdit: false,
-            input: ''
+            input: this.$store.state.selfDefinedRecs.name
         };
     },
     mounted() {
@@ -162,14 +162,10 @@ export default {
         update(isEditing) {
             this.isEditing = isEditing;
         },
-        setTemplateName(event) {
-            this.templateName = event.target.value;
-
-            this.$store.commit('setTemplateName', this.templateName);
-        },
         toggleEditSave() {
             this.templateNameEdit = !this.templateNameEdit;
             this.disableInput = !this.disableInput;
+            this.$store.commit('templateNameUpdate', this.input);
         }
     },
     computed: {
@@ -222,7 +218,18 @@ export default {
                         <el-button v-if="!this.isFinal" :class="{ 'pi pi-arrow-right p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" style="width: 12em; height: 4em" type="primary"
                             >下一步</el-button
                         >
-                        <el-button v-else class="pi p-button-success" @click="upload" v-tooltip="'請上確認後點擊'" style="width: 12em; height: 4em" :disabled="!this.templateNameEdit" type="primary">提交</el-button>
+                        <el-button
+                            v-else
+                            class="pi p-button-success"
+                            @click="upload"
+                            v-bind:class="{ 'p-disabled': !templateNameEdit }"
+                            v-bind:disabled="!templateNameEdit"
+                            v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''"
+                            style="width: 12em; height: 4em"
+                            type="primary"
+                        >
+                            提交
+                        </el-button>
                     </div>
                 </div>
                 <router-view />
@@ -234,7 +241,7 @@ export default {
             <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" @update:isEditing="update" />
             <div class="p-fluid" v-if="this.isFinal">
                 <div class="input-wrapper">
-                    <el-input v-model="input" placeholder="模板名稱" :disabled="disableInput" />
+                    <el-input v-model="this.input" placeholder="模板名稱" :disabled="disableInput" />
                     <Button @click="toggleEditSave">{{ buttonText }}</Button>
                 </div>
             </div>
@@ -255,5 +262,32 @@ export default {
 
 .input-wrapper > * {
     margin-right: 10px;
+}
+
+.tooltip:disabled::before {
+    content: 'Tooltip text';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #000;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.tooltip:hover:disabled::before {
+    display: block;
+}
+
+.tooltip:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.el-button[disabled]:before {
+    content: attr(title);
 }
 </style>
