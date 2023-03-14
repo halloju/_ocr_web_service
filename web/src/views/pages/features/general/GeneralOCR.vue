@@ -1,11 +1,11 @@
 <script>
 import Step1 from '@/components/general/step1.vue';
-import Step3 from '@/components/general/step3.vue';
+import Step2 from '@/components/general/step2.vue';
 
 export default {
     components: {
         Step1,
-        Step3
+        Step2
     },
     name: 'General',
     data() {
@@ -50,5 +50,5 @@ export default {
         </div>
     </div>
     <Step1 v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" />
-    <Step3 v-else-if="step == 3" @nextStepEmit="nextStep" />
+    <Step2 v-else-if="step == 2" @nextStepEmit="nextStep" />
 </template>
