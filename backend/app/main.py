@@ -80,13 +80,13 @@ def get_application():
     )
     app.include_router(
         gp_ocr.router,
-        prefix="/ocr",
-        tags=["ocr"],
+        prefix="/gp_ocr",
+        tags=["gp_ocr"],
     )
     app.include_router(
         template_ocr.router,
-        prefix="/ocr",
-        tags=["ocr"],
+        prefix="/template_ocr",
+        tags=["template_ocr"],
     )
     app.include_router(
         pdf_transform.router,

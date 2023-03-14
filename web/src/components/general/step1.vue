@@ -61,7 +61,7 @@ export default {
                 formData.append('files', file.raw);
             });
             axios
-                .post('/ocr/predict_images', formData, {
+                .post('/gp_ocr/predict_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
