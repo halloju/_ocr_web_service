@@ -7,7 +7,6 @@ export default {
     props: ['nextStepEmit'],
     data() {
         return {
-            selectedLang: null,
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
             breadcrumbItems: [
                 { label: '主要功能', to: '#' },
