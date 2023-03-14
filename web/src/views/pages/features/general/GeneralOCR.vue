@@ -45,7 +45,7 @@ export default {
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
                 <h5>通用辨識</h5>
-                <p>請上傳一張或多張圖片，下一步會先辨識第一張圖片讓您確認結果，再進行全部辨識。</p>
+                <p>請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。</p>
             </div>
         </div>
     </div>
