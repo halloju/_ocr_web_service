@@ -42,8 +42,8 @@ export default {
   props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow'],
   data () {
     return {
-      annotation_title: '要向名稱：',
-      annotation_text: '要向內容：',
+      annotation_title: '要項名稱：',
+      annotation_text: '要項內容：',
       submit: '確認',
       active: false,
       // form data as copy

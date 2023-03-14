@@ -86,7 +86,7 @@ export default {
             }
         },
         getImage(item) {
-            axios.get(`http://localhost:5000/ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
+            axios.get(`/ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
                 console.log('getImage', res);
                 if (res.status === 200) {
                     let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
