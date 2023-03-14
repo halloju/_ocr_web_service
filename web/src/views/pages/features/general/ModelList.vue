@@ -139,7 +139,8 @@ export default {
             });
             return JSON.stringify(myShapes);
         },
-        templateOCR() {
+        templateOCR(template_id) {
+            this.$store.commit('TemplateIdUpdate', template_id);
             this.$router.push({ name: 'TemplateOCR' });
         },
         async handleLook(template_id, userType) {

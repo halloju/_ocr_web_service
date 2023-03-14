@@ -10,7 +10,8 @@ const store = new Vuex.Store({
         general_boxes: [],
         general_upload_image: [],
         general_upload_res: [],
-        general_execute_time: 0
+        // 模板辨識
+        template_id : '',
     },
 
     mutations: {
@@ -71,7 +72,10 @@ const store = new Vuex.Store({
         generalImageOcrResults: function (state, payload) {
             state.general_upload_res[payload.item].ocr_results = payload.ocr_results;
             state.general_upload_res[payload.item].file_name = payload.file_name;
-        }
+        },
+        TemplateIdUpdate: function (state, payload) {
+            state.template_id = payload;
+        },
     }
 });
 export default store;

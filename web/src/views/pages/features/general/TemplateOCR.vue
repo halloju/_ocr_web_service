@@ -1,6 +1,6 @@
 <script>
-import Step1 from '@/components/general/step1.vue';
-import Step2 from '@/components/general/step2.vue';
+import Step1 from '@/components/template/step1.vue';
+import Step2 from '@/components/template/step2.vue';
 
 export default {
     components: {
@@ -12,7 +12,8 @@ export default {
         return {
             step: 1,
             image_complexity: '',
-            selectedLang: ''
+            selectedLang: '',
+            template_id: this.$store.state.template_id,
         };
     },
     watch: {},
@@ -36,7 +37,8 @@ export default {
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item>全文辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item >選擇模板</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
@@ -44,8 +46,9 @@ export default {
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
-                <h5>通用辨識</h5>
+                <h5>模板辨識</h5>
                 <p>請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。</p>
+                <p>template_id:{{ template_id }}</p>
             </div>
         </div>
     </div>
