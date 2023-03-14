@@ -1,8 +1,9 @@
 <script>
+import { ElMessage } from 'element-plus';
+
 export default {
     name: 'UploadImage',
     created() {
-        console.log('created');
         if (sessionStorage.imageSource !== '') {
             this.isOK = true;
             this.imageSource = sessionStorage.imageSource;
@@ -18,7 +19,8 @@ export default {
             imageSource: null,
             filename: '',
             filesize: 0,
-            isOK: false
+            isOK: false,
+            isFileUploaded: false
         };
     },
     computed: {
@@ -122,9 +124,62 @@ export default {
             sessionStorage.filesize = 0;
             sessionStorage.isUploaded = false;
             this.$refs.inputFile.value = '';
+            this.$store.commit('recsClear');
         },
         openfolder() {
             this.$refs.inputFile.click();
+        },
+        handleFileInputChange(event) {
+            this.$store.commit('recsClear');
+            sessionStorage.removeItem('imageSource');
+            let file = event.target.files[0];
+            if (file && file.type === 'application/json') {
+                let reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        let data = JSON.parse(reader.result);
+                        if (data.image) {
+                            this.isDragging = false;
+                            this.isOK = true;
+                            sessionStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
+                            sessionStorage.setItem('filename', data.template_name);
+                            sessionStorage.setItem('filesize', data.image.length / 1024);
+                            data.points_list.forEach((item) => {
+                                this.$store.commit('recsUpdate', {
+                                    type: item.type,
+                                    data: {
+                                        startPointX: item.points[0][0],
+                                        startPointY: item.points[0][1],
+                                        endPointX: item.points[2][0],
+                                        endPointY: item.points[2][1],
+                                        name: item.tag,
+                                        scaleX: 1,
+                                        scaleY: 1,
+                                        width: item.points[2][0] - item.points[0][0],
+                                        height: item.points[2][1] - item.points[0][1],
+                                        canDelete: true,
+                                        canEdit: true,
+                                        canSave: false
+                                    }
+                                });
+                            });
+                            this.filename = data.template_name;
+                            this.filesize = data.image.length / 1024;
+                            this.imageSource = `data:image/jpeg;base64,${data.image}`;
+                            this.isFileUploaded = !this.isFileUploaded;
+                        }
+                    } catch (error) {
+                        console.error('Error parsing JSON data:', error);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                ElMessage({
+                    type: 'error',
+                    message: '請上傳正確的設定檔'
+                });
+            }
+            this.$refs.fileInput.value = '';
         }
     },
     props: {
@@ -135,18 +190,24 @@ export default {
     }
 };
 </script>
-
 <template>
     <div class="container col-12" :class="getClasses" @dragover.prevent="dragOver" @dragleave.prevent="dragLeave" @drop.prevent="drop($event)">
         <div class="col-12 text-center">
             <h1 class="mb-3">上傳圖檔</h1>
         </div>
 
+        <div class="file-input-container">
+            <label class="file-input-label">
+                選擇設定檔
+                <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
+            </label>
+        </div>
+
         <Button type="button" label="選擇圖檔" @click="openfolder" class="pi p-button-outlined" style="width: 12em; height: 4em">
             <label for="my-file">選擇圖檔</label>
         </Button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
-        <div class="col-12 text-center" v-if="isOK && !wrongFile">
+        <div class="col-12 text-center" v-if="isOK && !wrongFile" :key="this.isFileUploaded">
             <Image v-if="this.imageSource" :src="this.imageSource" alt="Image" width="500" preview />
             <p class="mb-0 text-left">檔案名稱： {{ this.filename }}</p>
             <p class="mb-0 text-left">檔案大小： {{ this.showFileSize }} KB</p>
@@ -158,3 +219,49 @@ export default {
         <Button label="清除圖檔" class="pi p-button-info" @click="reset" style="width: 12em; height: 4em"></Button>
     </div>
 </template>
+<style scoped>
+.file-input-container {
+    display: inline-block;
+    position: relative;
+    width: 12em;
+    height: 4em;
+}
+
+.file-input-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #409eff;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    height: 100%;
+}
+
+.file-input-label:hover {
+    background-color: #66b1ff;
+}
+
+.el-icon-upload {
+    font-size: 24px;
+    margin-right: 8px;
+    background-color: #fff;
+    padding: 4px;
+    border-radius: 50%;
+    color: #409eff;
+}
+/* Hide the default file input */
+input[type='file'] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+</style>

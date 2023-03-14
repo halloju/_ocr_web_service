@@ -3,7 +3,7 @@ import Box from '@/components/Box.vue';
 import BoxCard from '@/components/BoxCard.vue';
 import axios from 'axios';
 import { mapState } from 'vuex';
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus';
 
 export default {
     components: {
@@ -70,10 +70,12 @@ export default {
                     this.boxes.push({
                         type: this.boxNames[i],
                         tag: box.name,
-                        x_min: box.startPointX,
-                        y_min: box.startPointY,
-                        x_max: box.endPointX,
-                        y_max: box.endPointY
+                        points: [
+                            [box.startPointX, box.startPointY],
+                            [box.endPointX, box.startPointY],
+                            [box.endPointX, box.endPointY],
+                            [box.startPointX, box.endPointY]
+                        ]
                     });
                 });
             }
@@ -86,11 +88,11 @@ export default {
                 return;
             }
             axios
-                .post('/template/create', {
+                .post('/template_crud/create_template', {
                     user_id: 12345,
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
-                    bbox: this.boxes,
+                    points_list: this.boxes,
                     template_name: '身分證',
                     is_public: false
                 })
@@ -181,9 +183,9 @@ export default {
             <div class="card card-w-title">
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
-                    <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{name: 'Model-List'}">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item >新增模板</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item>新增模板</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->

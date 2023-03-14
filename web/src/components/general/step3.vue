@@ -51,7 +51,7 @@ export default {
                     ocr_results: item.ocr_results
                 });
                 this.tableData.push({
-                    num: index + 1 ,
+                    num: index + 1,
                     task_id: item.task_id,
                     status: item.status,
                     image_id: item.image_id,
@@ -112,7 +112,7 @@ export default {
         async getOcrResults(item) {
             axios.get(`/ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
                 if (res.data.status === 'SUCCESS') {
-                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name});
+                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
                 } else {
                     ElMessage({
                         message: '辨識失敗',
@@ -141,7 +141,7 @@ export default {
             this.isRunning = true;
             let count = 0;
             while (this.isRunning) {
-                const unfinishedItems = this.general_upload_res.filter(item => !this.finishedStatus.includes(item.status));
+                const unfinishedItems = this.general_upload_res.filter((item) => !this.finishedStatus.includes(item.status));
                 for (let i = 0; i < unfinishedItems.length; i++) {
                     const item = unfinishedItems[i];
                     await this.getOcrStatus(this.general_upload_res.indexOf(item));
@@ -150,7 +150,7 @@ export default {
                     this.isRunning = false;
                     break;
                 }
-                await new Promise(resolve => setTimeout(resolve, 3000)); // wait 2 seconds before polling again
+                await new Promise((resolve) => setTimeout(resolve, 3000)); // wait 2 seconds before polling again
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
                 if (count === 30) break;
@@ -255,7 +255,7 @@ export default {
                                     <el-table-column prop="num" label="號碼" sortable width="100" />
                                     <el-table-column prop="file_name" label="檔名" sortable width="200" />
                                     <el-table-column prop="status" label="辨識狀態" width="180">
-                                        <template #default="{row}">
+                                        <template #default="{ row }">
                                             <el-tag :type="getStatusColor(row.status)">{{ row.status }}</el-tag>
                                         </template>
                                     </el-table-column>
@@ -267,7 +267,7 @@ export default {
                                 </el-table>
                             </div>
                         </div>
-                        <div v-if="imageSrc!==null">
+                        <div v-if="imageSrc !== null">
                             <Annotation
                                 containerId="my-pic-annotation-output"
                                 :imageSrc="imageSrc"
@@ -285,21 +285,6 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- <div class="col-12">
-            <div class="card">
-                <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-                    <el-table :data="getExcel" style="width: 100%">
-                        <el-table-column label="圖片預覽" width="180">
-                            <template #default="scope">
-                                <el-image style="width: 120px; height: 120px" :src="scope.row.image" :preview-src-list="[scope.row.image]" hide-on-click-modal="true" preview-teleported="true"> </el-image>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="filename" label="檔案名稱" sortable width="180" />
-                        <el-table-column prop="ocr_results" label="辨識結果" width="700" />
-                    </el-table>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 <style scoped>
