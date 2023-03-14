@@ -7,6 +7,11 @@ export default {
     props: ['nextStepEmit'],
     data() {
         return {
+            selectedLang: null,
+            languages: [
+                { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
+                { name: '英數字', code: 'dbnet_v0+en_epoch_v0' }
+            ],
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
             breadcrumbItems: [
                 { label: '主要功能', to: '#' },
@@ -14,8 +19,6 @@ export default {
                 { label: '通用辨識', to: '#' },
                 { label: '圖檔上傳', to: '#' }
             ],
-            switchValue: false,
-            image_complexity: 'medium',
             // upload 參數
             fileList: [],
             dialogVisible: false,
@@ -56,7 +59,7 @@ export default {
                 formData.append('files', file.raw);
             });
             axios
-                .post('/gp_ocr/predict_images', formData, {
+                .post('/template_ocr/predict_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -153,13 +156,10 @@ export default {
             <div class="card">
                 <div class="flex flex-column flex-wrap">
                     <div class="flex justify-content-start mb-1">
-                        <h5>使用高精準度模型</h5>
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <p>注意：當您使用高精準模型時耗時會較久</p>
+                        <h5>選擇語言</h5>
                     </div>
                     <div class="flex justify-content-start mb-5">
-                        <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" />
+                        <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
                     </div>
                     <div class="flex justify-content-start mb-1">
                         <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>

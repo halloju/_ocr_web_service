@@ -16,24 +16,39 @@ celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://lo
 class PredictTask(Task):
     def __init__(self):
         super().__init__()
-        self.url = os.environ.get("MLAAS_URL", "http://mlaas:7777/ocr/gp_ocr")
+        self.gp_ocr = os.environ.get("MLAAS_URL", "http://mlaas:7777/ocr/gp_ocr")
+        self.template_ocr = os.environ.get("MLAAS_URL", "http://mlaas:7777/ocr/template_ocr")
+        self.business_unit = "C170"
+        self.request_id = "QAZWSXEDC"
         
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def predict(self, image_id, image_complexity, model_name):
+    def predict(self, image_id, image_complexity, model_name, template_id):
         try:
             encoded_data = celery.backend.get(image_id)
-            # Process the image using the ML model
-            data_pred = requests.post(self.url, json = {
-                "business_unit": "C170",
-                "request_id": "QAZWSXEDC",
-                "inputs": {
-                        "image": encoded_data.decode("utf-8"),
-                        "image_complexity": image_complexity,
-                        "model_name": model_name
-                    }
-                })
+            # Call MLass using /template_ocr
+            if template_id != "":
+                data_pred = requests.post(self.template_ocr, json = {
+                    "business_unit": self.business_unit,
+                    "request_id": self.request_id,
+                    "inputs": {
+                            "image": encoded_data.decode("utf-8"),
+                            "template_id": template_id,
+                            "model_name": model_name
+                        }
+                    })
+            else:
+                # Call MLass using /gp_ocr
+                data_pred = requests.post(self.gp_ocr, json = {
+                    "business_unit": self.business_unit,
+                    "request_id": self.request_id,
+                    "inputs": {
+                            "image": encoded_data.decode("utf-8"),
+                            "image_complexity": image_complexity,
+                            "model_name": model_name
+                        }
+                    })
             # Return the prediction result
             return data_pred.json()
         except Exception as ex:
@@ -70,9 +85,9 @@ def get_from_redis(task_id):
         return {'status': 'FAIL'}
 
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
-def predict_image(self, image_id, image_complexity, model_name):
+def predict_image(self, image_id, image_complexity, model_name, template_id):
     try:
-        response = self.predict(image_id, image_complexity, model_name)
+        response = self.predict(image_id, image_complexity, model_name, template_id)
         if response['outputs']['status_msg'] == 'OK':
             data_pred = str(response['outputs']['ocr_results'])
         else:
