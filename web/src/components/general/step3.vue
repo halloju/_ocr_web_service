@@ -12,7 +12,7 @@ export default {
     name: 'General3',
     data() {
         return {
-            // 上方
+            // 下方
             containerId: 'my-pic-annotation',
             imageSrc: null,
             imageResult: '',
@@ -22,7 +22,7 @@ export default {
             dataCallback: '',
             initialData: '',
             initialDataId: null,
-            // 下方
+            // 上方
             isDownload: false,
             // general_upload_res: this.$store.state.general_upload_res,
             general_execute_time: this.$store.state.general_execute_time,
@@ -35,15 +35,27 @@ export default {
             finishedStatus: ['SUCCESS', 'FAIL']
         };
     },
+    watch: {
+        tableData(newTableData, oldTableData) {
+            console.debug(newTableData);
+        }
+    },
     computed: {
-        getExcel() {
-            // this.excelData = [];
-            this.tableData.length = 0;
+        getTaskData() {
+            this.excelData = [];
+            this.tableData = [];
             this.general_upload_res.forEach((item, index) => {
+                this.excelData.push({
+                    filename: item.file_name,
+                    image_id: item.image_id,
+                    ocr_results: item.ocr_results
+                });
                 this.tableData.push({
+                    num: index + 1 ,
                     task_id: item.task_id,
                     status: item.status,
                     image_id: item.image_id,
+                    file_name: item.file_name,
                     isFinished: item.status === 'SUCCESS' ? true : false
                 });
             });
@@ -63,6 +75,16 @@ export default {
             }
             console.log(this.general_upload_res);
         },
+        getStatusColor(status) {
+            switch (status) {
+                case 'SUCCESS':
+                    return 'success';
+                case 'PENDING':
+                    return 'gray';
+                default:
+                    return '';
+            }
+        },
         getImage(item) {
             axios.get(`http://localhost:5000/ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
                 console.log('getImage', res);
@@ -78,7 +100,7 @@ export default {
             });
         },
         async getOcrStatus(item) {
-            axios.get(`http://localhost:5000/ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
+            axios.get(`/ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
                 if (res.data.status === 'SUCCESS') {
                     await this.getOcrResults(item);
                 } else {
@@ -88,10 +110,9 @@ export default {
             });
         },
         async getOcrResults(item) {
-            axios.get(`http://localhost:5000/ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
+            axios.get(`/ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
                 if (res.data.status === 'SUCCESS') {
-                    console.log('getOcrResults', res.data.status);
-                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result });
+                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name});
                 } else {
                     ElMessage({
                         message: '辨識失敗',
@@ -129,10 +150,10 @@ export default {
                     this.isRunning = false;
                     break;
                 }
-                await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2 seconds before polling again
+                await new Promise(resolve => setTimeout(resolve, 3000)); // wait 2 seconds before polling again
                 count++;
-                if (count === 3) break;
-                console.log(count);
+                // 這個數字太小可能也跑不完？感覺要衡量一下
+                if (count === 30) break;
             }
         },
         getShapeData(regData) {
@@ -230,12 +251,17 @@ export default {
                     <div class="col-12">
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-                                <el-table :data="getExcel" style="width: 100%" :key="isRunning">
-                                    <el-table-column prop="task_id" label="任務" sortable width="350" />
-                                    <el-table-column prop="status" label="辨識結果" width="180" />
-                                    <el-table-column label="Action">
+                                <el-table :data="getTaskData" style="width: 100%" :key="isRunning">
+                                    <el-table-column prop="num" label="號碼" sortable width="100" />
+                                    <el-table-column prop="file_name" label="檔名" sortable width="200" />
+                                    <el-table-column prop="status" label="辨識狀態" width="180">
+                                        <template #default="{row}">
+                                            <el-tag :type="getStatusColor(row.status)">{{ row.status }}</el-tag>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="動作">
                                         <template v-slot="scope">
-                                            <el-button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)">View</el-button>
+                                            <el-button type="primary" v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)" round>檢視</el-button>
                                         </template>
                                     </el-table-column>
                                 </el-table>

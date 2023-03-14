@@ -63,7 +63,7 @@ export default {
                 formData.append('files', file.raw);
             });
             axios
-                .post(`/ocr/predict_images?image_complexity=${this.image_complexity}&model_name=dbnet_v0%2Bcht_ppocr_v1`, formData, {
+                .post('/ocr/predict_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
