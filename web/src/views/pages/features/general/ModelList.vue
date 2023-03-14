@@ -296,7 +296,7 @@ export default {
 
 <template>
     <div class="grid">
-        <div class="col-8">
+        <div class="col-7">
             <div class="card" style="height: 850px; overflow-y: scroll">
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
@@ -337,7 +337,7 @@ export default {
                 </el-table>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-5">
             <div v-if="(formattedTableData.length >= 1) & !template_id" class="card flex justify-content-center align-items-center" style="height: 850px">請點選檢視</div>
             <div v-else-if="template_id" class="card" style="height: 850px; overflow-y: scroll">
                 <h5>請選擇標註模式</h5>
