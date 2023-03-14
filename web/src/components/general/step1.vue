@@ -48,8 +48,6 @@ export default {
     },
     methods: {
         submit() {
-            // this.$store.commit('generalImageUpdate', this.fileList); // all image
-            const start_time = new Date().getTime();
             const generalImageResponseList = [];
             const responseData = {};
             const base64Image = this.fileList[0].reader.split(',')[1];
@@ -77,7 +75,6 @@ export default {
                         this.status = 'network';
                     }
                 });
-            const end_time = new Date().getTime();
             const loading = ElLoading.service({
                 lock: true,
                 text: 'Loading',
@@ -85,8 +82,6 @@ export default {
             });
             setTimeout(() => {
                 this.$store.commit('generalImageResponse', generalImageResponseList);
-                const api_time = (end_time - start_time) / 1000;
-                this.$store.commit('generalExecuteTime', api_time);
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
                 this.$emit('nextStepEmit', 2);

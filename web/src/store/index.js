@@ -65,9 +65,6 @@ const store = new Vuex.Store({
         generalImageResponse: function (state, payload) {
             state.general_upload_res = payload;
         },
-        generalExecuteTime: function (state, payload) {
-            state.general_execute_time = payload;
-        },
         generalImageOcrStatus: function (state, payload) {
             state.general_upload_res[payload.item].status = payload.status;
         },

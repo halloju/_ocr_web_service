@@ -23,9 +23,9 @@ export default {
             initialData: '',
             initialDataId: null,
             // 上方
+            file_name : "",
+            num: "",
             isDownload: false,
-            // general_upload_res: this.$store.state.general_upload_res,
-            general_execute_time: this.$store.state.general_execute_time,
             Download: Download,
             Back: Back,
             excelData: [],
@@ -131,9 +131,11 @@ export default {
                     this.imageSrc = '';
                 }
             });
-            console.log(this.general_upload_res);
-            let data = this.general_upload_res.filter(item => item.task_id===row.task_id);
-            this.initialData = this.getShapeData(data[0].ocr_results);
+            let fileInfo = this.tableData.filter(item => item.task_id===row.task_id);
+            this.file_name = fileInfo[0].file_name;
+            this.num = fileInfo[0].num;
+            let ocr_results = this.general_upload_res.filter(item => item.task_id===row.task_id)[0].ocr_results;
+            this.initialData = this.getShapeData(ocr_results);
         },
         async waitUntilOcrComplete() {
             this.isRunning = true;
@@ -243,7 +245,7 @@ export default {
                                     <el-button class="my-button" type="primary" :icon="Download" circle @click="downloadFile"></el-button>
                                 </el-tooltip>
                             </div>
-                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ this.general_upload_res.length }} 張，共耗時 {{ general_execute_time }} 秒</div>
+                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ this.general_upload_res.length }} 張</div>
                         </div>
                     </div>
                     <div class="col-12">
@@ -266,6 +268,8 @@ export default {
                             </div>
                         </div>
                         <div v-if="imageSrc !== null">
+                            <p>號碼：{{ num }}</p>
+                            <p>檔名：{{ file_name }}</p>
                             <Annotation
                                 containerId="my-pic-annotation-output"
                                 :imageSrc="imageSrc"
