@@ -89,7 +89,7 @@ export default {
                 this.$store.commit('generalExecuteTime', api_time);
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
-                this.$emit('nextStepEmit', 3);
+                this.$emit('nextStepEmit', 2);
             }, 1000);
         },
         fileChange(file, fileList) {
