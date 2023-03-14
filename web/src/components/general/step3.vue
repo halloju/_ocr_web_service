@@ -131,11 +131,9 @@ export default {
                     this.imageSrc = '';
                 }
             });
-            axios.get(`/ocr/result/${row.task_id}`).then((res) => {
-                if (res !== null) {
-                    this.initialData = this.getShapeData(res.data.result);
-                }
-            });
+            console.log(this.general_upload_res);
+            let data = this.general_upload_res.filter(item => item.task_id===row.task_id);
+            this.initialData = this.getShapeData(data[0].ocr_results);
         },
         async waitUntilOcrComplete() {
             this.isRunning = true;
