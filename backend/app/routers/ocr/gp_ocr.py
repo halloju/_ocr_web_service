@@ -1,31 +1,72 @@
-from app.database import get_db
-from app.exceptions import CustomException
-# from app.schema.common import Response
-from fastapi import APIRouter
-from fastapi import Depends
-from sqlalchemy.orm import Session
-
-from app.schema.ocr.gp_ocr import GpocrRequest
-from app.forms.ocr.gp_ocr import GpocrForm
-from app.services.ocr.gp_ocr import gp_ocr as service_gp_ocr
-from app.schema.ocr.gp_ocr import GpocrResponse
+import base64
+import logging
+import uuid
+from app.schema.ocr.gp_ocr import GpocrPredict
+from celery.result import AsyncResult
+from fastapi import APIRouter, Body, Depends, File, Response, Request, HTTPException, UploadFile
+from fastapi.responses import JSONResponse
+from pydantic.typing import List
+from worker import predict_image
 
 router = APIRouter()
 
+@router.get("/get_image/{image_id}", summary="拉圖片")
+async def get_images(image_id: str, request: Request):
+    # Get the Redis connection from the app state
+    redis = request.app.state.redis
+    image_string = await redis.get(image_id)
+    return JSONResponse(status_code=200, content=image_string)
 
-@router.post("/gp_ocr", response_model=GpocrResponse)  # responses={},
-async def gp_ocr(request: GpocrRequest, db: Session = Depends(get_db)):
-    '''
-    將 image 影像上傳至 MinIO, 並進行全文辨識，將辨識結果存入 db
-    '''
-    form = GpocrForm(request)
-    await form.load_data()
-    if await form.is_valid():
-        ocr_image_info = GpocrRequest(
-            image=form.image)
-        image_cv_id, ocr_results = service_gp_ocr(ocr_image_info=ocr_image_info, db=db)
-        return GpocrResponse(
-            image_cv_id=image_cv_id,
-            ocr_results=ocr_results
-        )
-    raise CustomException(status_code=400, message=form.errors)
+@router.post("/predict_images", summary="全文辨識")
+async def process(request: Request, image_complexity: str = "medium", model_name: str = "dbnet_v0+cht_ppocr_v1", files: List[UploadFile] = File(...)):
+    tasks = []
+    try:
+        for file in files:
+            try:
+                image_id = str(uuid.uuid4())
+
+                # Read and encode the file data as base64
+                image_data = await file.read()
+                encoded_data = base64.b64encode(image_data).decode("utf-8")
+
+                # Store the encoded image data in Redis using the image ID as the key
+                await request.app.state.redis.set(image_id, encoded_data)
+                # Set an expiration time of 1 day (86400 seconds) for the key
+                await request.app.state.redis.expire(image_id, 86400)
+
+                # Store the file name in Redis using the image ID as the key
+                await request.app.state.redis.set(image_id + '_file_name', file.filename)
+                # Set an expiration time of 1 day (86400 seconds) for the key
+                await request.app.state.redis.expire(image_id + '_file_name', 86400)
+
+                # start task prediction
+                task_id = predict_image.delay(image_id, image_complexity, model_name)
+                tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
+                
+            except Exception as ex:
+                logging.info(ex)
+                tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
+        return JSONResponse(status_code=202, content=tasks)
+    except Exception as ex:
+        logging.info(ex)
+        return JSONResponse(status_code=400, content=[])
+    
+
+@router.get('/result/{task_id}')
+async def result(task_id: str):
+    task = AsyncResult(task_id)
+
+    # Task Not Ready
+    if not task.ready():
+        return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
+
+    # Task done: return the value
+    task_result = task.get()
+    result = task_result.get('result')
+    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result, 'file_name': task_result.get('file_name')})
+
+
+@router.get('/status/{task_id}')
+async def status(task_id: str):
+    task = AsyncResult(task_id)
+    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})

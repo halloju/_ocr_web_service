@@ -11,6 +11,7 @@ from io import BytesIO
 import logging
 import random
 import uuid
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ def gp_ocr(ocr_image_info, db: Session):
         today = datetime.today()
         request_id = str(uuid.uuid4())
         image_cv_id = datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + request_id
-        image_base64_binary = ocr_image_info.image.encode('utf-8')
+        image_base64_binary = ocr_image_info.encode('utf-8')
         image_binary = base64.b64decode(image_base64_binary)
         # Step 1. 將 template 影像寫入 MinIO
         client = minio.get_minio_client()
@@ -81,6 +82,7 @@ def gp_ocr(ocr_image_info, db: Session):
             db.add(insert_ocr_results)
             db.commit()
             db.refresh(insert_ocr_results)
+            time.sleep(5)
         return image_cv_id, ocr_results
     except OperationalError as e:
         logger.error("gpocr db error:{}".format(e))

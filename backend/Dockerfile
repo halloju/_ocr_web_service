@@ -1,18 +1,15 @@
-FROM python:3.7-slim
-
+FROM python:3.9.5-slim-buster
 RUN apt-get update \
-    && apt-get -y install libpq-dev gcc
+    && apt-get -y install libpq-dev gcc vim poppler-utils
 
-RUN apt-get -y install vim
-RUN apt-get install poppler-utils -y
-
-WORKDIR /code
+# set work directory
+WORKDIR /usr/src/app
 
 COPY ./requirements.txt /code/requirements.txt
-
+RUN pip install -U pip
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./app /code/app
+COPY . .
 
 COPY gunicorn.conf.py /code/gunicorn.conf.py
 

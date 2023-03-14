@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
 
 
@@ -8,12 +8,32 @@ with open(filepath, 'r') as f:
     img_base64_string = f.read()
 
 
-class GpocrRequest(BaseModel):
-    image: StrictStr = Field(
+class GpocrUpload(BaseModel):
+    image: str = Field(
         title='base64 字串的影像',
         description='''
         ''',
         example=img_base64_string
+    )
+    image_id: str = Field(
+        title="image id",
+        description='''
+        ''',
+        example="id1"
+    )
+
+    @validator("image", allow_reuse=True)
+    def image_check(cls, v):
+        if v == '':
+            raise ValueError("影像不得為空字串")
+        return v
+
+class GpocrPredict(BaseModel):
+    imageList: List[str] = Field(
+        title='單張或多張影像的 image id (Redis)',
+        description='''
+        ''',
+        example=["id1", "id2"]
     )
     image_complexity: Optional[StrictStr] = Field(
         default='medium',
@@ -41,7 +61,7 @@ class GpocrRequest(BaseModel):
         example='dbnet_v0+cht_ppocr_v1'
     )
 
-    @validator("image", allow_reuse=True)
+    @validator("imageList", allow_reuse=True)
     def image_check(cls, v):
         if v == '':
             raise ValueError("影像不得為空字串")
@@ -58,7 +78,6 @@ class GpocrRequest(BaseModel):
         if len(v.split("+")) != 2:
             raise ValueError("model_name 格式為: det_model+rec_model")
         return v
-
 
 class OcrPredict(BaseModel, extra=Extra.forbid):
     points: List = Field(

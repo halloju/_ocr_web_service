@@ -10,7 +10,6 @@
       </span>
       {{ truncateText(formData.text, 10) }}
     </button>
-
     <div class="pa-panel" ref="panel">
       <template v-if="editMode">
         <form class="pa-annotation-form" @submit.prevent.stop="submitted">
@@ -24,8 +23,7 @@
       <template v-else>
         <form class="pa-annotation-form" @submit.prevent.stop="submitted">
           <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" />
-          <button v-if="!justShow" type="submit">{{ submit }}</button>
+          <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly/>
         </form>
       </template>
     </div>
@@ -44,8 +42,8 @@ export default {
   props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow'],
   data () {
     return {
-      annotation_title: '要向名稱：',
-      annotation_text: '要向內容：',
+      annotation_title: '要項名稱：',
+      annotation_text: '要項內容：',
       submit: '確認',
       active: false,
       // form data as copy

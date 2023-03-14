@@ -12,16 +12,6 @@ export default {
                 { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
                 { name: '英數字', code: 'dbnet_v0+en_epoch_v0' }
             ],
-            nestedRouteItems: [
-                {
-                    label: '圖檔上傳',
-                    to: '/features/general'
-                },
-                {
-                    label: '單張結果確認',
-                    to: '/features/general/step2'
-                }
-            ],
             breadcrumbHome: { icon: 'pi pi-home', to: '/' },
             breadcrumbItems: [
                 { label: '主要功能', to: '#' },
@@ -58,24 +48,26 @@ export default {
     },
     methods: {
         submit() {
-            this.$store.commit('generalImageUpdate', this.fileList); // all image
-            const start_time = new Date().getTime();
             const generalImageResponseList = [];
             const responseData = {};
             const base64Image = this.fileList[0].reader.split(',')[1];
             responseData['base64Image'] = base64Image;
             responseData['fileName'] = this.fileList[0].name;
             // 打 API
+            const formData = new FormData();
+            formData.append('image_complexity', this.image_complexity);
+            formData.append('model_name', this.selectedLang.code);
+            this.fileList.forEach((file) => {
+                formData.append('files', file.raw);
+            });
             axios
-                .post('/ocr/gp_ocr', {
-                    image: base64Image,
-                    image_complexity: this.image_complexity,
-                    model_name: this.selectedLang.code
+                .post('/ocr/predict_images', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 })
                 .then((response) => {
-                    responseData['ocr_results'] = response.data.ocr_results;
-                    responseData['image_cv_id'] = response.data.image_cv_id;
-                    generalImageResponseList.push(responseData);
+                    generalImageResponseList.push(...response.data);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -83,7 +75,6 @@ export default {
                         this.status = 'network';
                     }
                 });
-            const end_time = new Date().getTime();
             const loading = ElLoading.service({
                 lock: true,
                 text: 'Loading',
@@ -91,31 +82,25 @@ export default {
             });
             setTimeout(() => {
                 this.$store.commit('generalImageResponse', generalImageResponseList);
-                const api_time = (end_time - start_time) / 1000;
-                this.$store.commit('generalExecuteTime', api_time);
-                if (this.fileList.length > 1) {
-                    this.$emit('nextStepEmit', 2);
-                } else {
-                    this.$emit('nextStepEmit', 3);
-                }
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
-            }, 2000);
+                this.$emit('nextStepEmit', 2);
+            }, 1000);
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';
-            const isLt8M = file.size / 1024 / 1024 < 8;
+            const isLt5M = file.size / 1024 / 1024 < 5;
             if (!isIMAGE) {
                 this.$message.error('上傳文件只能是圖片格式!');
                 fileList.pop();
                 return false;
             }
-            if (!isLt8M) {
-                this.$message.error('上傳圖案大小不能超過 8 MB!');
+            if (!isLt5M) {
+                this.$message.error('上傳圖案大小不能超過 5 MB!');
                 fileList.pop();
                 return false;
             }
-            if (isIMAGE && isLt8M) {
+            if (isIMAGE && isLt5M) {
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;

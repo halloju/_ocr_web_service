@@ -53,9 +53,9 @@ export default {
             <div class="card card-w-title">
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
-                    <el-breadcrumb-item :to="{path: '/'}">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{name: 'Model-List'}">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item >新增模板</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item>新增模板</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
@@ -65,9 +65,6 @@ export default {
                     <div class="col-8">
                         <h5>新增自定義模板</h5>
                         <p>上傳一張清晰的圖片進行標注，並於後續步驟框選標註需辨識的區域位於哪一個區域。</p>
-                    </div>
-                    <div class="col-2">
-                        <FileUpload mode="basic" name="demo[]" url="./upload" :auto="true" chooseLabel="匯入設定檔" style="width: 12em; height: 4em" />
                     </div>
                     <div class="col-2">
                         <Button v-if="isOK" label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em"></Button>
