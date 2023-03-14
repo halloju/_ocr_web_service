@@ -46,7 +46,7 @@ export default {
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
-                <h5>選擇模板</h5>
+                <h5>選擇模板編號：{{ template_id }}</h5>
                 <p>請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。</p>
             </div>
         </div>

@@ -1,6 +1,7 @@
 <script>
 import moment from 'moment';
 import axios from 'axios';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import PhotoService from '@/service/PhotoService';
 import AnnotationVertical from '@/components/AnnotationVertical.vue';
 
@@ -162,7 +163,25 @@ export default {
             row.editable = false;
         },
         handleDelete(index) {
-            this.tableData.splice(index, 1);
+            ElMessageBox.confirm('請問是否要刪除該模板？', '警告', {
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                center: true
+            })
+                .then(() => {
+                    ElMessage({
+                        type: 'success',
+                        message: '刪除成功'
+                    });
+                    this.tableData.splice(index, 1);
+                })
+                .catch(() => {
+                    ElMessage({
+                        type: 'info',
+                        message: '操作取消'
+                    });
+                });
         },
         prepend(index) {
             item.editable = true;
@@ -224,7 +243,7 @@ export default {
 
 <template>
     <div class="grid">
-        <div class="col-7">
+        <div class="col-8">
             <div class="card" style="height: 850px; overflow-y: scroll">
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
@@ -253,19 +272,19 @@ export default {
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="200px">
+                    <el-table-column label="操作" width="350px">
                         <template #default="scope">
-                            <!-- <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button> -->
-                            <!-- <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button> -->
+                            <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
+                            <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="big" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="big" type="info" @click="handleLook(scope.row.template_id, this.myModel.code)">檢視</el-button>
-                            <!-- <el-button size="big" type="danger" @click="handleDelete(scope.$index)">刪除</el-button> -->
+                            <el-button size="big" type="danger" @click="handleDelete(scope.$index)">刪除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
             </div>
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <div v-if="(formattedTableData.length >= 1) & !template_id" class="card flex justify-content-center align-items-center" style="height: 850px">請點選檢視</div>
             <div v-else-if="template_id" class="card" style="height: 850px; overflow-y: scroll">
                 <h5>請選擇標註模式</h5>
