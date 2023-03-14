@@ -185,7 +185,7 @@ export default {
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
                     <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item>新增模板</el-breadcrumb-item>
+                    <el-breadcrumb-item>模板編輯</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
