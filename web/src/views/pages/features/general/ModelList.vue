@@ -139,6 +139,9 @@ export default {
             });
             return JSON.stringify(myShapes);
         },
+        templateOCR() {
+            this.$router.push({ name: 'TemplateOCR' });
+        },
         async handleLook(template_id, userType) {
             this.template_id = template_id;
             try {
@@ -176,7 +179,7 @@ export default {
             this.tableHeader.splice(index, 0, header);
         },
         createTemplate() {
-            this.$router.push({ path: '/features/general/self-define/step/1' });
+            this.$router.push({ name: 'SelfDefine1' });
         },
         editTemplate() {
             this.$store.commit('recsClear');
