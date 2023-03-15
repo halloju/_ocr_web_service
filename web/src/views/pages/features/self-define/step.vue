@@ -49,6 +49,10 @@ export default {
             input: this.$store.state.selfDefinedRecs.name
         };
     },
+    created() {
+        // 直接跳到非上傳頁，原本圖檔資料均需要留著
+        this.$store.commit('createNewUpdate', false);
+    },
     mounted() {
         this.isFinalStep();
     },
@@ -112,7 +116,6 @@ export default {
                 };
                 action = 'create_template';
             } else {
-                console.log('update');
                 body = {
                     user_id: 12345,
                     points_list: this.boxes,

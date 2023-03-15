@@ -4,14 +4,13 @@ import { ElMessage } from 'element-plus';
 export default {
     name: 'UploadImage',
     created() {
-        if (sessionStorage.imageSource !== '') {
+        if (!this.createNew) {
             this.isOK = true;
             this.imageSource = sessionStorage.imageSource;
             this.filename = sessionStorage.filename;
             this.filesize = sessionStorage.filesize;
         }
     },
-    components: {},
     data() {
         return {
             isDragging: false,
@@ -187,6 +186,10 @@ export default {
     },
     props: {
         isUploaded: {
+            type: Boolean,
+            default: false
+        },
+        createNew: {
             type: Boolean,
             default: false
         }

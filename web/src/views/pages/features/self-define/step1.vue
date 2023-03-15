@@ -31,7 +31,8 @@ export default {
                     to: '/features/general/self-define/step/5'
                 }
             ],
-            switchValue: false
+            switchValue: false,
+            createNew: this.$store.state.createNew,
         };
     },
     methods: {
@@ -79,7 +80,7 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12">
             <div class="card">
-                <UploadImage :isUploaded="true" @updateStatus="Upload" />
+                <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
             </div>
         </div>
     </div>

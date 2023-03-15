@@ -12,6 +12,7 @@ const store = new Vuex.Store({
         general_upload_res: [],
         // 模板辨識
         template_id : '',
+        createNew: false,
     },
 
     mutations: {
@@ -82,6 +83,9 @@ const store = new Vuex.Store({
         },
         TemplateIdUpdate: function (state, payload) {
             state.template_id = payload;
+        },
+        createNewUpdate: function (state, payload) {
+            state.createNew = payload;
         },
     }
 });

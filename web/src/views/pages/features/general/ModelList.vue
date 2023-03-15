@@ -214,6 +214,7 @@ export default {
             this.tableHeader.splice(index, 0, header);
         },
         createTemplate() {
+            this.$store.commit('createNewUpdate', true);
             this.$router.push({ name: 'SelfDefine1' });
         },
         editTemplate() {
