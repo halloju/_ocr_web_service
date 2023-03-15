@@ -1,13 +1,10 @@
+import logging
 import os
 import json
-import time
-import uuid
-from celery import Task
-from celery.exceptions import MaxRetriesExceededError
 import requests
-import logging
-
+import uuid
 from celery import Celery
+from celery import Task
 
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "amqp://rabbitmq")
@@ -54,12 +51,6 @@ class PredictTask(Task):
         except Exception as ex:
             logging.error(ex)
             raise ex
-                
-    
-@celery.task(name="create_task")
-def create_task(task_type):
-    time.sleep(int(task_type) * 10)
-    return True
 
 @celery.task(name="upload_to_redis")
 def upload_to_redis(image_data):
