@@ -38,7 +38,7 @@ const model = ref([
                     {
                         label: '第二證件',
                         icon: 'pi pi-credit-card'
-                    },
+                    }
                 ]
             },
             {
@@ -52,7 +52,7 @@ const model = ref([
                     {
                         label: '扣繳憑單辨識',
                         icon: 'pi pi-envelope'
-                    },
+                    }
                 ]
             },
             {
@@ -61,8 +61,9 @@ const model = ref([
                 items: [
                     {
                         label: 'PDF to Image',
-                        icon: 'pi pi-images'
-                    },
+                        icon: 'pi pi-images',
+                        to: '/features/pdf2image'
+                    }
                 ]
             },
             {
@@ -75,7 +76,7 @@ const model = ref([
                         to: '/features/test'
                     }
                 ]
-            },
+            }
         ]
     },
     {
