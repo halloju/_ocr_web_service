@@ -5,7 +5,7 @@ const store = new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
         // 自定義模板
-        selfDefinedRecs: { text: [], box: [], mask: [], name: '自定義模板', id: '' },
+        selfDefinedRecs: { text: [], box: [], mask: [], name: [], id: [] },
         // 通用辨識
         general_boxes: [],
         general_upload_image: [],

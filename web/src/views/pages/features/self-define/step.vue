@@ -98,7 +98,7 @@ export default {
 
             let body;
             let action;
-            if (this.selfDefinedRecs.id === '') {
+            if (this.selfDefinedRecs.id.length === 0) {
                 console.log('create');
                 const image = new window.Image();
                 image.src = sessionStorage.imageSource;
