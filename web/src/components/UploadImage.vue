@@ -208,7 +208,7 @@ export default {
             </el-button>
         </div>
         <el-button type="primary" @click="openfolder" class="pi p-button-outlined">
-            <label for="my-file">選擇圖檔</label>
+            選擇圖檔
         </el-button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
         <div class="col-12 text-center" v-if="isOK && !wrongFile" :key="this.isFileUploaded">
