@@ -1,12 +1,14 @@
-import base64
-import logging
-import uuid
 from app.schema.ocr.gp_ocr import GpocrPredict
 from celery.result import AsyncResult
 from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic.typing import List
 from worker import predict_image
+import base64
+import logging
+import uuid
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -45,11 +47,11 @@ async def process(request: Request, image_complexity: str = "medium", model_name
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
-                logging.info(ex)
+                logger.info(ex)
                 tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=202, content=tasks)
     except Exception as ex:
-        logging.info(ex)
+        logger.info(ex)
         return JSONResponse(status_code=400, content=[])
     
 

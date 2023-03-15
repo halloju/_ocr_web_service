@@ -1,6 +1,3 @@
-import base64
-import logging
-import uuid
 from app.database import get_db
 from app.exceptions import CustomException
 from celery.result import AsyncResult
@@ -9,6 +6,11 @@ from fastapi.responses import JSONResponse
 from pydantic.typing import List
 from sqlalchemy.orm import Session
 from worker import predict_image
+import base64
+import logging
+import uuid
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -47,11 +49,11 @@ async def process(request: Request, template_id: str = "1352020230314163823", mo
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
-                logging.info(ex)
+                logger.info(ex)
                 tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=202, content=tasks)
     except Exception as ex:
-        logging.info(ex)
+        logger.info(ex)
         return JSONResponse(status_code=400, content=[])
     
 
