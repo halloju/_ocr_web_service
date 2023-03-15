@@ -43,7 +43,6 @@ export default {
 </script>
 
 <template>
-    {{ recs }}
     <div v-for="box in this.Boxes" :key="box.name" class="surface-section" style="width: 400px">
         <div class="font-medium text-3xl text-900 mb-3">
             {{ box.title }}

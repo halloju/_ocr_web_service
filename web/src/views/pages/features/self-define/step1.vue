@@ -62,13 +62,13 @@ export default {
                 <Steps :model="nestedRouteItems" :readonly="true" />
                 <br />
                 <div class="grid">
-                    <div class="col-8">
+                    <div class="col-12">
                         <h5>新增自定義模板</h5>
                         <p>上傳一張清晰的圖片進行標注，並於後續步驟框選標註需辨識的區域位於哪一個區域。</p>
                     </div>
-                    <div class="col-2">
-                        <Button v-if="isOK" label=" 下一步" class="pi pi-arrow-right p-button-success" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em"></Button>
-                        <Button v-else label=" 下一步" class="pi pi-arrow-right p-button-secondary" @click="next" v-tooltip="'請上傳圖片後點擊'" style="width: 12em; height: 4em" :disabled="true"></Button>
+                    <div class="col-12">
+                        <el-button v-if="isOK" type="success" @click="next" v-tooltip="'請上傳好圖片後點我'">下一步</el-button>
+                        <el-button v-else type="success" disabled>下一步</el-button>
                     </div>
                 </div>
                 <router-view />
