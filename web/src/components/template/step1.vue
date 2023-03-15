@@ -45,7 +45,7 @@ export default {
         }
     },
     methods: {
-        submit() {
+        async submit() {
             const generalImageResponseList = [];
             const responseData = {};
             const base64Image = this.fileList[0].reader.split(',')[1];
@@ -58,7 +58,7 @@ export default {
             this.fileList.forEach((file) => {
                 formData.append('files', file.raw);
             });
-            axios
+            await axios
                 .post('/template_ocr/predict_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'

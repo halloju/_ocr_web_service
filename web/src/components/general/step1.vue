@@ -47,7 +47,7 @@ export default {
         }
     },
     methods: {
-        submit() {
+        async submit() {
             const generalImageResponseList = [];
             const responseData = {};
             const base64Image = this.fileList[0].reader.split(',')[1];
@@ -60,7 +60,7 @@ export default {
             this.fileList.forEach((file) => {
                 formData.append('files', file.raw);
             });
-            axios
+            await axios
                 .post('/gp_ocr/predict_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -85,7 +85,7 @@ export default {
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
                 this.$emit('nextStepEmit', 2);
-            }, 1000);
+            }, 1500);
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';

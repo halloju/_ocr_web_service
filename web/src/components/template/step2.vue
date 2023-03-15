@@ -9,7 +9,7 @@ export default {
     components: {
         Annotation
     },
-    name: 'General3',
+    name: 'GeneralTemplateStep2',
     data() {
         return {
             // 下方

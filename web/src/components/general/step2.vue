@@ -9,7 +9,7 @@ export default {
     components: {
         Annotation
     },
-    name: 'General3',
+    name: 'GeneralOcrStep1',
     data() {
         return {
             // 下方
@@ -42,6 +42,7 @@ export default {
     },
     computed: {
         getTaskData() {
+            console.log(this.general_upload_res)
             this.excelData = [];
             this.tableData = [];
             this.general_upload_res.forEach((item, index) => {
@@ -64,17 +65,6 @@ export default {
         ...mapState(['general_upload_res'])
     },
     methods: {
-        callback(data, image_cv_id) {
-            for (let i = 0; i < this.general_upload_res.length; i++) {
-                if (image_cv_id === this.general_upload_res[i].image_id) {
-                    for (let j = 0; j < this.general_upload_res[i].ocr_results.length; j++) {
-                        this.general_upload_res[i].ocr_results[j].text = data[j].annotation.text;
-                    }
-                    break;
-                }
-            }
-            console.log(this.general_upload_res);
-        },
         getStatusColor(status) {
             switch (status) {
                 case 'SUCCESS':
@@ -87,7 +77,6 @@ export default {
         },
         getImage(item) {
             axios.get(`/gp_ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
-                console.log('getImage', res);
                 if (res.status === 200) {
                     let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
                     return ImageSrc;
@@ -104,7 +93,6 @@ export default {
                 if (res.data.status === 'SUCCESS') {
                     await this.getOcrResults(item);
                 } else {
-                    console.log('getOcrResults', res.data.status);
                     this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
                 }
             });

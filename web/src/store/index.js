@@ -62,7 +62,6 @@ const store = new Vuex.Store({
             state.selfDefinedRecs['name'] = payload;
         },
         templateIdUpdate: function (state, payload) {
-            console.log(payload);
             state.selfDefinedRecs['id'] = payload;
         },
         generalBoxesUpdate: function (state, payload) {
