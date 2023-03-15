@@ -140,6 +140,10 @@ export default {
             });
             return JSON.stringify(myShapes);
         },
+        templateOCR(template_id) {
+            this.$store.commit('TemplateIdUpdate', template_id);
+            this.$router.push({ name: 'TemplateOCR' });
+        },
         async handleLook(template_id, userType) {
             this.template_id = template_id;
             try {
@@ -158,8 +162,41 @@ export default {
         handleConfirm(row) {
             row.editable = false;
         },
-        handleDelete(index) {
-            this.tableData.splice(index, 1);
+        handleDelete(template_id) {
+            ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(async () => {
+                    try {
+                        const response = await axios.delete('/template_crud/delete_template/' + template_id);
+                        if (!response.error) {
+                            this.$message({
+                                type: 'success',
+                                message: '刪除成功!'
+                            });
+                            this.tableData = await this.getAvailableTemplate();
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: '刪除失敗!'
+                            });
+                        }
+                    } catch (error) {
+                        this.$message({
+                            type: 'error',
+                            message: '刪除失敗!'
+                        });
+                        return error;
+                    }
+                })
+                .catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消刪除'
+                    });
+                });
         },
         prepend(index) {
             item.editable = true;
@@ -177,7 +214,8 @@ export default {
             this.tableHeader.splice(index, 0, header);
         },
         createTemplate() {
-            this.$router.push({ path: '/features/general/self-define/step/1' });
+            this.$store.commit('createNewUpdate', true);
+            this.$router.push({ name: 'SelfDefine1' });
         },
         editTemplate() {
             this.$store.commit('recsClear');
@@ -288,10 +326,13 @@ export default {
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="200px">
+                    <el-table-column label="操作" width="350px">
                         <template #default="scope">
+                            <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
+                            <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="big" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="big" type="info" @click="handleLook(scope.row.template_id, this.myModel.code)">檢視</el-button>
+                            <el-button size="big" type="danger" @click="handleDelete(scope.row.template_id)">刪除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>

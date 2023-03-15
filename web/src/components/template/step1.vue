@@ -19,8 +19,6 @@ export default {
                 { label: '通用辨識', to: '#' },
                 { label: '圖檔上傳', to: '#' }
             ],
-            switchValue: false,
-            image_complexity: 'medium',
             // upload 參數
             fileList: [],
             dialogVisible: false,
@@ -61,7 +59,7 @@ export default {
                 formData.append('files', file.raw);
             });
             await axios
-                .post('/gp_ocr/predict_images', formData, {
+                .post('/template_ocr/predict_images', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -85,7 +83,7 @@ export default {
                 this.$emit('uploadConfig', this.image_complexity, this.selectedLang.code);
                 loading.close();
                 this.$emit('nextStepEmit', 2);
-            }, 1500);
+            }, 1000);
         },
         fileChange(file, fileList) {
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';
@@ -162,15 +160,6 @@ export default {
                     </div>
                     <div class="flex justify-content-start mb-5">
                         <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <h5>使用高精準度模型</h5>
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <p>注意：當您使用高精準模型時耗時會較久</p>
-                    </div>
-                    <div class="flex justify-content-start mb-5">
-                        <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" />
                     </div>
                     <div class="flex justify-content-start mb-1">
                         <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 圖檔提交 </el-button>

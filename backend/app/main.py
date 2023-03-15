@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from aioredis import create_redis_pool, Redis
+from aioredis import create_redis_pool
 from app.exceptions import CustomException, exception_handler
 from app.exceptions import MlaasRequestError, mlaas_request_handler
 from app.routers import docs
@@ -10,6 +10,20 @@ from app.routers.image_tools import pdf_transform
 from app.routers.template_crud import create, read, update, delete
 from app.api_config import http_responses
 import os
+import logging
+from datetime import datetime
+
+log_filename = "./app/logger/" + datetime.now().strftime('%Y-%m-%d') + ".log"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(name)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    filename=log_filename,
+    filemode='a'
+)
+# 設定 logger
+logger = logging.getLogger(__name__)
 
 def register_redis(app: FastAPI) -> None:
     """
@@ -37,7 +51,7 @@ def register_redis(app: FastAPI) -> None:
 
 def get_application():
     app = FastAPI(docs_url=None,
-                  title="Backend")
+                  title="Web Backend")
 
     origins = ["*"]
 
@@ -80,13 +94,13 @@ def get_application():
     )
     app.include_router(
         gp_ocr.router,
-        prefix="/ocr",
-        tags=["ocr"],
+        prefix="/gp_ocr",
+        tags=["gp_ocr"],
     )
     app.include_router(
         template_ocr.router,
-        prefix="/ocr",
-        tags=["ocr"],
+        prefix="/template_ocr",
+        tags=["template_ocr"],
     )
     app.include_router(
         pdf_transform.router,

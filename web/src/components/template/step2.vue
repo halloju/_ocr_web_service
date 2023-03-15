@@ -9,7 +9,7 @@ export default {
     components: {
         Annotation
     },
-    name: 'GeneralOcrStep1',
+    name: 'GeneralTemplateStep2',
     data() {
         return {
             // 下方
@@ -42,7 +42,6 @@ export default {
     },
     computed: {
         getTaskData() {
-            console.log(this.general_upload_res)
             this.excelData = [];
             this.tableData = [];
             this.general_upload_res.forEach((item, index) => {
@@ -65,6 +64,17 @@ export default {
         ...mapState(['general_upload_res'])
     },
     methods: {
+        callback(data, image_cv_id) {
+            for (let i = 0; i < this.general_upload_res.length; i++) {
+                if (image_cv_id === this.general_upload_res[i].image_id) {
+                    for (let j = 0; j < this.general_upload_res[i].ocr_results.length; j++) {
+                        this.general_upload_res[i].ocr_results[j].text = data[j].annotation.text;
+                    }
+                    break;
+                }
+            }
+            console.log(this.general_upload_res);
+        },
         getStatusColor(status) {
             switch (status) {
                 case 'SUCCESS':
@@ -76,7 +86,8 @@ export default {
             }
         },
         getImage(item) {
-            axios.get(`/gp_ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
+            axios.get(`/template_ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
+                console.log('getImage', res);
                 if (res.status === 200) {
                     let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
                     return ImageSrc;
@@ -89,16 +100,17 @@ export default {
             });
         },
         async getOcrStatus(item) {
-            axios.get(`/gp_ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
+            axios.get(`/template_ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
                 if (res.data.status === 'SUCCESS') {
                     await this.getOcrResults(item);
                 } else {
+                    console.log('getOcrResults', res.data.status);
                     this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
                 }
             });
         },
         async getOcrResults(item) {
-            axios.get(`/gp_ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
+            axios.get(`/template_ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
                 if (res.data.status === 'SUCCESS') {
                     this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
                 } else {
@@ -112,7 +124,7 @@ export default {
             });
         },
         handleButtonClick(row) {
-            axios.get(`/gp_ocr/get_image/${row.image_id}`).then((res) => {
+            axios.get(`/template_ocr/get_image/${row.image_id}`).then((res) => {
                 if (res !== null) {
                     this.imageSrc = 'data:image/png;base64,' + res.data;
                 } else {

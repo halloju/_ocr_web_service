@@ -4,14 +4,13 @@ import { ElMessage } from 'element-plus';
 export default {
     name: 'UploadImage',
     created() {
-        if (sessionStorage.imageSource !== '') {
+        if (!this.createNew) {
             this.isOK = true;
             this.imageSource = sessionStorage.imageSource;
             this.filename = sessionStorage.filename;
             this.filesize = sessionStorage.filesize;
         }
     },
-    components: {},
     data() {
         return {
             isDragging: false,
@@ -189,6 +188,10 @@ export default {
         isUploaded: {
             type: Boolean,
             default: false
+        },
+        createNew: {
+            type: Boolean,
+            default: false
         }
     }
 };
@@ -198,17 +201,15 @@ export default {
         <div class="col-12 text-center">
             <h1 class="mb-3">上傳圖檔</h1>
         </div>
-
         <div class="file-input-container">
-            <label class="file-input-label">
+            <el-button>
                 選擇設定檔
                 <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
-            </label>
+            </el-button>
         </div>
-
-        <Button type="button" label="選擇圖檔" @click="openfolder" class="pi p-button-outlined" style="width: 12em; height: 4em">
-            <label for="my-file">選擇圖檔</label>
-        </Button>
+        <el-button type="primary" @click="openfolder" class="pi p-button-outlined">
+            選擇圖檔
+        </el-button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
         <div class="col-12 text-center" v-if="isOK && !wrongFile" :key="this.isFileUploaded">
             <Image v-if="this.imageSource" :src="this.imageSource" alt="Image" width="500" preview />
@@ -219,7 +220,7 @@ export default {
         <div class="my-content flex justify-content-center align-items-center" v-if="!isOK && !wrongFile" style="color: black; height: 500px; font-size: 25px">請拖曳圖片</div>
     </div>
     <div class="col-12 mt-3 text-center">
-        <Button label="清除圖檔" class="pi p-button-info" @click="reset" style="width: 12em; height: 4em"></Button>
+        <el-button type="danger" @click="reset">清除圖檔</el-button>
     </div>
 </template>
 <style scoped>

@@ -7,7 +7,7 @@ export default {
         Step1,
         Step2
     },
-    name: 'General',
+    name: 'GeneralOCR',
     data() {
         return {
             step: 1,
