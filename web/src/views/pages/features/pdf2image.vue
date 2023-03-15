@@ -99,10 +99,19 @@ export default {
         <div class="col-12 md:col-9">
             <div class="card">
                 <div class="card">
-                    <el-upload :file-list="fileList" list-type="text" :on-change="fileChange" :on-remove="handleRemove" multiple :auto-upload="false" accept="application/pdf" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15">
+                    <el-upload :file-list="fileList" list-type="text" :on-change="fileChange" :on-remove="handleRemove" multiple :auto-upload="false" accept="application/pdf">
                         <template v-slot="{ file }">
-                            <div class="el-upload__text">{{ file ? file.name : 'Upload PDF File' }}</div>
+                            <div class="el-upload__text">
+                            <template v-if="file">
+                                {{ file.name }}
+                            </template>
+                            <template v-else>
+                                <el-button type="primary">
+                                Upload PDF File
+                                </el-button>
                         </template>
+                        </div>
+                    </template>
                     </el-upload>
                     <el-dialog v-model="dialogVisible" :width="dialogWidth">
                         <embed :src="dialogFileUrl" type="application/pdf" :width="embedWidth" :height="embedHeight" />
