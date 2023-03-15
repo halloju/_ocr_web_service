@@ -101,6 +101,11 @@ const router = createRouter({
                     },
                 },
                 {
+                    path: '/features/pdf2image',
+                    name: 'pdf2image',
+                    component: () => import('@/views/pages/features/pdf2image.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')
