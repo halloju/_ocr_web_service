@@ -3,7 +3,7 @@ version: '3'
 services:
     db:
         container_name: db
-        image: postgres:14
+        image: postgres:latest
         restart: always
         environment:
           - POSTGRES_DATABASE=postgres
@@ -33,20 +33,17 @@ services:
         restart: always
     web:
         container_name: web
-        build: "web/."
-        volumes:
-          - './web:/app'
-
-          - '/app/node_modules'
+        build:
+          context: ./web
+          dockerfile: Dockerfile.prod
         ports:
-          - '3000:3000'
+          - '80:80'
         environment:
           - MODE=development
+          - VUE_APP_API_URL=http://backend:5000
     backend:
         container_name: backend
         build: "backend/."
-        volumes:
-          - ./backend:/usr/src/app
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
@@ -61,8 +58,6 @@ services:
     mlaas:
         container_name: mlaas
         build: "mlaas/."
-        volumes:
-          - "./mlaas:/code"
         ports:
           - "7777:7777"
         command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 7777 --reload"
@@ -73,16 +68,6 @@ services:
           db:
             condition: service_healthy
         restart: always
-    nginx:
-        container_name: nginx
-        volumes:
-          - "./nginx:/etc/nginx/conf.d"
-        build: ./nginx
-        ports:
-          - 80:80
-        depends_on:
-          - backend
-          - web
     redis:
         container_name: redis
         image: "redis:alpine"
@@ -98,8 +83,6 @@ services:
       container_name: worker
       build: ./backend
       command: celery worker --app=worker.celery
-      volumes:
-        - ./backend:/usr/src/app
       environment:
         - CELERY_BROKER_URL=amqp://rabbitmq
         - CELERY_RESULT_BACKEND=redis://redis:6379/0

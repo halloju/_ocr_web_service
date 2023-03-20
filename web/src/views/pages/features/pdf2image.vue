@@ -102,16 +102,14 @@ export default {
                     <el-upload :file-list="fileList" list-type="text" :on-change="fileChange" :on-remove="handleRemove" multiple :auto-upload="false" accept="application/pdf">
                         <template v-slot="{ file }">
                             <div class="el-upload__text">
-                            <template v-if="file">
-                                {{ file.name }}
-                            </template>
-                            <template v-else>
-                                <el-button type="primary">
-                                Upload PDF File
-                                </el-button>
+                                <template v-if="file">
+                                    {{ file.name }}
+                                </template>
+                                <template v-else>
+                                    <el-button type="primary"> Upload PDF File </el-button>
+                                </template>
+                            </div>
                         </template>
-                        </div>
-                    </template>
                     </el-upload>
                     <el-dialog v-model="dialogVisible" :width="dialogWidth">
                         <embed :src="dialogFileUrl" type="application/pdf" :width="embedWidth" :height="embedHeight" />
