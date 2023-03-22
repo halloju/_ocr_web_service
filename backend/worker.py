@@ -5,6 +5,7 @@ import requests
 import uuid
 from celery import Celery
 from celery import Task
+from route_utils import get_request_id, call_mlaas_function
 
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "amqp://rabbitmq")
@@ -13,10 +14,10 @@ celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://lo
 class PredictTask(Task):
     def __init__(self):
         super().__init__()
-        self.gp_ocr = os.environ.get("MLAAS_URL", "http://mlaas:7777/ocr/gp_ocr")
-        self.template_ocr = os.environ.get("MLAAS_URL", "http://mlaas:7777/ocr/template_ocr")
+        self.gp_ocr = 'ocr/gp_ocr'
+        self.template_ocr = 'ocr/template_ocr'
         self.business_unit = "C170"
-        self.request_id = "QAZWSXEDC"
+        self.request_id = get_request_id()
         
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -26,28 +27,30 @@ class PredictTask(Task):
             encoded_data = celery.backend.get(image_id)
             # Call MLass using /template_ocr
             if template_id != "":
-                data_pred = requests.post(self.template_ocr, json = {
+                input_data = {
                     "business_unit": self.business_unit,
                     "request_id": self.request_id,
                     "inputs": {
-                            "image": encoded_data.decode("utf-8"),
-                            "template_id": template_id,
-                            "model_name": model_name
-                        }
-                    })
+                        "image": encoded_data.decode("utf-8"),
+                        "template_id": template_id,
+                        "model_name": model_name
+                    }
+                }
+                data_pred = call_mlaas_function(input_data, self.template_ocr)
             else:
                 # Call MLass using /gp_ocr
-                data_pred = requests.post(self.gp_ocr, json = {
+                input_data = {
                     "business_unit": self.business_unit,
-                    "request_id": self.request_id,
+                    "request_id": get_request_id(),
                     "inputs": {
-                            "image": encoded_data.decode("utf-8"),
-                            "image_complexity": image_complexity,
-                            "model_name": model_name
-                        }
-                    })
+                        "image": encoded_data.decode("utf-8"),
+                        "image_complexity": image_complexity,
+                        "model_name": model_name
+                    }
+                }
+                data_pred = call_mlaas_function(input_data, self.gp_ocr)
             # Return the prediction result
-            return data_pred.json()
+            return data_pred
         except Exception as ex:
             logging.error(ex)
             raise ex

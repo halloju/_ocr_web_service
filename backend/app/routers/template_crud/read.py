@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 # from app.services.template_crud import read as service_read
 from app.schema.template_crud.read import GetAvailableTemplatesResponse
 from app.schema.template_crud.read import GetTemplateDetailResponse
-from app.route_utils import get_user_id, call_mlaas_function, get_request_id
+from route_utils import get_user_id, call_mlaas_function, get_request_id
 from app.exceptions import MlaasRequestError
 from app import response_table
 
@@ -25,7 +25,7 @@ def get_available_templates(user_id: str, db: Session = Depends(get_db)):
         "request_id": get_request_id(),
         "inputs": {'user_id': user_id}
     }
-    outputs = call_mlaas_function(input_data, 'get_available_templates')
+    outputs = call_mlaas_function(input_data, 'template_crud/get_available_templates')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return GetAvailableTemplatesResponse(
@@ -45,7 +45,7 @@ def get_template_detail(template_id: str, db: Session = Depends(get_db)):
         "request_id": get_request_id(),
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'get_template_detail')
+    outputs = call_mlaas_function(input_data, 'template_crud/get_template_detail')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         template_detail = outputs['outputs']['template_detail']
@@ -58,4 +58,4 @@ def get_template_detail(template_id: str, db: Session = Depends(get_db)):
     elif status_code == '5407':
         raise MlaasRequestError(**response_table.status_templateexisterror)
     else:
-        raise MlaasRequestError(**response_table.status_mlaaserror)
+        raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
