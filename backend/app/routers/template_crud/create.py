@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.schema.template_crud.create import CreateTemplateRequest
 from app.forms.template_crud.create import CreateTemplateForm
 from app.schema.template_crud.create import CreateTemplateResponse
-from app.route_utils import get_user_id, call_mlaas_function, get_request_id
+from route_utils import get_user_id, call_mlaas_function, get_request_id
 from app.exceptions import MlaasRequestError
 from app import response_table
 import json
@@ -38,7 +38,7 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
             "request_id": "111",
             "inputs": jsonable_encoder(inputs)
         }
-        outputs = call_mlaas_function(input_data, 'create_template')
+        outputs = call_mlaas_function(input_data, 'template_crud/create_template')
         status_code = outputs['outputs']['status_code']
         if status_code == '0000':
             print(outputs['outputs']['template_id'])
@@ -52,5 +52,5 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
         elif status_code == '5402':
             raise MlaasRequestError(**response_table.status_image_type_error)
         else:
-            raise MlaasRequestError(**response_table.status_mlaaserror)
+            raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
     raise CustomException(status_code=400, message=form.errors)
