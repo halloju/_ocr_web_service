@@ -58,12 +58,17 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...)):
         if doc.content_type == 'application/pdf':
             filename = doc.filename.split('/')[-1].replace('.pdf', '').replace('.PDF', '.jpg')
             # pdf_file = await file.read()  # byte
-            with tempfile.TemporaryDirectory() as path:
-                doc_results = convert_from_bytes(
-                    doc.file.read(), output_folder=path, dpi=350, thread_count=4
-                )
+            try:
+                with tempfile.TemporaryDirectory() as path:
+                    doc_results = convert_from_bytes(
+                        doc.file.read(), output_folder=path, dpi=350, thread_count=4
+                    )
+            except:
+                raise CustomException(status_code=400, message=f'{doc.filename} 該檔案出了一點問題，請確認此 pdf 是否有效')
             img_files = [get_bytes_value(image, zip_dir, f'{filename}_{idx}') for idx, image in enumerate(doc_results)] if doc_results else None
             all_img_files.extend(img_files)
-        success_file_num += 1
-    return zipfiles(all_img_files)
-    # raise CustomException(status_code=400, message=form.errors)
+            success_file_num += 1
+    if success_file_num != 0:
+        return zipfiles(all_img_files)
+    else:
+        raise CustomException(status_code=400, message='未上傳有效的 pdf 檔案')
