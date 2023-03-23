@@ -3,7 +3,7 @@ version: '3'
 services:
     db:
         container_name: db
-        image: postgres:14
+        image: postgres:latest
         restart: always
         environment:
           - POSTGRES_DATABASE=postgres
@@ -43,7 +43,7 @@ services:
           - '3000:3000'
         environment:
           - MODE=development
-          - VUE_APP_API_URL=http://backend:5000
+          - VITE_API_URL=http://localhost/backend
     backend:
         container_name: backend
         build: "backend/."

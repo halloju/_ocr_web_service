@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios';
+import { ElLoading, ElMessageBox } from 'element-plus';
 
 export default {
     name: 'pdf2image',
@@ -44,13 +45,17 @@ export default {
                 }
             }
         },
-        submit() {
+        async submit() {
             const formData = new FormData();
             this.fileList.forEach((file) => {
                 formData.append('files', file.raw);
             });
-
-            axios
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            await axios
                 .post('/image_tools/pdf_transform', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -71,8 +76,18 @@ export default {
                     if (error.code === 'ERR_NETWORK') {
                         this.status = 'network';
                     }
+                    //error alert for the axios request
+                    ElMessageBox.confirm('', '失敗', {
+                        confirmButtonText: '確定',
+                        type: 'error',
+                        center: true,
+                        showclose: false,
+                        showCancelButton: false,
+                        closeOnClickModal: false,
+                        roundButton: true
+                    });
                 });
-
+            loading.close();
             //remove all file in fileList
             this.fileList = [];
         }

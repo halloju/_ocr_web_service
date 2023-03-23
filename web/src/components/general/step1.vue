@@ -1,6 +1,6 @@
 <script>
 import axios from 'axios';
-import { ElLoading } from 'element-plus';
+import { ElLoading, ElMessageBox } from 'element-plus';
 
 export default {
     name: 'GeneralUploadImage',
@@ -71,9 +71,21 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error);
+                    //handle error by alerting
                     if (error.code === 'ERR_NETWORK') {
                         this.status = 'network';
                     }
+                    ElMessageBox.confirm('', '失敗', {
+                        confirmButtonText: '確定',
+                        type: 'error',
+                        center: true,
+                        showclose: false,
+                        showCancelButton: false,
+                        closeOnClickModal: false,
+                        roundButton: true
+                    }).then(() => {
+                        return;
+                    });
                 });
             const loading = ElLoading.service({
                 lock: true,

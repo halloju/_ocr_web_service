@@ -23,8 +23,8 @@ export default {
             initialData: '',
             initialDataId: null,
             // 上方
-            file_name : "",
-            num: "",
+            file_name: '',
+            num: '',
             isDownload: false,
             Download: Download,
             Back: Back,
@@ -86,18 +86,27 @@ export default {
             }
         },
         getImage(item) {
-            axios.get(`/template_ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
-                console.log('getImage', res);
-                if (res.status === 200) {
-                    let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
-                    return ImageSrc;
-                } else {
+            axios
+                .get(`/template_ocr/get_image/${this.general_upload_res[item - 1].image_id}`)
+                .then((res) => {
+                    console.log('getImage', res);
+                    if (res.status === 200) {
+                        let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
+                        return ImageSrc;
+                    } else {
+                        ElMessage({
+                            message: '辨識中，請稍後',
+                            type: 'warning'
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
                     ElMessage({
-                        message: '辨識中，請稍後',
+                        message: 'Get Image Failed',
                         type: 'warning'
                     });
-                }
-            });
+                });
         },
         async getOcrStatus(item) {
             axios.get(`/template_ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
@@ -110,18 +119,27 @@ export default {
             });
         },
         async getOcrResults(item) {
-            axios.get(`/template_ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
-                if (res.data.status === 'SUCCESS') {
-                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
-                } else {
+            axios
+                .get(`/template_ocr/result/${this.general_upload_res[item].task_id}`)
+                .then((res) => {
+                    if (res.data.status === 'SUCCESS') {
+                        this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
+                    } else {
+                        ElMessage({
+                            message: '辨識失敗',
+                            type: 'warning'
+                        });
+                    }
+                    this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
+                    this.reloadAnnotator = !this.reloadAnnotator;
+                })
+                .catch((res) => {
+                    console.log('getOcrResults', res);
                     ElMessage({
                         message: '辨識失敗',
                         type: 'warning'
                     });
-                }
-                this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
-                this.reloadAnnotator = !this.reloadAnnotator;
-            });
+                });
         },
         handleButtonClick(row) {
             axios.get(`/template_ocr/get_image/${row.image_id}`).then((res) => {
@@ -131,10 +149,10 @@ export default {
                     this.imageSrc = '';
                 }
             });
-            let fileInfo = this.tableData.filter(item => item.task_id===row.task_id);
+            let fileInfo = this.tableData.filter((item) => item.task_id === row.task_id);
             this.file_name = fileInfo[0].file_name;
             this.num = fileInfo[0].num;
-            let ocr_results = this.general_upload_res.filter(item => item.task_id===row.task_id)[0].ocr_results;
+            let ocr_results = this.general_upload_res.filter((item) => item.task_id === row.task_id)[0].ocr_results;
             this.initialData = this.getShapeData(ocr_results);
         },
         async waitUntilOcrComplete() {

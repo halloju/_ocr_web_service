@@ -65,8 +65,13 @@ async def result(task_id: str):
     if not task.ready():
         return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
 
+    
     # Task done: return the value
     task_result = task.get()
+    # Task Result is None
+    if task_result is None:
+        return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': 'FAIL', 'result': 'Task result is None', 'file_name': ''})
+
     result = task_result.get('result')
     return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result, 'file_name': task_result.get('file_name')})
 

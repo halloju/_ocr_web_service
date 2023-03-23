@@ -6,6 +6,10 @@ COPY package*.json /app/
 RUN npm config set unsafe-perm true
 RUN npm install --force
 
+# Use build-time arguments for environment variables
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 COPY . /app
 RUN chown -R node:node /app/node_modules
 USER root

@@ -114,7 +114,8 @@ import '@/assets/styles.scss';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+console.log(import.meta.env.VITE_API_URL);
 
 const app = createApp(App);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

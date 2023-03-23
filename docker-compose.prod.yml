@@ -33,14 +33,16 @@ services:
         restart: always
     web:
         container_name: web
-        build:
-          context: ./web
-          dockerfile: Dockerfile.prod
+        image: halloju/if_gp_ocr_system_web:latest
+        #build:
+        #  context: ./web
+        #  dockerfile: Dockerfile.prod
         ports:
           - '80:80'
         environment:
           - MODE=development
-          - VUE_APP_API_URL=http://backend:5000
+        depends_on:
+          - backend
     backend:
         container_name: backend
         build: "backend/."
