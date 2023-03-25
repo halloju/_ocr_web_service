@@ -207,9 +207,7 @@ export default {
                 <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
             </el-button>
         </div>
-        <el-button type="primary" @click="openfolder" class="pi p-button-outlined">
-            選擇圖檔
-        </el-button>
+        <el-button type="primary" @click="openfolder" class="pi p-button-outlined"> 選擇圖檔 </el-button>
         <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
         <div class="col-12 text-center" v-if="isOK && !wrongFile" :key="this.isFileUploaded">
             <Image v-if="this.imageSource" :src="this.imageSource" alt="Image" width="500" preview />

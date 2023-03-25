@@ -32,7 +32,7 @@ export default {
                 }
             ],
             switchValue: false,
-            createNew: this.$store.state.createNew,
+            createNew: this.$store.state.createNew
         };
     },
     methods: {

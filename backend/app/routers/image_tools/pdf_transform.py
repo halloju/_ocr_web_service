@@ -46,7 +46,7 @@ def get_bytes_value(image, folder, name):
     return path
 
 @router.post("/pdf_transform")  # responses={},
-async def gp_ocr(request: Request, files: List[UploadFile] = File(...)):
+async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout: int = 300):
     '''
     將 pdf 轉成圖片
     '''

@@ -1,57 +1,55 @@
 <script>
+import { ref, computed, onMounted } from 'vue';
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { mapState } from 'vuex';
+import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
+import { useStore } from 'vuex';
+
 export default {
     components: {
         Annotation
     },
-    name: 'GeneralOcrStep1',
-    data() {
-        return {
-            // 下方
-            containerId: 'my-pic-annotation',
-            imageSrc: null,
-            imageResult: '',
-            localStorageKey: 'storage',
-            width: 1200,
-            height: 600,
-            dataCallback: '',
-            initialData: '',
-            initialDataId: null,
-            // 上方
-            file_name : "",
-            num: "",
-            isDownload: false,
-            Download: Download,
-            Back: Back,
-            excelData: [],
-            tableData: [],
-            reloadAnnotator: false,
-            isRunning: false,
-            finishedStatus: ['SUCCESS', 'FAIL']
-        };
-    },
-    watch: {
-        tableData(newTableData, oldTableData) {
-            console.debug(newTableData);
+    name: 'BaseOcrResultShow',
+    props: {
+        baseUrl: {
+            type: String,
+            required: true
         }
     },
-    computed: {
-        getTaskData() {
-            console.log(this.general_upload_res)
-            this.excelData = [];
-            this.tableData = [];
-            this.general_upload_res.forEach((item, index) => {
-                this.excelData.push({
+    setup(props, { emit }) {
+        const store = useStore();
+
+        const containerId = ref('my-pic-annotation');
+        const imageSrc = ref(null);
+        const imageResult = ref('');
+        const localStorageKey = ref('storage');
+        const width = ref(1200);
+        const height = ref(600);
+        const dataCallback = ref('');
+        const initialData = ref('');
+        const initialDataId = ref(null);
+        const file_name = ref('');
+        const num = ref('');
+        const isDownload = ref(false);
+        const excelData = ref([]);
+        const tableData = ref([]);
+        const reloadAnnotator = ref(false);
+        const isRunning = ref(false);
+        const finishedStatus = ref(['SUCCESS', 'FAIL']);
+        const general_upload_res = computed(() => store.state.general_upload_res);
+        const getTaskData = computed(() => {
+            excelData.value = [];
+            tableData.value = [];
+            general_upload_res.value.forEach((item, index) => {
+                excelData.value.push({
                     filename: item.file_name,
                     image_id: item.image_id,
                     ocr_results: item.ocr_results
                 });
-                this.tableData.push({
+                tableData.value.push({
                     num: index + 1,
                     task_id: item.task_id,
                     status: item.status,
@@ -60,12 +58,21 @@ export default {
                     isFinished: item.status === 'SUCCESS' ? true : false
                 });
             });
-            return this.tableData;
-        },
-        ...mapState(['general_upload_res'])
-    },
-    methods: {
-        getStatusColor(status) {
+            return tableData.value;
+        });
+
+        function callback(data, image_cv_id) {
+            for (let i = 0; i < general_upload_res.value.length; i++) {
+                if (image_cv_id === general_upload_res[i].image_id) {
+                    for (let j = 0; j < general_upload_res[i].ocr_results.length; j++) {
+                        general_upload_res[i].ocr_results[j].text = data[j].annotation.text;
+                    }
+                    break;
+                }
+            }
+        }
+
+        function getStatusColor(status) {
             switch (status) {
                 case 'SUCCESS':
                     return 'success';
@@ -74,77 +81,99 @@ export default {
                 default:
                     return '';
             }
-        },
-        getImage(item) {
-            axios.get(`/gp_ocr/get_image/${this.general_upload_res[item - 1].image_id}`).then((res) => {
-                if (res.status === 200) {
-                    let ImageSrc = 'data:image/png;base64,' + res.data.image_string;
-                    return ImageSrc;
-                } else {
-                    ElMessage({
-                        message: '辨識中，請稍後',
-                        type: 'warning'
-                    });
-                }
-            });
-        },
-        async getOcrStatus(item) {
-            axios.get(`/gp_ocr/status/${this.general_upload_res[item].task_id}`).then(async (res) => {
-                if (res.data.status === 'SUCCESS') {
-                    await this.getOcrResults(item);
-                } else {
-                    this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
-                }
-            });
-        },
-        async getOcrResults(item) {
-            axios.get(`/gp_ocr/result/${this.general_upload_res[item].task_id}`).then((res) => {
-                if (res.data.status === 'SUCCESS') {
-                    this.$store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
-                } else {
+        }
+
+        async function getOcrStatus(item) {
+            axios
+                .get(`/${props.baseUrl}/status/${general_upload_res.value[item].task_id}`)
+                .then(async (res) => {
+                    console.log('getOcrStatus', res);
+                    if (res.data.status === 'SUCCESS') {
+                        await getOcrResults(item);
+                    } else {
+                        console.log('getOcrResults', res.data.status);
+                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
+                    }
+                })
+                .catch((res) => {
+                    console.log('getOcrStatus', res);
                     ElMessage({
                         message: '辨識失敗',
                         type: 'warning'
                     });
-                }
-                this.$store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
-                this.reloadAnnotator = !this.reloadAnnotator;
-            });
-        },
-        handleButtonClick(row) {
-            axios.get(`/gp_ocr/get_image/${row.image_id}`).then((res) => {
-                if (res !== null) {
-                    this.imageSrc = 'data:image/png;base64,' + res.data;
-                } else {
-                    this.imageSrc = '';
-                }
-            });
-            let fileInfo = this.tableData.filter(item => item.task_id===row.task_id);
-            this.file_name = fileInfo[0].file_name;
-            this.num = fileInfo[0].num;
-            let ocr_results = this.general_upload_res.filter(item => item.task_id===row.task_id)[0].ocr_results;
-            this.initialData = this.getShapeData(ocr_results);
-        },
-        async waitUntilOcrComplete() {
-            this.isRunning = true;
+                });
+        }
+
+        async function getOcrResults(item) {
+            axios
+                .get(`/${props.baseUrl}/result/${general_upload_res.value[item].task_id}`)
+                .then((res) => {
+                    if (res.data.status === 'SUCCESS') {
+                        store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
+                    } else {
+                        ElMessage({
+                            message: '辨識失敗',
+                            type: 'warning'
+                        });
+                    }
+                    store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
+                    reloadAnnotator.value = !reloadAnnotator.value;
+                })
+                .catch((res) => {
+                    console.log('getOcrResults', res);
+                    ElMessage({
+                        message: '辨識失敗',
+                        type: 'warning'
+                    });
+                });
+        }
+
+        async function waitUntilOcrComplete() {
+            isRunning.value = true;
             let count = 0;
-            while (this.isRunning) {
-                const unfinishedItems = this.general_upload_res.filter((item) => !this.finishedStatus.includes(item.status));
+            while (isRunning) {
+                const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
                 for (let i = 0; i < unfinishedItems.length; i++) {
                     const item = unfinishedItems[i];
-                    await this.getOcrStatus(this.general_upload_res.indexOf(item));
+                    await getOcrStatus(general_upload_res.value.indexOf(item));
                 }
                 if (unfinishedItems.length === 0) {
-                    this.isRunning = false;
+                    isRunning.value = false;
                     break;
                 }
-                await new Promise((resolve) => setTimeout(resolve, 3000)); // wait 2 seconds before polling again
+                await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
-                if (count === 30) break;
+                if (count === MAX_RETRIES) break;
             }
-        },
-        getShapeData(regData) {
+        }
+
+        // ocr結果轉成 annotation 的格式
+        function handleButtonClick(row) {
+            axios
+                .get(`/${props.baseUrl}/get_image/${row.image_id}`)
+                .then((res) => {
+                    if (res !== null) {
+                        imageSrc.value = 'data:image/png;base64,' + res.data;
+                    } else {
+                        imageSrc.value = '';
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    ElMessage({
+                        message: 'Get Image Failed',
+                        type: 'warning'
+                    });
+                });
+            let fileInfo = tableData.value.filter((item) => item.task_id === row.task_id);
+            file_name.value = fileInfo[0].file_name;
+            num.value = fileInfo[0].num;
+            let ocr_results = general_upload_res.value.filter((item) => item.task_id === row.task_id)[0].ocr_results;
+            initialData.value = getShapeData(ocr_results);
+        }
+
+        function getShapeData(regData) {
             let myShapes = [];
             // 使用正規表達式將 regData 中的所有 ' 符號替換為 " 符號
             regData = JSON.parse(regData.replace(/'/g, '"'));
@@ -179,8 +208,9 @@ export default {
                 });
             });
             return JSON.stringify(myShapes);
-        },
-        back() {
+        }
+
+        function back() {
             ElMessageBox.confirm('本次辨識結果將不保留，請問是否要繼續？', '警告', {
                 confirmButtonText: '確定',
                 cancelButtonText: '取消',
@@ -192,7 +222,7 @@ export default {
                         type: 'success',
                         message: '回到圖檔上傳'
                     });
-                    this.$emit('nextStepEmit', 1);
+                    emit('nextStepEmit', 1);
                 })
                 .catch(() => {
                     ElMessage({
@@ -200,9 +230,10 @@ export default {
                         message: '操作取消'
                     });
                 });
-        },
-        downloadFile() {
-            const jsonWorkSheet = XLSX.utils.json_to_sheet(this.excelData);
+        }
+
+        function downloadFile() {
+            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {
                 SheetNames: ['jsonWorkSheet'],
                 Sheets: {
@@ -211,9 +242,44 @@ export default {
             };
             XLSX.writeFile(workBook, '通用辨識結果.xlsx');
         }
-    },
-    created() {
-        this.waitUntilOcrComplete();
+
+        // Start to pull the status
+        onMounted(() => {
+            waitUntilOcrComplete();
+        });
+
+        return {
+            containerId,
+            imageSrc,
+            imageResult,
+            localStorageKey,
+            width,
+            height,
+            dataCallback,
+            initialData,
+            initialDataId,
+            file_name,
+            num,
+            isDownload,
+            Download,
+            Back,
+            excelData,
+            tableData,
+            reloadAnnotator,
+            isRunning,
+            finishedStatus,
+            getTaskData,
+            general_upload_res,
+            callback,
+            getStatusColor,
+            getOcrStatus,
+            getOcrResults,
+            waitUntilOcrComplete,
+            handleButtonClick,
+            getShapeData,
+            back,
+            downloadFile
+        };
     }
 };
 </script>
@@ -233,7 +299,7 @@ export default {
                                     <el-button class="my-button" type="primary" :icon="Download" circle @click="downloadFile"></el-button>
                                 </el-tooltip>
                             </div>
-                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ this.general_upload_res.length }} 張</div>
+                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ general_upload_res.length }} 張</div>
                         </div>
                     </div>
                     <div class="col-12">

@@ -16,7 +16,7 @@ export default {
     },
     watch: {},
     computed: {
-        disableUpload() {
+        isUploadDisabled() {
             if (this.fileList.length === 0) {
                 return true;
             } else {
@@ -136,7 +136,7 @@ export default {
             <div class="card">
                 <div class="flex flex-column flex-wrap">
                     <div class="flex justify-content-start mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="disableUpload"> 檔案提交 </el-button>
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="isUploadDisabled"> 檔案提交 </el-button>
                     </div>
                 </div>
             </div>

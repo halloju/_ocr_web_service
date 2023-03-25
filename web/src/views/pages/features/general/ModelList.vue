@@ -310,11 +310,11 @@ export default {
                         <h2>模板檢視</h2>
                     </div>
                     <div class="flex align-items-center justify-content-center mt-1 mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="createTemplate" :disabled="disableUpload"> ＋新增 </el-button>
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="createTemplate" :disabled="isUploadDisabled"> ＋新增 </el-button>
                     </div>
                 </div>
                 <el-table :data="formattedTableData" style="width: 100%">
-                    <el-table-column :prop="item.prop" :label="item.label" v-for="(item, index) in tableHeader" :key="item.prop" :width="item.width">
+                    <el-table-column :prop="item.prop" :label="item.label" v-for="item in tableHeader" :key="item.prop" :width="item.width">
                         <template #default="scope">
                             <div v-show="item.editable || scope.row.editable" class="editable-row">
                                 <template v-if="item.type === 'input'">

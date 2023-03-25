@@ -235,18 +235,8 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-6">
-                        <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" type="success"
-                            >下一步</el-button
-                        >
-                        <el-button
-                            v-else
-                            class="pi p-button-success"
-                            @click="upload"
-                            v-bind:class="{ 'p-disabled': !templateNameEdit }"
-                            v-bind:disabled="!templateNameEdit"
-                            v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''"
-                            type="success"
-                        >
+                        <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" type="success">下一步</el-button>
+                        <el-button v-else class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
                             提交
                         </el-button>
                     </div>
@@ -254,11 +244,10 @@ export default {
                         <div class="input-wrapper">
                             <span class="w-50">模板名稱：</span>
                             <el-input v-model="this.input" placeholder="模板名稱" :disabled="disableInput" />
-                            <el-button type="primary"  @click="toggleEditSave">{{ buttonText }}</el-button>
+                            <el-button type="primary" @click="toggleEditSave">{{ buttonText }}</el-button>
                         </div>
                     </div>
-                    <div class="p-fluid" v-if="this.isFinal">
-            </div>
+                    <div class="p-fluid" v-if="this.isFinal"></div>
                 </div>
                 <router-view />
             </div>

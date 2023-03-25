@@ -1,11 +1,11 @@
 <script>
-import Step1 from '@/components/template/step1.vue';
-import Step2 from '@/components/template/step2.vue';
+import BaseUploadImage from '@/components/BaseUploadImage.vue';
+import BaseOcrResultShow from '@/components/BaseOcrResultShow.vue';
 
 export default {
     components: {
-        Step1,
-        Step2
+        BaseUploadImage,
+        BaseOcrResultShow
     },
     name: 'TemplateOCR',
     data() {
@@ -13,7 +13,7 @@ export default {
             step: 1,
             image_complexity: '',
             selectedLang: '',
-            template_id: this.$store.state.template_id,
+            template_id: this.$store.state.template_id
         };
     },
     watch: {},
@@ -38,7 +38,7 @@ export default {
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
                     <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item >選擇模板</el-breadcrumb-item>
+                    <el-breadcrumb-item>選擇模板</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
@@ -51,6 +51,6 @@ export default {
             </div>
         </div>
     </div>
-    <Step1 v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" />
-    <Step2 v-else-if="step == 2" @nextStepEmit="nextStep" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/template_ocr/predict_images" />
+    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="template_ocr" />
 </template>
