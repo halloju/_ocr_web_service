@@ -16,7 +16,6 @@ class CreateTemplateForm:
         self.points_list = self.request.points_list
         self.template_name = self.request.template_name
         self.is_public = self.request.is_public
-        self.is_no_ttl = self.request.is_no_ttl
 
     async def is_valid(self):
         if not self.user_id or not len(self.user_id) == 5:

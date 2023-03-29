@@ -22,10 +22,11 @@ CREATE TABLE IF NOT EXISTS if_gp_ocr.template_info(
     points_list JSON[],
     is_no_ttl BOOLEAN DEFAULT FALSE,
     is_public BOOLEAN DEFAULT FALSE,
-    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT current_timestamp 
+    creation_time VARCHAR(30) NOT NULL,
+    expiration_time VARCHAR(30)
 );
 
-CREATE INDEX IF NOT EXISTS template_info_updated_at ON if_gp_ocr.template_info (updated_at);
+CREATE INDEX IF NOT EXISTS template_info_template_id ON if_gp_ocr.template_info (template_id);
 
 /*紀錄驗證碼辨識結果的表*/
 CREATE TABLE IF NOT EXISTS if_gp_ocr.ocr_results(

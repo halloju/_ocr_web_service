@@ -18,17 +18,23 @@ def update_template(template, db: Session):
         today = datetime.now(pytz.timezone("Asia/Taipei"))
         template_id = template.template_id
         new_template_id=template.user_id+today.strftime('%Y%m%d%H%M%S')
+        
+        expiration_time = today.strftime("%Y-%m-%d %H:%M:%S")
+       
          # Step 1. 將 template 影像寫入 db
         record = db.query(TemplateInfo).\
             filter(TemplateInfo.template_id == template.template_id).one()
+        if(record.is_no_ttl):
+            expiration_time = None
         template_info = TemplateInfo(
             template_id=new_template_id,
             user_id=template.user_id,
             template_name=template.template_name,
             points_list=jsonable_encoder(template.points_list),
-            updated_at=today,
             is_public=record.is_public,
-            is_no_ttl=record.is_no_ttl
+            is_no_ttl=record.is_no_ttl,
+            creation_time=today.strftime("%Y-%m-%d %H:%M:%S"),
+            expiration_time=expiration_time
         )
         db.add(template_info)
         db.commit()
