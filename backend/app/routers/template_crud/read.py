@@ -53,7 +53,8 @@ def get_template_detail(template_id: str, db: Session = Depends(get_db)):
             image=template_detail['image'],
             template_name=template_detail['template_name'],
             points_list=template_detail['points_list'],
-            updated_at=template_detail['updated_at']
+            creation_time=template_detail['creation_time'],
+            expiration_time=template_detail['expiration_time']
         )
     elif status_code == '5407':
         raise MlaasRequestError(**response_table.status_templateexisterror)
