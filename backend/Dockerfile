@@ -1,16 +1,19 @@
-FROM python:3.9.5-slim-buster
-RUN apt-get update \
-    && apt-get -y install libpq-dev gcc vim poppler-utils
-# set work directory
-WORKDIR /usr/src/app
+# Use an alias for the base image
+FROM python:3.9.5-alpine
 
-COPY ./requirements.txt /code/requirements.txt
-RUN pip install -U pip
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+# Set the working directory
+WORKDIR /code
 
+# Install required packages and build dependencies
+RUN apk --no-cache add libpq gcc vim poppler-utils musl-dev
+
+# Copy the requirements file
+COPY ./requirements.txt .
+
+# Upgrade pip and install the required packages from the requirements file
+RUN pip install -U pip && \
+    pip install --no-cache-dir --upgrade -r requirements.txt
+
+# Copy the rest of the application code
 COPY . .
-
-COPY gunicorn.conf.py /code/gunicorn.conf.py
-
-COPY .env.dev /code/.env.dev
 

@@ -42,7 +42,8 @@ export default {
             return this.tableData.map((row) => {
                 return {
                     ...row,
-                    updated_at: this.formatDate(row.updated_at)
+                    created_at: this.formatDate(row.updated_at),
+                    expired_at: this.formatDate(row.expired_at)
                 };
             });
         }
@@ -75,8 +76,15 @@ export default {
                     width: '150px'
                 },
                 {
-                    prop: 'updated_at',
-                    label: '更新日期',
+                    prop: 'created_at',
+                    label: '創建日期',
+                    editable: false,
+                    type: 'date',
+                    width: '200px'
+                },
+                {
+                    prop: 'expired_at',
+                    label: '到期日期',
                     editable: false,
                     type: 'date',
                     width: '200px'

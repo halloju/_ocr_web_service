@@ -8,7 +8,10 @@ RUN npm config set unsafe-perm true
 
 RUN npm install --force
 
-ENV VITE_API_URL=http://localhost/backend
+ARG VITE_API_URL
+
+# Set environment variables using the ARG values
+ENV VITE_API_URL=${VITE_API_URL}
 
 COPY . /app
 
@@ -17,18 +20,3 @@ RUN chown -R node:node /app/node_modules
 USER node
 # 運行
 CMD ["npm", "run", "dev"]
-
-# # build stage
-# FROM node:16-alpine as build-stage
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install
-# COPY . .
-# RUN chown -R node:node /app/node_modules
-# RUN npm run build
-
-# # production stage
-# FROM nginx:1.15-alpine as production-stage
-# COPY --from=build-stage /app/dist /usr/share/nginx/html
-# COPY nginx.conf /etc/nginx/conf.d
-# CMD ["nginx", "-g", "daemon off;"]
