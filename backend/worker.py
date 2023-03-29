@@ -86,7 +86,7 @@ def predict_image(self, image_id, image_complexity, model_name, template_id):
     try:
         response = self.predict(image_id, image_complexity, model_name, template_id)
         if response['outputs']['status_msg'] == 'OK':
-            data_pred = str(response['outputs']['ocr_results'])
+            data_pred = str(response['outputs']['data_results'])
         else:
             data_pred = str(response['outputs']['status_msg'])
 

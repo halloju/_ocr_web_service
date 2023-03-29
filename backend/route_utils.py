@@ -3,13 +3,12 @@ import json
 from fastapi import Request
 from app.exceptions import MlaasRequestError
 import os
-LOCAL_MLAAS_URL = "http://mlaas:7777"
 
 
 def call_mlaas_function(request, action: str, timeout=5):
-    mlaas_url = os.environ.get("MLAAS_URL", LOCAL_MLAAS_URL)
+    mlaas_url = os.environ.get("MLAAS_URL")
     
-    if mlaas_url == LOCAL_MLAAS_URL:
+    if os.environ.get('MODE') == 'dev':
         connection_url = f'{mlaas_url}/{action}'
         inp_post_response = requests.post(connection_url, json=request)
     else:
