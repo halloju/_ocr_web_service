@@ -1,31 +1,24 @@
-# Build stage
-FROM python:3.9.5-alpine AS build
+FROM python:3.9.5-slim-buster
+RUN apt-get update \
+    && apt-get -y install libpq-dev gcc vim poppler-utils
 
-RUN apk --no-cache add libpq gcc vim poppler-utils && \
-    apk --no-cache add --virtual .build-deps musl-dev postgresql-dev
+ARG MLAAS_XClient
+ARG MLAAS_JWT
+ARG MLAAS_URL=http://mlaas:7777
 
-WORKDIR /code
+# set work directory
+WORKDIR /usr/src/app
 
-COPY ./requirements.txt .
-
-RUN pip install -U pip && \
-    pip install --no-cache-dir --upgrade -r requirements.txt
+COPY ./requirements.txt /code/requirements.txt
+RUN pip install -U pip
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY . .
 
-# Production stage
-FROM python:3.9.5-alpine
+COPY gunicorn.conf.py /code/gunicorn.conf.py
 
-RUN apk --no-cache add libpq poppler-utils
+COPY .env.dev /code/.env.dev
 
-WORKDIR /usr/src/app
-
-COPY --from=build /code /usr/src/app
-
-COPY gunicorn.conf.py .
-
-COPY .env.dev .
-
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "app:app"]
-
-
+ENV MLAAS_XClient ${MLAAS_XClient}
+ENV MLAAS_JWT ${MLAAS_JWT}
+ENV MLAAS_URL ${MLAAS_URL}
