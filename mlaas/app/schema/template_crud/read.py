@@ -32,12 +32,32 @@ class TemplateDetail(BaseModel, extra=Extra.forbid):
     image: str = Field(..., title='範本影像', example=img_base64_string)
     points_list: conlist(PointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]]}, {'type': 'box', 'tag': '是否為範本', 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}, {'type': 'mask', 'tag': None, 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}])
     template_name: str = Field(..., title='範本名稱', example='身分證')
-    updated_at: datetime = Field(..., title='更新時間', example='2022-10-04T05:12:14.084870+00:00')
+    creation_time: StrictStr = Field(
+        ...,
+        title='模型建立時間',
+        example='2022-10-04 05:12:14')
+    expiration_time: Optional[StrictStr] = Field(
+        ...,
+        title='模型到期時間',
+        description='''
+        模型到期後會自動清除，如果回傳 null，則代表沒有期限
+        ''',
+        example='2022-10-04 05:12:14')
 
 class AvailableTemplates(BaseModel):
     template_id: str = Field(..., title="範本影像編號", example="1352020220930134411")
     template_name: str = Field(..., title='範本名稱', example='身分證')
-    updated_at: datetime = Field(..., title='更新時間', example='2022-10-04T05:12:14.084870+00:00')
+    creation_time: StrictStr = Field(
+        ...,
+        title='模型建立時間',
+        example='2022-10-04 05:12:14')
+    expiration_time: Optional[StrictStr] = Field(
+        ...,
+        title='模型到期時間',
+        description='''
+        模型到期後會自動清除，如果回傳 null，則代表沒有期限
+        ''',
+        example='2022-10-04 05:12:14')
 
 class GetAvailableTemplatesRequest(BaseModel):
     user_id: StrictStr = Field(..., title="員編", example="13520")
