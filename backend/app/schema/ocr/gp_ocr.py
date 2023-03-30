@@ -105,4 +105,4 @@ class GpocrResponse(BaseModel):
         ''',
         example='2022/09/20/19/30/438ffd10-1090-4687-be84-8f6c36be463a'
     )
-    ocr_results: List[OcrPredict]
+    data_results: List[OcrPredict]
