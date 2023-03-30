@@ -27,9 +27,7 @@ async def create_template(request: CreateTemplateRequest):
             'user_id': get_user_id(),
             'image': form.image,
             'points_list': form.points_list,
-            'template_name': form.template_name,
-            'is_public': False,
-            'is_no_ttl': False
+            'template_name': form.template_name
         }
         input_data = {
             "business_unit": "C170",
