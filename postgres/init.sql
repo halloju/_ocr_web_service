@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS if_gp_ocr.template_info(
     template_name VARCHAR,
     points_list JSON[],
     is_no_ttl BOOLEAN DEFAULT FALSE,
-    is_public BOOLEAN DEFAULT FALSE,
     creation_time VARCHAR(30) NOT NULL,
     expiration_time VARCHAR(30)
 );

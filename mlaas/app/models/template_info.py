@@ -11,5 +11,4 @@ class TemplateInfo(Base):
     points_list = Column(ARRAY(JSON(String)), nullable=False)
     creation_time = Column(String, nullable=False)
     expiration_time = Column(String, nullable=True)
-    is_public = Column(Boolean, nullable=False)
     is_no_ttl = Column(Boolean, nullable=False)

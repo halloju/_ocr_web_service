@@ -42,8 +42,6 @@ def create_template(template, db: Session):
         print(f"service template create <template>: {template}")
         # Step 2. 將 template 其餘資訊寫入 DB
         expiration_time = (today + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
-        if(template.is_no_ttl):
-            expiration_time = None
         template_info = TemplateInfo(
             template_id=template_id,
             user_id=template.user_id,
@@ -51,8 +49,7 @@ def create_template(template, db: Session):
             points_list=jsonable_encoder(template.points_list),
             creation_time=today.strftime("%Y-%m-%d %H:%M:%S"),
             expiration_time=expiration_time,
-            is_public=template.is_public,
-            is_no_ttl=template.is_no_ttl
+            is_no_ttl=False
         )
         db.add(template_info)
         db.commit()
