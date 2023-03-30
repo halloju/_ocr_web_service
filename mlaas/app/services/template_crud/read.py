@@ -52,6 +52,7 @@ def get_template_detail(template, db: Session):
 
         # Step 2. 從 DB 拉座標點等資訊
         template_detail = db.query(
+            TemplateInfo.is_no_ttl,
             TemplateInfo.template_name,
             TemplateInfo.points_list,
             TemplateInfo.creation_time,
@@ -61,6 +62,7 @@ def get_template_detail(template, db: Session):
         detail_dict = jsonable_encoder(template_detail.first())
         template_detail = {
             "image": image_base64,
+            "is_no_ttl": detail_dict['is_no_ttl'],
             "points_list": detail_dict["points_list"],
             "template_name": detail_dict["template_name"],
             "creation_time": detail_dict["creation_time"],

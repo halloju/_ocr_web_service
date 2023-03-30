@@ -49,6 +49,7 @@ def get_template_detail(template_id: str):
         template_detail = outputs['outputs']['template_detail']
         return GetTemplateDetailResponse(
             image=template_detail['image'],
+            is_no_ttl=template_detail['is_no_ttl'],
             template_name=template_detail['template_name'],
             points_list=template_detail['points_list'],
             creation_time=template_detail['creation_time'],

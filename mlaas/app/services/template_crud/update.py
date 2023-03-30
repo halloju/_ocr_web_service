@@ -31,7 +31,6 @@ def update_template(template, db: Session):
             user_id=template.user_id,
             template_name=template.template_name,
             points_list=jsonable_encoder(template.points_list),
-            is_public=record.is_public,
             is_no_ttl=record.is_no_ttl,
             creation_time=today.strftime("%Y-%m-%d %H:%M:%S"),
             expiration_time=expiration_time
