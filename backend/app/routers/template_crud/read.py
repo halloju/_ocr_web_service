@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi import Depends
-from sqlalchemy.orm import Session
 
 # from app.services.template_crud import read as service_read
 from app.schema.template_crud.read import GetAvailableTemplatesResponse
@@ -16,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(user_id: str, db: Session = Depends(get_db)):
+def get_available_templates(user_id: str):
     '''
     取得該 user_id 可用的 template 清單
     '''
@@ -36,7 +34,7 @@ def get_available_templates(user_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str, db: Session = Depends(get_db)):
+def get_template_detail(template_id: str):
     '''
     取得該 template 的細節
     '''

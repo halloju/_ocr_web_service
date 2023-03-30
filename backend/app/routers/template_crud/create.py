@@ -1,10 +1,8 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi import Depends
-from sqlalchemy.orm import Session
 
 from app.schema.template_crud.create import CreateTemplateRequest
 from app.forms.template_crud.create import CreateTemplateForm
@@ -18,7 +16,7 @@ router = APIRouter()
 
 
 @router.post("/create_template", response_model=CreateTemplateResponse)  # responses={},
-async def create_template(request: CreateTemplateRequest, db: Session = Depends(get_db)):
+async def create_template(request: CreateTemplateRequest):
     '''
     將 template 影像上傳至 MinIO, 並將其餘資訊存入 Feature DB
     '''

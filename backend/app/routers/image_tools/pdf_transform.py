@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from fastapi import APIRouter, UploadFile, Request, Response, File
 from pydantic.typing import List
 from fastapi import Depends
-from sqlalchemy.orm import Session
 from fastapi.responses import StreamingResponse
 from pdf2image import convert_from_bytes
 import zipfile
