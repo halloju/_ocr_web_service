@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi import Depends
-from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
@@ -18,7 +16,7 @@ router = APIRouter()
 
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)
-async def update_template(request: UpdateTemplateRequest, db: Session = Depends(get_db)):
+async def update_template(request: UpdateTemplateRequest):
     '''
     將 Feature DB 中的 template 資訊更新
     '''

@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi import Depends
-from sqlalchemy.orm import Session
 
 from app.schema.template_crud.delete import DeleteTemplateRequest
 from app.forms.template_crud.delete import DeleteTemplateForm
@@ -15,7 +13,7 @@ router = APIRouter()
 
 
 @router.delete("/delete_template/{template_id}")
-async def delete_template(template_id: str, db: Session = Depends(get_db)):
+async def delete_template(template_id: str):
     '''
     將 Feature DB 中的 template 資訊刪除
     '''

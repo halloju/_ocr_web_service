@@ -70,7 +70,7 @@ async def gp_ocr(request: Input, db: Session = Depends(get_db)):
         duration_time = round((end_time - start_time), 4)
         result = {
             'image_cv_id': image_cv_id,
-            'ocr_results': ocr_results,
+            'data_results': ocr_results,
             'status_code': '0000',
             'status_msg': 'OK'
         }

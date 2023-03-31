@@ -5,12 +5,10 @@ import requests
 import uuid
 from celery import Celery
 from celery import Task
-import dotenv
+
 from route_utils import get_request_id, call_mlaas_function
 
 celery = Celery(__name__)
-env_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), f'.env.{os.environ.get("MODE")}')
-dotenv.load_dotenv(env_file)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "amqp://rabbitmq")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
 

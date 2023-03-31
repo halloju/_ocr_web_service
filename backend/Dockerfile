@@ -17,12 +17,3 @@ RUN pip install -U pip && \
 # Copy the rest of the application code
 COPY . .
 
-# Declare build-time variables with default values
-ARG MLAAS_XClient
-ARG MLAAS_JWT
-ARG MLAAS_URL=http://mlaas:7777
-
-# Set environment variables using the ARG values
-ENV MLAAS_XClient=${MLAAS_XClient} \
-    MLAAS_JWT=${MLAAS_JWT} \
-    MLAAS_URL=${MLAAS_URL}

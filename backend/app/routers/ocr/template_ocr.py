@@ -1,10 +1,8 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from celery.result import AsyncResult
 from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic.typing import List
-from sqlalchemy.orm import Session
 from worker import predict_image
 import base64
 import logging

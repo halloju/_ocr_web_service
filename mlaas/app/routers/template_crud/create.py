@@ -64,8 +64,6 @@ async def create_template(request: Input, db: Session = Depends(get_db)):
             image=form.image,
             points_list=form.points_list,
             template_name=form.template_name,
-            is_public=form.is_public,
-            is_no_ttl=form.is_no_ttl
         )
         template_id = service_create.create_template(template=template, db=db)
         end_time = time.time()
