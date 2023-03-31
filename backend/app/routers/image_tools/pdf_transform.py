@@ -10,7 +10,9 @@ import zipfile
 import io
 import os
 import tempfile
-
+from PIL import ImageFile, Image
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+Image.MAX_IMAGE_PIXELS = None
 router = APIRouter()
 
 def zipfiles(filenames):
@@ -61,7 +63,7 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
             try:
                 with tempfile.TemporaryDirectory() as path:
                     doc_results = convert_from_bytes(
-                        doc.file.read(), output_folder=path, dpi=350, thread_count=4
+                        doc.file.read(), output_folder=path, dpi=300, thread_count=4
                     )
             except:
                 raise CustomException(status_code=400, message=f'{doc.filename} 該檔案出了一點問題，請確認此 pdf 是否有效')
