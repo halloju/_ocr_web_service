@@ -11,6 +11,16 @@ export default {
         apiUrl: {
             type: String,
             required: true
+        },
+        // The default category is 'general' with limited file number to be 20
+        category: {
+            type: Object,
+            default: () => {
+                return {
+                    name: 'general',
+                    limit: 20
+                };
+            }
         }
     },
     setup(props, { emit }) {
@@ -139,6 +149,14 @@ export default {
             dialogVisible.value = true;
         }
 
+        // handle if the upload number exceed the limit
+        function handleExceed(file) {
+            ElMessageBox.alert(`只能上傳 ${props.category.limit} 張圖片!`, '錯誤', {
+                confirmButtonText: '確定',
+                type: 'error'
+            });
+        }
+
         // Image preview
         function onLoadImg(e) {
             // Get image width
@@ -167,11 +185,13 @@ export default {
             fileList,
             dialogVisible,
             isUploadDisabled,
+            category: props.category,
             submit,
             beforeUpload,
             handleRemove,
             handlePictureCardPreview,
-            onLoadImg
+            onLoadImg,
+            handleExceed
         };
     }
 };
@@ -181,7 +201,17 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
             <div class="card">
-                <el-upload :file-list="fileList" list-type="picture-card" :on-change="beforeUpload" :on-remove="handleRemove" multiple :auto-upload="false" :on-preview="handlePictureCardPreview" accept="image/*">
+                <el-upload
+                    :file-list="fileList"
+                    list-type="picture-card"
+                    :on-change="beforeUpload"
+                    :on-remove="handleRemove"
+                    :limit="category.limit"
+                    :on-exceed="handleExceed"
+                    :auto-upload="false"
+                    :on-preview="handlePictureCardPreview"
+                    accept="image/*"
+                >
                     <el-icon><Plus /></el-icon>
                 </el-upload>
                 <el-dialog v-model="dialogVisible" :width="dialogWidth">

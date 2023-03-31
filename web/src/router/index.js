@@ -29,7 +29,16 @@ const router = createRouter({
                     name: 'Model-List',
                     component: () => import('@/views/pages/features/general/ModelList.vue')
                 },
-
+                {
+                    path: '/features/br/remittance',
+                    name: 'RemittanceOCR',
+                    component: () => import('@/views/pages/features/br/RemittanceOCR.vue')
+                },
+                {
+                    path: '/features/br/check',
+                    name: 'CheckOCR',
+                    component: () => import('@/views/pages/features/br/CheckOCR.vue')
+                },
                 {
                     path: '/features/test',
                     name: 'TEST',

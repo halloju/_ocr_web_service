@@ -76,14 +76,14 @@ export default {
                     width: '150px'
                 },
                 {
-                    prop: 'created_at',
+                    prop: 'creation_time',
                     label: '創建日期',
                     editable: false,
                     type: 'date',
                     width: '200px'
                 },
                 {
-                    prop: 'expired_at',
+                    prop: 'expiration_time',
                     label: '到期日期',
                     editable: false,
                     type: 'date',
