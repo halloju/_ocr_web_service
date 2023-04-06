@@ -42,8 +42,8 @@ export default {
             return this.tableData.map((row) => {
                 return {
                     ...row,
-                    created_at: this.formatDate(row.updated_at),
-                    expired_at: this.formatDate(row.expired_at)
+                    created_at: this.formatDate(row.creation_time),
+                    expired_at: this.formatDate(row.expiration_time)
                 };
             });
         }
