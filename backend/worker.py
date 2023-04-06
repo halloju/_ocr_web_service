@@ -15,41 +15,28 @@ celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://lo
 class PredictTask(Task):
     def __init__(self):
         super().__init__()
-        self.gp_ocr = 'ocr/gp_ocr'
-        self.template_ocr = 'ocr/template_ocr'
         self.business_unit = "C170"
         self.request_id = get_request_id()
+        self.endpoints = {
+            "gp_ocr": "ocr/gp_ocr",
+            "template_ocr": "ocr/template_ocr",
+        }
         
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def predict(self, image_id, image_complexity, model_name, template_id):
+    def predict(self, image_id, endpoint, input_params):
         try:
             encoded_data = celery.backend.get(image_id)
-            # Call MLass using /template_ocr
-            if template_id != "":
-                input_data = {
-                    "business_unit": self.business_unit,
-                    "request_id": self.request_id,
-                    "inputs": {
-                        "image": encoded_data.decode("utf-8"),
-                        "template_id": template_id,
-                        "model_name": model_name
-                    }
+            input_data = {
+                "business_unit": self.business_unit,
+                "request_id": self.request_id,
+                "inputs": {
+                    "image": encoded_data.decode("utf-8"),
+                    **input_params
                 }
-                data_pred = call_mlaas_function(input_data, self.template_ocr)
-            else:
-                # Call MLass using /gp_ocr
-                input_data = {
-                    "business_unit": self.business_unit,
-                    "request_id": get_request_id(),
-                    "inputs": {
-                        "image": encoded_data.decode("utf-8"),
-                        "image_complexity": image_complexity,
-                        "model_name": model_name
-                    }
-                }
-                data_pred = call_mlaas_function(input_data, self.gp_ocr)
+            }
+            data_pred = call_mlaas_function(input_data, action=self.endpoints[endpoint])
             # Return the prediction result
             return data_pred
         except Exception as ex:
@@ -80,18 +67,17 @@ def get_from_redis(task_id):
         return {'status': 'FAIL'}
 
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
-def predict_image(self, image_id, image_complexity, model_name, template_id):
+def predict_image(self, image_id, endpoint, input_params):
     try:
-        response = self.predict(image_id, image_complexity, model_name, template_id)
-        if response['outputs']['status_msg'] == 'OK':
-            data_pred = str(response['outputs']['data_results'])
-        else:
-            data_pred = str(response['outputs']['status_msg'])
+        response = self.predict(image_id, endpoint=endpoint, input_params=input_params)
+        status_msg = response['outputs']['status_msg']
+        data_pred = str(response['outputs']['data_results']) if status_msg == 'OK' else str(status_msg)
+        status = 'SUCCESS' if status_msg == 'OK' else 'FAIL'
 
         # Get the file name from Redis using the image ID as the key
         file_name = celery.backend.get(image_id + '_file_name').decode("utf-8")
 
-        return {'status': 'SUCCESS', 'result': data_pred, 'file_name': file_name}
+        return {'status': status, 'result': data_pred, 'file_name': file_name}
 
     except Exception as ex:
         logging.error(ex)
