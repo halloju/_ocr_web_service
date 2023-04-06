@@ -42,8 +42,7 @@ async def process(request: Request, image_complexity: str = "medium", model_name
                 await request.app.state.redis.expire(image_id + '_file_name', 86400)
 
                 # start task prediction
-                template_id = "" # template_id 為空就會打 /ocr/gp_ocr
-                task_id = predict_image.delay(image_id, image_complexity, model_name, template_id)
+                task_id = predict_image.delay(image_id, endpoint='gp_ocr', input_params={image_complexity: image_complexity, model_name: model_name})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:

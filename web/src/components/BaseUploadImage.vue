@@ -1,5 +1,5 @@
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import axios from 'axios';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
@@ -11,6 +11,10 @@ export default {
         apiUrl: {
             type: String,
             required: true
+        },
+        useModelComplexity: {
+            type: Boolean,
+            default: false
         },
         // The default category is 'general' with limited file number to be 20
         category: {
@@ -29,7 +33,7 @@ export default {
         const selectedLang = ref(null);
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
-            { name: '英數字', code: 'dbnet_v0+en_epoch_v0' }
+            { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
         ];
         const breadcrumbItems = [
             { label: '主要功能', to: '#' },
@@ -38,6 +42,7 @@ export default {
             { label: '圖檔上傳', to: '#' }
         ];
         const image_complexity = ref('medium');
+        const switchValue = ref(false);
         // upload 參數
         const fileList = ref([]);
         const dialogVisible = ref(false);
@@ -64,6 +69,7 @@ export default {
             const formData = new FormData();
             formData.append('image_complexity', image_complexity.value);
             formData.append('model_name', selectedLang.value.code);
+            formData.append('template_id', store.state.template_id);
             fileList.value.forEach((file) => {
                 formData.append('files', file.raw);
             });
@@ -177,6 +183,15 @@ export default {
             dialogWidth.value = width + 40;
         }
 
+        // watch
+        watch(switchValue, (newVal) => {
+            if (newVal) {
+                image_complexity.value = 'high';
+            } else {
+                image_complexity.value = 'medium';
+            }
+        });
+
         return {
             breadcrumbItems,
             image_complexity,
@@ -186,6 +201,8 @@ export default {
             dialogVisible,
             isUploadDisabled,
             category: props.category,
+            useModelComplexity: props.useModelComplexity,
+            switchValue,
             submit,
             beforeUpload,
             handleRemove,
@@ -227,6 +244,15 @@ export default {
                     </div>
                     <div class="flex justify-content-start mb-5">
                         <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
+                    </div>
+                    <div v-if="useModelComplexity" class="flex justify-content-start mb-1">
+                        <h5>使用高精準度模型</h5>
+                    </div>
+                    <div v-if="useModelComplexity" class="flex justify-content-start mb-1">
+                        <p>注意：當您使用高精準模型時耗時會較久</p>
+                    </div>
+                    <div v-if="useModelComplexity" class="flex justify-content-start mb-5">
+                        <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" />
                     </div>
                     <div class="flex justify-content-start mb-1">
                         <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="isUploadDisabled"> 圖檔提交 </el-button>

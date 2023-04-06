@@ -49,6 +49,6 @@ export default {
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/gp_ocr/predict_images" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/gp_ocr/predict_images" useModelComplexity="true" />
     <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="gp_ocr" />
 </template>
