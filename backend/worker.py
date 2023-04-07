@@ -36,7 +36,7 @@ class PredictTask(Task):
                     **input_params
                 }
             }
-            data_pred = call_mlaas_function(input_data, action=self.endpoints[endpoint])
+            data_pred = call_mlaas_function(input_data, action=self.endpoints[endpoint], timeout=60)
             # Return the prediction result
             return data_pred
         except Exception as ex:
