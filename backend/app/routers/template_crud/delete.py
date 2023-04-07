@@ -23,7 +23,7 @@ async def delete_template(template_id: str):
         "request_id": get_request_id(),
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/delete_template')
+    outputs = call_mlaas_function(input_data, 'template_crud/delete_template', project='GP')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return Response(status_code=200)

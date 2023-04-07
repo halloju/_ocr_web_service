@@ -34,7 +34,7 @@ async def update_template(request: UpdateTemplateRequest):
             "request_id": get_request_id(),
             "inputs": jsonable_encoder(inputs)
         }
-        outputs = call_mlaas_function(input_data, 'template_crud/update_template')
+        outputs = call_mlaas_function(input_data, 'template_crud/update_template', project='GP')
         status_code = outputs['outputs']['status_code']
         if status_code == '0000':
             print(outputs['outputs'])

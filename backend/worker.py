@@ -17,15 +17,26 @@ class PredictTask(Task):
         super().__init__()
         self.business_unit = "C170"
         self.request_id = get_request_id()
+        self.project_names = {
+            'gp_ocr': 'GP',
+            'template_ocr': 'GP',
+            'check_front': 'CHECK',  # 支票正面
+            'check_back': 'CHECK',  # 支票背面
+            'remittance': 'REMIT' # 匯款單
+        }
         self.endpoints = {
-            "gp_ocr": "ocr/gp_ocr",
-            "template_ocr": "ocr/template_ocr",
+            'gp_ocr': 'ocr/gp_ocr',
+            'template_ocr': 'ocr/template_ocr',
+            'check_front': 'front_out_predict',  # 支票正面
+            'check_back': 'back_predict',  # 支票背面
+            'remittance': 'predict' # 匯款單
+            
         }
         
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    def predict(self, image_id, endpoint, input_params):
+    def predict(self, image_id, action, input_params):
         try:
             encoded_data = celery.backend.get(image_id)
             input_data = {
@@ -36,7 +47,7 @@ class PredictTask(Task):
                     **input_params
                 }
             }
-            data_pred = call_mlaas_function(input_data, action=self.endpoints[endpoint], timeout=60)
+            data_pred = call_mlaas_function(input_data, action=self.endpoints[action], project= self.project_names[action], timeout=60)
             # Return the prediction result
             return data_pred
         except Exception as ex:
