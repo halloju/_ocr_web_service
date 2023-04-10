@@ -27,9 +27,9 @@ class PredictTask(Task):
         self.endpoints = {
             'gp_ocr': 'ocr/gp_ocr',
             'template_ocr': 'ocr/template_ocr',
-            'check_front': 'front_out_predict',  # 支票正面
-            'check_back': 'back_predict',  # 支票背面
-            'remittance': 'predict' # 匯款單
+            'check_front': 'ocr/front_out_predict',  # 支票正面
+            'check_back': 'ocr/back_predict',  # 支票背面
+            'remittance': 'ocr/predict' # 匯款單
             
         }
         
