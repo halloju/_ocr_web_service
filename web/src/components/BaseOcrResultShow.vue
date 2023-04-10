@@ -148,7 +148,7 @@ export default {
             }
         }
 
-        // ocr結果轉成 annotation 的格式
+        // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row) {
             axios
                 .get(`/${props.baseUrl}/get_image/${row.image_id}`)

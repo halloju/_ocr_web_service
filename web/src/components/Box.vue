@@ -6,7 +6,7 @@ export default {
     name: 'Box',
     mounted() {
         this.image = new window.Image();
-        this.image.src = sessionStorage.imageSource;
+        this.image.src = localStorage.imageSource;
         this.image.onload = () => {
             this.imageConfig = {
                 x: 0,
@@ -144,72 +144,6 @@ export default {
             });
             this.isInputting = false;
         },
-
-        // handleMouseDown(event) {
-        //     if (!this.isNamingOk) return;
-        //     if (!this.canDraw) return;
-        //     if (this.imageMode) return;
-        //     if (event.target === event.target.getStage()) return;
-        //     if (this.isTransforming & (event.target.className === 'Image')) {
-        //         this.selectedShapeName = '';
-        //         this.updateTransformer();
-        //         this.isTransforming = false;
-        //         this.$emit('update:isEditing', false);
-        //         return;
-        //     }
-        //     // transform rect
-        //     if (event.target.className === 'Rect' || event.target.className === 'Text') {
-        //         this.isTransforming = true;
-        //         this.$emit('update:isEditing', true);
-        //         // clicked on transformer - do nothing
-        //         const clickedOnTransformer = event.target.getParent().className === 'Transformer';
-        //         if (clickedOnTransformer) {
-        //             return;
-        //         }
-
-        //         // find clicked rect by its name
-        //         const name = event.target.name();
-        //         const rect = this.recs.find((r) => r.name === name);
-        //         if (rect) {
-        //             this.selectedShapeName = name;
-        //         } else {
-        //             this.selectedShapeName = '';
-        //         }
-        //         this.updateTransformer();
-        //         return;
-        //     }
-
-        //     // draw rect
-        //     this.isDrawing = true;
-        //     this.isNamingOk = false;
-        //     const stage = this.$refs.stage.getNode();
-        //     const stageScale = stage.scale();
-        //     const imagePosition = this.$refs.image.getNode().getPosition();
-        //     const pos = stage.getPointerPosition();
-
-        //     const relativePos = {
-        //         x: (pos.x - imagePosition.x) / stageScale.x,
-        //         y: (pos.y - imagePosition.y) / stageScale.y
-        //     };
-
-        //     this.$store.commit('recsUpdate', {
-        //         type: this.Boxes[0].name,
-        //         data: {
-        //             startPointX: relativePos.x,
-        //             startPointY: relativePos.y,
-        //             endPointX: relativePos.x,
-        //             endPointY: relativePos.y,
-        //             scaleX: 1,
-        //             scaleY: 1,
-        //             width: 0,
-        //             height: 0,
-        //             canDelete: false,
-        //             canEdit: false,
-        //             canSave: false
-        //         }
-        //     });
-        //     this.isInputting = false;
-        // },
         updateTransformer() {
             // here we need to manually attach or detach Transformer node
             const transformerNode = this.$refs.transformer.getNode();
@@ -270,8 +204,15 @@ export default {
             if (!this.isDrawing) {
                 return;
             }
-            // console.log(event);
-            const point = this.$refs.image.getNode().getRelativePointerPosition();
+            // calculate new rect size
+            const stage = this.$refs.stage.getNode();
+            const imageNode = this.$refs.image.getNode();
+            const pointerPosition = stage.getPointerPosition();
+            const relativePos = this.calculateRelativePosition(stage, imageNode, pointerPosition);
+            const point = {
+                x: relativePos.x,
+                y: relativePos.y
+            };
             if (point.x < 0) {
                 point.x = 0;
             }
