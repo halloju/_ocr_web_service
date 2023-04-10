@@ -1,6 +1,5 @@
-from app.exceptions import CustomException
 from celery.result import AsyncResult
-from fastapi import APIRouter, Depends, File, Request, UploadFile, Form
+from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic.typing import List
 from worker import predict_image
@@ -19,8 +18,9 @@ async def get_images(image_id: str, request: Request):
     image_string = await redis.get(image_id)
     return JSONResponse(status_code=200, content=image_string)
 
-@router.post("/predict_images", summary="模板辨識")
-async def process(request: Request, model_name: str = Form(...), template_id: str = Form(...), files: List[UploadFile] = File(...)):
+
+@router.post("/check_back", summary="支票背面辨識")
+async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     try:
         for file in files:
@@ -42,8 +42,7 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
                 await request.app.state.redis.expire(image_id + '_file_name', 86400)
 
                 # start task prediction
-                image_complexity = "" # template 的 image_complexity 設定空值
-                task_id = predict_image.delay(image_id, action='template_ocr', input_params={'template_id': template_id, 'model_name': model_name, 'image_complexity': image_complexity})
+                task_id = predict_image.delay(image_id, action='check_front')
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
@@ -54,7 +53,6 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
         logger.info(ex)
         return JSONResponse(status_code=400, content=[])
     
-
 @router.get('/result/{task_id}')
 async def result(task_id: str):
     task = AsyncResult(task_id)
@@ -62,14 +60,11 @@ async def result(task_id: str):
     # Task Not Ready
     if not task.ready():
         return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
-
     
-    # Task done: return the value
     task_result = task.get()
-    # Task Result is None
     if task_result is None:
         return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': 'FAIL', 'result': 'Task result is None', 'file_name': ''})
-
+    # Task done: return the value
     result = task_result.get('result')
     return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result, 'file_name': task_result.get('file_name')})
 

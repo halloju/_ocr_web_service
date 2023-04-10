@@ -23,7 +23,7 @@ def get_available_templates(user_id: str):
         "request_id": get_request_id(),
         "inputs": {'user_id': user_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/get_available_templates')
+    outputs = call_mlaas_function(input_data, 'template_crud/get_available_templates', project='GP')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return GetAvailableTemplatesResponse(
@@ -43,7 +43,7 @@ def get_template_detail(template_id: str):
         "request_id": get_request_id(),
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/get_template_detail')
+    outputs = call_mlaas_function(input_data, 'template_crud/get_template_detail', project='GP')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         template_detail = outputs['outputs']['template_detail']

@@ -1,4 +1,3 @@
-from app.schema.ocr.gp_ocr import GpocrPredict
 from celery.result import AsyncResult
 from fastapi import APIRouter, File, Request, UploadFile, Form
 from fastapi.responses import JSONResponse
@@ -42,7 +41,7 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
                 await request.app.state.redis.expire(image_id + '_file_name', 86400)
 
                 # start task prediction
-                task_id = predict_image.delay(image_id, endpoint='gp_ocr', input_params={'image_complexity': image_complexity, 'model_name': model_name})
+                task_id = predict_image.delay(image_id, action='gp_ocr', input_params={image_complexity: image_complexity, model_name: model_name})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
