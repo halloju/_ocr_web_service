@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional
-from app.common.schema import img_base64_string
+from app.schema.common import img_base64_string
 
 
 class Back_PredictInput(BaseModel):

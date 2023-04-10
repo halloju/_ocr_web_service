@@ -1,7 +1,7 @@
 import os
 from typing import Optional, List
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
-from app.common.schema import img_base64_string
+from app.schema.common import img_base64_string
 
 
 class GpocrRequest(BaseModel):

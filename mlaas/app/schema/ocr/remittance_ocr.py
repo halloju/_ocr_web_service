@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from app.common.schema import img_base64_string
+from app.schema.common import img_base64_string
 
 
 class PredictInput(BaseModel):
