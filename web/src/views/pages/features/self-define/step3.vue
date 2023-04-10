@@ -1,14 +1,14 @@
 <script>
-import Annotation from '@/components/Annotation.vue';
+import Box from '@/components/Box.vue';
+import BoxCard from '@/components/BoxCard.vue';
 import axios from 'axios';
 import { mapState } from 'vuex';
 import { ElMessageBox } from 'element-plus';
-import UploadImage from '@/components/UploadImage.vue';
 
 export default {
     components: {
-        Annotation,
-        UploadImage
+        BoxCard,
+        Box
     },
     name: 'SelfDefine',
     data() {
@@ -37,7 +37,7 @@ export default {
             ],
             isFinal: false,
             boxes: [],
-            boxNames: ['text', 'box', 'mask', 'all'],
+            boxNames: ['text', 'box', 'mask'],
             isShapesVisible: {
                 text: true,
                 box: true,
@@ -46,15 +46,7 @@ export default {
             isEditing: false,
             disableInput: false,
             templateNameEdit: false,
-            input: this.$store.state.selfDefinedRecs.name,
-            imageSrc: localStorage.getItem('imageSource') || '',
-            initialData: {
-                text: [],
-                box: [],
-                mask: []
-            },
-            currentStep: 0,
-            createNew: this.$store.state.createNew
+            input: this.$store.state.selfDefinedRecs.name
         };
     },
     created() {
@@ -73,28 +65,8 @@ export default {
                 });
                 return;
             }
-            // const nextStep = this.step + 1;
-            // this.$router.push({ path: `/features/general/self-define/step/${nextStep}` });
-            if (this.currentStep < 5) {
-                this.currentStep++;
-                //localStorage.removeItem(this.localStorageKey); // Clear localStorage for the next step
-            }
-        },
-        previous() {
-            if (this.currentStep > 0) {
-                this.currentStep--;
-            }
-        },
-        getRecsFromLocalStorage() {
-            const keys = ['text', 'box', 'mask'];
-            const recs = [];
-            keys.forEach((key) => {
-                const rec = JSON.parse(localStorage.getItem(key) || '[]');
-                if (rec) {
-                    recs.push(...rec);
-                }
-            });
-            return recs;
+            const nextStep = this.step + 1;
+            this.$router.push({ path: `/features/general/self-define/step/${nextStep}` });
         },
         upload() {
             if (this.input === '') {
@@ -104,16 +76,17 @@ export default {
                 });
                 return;
             }
+
             for (let i = 0; i < this.boxNames.length; i++) {
-                this.getRecsFromLocalStorage().forEach((box) => {
+                this.selfDefinedRecs[this.boxNames[i]].forEach((box) => {
                     this.boxes.push({
                         type: this.boxNames[i],
-                        tag: box.annotation.title,
+                        tag: box.name,
                         points: [
-                            [box.x, box.y],
-                            [box.x + box.width * box.scaleX, box.y],
-                            [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
-                            [box.x, box.y + box.height * box.scaleY]
+                            [box.startPointX, box.startPointY],
+                            [box.endPointX, box.startPointY],
+                            [box.endPointX, box.endPointY],
+                            [box.startPointX, box.endPointY]
                         ]
                     });
                 });
@@ -129,7 +102,7 @@ export default {
 
             let body;
             let action;
-            if (this.template_id !== '') {
+            if (this.selfDefinedRecs.id.length === 0) {
                 console.log('create');
                 const image = new window.Image();
                 image.src = localStorage.imageSource;
@@ -191,18 +164,17 @@ export default {
                 });
         },
         isFinalStep() {
-            if (this.currentStep === 4) {
+            if (this.step === 5) {
                 this.isFinal = true;
             } else {
                 this.isFinal = false;
             }
         },
         clearState() {
-            // remove all localStorage
-            localStorage.removeItem('imageSource');
-            localStorage.removeItem('text');
-            localStorage.removeItem('box');
-            localStorage.removeItem('mask');
+            this.$store.commit('recsClear');
+            sessionStorage.removeItem('imageSource');
+            sessionStorage.filename = '';
+            sessionStorage.filesize = 0;
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;
@@ -214,28 +186,16 @@ export default {
             this.templateNameEdit = !this.templateNameEdit;
             this.disableInput = !this.disableInput;
             this.$store.commit('templateNameUpdate', this.input);
-        },
-        Upload(val) {
-            this.isOK = val;
         }
     },
     computed: {
         ...mapState(['selfDefinedRecs']),
         buttonText() {
             return this.templateNameEdit ? '編輯' : '確認';
-        },
-        rectangleType() {
-            return this.boxNames[this.currentStep - 1];
-        },
-        localStorageKey() {
-            return this.boxNames[this.currentStep - 1];
-        },
-        editMode() {
-            return this.currentStep < 4;
         }
     },
     watch: {
-        currentStep() {
+        step() {
             this.isFinalStep();
         }
     },
@@ -267,14 +227,7 @@ export default {
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
-                <!-- <Steps :model="nestedRouteItems" :readonly="false" /> -->
-                <el-steps :active="currentStep" align-center>
-                    <el-step title="模板圖檔上傳" />
-                    <el-step title="文字位置標註" />
-                    <el-step title="方塊位置標註" />
-                    <el-step title="遮罩位置標註" />
-                    <el-step title="確認" />
-                </el-steps>
+                <Steps :model="nestedRouteItems" :readonly="false" />
                 <br />
                 <div class="grid">
                     <div class="col-12">
@@ -282,7 +235,6 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-6">
-                        <el-button v-if="!this.isFinal" class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
                         <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" type="success">下一步</el-button>
                         <el-button v-else class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
                             提交
@@ -301,30 +253,13 @@ export default {
             </div>
         </div>
     </div>
-    <div v-if="currentStep > 0" class="grid p-fluid">
-        <div class="col-12">
-            <div class="card">
-                <Annotation
-                    :key="currentStep"
-                    containerId="my-pic-annotation-output"
-                    :imageSrc="imageSrc"
-                    :editMode="editMode"
-                    :language="en"
-                    :width="width"
-                    :height="height"
-                    dataCallback=""
-                    initialDataId=""
-                    image_cv_id=""
-                    :rectangleType="rectangleType"
-                    :localStorageKey="localStorageKey"
-                />
-            </div>
+    <div class="grid p-fluid">
+        <div class="col-12 md:col-8">
+            <Box :Boxes="this.Boxes" :isShapesVisible="this.isShapesVisible" @update:isEditing="update" />
         </div>
-    </div>
-    <div v-else class="grid p-fluid">
-        <div class="col-12">
-            <div class="card">
-                <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
+        <div class="col-12 md:col-4">
+            <div class="card" style="overflow-x: scroll">
+                <BoxCard :Boxes="this.Boxes" @toggleShowShapes="onSwitchChange" />
             </div>
         </div>
     </div>

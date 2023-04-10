@@ -6,9 +6,9 @@ export default {
     created() {
         if (!this.createNew) {
             this.isOK = true;
-            this.imageSource = sessionStorage.imageSource;
-            this.filename = sessionStorage.filename;
-            this.filesize = sessionStorage.filesize;
+            this.imageSource = localStorage.imageSource;
+            this.filename = localStorage.filename;
+            this.filesize = localStorage.filesize;
         }
     },
     data() {
@@ -69,9 +69,9 @@ export default {
                         this.isOK = true;
                         this.filename = file.name;
                         this.filesize = file.size / 1024;
-                        sessionStorage.imageSource = this.imageSource;
-                        sessionStorage.filename = this.filename;
-                        sessionStorage.filesize = this.filesize;
+                        localStorage.imageSource = this.imageSource;
+                        localStorage.filename = this.filename;
+                        localStorage.filesize = this.filesize;
                         this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
@@ -101,9 +101,9 @@ export default {
                         this.isOK = true;
                         this.filename = file.name;
                         this.filesize = file.size / 1024;
-                        sessionStorage.imageSource = this.imageSource;
-                        sessionStorage.filename = this.filename;
-                        sessionStorage.filesize = this.filesize;
+                        localStorage.imageSource = this.imageSource;
+                        localStorage.filename = this.filename;
+                        localStorage.filesize = this.filesize;
                         this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
@@ -120,10 +120,10 @@ export default {
             this.preview = null;
             this.isOK = false;
             this.wrongFile = false;
-            sessionStorage.imageSource = '';
-            sessionStorage.filename = null;
-            sessionStorage.filesize = 0;
-            sessionStorage.isUploaded = false;
+            localStorage.imageSource = '';
+            localStorage.filename = null;
+            localStorage.filesize = 0;
+            localStorage.isUploaded = false;
             this.$refs.inputFile.value = '';
             this.$store.commit('recsClear');
         },
@@ -132,7 +132,7 @@ export default {
         },
         handleFileInputChange(event) {
             this.$store.commit('recsClear');
-            sessionStorage.removeItem('imageSource');
+            localStorage.removeItem('imageSource');
             let file = event.target.files[0];
             if (file && file.type === 'application/json') {
                 let reader = new FileReader();
@@ -142,9 +142,9 @@ export default {
                         if (data.image) {
                             this.isDragging = false;
                             this.isOK = true;
-                            sessionStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
-                            sessionStorage.setItem('filename', data.template_name);
-                            sessionStorage.setItem('filesize', data.image.length / 1024);
+                            localStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
+                            localStorage.setItem('filename', data.template_name);
+                            localStorage.setItem('filesize', data.image.length / 1024);
                             data.points_list.forEach((item) => {
                                 this.$store.commit('recsUpdate', {
                                     type: item.type,

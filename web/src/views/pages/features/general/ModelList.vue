@@ -227,29 +227,13 @@ export default {
         },
         editTemplate() {
             this.$store.commit('recsClear');
-            this.template.points_list.forEach((box) => {
-                this.$store.commit('recsUpdate', {
-                    type: box.type,
-                    data: {
-                        startPointX: box.points[0][0],
-                        startPointY: box.points[0][1],
-                        endPointX: box.points[2][0],
-                        endPointY: box.points[2][1],
-                        scaleX: 1,
-                        scaleY: 1,
-                        width: box.points[2][0] - box.points[0][0],
-                        height: box.points[2][1] - box.points[0][1],
-                        canDelete: true,
-                        canEdit: true,
-                        canSave: false,
-                        name: box.tag
-                    }
-                });
+            JSON.parse(this.initialData).forEach((item) => {
+                localStorage.setItem(item.type, JSON.stringify(item));
             });
-            sessionStorage.imageSource = 'data:image/png;base64,' + this.template.image;
+            localStorage.imageSource = 'data:image/png;base64,' + this.template.image;
             this.$store.commit('templateNameUpdate', this.template.template_name);
             this.$store.commit('templateIdUpdate', this.template_id);
-            this.$router.push({ path: '/features/general/self-define/step/2' });
+            this.$router.push({ path: '/features/general/self-define/step' });
         },
         downloadTemplate() {
             let template_info_json = JSON.stringify(this.template);

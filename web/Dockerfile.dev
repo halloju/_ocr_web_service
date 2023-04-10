@@ -8,10 +8,8 @@ RUN npm config set unsafe-perm true
 
 RUN npm install --force
 
-ARG VITE_API_URL
-
 # Set environment variables using the ARG values
-ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_API_URL=http://localhost/backend/
 
 COPY . /app
 
