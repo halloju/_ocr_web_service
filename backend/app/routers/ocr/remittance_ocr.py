@@ -42,7 +42,7 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
                 await request.app.state.redis.expire(image_id + '_file_name', 86400)
 
                 # start task prediction
-                task_id = predict_image.delay(image_id, action='check_front')
+                task_id = predict_image.delay(image_id, action='remittance', input_params={})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
