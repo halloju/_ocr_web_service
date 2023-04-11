@@ -54,7 +54,8 @@ export default {
                 mask: []
             },
             currentStep: 0,
-            createNew: this.$store.state.createNew
+            createNew: this.$store.state.createNew,
+            template_id: localStorage.getItem('template_id') || ''
         };
     },
     created() {
@@ -94,6 +95,7 @@ export default {
                     recs.push(...rec);
                 }
             });
+            console.log(recs);
             return recs;
         },
         upload() {
@@ -104,20 +106,21 @@ export default {
                 });
                 return;
             }
-            for (let i = 0; i < this.boxNames.length; i++) {
-                this.getRecsFromLocalStorage().forEach((box) => {
-                    this.boxes.push({
-                        type: this.boxNames[i],
-                        tag: box.annotation.title,
-                        points: [
-                            [box.x, box.y],
-                            [box.x + box.width * box.scaleX, box.y],
-                            [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
-                            [box.x, box.y + box.height * box.scaleY]
-                        ]
-                    });
+            // clear state
+            this.boxes = [];
+            this.getRecsFromLocalStorage().forEach((box) => {
+                console.log(box);
+                this.boxes.push({
+                    type: box.rectangleType,
+                    tag: box.annotation.title,
+                    points: [
+                        [box.x, box.y],
+                        [box.x + box.width * box.scaleX, box.y],
+                        [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
+                        [box.x, box.y + box.height * box.scaleY]
+                    ]
                 });
-            }
+            });
 
             if (this.boxes.length === 0) {
                 this.$message({
@@ -129,7 +132,8 @@ export default {
 
             let body;
             let action;
-            if (this.template_id !== '') {
+            console.log(this.template_id);
+            if (this.createNew) {
                 console.log('create');
                 const image = new window.Image();
                 image.src = localStorage.imageSource;
@@ -147,7 +151,7 @@ export default {
                     user_id: 12345,
                     points_list: this.boxes,
                     template_name: this.input,
-                    template_id: this.selfDefinedRecs.id
+                    template_id: this.template_id
                 };
                 action = 'update_template';
             }
@@ -199,10 +203,7 @@ export default {
         },
         clearState() {
             // remove all localStorage
-            localStorage.removeItem('imageSource');
-            localStorage.removeItem('text');
-            localStorage.removeItem('box');
-            localStorage.removeItem('mask');
+            localStorage.clear();
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;
@@ -237,6 +238,7 @@ export default {
     watch: {
         currentStep() {
             this.isFinalStep();
+            this.imageSrc = localStorage.getItem('imageSource');
         }
     },
     props: {
@@ -282,7 +284,7 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-6">
-                        <el-button v-if="!this.isFinal" class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
+                        <el-button v-if="currentStep != 0" class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
                         <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" type="success">下一步</el-button>
                         <el-button v-else class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
                             提交

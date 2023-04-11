@@ -171,12 +171,14 @@ export default {
             return {
                 type: type,
                 name: 'shape-' + new Date().valueOf(),
-                fill: '#b0c4de',
+                fill: this.getFillColorByRectangleType(rectangleType),
                 opacity: 0.5,
                 stroke: '#0000ff',
                 draggable: true,
                 strokeWidth: 2,
                 strokeScaleEnabled: false,
+                scaleX: 1,
+                scaleY: 1,
                 annotation: {
                     title: '',
                     text: '',
@@ -254,6 +256,7 @@ export default {
             shape.scaleY = event.currentTarget.attrs.scaleY;
             shape.x = event.currentTarget.attrs.x;
             shape.y = event.currentTarget.attrs.y;
+            console.log('handleTransform', shape);
             // call update
             this.shapesUpdated();
         },
@@ -290,7 +293,7 @@ export default {
                 const idx = this.shapes.findIndex((r) => r.name === name);
                 if (idx >= 0) {
                     this.shapes[idx].stroke = '#00f';
-                    this.shapes[idx].fill = '#b0c4de';
+                    this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
                 }
             }
         },
@@ -316,6 +319,7 @@ export default {
             }
             // save to local storage, if defined
             if (this.localStorageKey) {
+                console.log('save', this.shapes);
                 localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
             }
         },

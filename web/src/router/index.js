@@ -46,7 +46,7 @@ const router = createRouter({
                 },
                 {
                     path: '/features/general/self-define/step',
-                    name: 'SelfDefine1',
+                    name: 'SelfDefine',
                     component: () => import('@/views/pages/features/self-define/step.vue')
                 },
                 // {
