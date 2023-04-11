@@ -43,7 +43,7 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
 
                 # start task prediction
                 image_complexity = "" # template 的 image_complexity 設定空值
-                task_id = predict_image.delay(image_id, action='template_ocr', input_params={'template_id': template_id, 'model_name': model_name, 'image_complexity': image_complexity})
+                task_id = predict_image.delay(image_id, action='template_ocr', input_params={'template_id': template_id, 'model_name': model_name})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
