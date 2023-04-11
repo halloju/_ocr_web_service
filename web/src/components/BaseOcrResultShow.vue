@@ -233,7 +233,7 @@ export default {
         }
 
         function downloadFile() {
-            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
+            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData.value);
             const workBook = {
                 SheetNames: ['jsonWorkSheet'],
                 Sheets: {
