@@ -256,7 +256,6 @@ export default {
             shape.scaleY = event.currentTarget.attrs.scaleY;
             shape.x = event.currentTarget.attrs.x;
             shape.y = event.currentTarget.attrs.y;
-            console.log('handleTransform', shape);
             // call update
             this.shapesUpdated();
         },
@@ -301,7 +300,6 @@ export default {
             // save correct color
             const idx = this.shapes.findIndex((r) => r.name === name);
             this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
-            console.log('form submitted', this.shapes[idx]);
             // callback/persist
             this.shapesUpdated();
         },
@@ -324,8 +322,16 @@ export default {
             }
         },
         load() {
+            // load from initial data
+            if (this.initialData) {
+                this.shapes = this.initialData;
+                // if we only show data, remove draggable from it
+                if (!this.editMode) {
+                    this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
+                }
+                return;
+            }
             // load from local storage, if defined
-            console.log('load', this.localStorageKey);
             let data = [];
             if (this.localStorageKey === 'all') {
                 const keys = ['text', 'box', 'mask'];
@@ -336,11 +342,8 @@ export default {
             } else {
                 const value = localStorage.getItem(this.localStorageKey) || '[]';
                 data = JSON.parse(value);
-                console.log('data', data);
             }
             this.shapes = data;
-            console.log('shape', this.shapes);
-
             // if we only show data, remove draggable from it
             if (!this.editMode) {
                 this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);

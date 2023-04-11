@@ -109,7 +109,9 @@ export default {
             // clear state
             this.boxes = [];
             this.getRecsFromLocalStorage().forEach((box) => {
-                console.log(box);
+                //calculate amd round the points
+                // let endX = Math.round(box.x + box.width * box.scaleX);
+                // let endY = Math.round(box.y + box.height * box.scaleY);
                 this.boxes.push({
                     type: box.rectangleType,
                     tag: box.annotation.title,
@@ -132,9 +134,7 @@ export default {
 
             let body;
             let action;
-            console.log(this.template_id);
             if (this.createNew) {
-                console.log('create');
                 const image = new window.Image();
                 image.src = localStorage.imageSource;
                 body = {

@@ -89,6 +89,8 @@ export default {
             }
             let input = e.target;
             this.wrongFile = false;
+            // clear local storage
+            localStorage.clear();
             // allows only 1 file
             if (input.files.length === 1) {
                 let file = input.files[0];

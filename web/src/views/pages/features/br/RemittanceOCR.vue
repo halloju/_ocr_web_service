@@ -53,6 +53,6 @@ export default {
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/remittance/predict_images" :category="category" />
-    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="remittance" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/remittance_ocr/remittance" :category="category" />
+    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="remittance_ocr" />
 </template>

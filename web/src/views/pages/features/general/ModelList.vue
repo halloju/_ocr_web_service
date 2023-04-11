@@ -130,18 +130,31 @@ export default {
                     return '#b0c4de'; // Default color for other types
             }
         },
+        generatePointsList(points) {
+            // find the min and max x and y
+            let minX = Math.min(...points.map((point) => point[0]));
+            let maxX = Math.max(...points.map((point) => point[0]));
+            let minY = Math.min(...points.map((point) => point[1]));
+            let maxY = Math.max(...points.map((point) => point[1]));
+
+            return {
+                label_x: minX,
+                label_y: minY,
+                label_width: maxX - minX,
+                label_height: maxY - minY
+            };
+        },
         generateTemplate(template_id, bbox) {
             let myShapes = [];
             if (bbox.length === 0) {
                 return JSON.stringify(myShapes);
             }
             let fill = this.getFillColorByRectangleType(bbox[0].type);
-            bbox.forEach(function (element) {
+            console.log(bbox);
+            bbox.forEach((element) => {
                 var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
-                var label_x = element['points'][0][0];
-                var label_y = element['points'][0][1];
-                var label_width = element['points'][1][0] - element['points'][0][0];
-                var label_height = element['points'][2][1] - element['points'][1][1];
+                var { label_x, label_y, label_width, label_height } = this.generatePointsList(element.points);
+                console.log(label_x, label_y, label_width, label_height);
                 myShapes.push({
                     type: 'rect',
                     name: template_id,
