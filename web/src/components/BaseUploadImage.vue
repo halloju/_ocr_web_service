@@ -143,7 +143,7 @@ export default {
         function handleRemove(file) {
             // Remove file from fileList
             for (let i = 0; i < fileList.value.length; i++) {
-                if (fileList[i]['uid'] === file.uid) {
+                if (fileList.value[i].raw.uid === file.uid) {
                     fileList.value.splice(i, 1);
                     break;
                 }
