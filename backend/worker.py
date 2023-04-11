@@ -85,7 +85,7 @@ def predict_image(self, image_id, action, input_params):
     try:
         response = self.predict(image_id, action=action, input_params=input_params)
         status_code = response['outputs']['status_code']
-        data_pred = str(response['outputs']['data_results']) if status_code == '0000' else str(response['outputs']['status_str'])
+        data_pred = str(response['outputs']['data_results']) if status_code == '0000' else str(response['outputs']['status_msg'])
         status = 'SUCCESS' if status_code == '0000' else 'FAIL'
 
         # Get the file name from Redis using the image ID as the key
