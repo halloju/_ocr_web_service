@@ -48,6 +48,9 @@ class PredictTask(Task):
                 }
             }
             data_pred = call_mlaas_function(input_data, action=self.endpoints[action], project= self.project_names[action], timeout=60)
+            if action in ['check_front', 'check_back', 'remittance']:
+                if data_pred['outputs']['status_code'] == '0000':
+                    data_pred['outputs']['data_results'] = [{'tag': key, 'text': value} for key, value in data_pred['outputs'].items() if key not in ['status_code', 'status_msg', 'err_detail']]
             # Return the prediction result
             return data_pred
         except Exception as ex:
@@ -78,12 +81,12 @@ def get_from_redis(task_id):
         return {'status': 'FAIL'}
 
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
-def predict_image(self, image_id, endpoint, input_params):
+def predict_image(self, image_id, action, input_params):
     try:
-        response = self.predict(image_id, endpoint=endpoint, input_params=input_params)
-        status_msg = response['outputs']['status_msg']
-        data_pred = str(response['outputs']['data_results']) if status_msg == 'OK' else str(status_msg)
-        status = 'SUCCESS' if status_msg == 'OK' else 'FAIL'
+        response = self.predict(image_id, action=action, input_params=input_params)
+        status_code = response['outputs']['status_code']
+        data_pred = str(response['outputs']['data_results']) if status_code == '0000' else str(response['outputs']['status_msg'])
+        status = 'SUCCESS' if status_code == '0000' else 'FAIL'
 
         # Get the file name from Redis using the image ID as the key
         file_name = celery.backend.get(image_id + '_file_name').decode("utf-8")

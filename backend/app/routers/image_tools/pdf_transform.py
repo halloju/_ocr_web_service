@@ -54,12 +54,12 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
     for doc in files:
         # Read and encode the file data as base64
         if doc.content_type == 'application/pdf':
-            filename = doc.filename.split('/')[-1].replace('.pdf', '').replace('.PDF', '.jpg')
+            filename = doc.filename.split('/')[-1].replace('.pdf', '').replace('.PDF', '')
             # pdf_file = await file.read()  # byte
             try:
                 with tempfile.TemporaryDirectory() as path:
                     doc_results = convert_from_bytes(
-                        doc.file.read(), output_folder=path, dpi=350, thread_count=4
+                        doc.file.read(), output_folder=path, dpi=300, thread_count=4
                     )
             except:
                 raise CustomException(status_code=400, message=f'{doc.filename} 該檔案出了一點問題，請確認此 pdf 是否有效')

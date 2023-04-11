@@ -1,10 +1,11 @@
 from pydantic import BaseModel, Field
+from app.schema.common import img_base64_string
 
 
 class PredictInput(BaseModel):
     image: str = Field(...,
                        description='''base64 字串的影像<br /><br />''',
-                       example="/9j/4AAQSkZJRgABAQEBLAEsAAD/2w")
+                       example=img_base64_string)
 
 
 class PredictOutput(BaseModel):
