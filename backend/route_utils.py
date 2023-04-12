@@ -3,6 +3,7 @@ import json
 from fastapi import Request
 from app.exceptions import MlaasRequestError
 import os
+from datetime import datetime
 
 
 def call_mlaas_function(request, action: str, project, timeout=5):
@@ -28,4 +29,4 @@ def get_user_id() -> str:
     return '13520'
 
 def get_request_id() -> str:
-    return 'gpocr_system_test'
+    return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
