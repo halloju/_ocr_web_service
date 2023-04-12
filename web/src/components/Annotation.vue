@@ -180,7 +180,7 @@ export default {
                 scaleX: 1,
                 scaleY: 1,
                 annotation: {
-                    title: '',
+                    title: null,
                     text: '',
                     linkTitle: '',
                     link: ''
