@@ -193,10 +193,17 @@ export default {
 
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
-                var points = Object.values(label[0]);
-                var myContent = label[1];
+                var points = Object.values(element['points']);
+                var myContent = element['text'];
                 var { label_x, label_y, label_width, label_height } = generatePointsList(points);
-                var image_cv_id = label[2];
+                var image_cv_id = "image_cv_id";  // 不知道這個是做什麼用的
+                var tagtitle;
+
+                if (element.hasOwnProperty('tag')){
+                    tagtitle = element['tag'];
+                }else{
+                    tagtitle = index + 1;
+                }
                 myShapes.push({
                     type: 'rect',
                     name: image_cv_id,
@@ -207,7 +214,7 @@ export default {
                     strokeWidth: 2,
                     strokeScaleEnabled: false,
                     annotation: {
-                        title: index + 1,
+                        title: tagtitle,
                         text: myContent,
                         linkTitle: '',
                         link: ''
