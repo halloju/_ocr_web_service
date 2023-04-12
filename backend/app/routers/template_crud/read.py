@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi import Depends
-from sqlalchemy.orm import Session
 
 # from app.services.template_crud import read as service_read
 from app.schema.template_crud.read import GetAvailableTemplatesResponse
@@ -16,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(user_id: str, db: Session = Depends(get_db)):
+def get_available_templates(user_id: str):
     '''
     取得該 user_id 可用的 template 清單
     '''
@@ -25,7 +23,7 @@ def get_available_templates(user_id: str, db: Session = Depends(get_db)):
         "request_id": get_request_id(),
         "inputs": {'user_id': user_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/get_available_templates')
+    outputs = call_mlaas_function(input_data, 'template_crud/get_available_templates', project='GP')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return GetAvailableTemplatesResponse(
@@ -36,7 +34,7 @@ def get_available_templates(user_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str, db: Session = Depends(get_db)):
+def get_template_detail(template_id: str):
     '''
     取得該 template 的細節
     '''
@@ -45,15 +43,17 @@ def get_template_detail(template_id: str, db: Session = Depends(get_db)):
         "request_id": get_request_id(),
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/get_template_detail')
+    outputs = call_mlaas_function(input_data, 'template_crud/get_template_detail', project='GP')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         template_detail = outputs['outputs']['template_detail']
         return GetTemplateDetailResponse(
             image=template_detail['image'],
+            is_no_ttl=template_detail['is_no_ttl'],
             template_name=template_detail['template_name'],
             points_list=template_detail['points_list'],
-            updated_at=template_detail['updated_at']
+            creation_time=template_detail['creation_time'],
+            expiration_time=template_detail['expiration_time']
         )
     elif status_code == '5407':
         raise MlaasRequestError(**response_table.status_templateexisterror)

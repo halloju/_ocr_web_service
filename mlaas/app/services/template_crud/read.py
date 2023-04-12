@@ -20,9 +20,11 @@ def get_available_templates(template, db: Session):
         available_templates = db.query(
             TemplateInfo.template_id,
             TemplateInfo.template_name,
-            TemplateInfo.updated_at).filter(TemplateInfo.user_id == template.user_id)
+            TemplateInfo.creation_time,
+            TemplateInfo.expiration_time).filter(TemplateInfo.user_id == template.user_id)
         if not available_templates.first():
-            raise CustomException(status_code=400, message="available_templates are not found")
+            logger.info({'msg': "available_templates are not found"})
+        #     raise CustomException(status_code=400, message=)
         return available_templates.all()
     except OperationalError as e:
         logger.error("db error:{}".format(e))
@@ -50,17 +52,21 @@ def get_template_detail(template, db: Session):
 
         # Step 2. 從 DB 拉座標點等資訊
         template_detail = db.query(
+            TemplateInfo.is_no_ttl,
             TemplateInfo.template_name,
             TemplateInfo.points_list,
-            TemplateInfo.updated_at).filter(TemplateInfo.template_id == template_id)
+            TemplateInfo.creation_time,
+            TemplateInfo.expiration_time).filter(TemplateInfo.template_id == template_id)
         if not template_detail.first():
             raise CustomException(status_code=400, message="template_detail is not found")
         detail_dict = jsonable_encoder(template_detail.first())
         template_detail = {
             "image": image_base64,
+            "is_no_ttl": detail_dict['is_no_ttl'],
             "points_list": detail_dict["points_list"],
             "template_name": detail_dict["template_name"],
-            "updated_at": detail_dict["updated_at"]
+            "creation_time": detail_dict["creation_time"],
+            "expiration_time": detail_dict["expiration_time"]
         }
         return template_detail
     except Exception as e:

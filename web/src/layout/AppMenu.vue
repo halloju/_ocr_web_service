@@ -24,6 +24,22 @@ const model = ref([
                 ]
             },
             {
+                label: '票據辨識',
+                icon: 'pi pi-th-large',
+                items: [
+                    {
+                        label: '匯款單辨識',
+                        icon: 'pi pi-th-large',
+                        to: '/features/br/remittance'
+                    },
+                    {
+                        label: '支票辨識',
+                        icon: 'pi pi-list',
+                        to: '/features/br/check'
+                    }
+                ]
+            },
+            {
                 label: '人證辨識',
                 icon: 'pi pi-users',
                 items: [
@@ -36,7 +52,7 @@ const model = ref([
                         icon: 'pi pi-car'
                     },
                     {
-                        label: '第二證件',
+                        label: '健保卡辨識',
                         icon: 'pi pi-credit-card'
                     }
                 ]

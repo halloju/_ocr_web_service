@@ -1,5 +1,5 @@
 from celery.result import AsyncResult
-from fastapi import APIRouter, File, Request, UploadFile, Form
+from fastapi import APIRouter, File, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic.typing import List
 from worker import predict_image
@@ -18,8 +18,9 @@ async def get_images(image_id: str, request: Request):
     image_string = await redis.get(image_id)
     return JSONResponse(status_code=200, content=image_string)
 
-@router.post("/predict_images", summary="全文辨識")
-async def process(request: Request, image_complexity: str = Form(...), model_name: str = Form(...), files: List[UploadFile] = File(...)):
+
+@router.post("/remittance", summary="匯款單辨識")
+async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     try:
         for file in files:
@@ -41,7 +42,7 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
                 await request.app.state.redis.expire(image_id + '_file_name', 86400)
 
                 # start task prediction
-                task_id = predict_image.delay(image_id, action='gp_ocr', input_params={'image_complexity': image_complexity, 'model_name': model_name})
+                task_id = predict_image.delay(image_id, action='remittance', input_params={})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
                 
             except Exception as ex:
@@ -52,7 +53,6 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
         logger.info(ex)
         return JSONResponse(status_code=400, content=[])
     
-
 @router.get('/result/{task_id}')
 async def result(task_id: str):
     task = AsyncResult(task_id)

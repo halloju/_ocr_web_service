@@ -42,8 +42,8 @@ export default {
             return this.tableData.map((row) => {
                 return {
                     ...row,
-                    created_at: this.formatDate(row.updated_at),
-                    expired_at: this.formatDate(row.expired_at)
+                    created_at: this.formatDate(row.creation_time),
+                    expired_at: this.formatDate(row.expiration_time)
                 };
             });
         }
@@ -76,14 +76,14 @@ export default {
                     width: '150px'
                 },
                 {
-                    prop: 'created_at',
+                    prop: 'creation_time',
                     label: '創建日期',
                     editable: false,
                     type: 'date',
                     width: '200px'
                 },
                 {
-                    prop: 'expired_at',
+                    prop: 'expiration_time',
                     label: '到期日期',
                     editable: false,
                     type: 'date',
@@ -117,33 +117,65 @@ export default {
         handleEdit(row) {
             row.editable = true;
         },
+        getFillColorByRectangleType(rectangleType) {
+            console.log(rectangleType);
+            switch (rectangleType) {
+                case 'text':
+                    return '#ff0000'; // Red color for text box
+                case 'box':
+                    return '#00ff00'; // Green color for box
+                case 'mask':
+                    return '#0000ff'; // Brown color for mask box
+                default:
+                    return '#b0c4de'; // Default color for other types
+            }
+        },
+        generatePointsList(points) {
+            // find the min and max x and y
+            let minX = Math.min(...points.map((point) => point[0]));
+            let maxX = Math.max(...points.map((point) => point[0]));
+            let minY = Math.min(...points.map((point) => point[1]));
+            let maxY = Math.max(...points.map((point) => point[1]));
+
+            return {
+                label_x: minX,
+                label_y: minY,
+                label_width: maxX - minX,
+                label_height: maxY - minY
+            };
+        },
         generateTemplate(template_id, bbox) {
             let myShapes = [];
-            bbox.forEach(function (element, index) {
+            if (bbox.length === 0) {
+                return JSON.stringify(myShapes);
+            }
+            let fill = this.getFillColorByRectangleType(bbox[0].type);
+            bbox.forEach((element) => {
                 var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
-                var label_x = element['points'][0][0];
-                var label_y = element['points'][0][1];
-                var label_width = element['points'][1][0] - element['points'][0][0];
-                var label_height = element['points'][2][1] - element['points'][1][1];
+                var { label_x, label_y, label_width, label_height } = this.generatePointsList(element.points);
+                console.log(label_x, label_y, label_width, label_height);
                 myShapes.push({
                     type: 'rect',
                     name: template_id,
-                    fill: '#b0c4de',
+                    fill: fill,
                     opacity: 0.5,
                     stroke: '#0ff',
                     draggable: true,
                     strokeWidth: 2,
                     strokeScaleEnabled: false,
                     annotation: {
-                        title: index + 1,
-                        text: myContent,
+                        title: myContent,
+                        text: '',
                         linkTitle: '',
                         link: ''
                     },
                     x: label_x,
                     y: label_y,
                     width: label_width,
-                    height: label_height
+                    height: label_height,
+                    scaleX: 1,
+                    scaleY: 1,
+                    rectangleType: bbox[0].type
                 });
             });
             return JSON.stringify(myShapes);
@@ -223,33 +255,24 @@ export default {
         },
         createTemplate() {
             this.$store.commit('createNewUpdate', true);
-            this.$router.push({ name: 'SelfDefine1' });
+            this.$router.push({ name: 'SelfDefine' });
         },
-        editTemplate() {
-            this.$store.commit('recsClear');
-            this.template.points_list.forEach((box) => {
-                this.$store.commit('recsUpdate', {
-                    type: box.type,
-                    data: {
-                        startPointX: box.points[0][0],
-                        startPointY: box.points[0][1],
-                        endPointX: box.points[2][0],
-                        endPointY: box.points[2][1],
-                        scaleX: 1,
-                        scaleY: 1,
-                        width: box.points[2][0] - box.points[0][0],
-                        height: box.points[2][1] - box.points[0][1],
-                        canDelete: true,
-                        canEdit: true,
-                        canSave: false,
-                        name: box.tag
-                    }
-                });
-            });
-            sessionStorage.imageSource = 'data:image/png;base64,' + this.template.image;
+        async editTemplate() {
+            // clear local storage
+            localStorage.clear();
+            // set local storage
+            const response = await axios.get('/template_crud/get_template_detail/' + this.template_id);
+            this.template = response['data'];
+            localStorage.imageSource = 'data:image/png;base64,' + this.template.image;
+            for (let i = 0; i < this.models.length; i++) {
+                let bbox = this.template.points_list.filter((item) => item['type'] === this.models[i].code);
+                let data = this.generateTemplate(this.template_id, bbox);
+                localStorage.setItem(this.models[i].code, data);
+            }
             this.$store.commit('templateNameUpdate', this.template.template_name);
-            this.$store.commit('templateIdUpdate', this.template_id);
-            this.$router.push({ path: '/features/general/self-define/step/2' });
+            localStorage.setItem('template_id', this.template_id);
+            this.$store.commit('createNewUpdate', false);
+            this.$router.push({ path: '/features/general/self-define/step' });
         },
         downloadTemplate() {
             let template_info_json = JSON.stringify(this.template);
@@ -352,7 +375,7 @@ export default {
                 <h5>請選擇標註模式</h5>
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                        <SelectButton v-model="myModel" :options="models" optionLabel="name" @click="handleLook(this.template_id, this.myModel.code)" />
+                        <SelectButton v-model="myModel" :options="models" optionLabel="name" @change="handleLook(this.template_id, this.myModel.code)" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
                         <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="downloadTemplate" />

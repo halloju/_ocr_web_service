@@ -116,8 +116,8 @@ export default {
             fill: `rgb(${this.fillColor.r},${this.fillColor.g},${this.fillColor.b},${this.opacity})`,
             stroke: `rgb(20,20,200,${this.opacity})`,
             strokeWidth: 0.5,
-            x: Math.min(rec.startPointX, rec.startPointX + rec.width),
-            y: Math.min(rec.startPointY, rec.startPointY + rec.height)
+            x: rec.startPointX,
+            y: rec.startPointY
         }"
         draggable="false"
         @transformend="handleTransformEnd"

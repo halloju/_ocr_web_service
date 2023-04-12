@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi import Depends
-from sqlalchemy.orm import Session
 
 from app.schema.template_crud.delete import DeleteTemplateRequest
 from app.forms.template_crud.delete import DeleteTemplateForm
@@ -15,7 +13,7 @@ router = APIRouter()
 
 
 @router.delete("/delete_template/{template_id}")
-async def delete_template(template_id: str, db: Session = Depends(get_db)):
+async def delete_template(template_id: str):
     '''
     將 Feature DB 中的 template 資訊刪除
     '''
@@ -25,7 +23,7 @@ async def delete_template(template_id: str, db: Session = Depends(get_db)):
         "request_id": get_request_id(),
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/delete_template')
+    outputs = call_mlaas_function(input_data, 'template_crud/delete_template', project='GP')
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return Response(status_code=200)

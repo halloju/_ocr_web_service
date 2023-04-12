@@ -6,9 +6,9 @@ export default {
     created() {
         if (!this.createNew) {
             this.isOK = true;
-            this.imageSource = sessionStorage.imageSource;
-            this.filename = sessionStorage.filename;
-            this.filesize = sessionStorage.filesize;
+            this.imageSource = localStorage.imageSource;
+            this.filename = localStorage.filename;
+            this.filesize = localStorage.filesize;
         }
     },
     data() {
@@ -69,9 +69,9 @@ export default {
                         this.isOK = true;
                         this.filename = file.name;
                         this.filesize = file.size / 1024;
-                        sessionStorage.imageSource = this.imageSource;
-                        sessionStorage.filename = this.filename;
-                        sessionStorage.filesize = this.filesize;
+                        localStorage.imageSource = this.imageSource;
+                        localStorage.filename = this.filename;
+                        localStorage.filesize = this.filesize;
                         this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
@@ -89,6 +89,8 @@ export default {
             }
             let input = e.target;
             this.wrongFile = false;
+            // clear local storage
+            localStorage.clear();
             // allows only 1 file
             if (input.files.length === 1) {
                 let file = input.files[0];
@@ -101,9 +103,9 @@ export default {
                         this.isOK = true;
                         this.filename = file.name;
                         this.filesize = file.size / 1024;
-                        sessionStorage.imageSource = this.imageSource;
-                        sessionStorage.filename = this.filename;
-                        sessionStorage.filesize = this.filesize;
+                        localStorage.imageSource = this.imageSource;
+                        localStorage.filename = this.filename;
+                        localStorage.filesize = this.filesize;
                         this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
@@ -120,56 +122,84 @@ export default {
             this.preview = null;
             this.isOK = false;
             this.wrongFile = false;
-            sessionStorage.imageSource = '';
-            sessionStorage.filename = null;
-            sessionStorage.filesize = 0;
-            sessionStorage.isUploaded = false;
+            localStorage.clear();
             this.$refs.inputFile.value = '';
             this.$store.commit('recsClear');
         },
         openfolder() {
             this.$refs.inputFile.click();
         },
+        getFillColorByRectangleType(rectangleType) {
+            switch (rectangleType) {
+                case 'text':
+                    return '#ff0000'; // Red color for text box
+                case 'box':
+                    return '#00ff00'; // Green color for box
+                case 'mask':
+                    return '#0000ff'; // Brown color for mask box
+                default:
+                    return '#b0c4de'; // Default color for other types
+            }
+        },
         handleFileInputChange(event) {
-            this.$store.commit('recsClear');
-            sessionStorage.removeItem('imageSource');
+            localStorage.clear();
             let file = event.target.files[0];
             if (file && file.type === 'application/json') {
                 let reader = new FileReader();
                 reader.onload = () => {
                     try {
                         let data = JSON.parse(reader.result);
+                        let types = ['text', 'box', 'mask'];
                         if (data.image) {
                             this.isDragging = false;
                             this.isOK = true;
-                            sessionStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
-                            sessionStorage.setItem('filename', data.template_name);
-                            sessionStorage.setItem('filesize', data.image.length / 1024);
-                            data.points_list.forEach((item) => {
-                                this.$store.commit('recsUpdate', {
-                                    type: item.type,
-                                    data: {
-                                        startPointX: item.points[0][0],
-                                        startPointY: item.points[0][1],
-                                        endPointX: item.points[2][0],
-                                        endPointY: item.points[2][1],
-                                        name: item.tag,
-                                        scaleX: 1,
-                                        scaleY: 1,
-                                        width: item.points[2][0] - item.points[0][0],
-                                        height: item.points[2][1] - item.points[0][1],
-                                        canDelete: true,
-                                        canEdit: true,
-                                        canSave: false
-                                    }
-                                });
-                            });
-                            this.$store.commit('templateNameUpdate', data.template_name);
-                            this.filename = data.template_name;
-                            this.filesize = data.image.length / 1024;
-                            this.imageSource = `data:image/jpeg;base64,${data.image}`;
-                            this.isFileUploaded = !this.isFileUploaded;
+                            localStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
+                            localStorage.setItem('filename', data.template_name);
+                            localStorage.setItem('filesize', data.image.length / 1024);
+                            for (let i = 0; i < 3; i++) {
+                                let bbox = data.points_list.filter((item) => item['type'] === types[i]);
+                                let myShapes = [];
+                                let fill = this.getFillColorByRectangleType(types[i]);
+                                if (bbox.length > 0) {
+                                    bbox.forEach(function (element, index) {
+                                        var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
+                                        var label_x = element['points'][0][0];
+                                        var label_y = element['points'][0][1];
+                                        var label_width = element['points'][1][0] - element['points'][0][0];
+                                        var label_height = element['points'][2][1] - element['points'][1][1];
+                                        myShapes.push({
+                                            type: 'rect',
+                                            name: 'rect' + index,
+                                            fill: fill,
+                                            opacity: 0.5,
+                                            stroke: '#0ff',
+                                            draggable: true,
+                                            strokeWidth: 2,
+                                            strokeScaleEnabled: false,
+                                            annotation: {
+                                                title: myContent,
+                                                text: '',
+                                                linkTitle: '',
+                                                link: ''
+                                            },
+                                            x: label_x,
+                                            y: label_y,
+                                            width: label_width,
+                                            height: label_height,
+                                            scaleX: 1,
+                                            scaleY: 1,
+                                            rectangleType: types[i]
+                                        });
+                                    });
+                                    localStorage.setItem(types[i], JSON.stringify(myShapes));
+                                }
+                            }
                         }
+                        this.$store.commit('templateNameUpdate', data.template_name);
+                        this.filename = data.template_name;
+                        this.filesize = data.image.length / 1024;
+                        this.imageSource = `data:image/jpeg;base64,${data.image}`;
+                        this.isFileUploaded = !this.isFileUploaded;
                     } catch (error) {
                         console.error('Error parsing JSON data:', error);
                     }

@@ -5,7 +5,7 @@ from aioredis import create_redis_pool
 from app.exceptions import CustomException, exception_handler
 from app.exceptions import MlaasRequestError, mlaas_request_handler
 from app.routers import docs
-from app.routers.ocr import gp_ocr, template_ocr
+from app.routers.ocr import gp_ocr, template_ocr, check_front_ocr, check_back_ocr, remittance_ocr
 from app.routers.image_tools import pdf_transform
 from app.routers.template_crud import create, read, update, delete
 from app.api_config import http_responses
@@ -101,6 +101,21 @@ def get_application():
         template_ocr.router,
         prefix="/template_ocr",
         tags=["template_ocr"],
+    )
+    app.include_router(
+        check_back_ocr.router,
+        prefix="/check_back_ocr",
+        tags=["check_back_ocr"],
+    )
+    app.include_router(
+        check_front_ocr.router,
+        prefix="/check_front_ocr",
+        tags=["check_front_ocr"],
+    )
+    app.include_router(
+        remittance_ocr.router,
+        prefix="/remittance_ocr",
+        tags=["remittance_ocr"],
     )
     app.include_router(
         pdf_transform.router,

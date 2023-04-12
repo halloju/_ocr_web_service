@@ -1,31 +1,19 @@
-# Build stage
-FROM python:3.9.5-alpine AS build
+# Use an alias for the base image
+FROM python:3.9.5-alpine
 
-RUN apk --no-cache add libpq gcc vim poppler-utils && \
-    apk --no-cache add --virtual .build-deps musl-dev postgresql-dev
-
+# Set the working directory
 WORKDIR /code
 
+# Install required packages and build dependencies
+RUN apk --no-cache add libpq gcc vim poppler-utils musl-dev
+
+# Copy the requirements file
 COPY ./requirements.txt .
 
+# Upgrade pip and install the required packages from the requirements file
 RUN pip install -U pip && \
     pip install --no-cache-dir --upgrade -r requirements.txt
 
+# Copy the rest of the application code
 COPY . .
-
-# Production stage
-FROM python:3.9.5-alpine
-
-RUN apk --no-cache add libpq poppler-utils
-
-WORKDIR /usr/src/app
-
-COPY --from=build /code /usr/src/app
-
-COPY gunicorn.conf.py .
-
-COPY .env.dev .
-
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "app:app"]
-
 

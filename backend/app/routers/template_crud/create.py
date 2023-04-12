@@ -1,10 +1,8 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 from fastapi import Depends
-from sqlalchemy.orm import Session
 
 from app.schema.template_crud.create import CreateTemplateRequest
 from app.forms.template_crud.create import CreateTemplateForm
@@ -18,7 +16,7 @@ router = APIRouter()
 
 
 @router.post("/create_template", response_model=CreateTemplateResponse)  # responses={},
-async def create_template(request: CreateTemplateRequest, db: Session = Depends(get_db)):
+async def create_template(request: CreateTemplateRequest):
     '''
     將 template 影像上傳至 MinIO, 並將其餘資訊存入 Feature DB
     '''
@@ -29,16 +27,14 @@ async def create_template(request: CreateTemplateRequest, db: Session = Depends(
             'user_id': get_user_id(),
             'image': form.image,
             'points_list': form.points_list,
-            'template_name': form.template_name,
-            'is_public': False,
-            'is_no_ttl': False
+            'template_name': form.template_name
         }
         input_data = {
             "business_unit": "C170",
             "request_id": "111",
             "inputs": jsonable_encoder(inputs)
         }
-        outputs = call_mlaas_function(input_data, 'template_crud/create_template')
+        outputs = call_mlaas_function(input_data, 'template_crud/create_template', project='GP', timeout=60)
         status_code = outputs['outputs']['status_code']
         if status_code == '0000':
             print(outputs['outputs']['template_id'])

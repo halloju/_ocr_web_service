@@ -1,5 +1,4 @@
 version: '3'
-
 services:
     db:
         container_name: db
@@ -33,6 +32,7 @@ services:
         restart: always
     web:
         container_name: web
+        # image: halloju/if_gp_ocr_system_web:latest
         build: 
           context: ./web
           dockerfile: Dockerfile.dev
@@ -48,15 +48,17 @@ services:
         container_name: backend
         build: "backend/."
         volumes:
-          - ./backend:/usr/src/app
+          - ./backend:/code
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
-        #command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
+        # command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
         environment:
           - MODE=dev
           - CELERY_BROKER_URL=amqp://rabbitmq
           - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        env_file:
+          - 'variable.env'
         depends_on:
           - db
           - redis
@@ -74,7 +76,6 @@ services:
         depends_on:
           db:
             condition: service_healthy
-        restart: always
     nginx:
         container_name: nginx
         volumes:
@@ -101,24 +102,14 @@ services:
       build: ./backend
       command: celery worker --app=worker.celery
       volumes:
-        - ./backend:/usr/src/app
+        - ./backend:/code
       environment:
+        - MODE=dev
         - CELERY_BROKER_URL=amqp://rabbitmq
         - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      env_file:
+        - 'variable.env'
       depends_on:
         - backend
         - redis
-        - rabbitmq
-    flower:
-      container_name: flower
-      build: ./backend
-      command:  flower --app=worker.celery --port=5555 --broker=amqp://rabbitmq
-      ports:
-        - 5555:5555
-      environment:
-        - CELERY_BROKER_URL=amqp://rabbitmq
-        - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      depends_on:
-        - redis
-        - worker
         - rabbitmq

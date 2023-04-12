@@ -6,7 +6,7 @@ export default {
     name: 'Box',
     mounted() {
         this.image = new window.Image();
-        this.image.src = sessionStorage.imageSource;
+        this.image.src = localStorage.imageSource;
         this.image.onload = () => {
             this.imageConfig = {
                 x: 0,
@@ -72,11 +72,21 @@ export default {
         }
     },
     methods: {
+        calculateRelativePosition(stage, imageNode, pointerPosition) {
+            const stageScale = stage.scale();
+            const imagePosition = imageNode.getPosition();
+
+            return {
+                x: (pointerPosition.x - imagePosition.x) / stageScale.x,
+                y: (pointerPosition.y - imagePosition.y) / stageScale.y
+            };
+        },
+        canProceedToDraw(event) {
+            return this.isNamingOk && this.canDraw && !this.imageMode && event.target !== event.target.getStage();
+        },
         handleMouseDown(event) {
-            if (!this.isNamingOk) return;
-            if (!this.canDraw) return;
-            if (this.imageMode) return;
-            if (event.target === event.target.getStage()) return;
+            if (!this.canProceedToDraw(event)) return;
+
             if (this.isTransforming & (event.target.className === 'Image')) {
                 this.selectedShapeName = '';
                 this.updateTransformer();
@@ -84,7 +94,8 @@ export default {
                 this.$emit('update:isEditing', false);
                 return;
             }
-            // transform rect
+
+            // Transform rect
             if (event.target.className === 'Rect' || event.target.className === 'Text') {
                 this.isTransforming = true;
                 this.$emit('update:isEditing', true);
@@ -106,17 +117,22 @@ export default {
                 return;
             }
 
-            // draw rect
+            // Draw rect
             this.isDrawing = true;
             this.isNamingOk = false;
-            const pos = this.$refs.image.getNode().getRelativePointerPosition();
+            const stage = this.$refs.stage.getNode();
+            const imageNode = this.$refs.image.getNode();
+            const pointerPosition = stage.getPointerPosition();
+
+            const relativePos = this.calculateRelativePosition(stage, imageNode, pointerPosition);
+
             this.$store.commit('recsUpdate', {
                 type: this.Boxes[0].name,
                 data: {
-                    startPointX: pos.x,
-                    startPointY: pos.y,
-                    endPointX: pos.x,
-                    endPointY: pos.y,
+                    startPointX: relativePos.x,
+                    startPointY: relativePos.y,
+                    endPointX: relativePos.x,
+                    endPointY: relativePos.y,
                     scaleX: 1,
                     scaleY: 1,
                     width: 0,
@@ -188,8 +204,15 @@ export default {
             if (!this.isDrawing) {
                 return;
             }
-            // console.log(event);
-            const point = this.$refs.image.getNode().getRelativePointerPosition();
+            // calculate new rect size
+            const stage = this.$refs.stage.getNode();
+            const imageNode = this.$refs.image.getNode();
+            const pointerPosition = stage.getPointerPosition();
+            const relativePos = this.calculateRelativePosition(stage, imageNode, pointerPosition);
+            const point = {
+                x: relativePos.x,
+                y: relativePos.y
+            };
             if (point.x < 0) {
                 point.x = 0;
             }

@@ -7,12 +7,16 @@ export default {
         BaseUploadImage,
         BaseOcrResultShow
     },
-    name: 'GeneralOCR',
+    name: 'CheckOCR',
     data() {
         return {
             step: 1,
             image_complexity: '',
-            selectedLang: ''
+            selectedLang: '',
+            category: {
+                name: 'limited',
+                limit: 1
+            }
         };
     },
     watch: {},
@@ -36,7 +40,7 @@ export default {
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item>全文辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item>票據辨識</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
@@ -44,11 +48,11 @@ export default {
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
-                <h5>通用辨識</h5>
-                <p>請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。</p>
+                <h5>支票辨識</h5>
+                <p>請上傳一張，下一步會進行全部辨識並可以進行檢視。</p>
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/gp_ocr/predict_images" useModelComplexity="true" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/check/predict_images" :category="category" />
     <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="gp_ocr" />
 </template>

@@ -8,7 +8,7 @@ export default {
         Icon,
         Loader
     },
-    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow'],
+    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow', 'rectangleType'],
     data() {
         return {
             image: null,
@@ -153,10 +153,10 @@ export default {
         cancelEvent(e) {
             e.evt.preventDefault();
         },
-        addRectangle() {
+        addRectangle(rectangleType) {
             if (this.isAddingPolygon) return;
             this.shapes.push({
-                ...this.getBaseShape('rect'),
+                ...this.getBaseShape('rect', rectangleType),
                 x: 80 / this.scale,
                 y: 50 / this.scale,
                 width: 200 / this.scale,
@@ -165,23 +165,40 @@ export default {
             // call update
             this.shapesUpdated();
         },
-        getBaseShape(type) {
+        getBaseShape(type, rectangleType) {
+            // const fillColor = this.getFillColorByRectangleType(rectangleType);
+
             return {
                 type: type,
                 name: 'shape-' + new Date().valueOf(),
-                fill: '#b0c4de',
+                fill: this.getFillColorByRectangleType(rectangleType),
                 opacity: 0.5,
                 stroke: '#0000ff',
                 draggable: true,
                 strokeWidth: 2,
                 strokeScaleEnabled: false,
+                scaleX: 1,
+                scaleY: 1,
                 annotation: {
-                    title: '',
+                    title: null,
                     text: '',
                     linkTitle: '',
                     link: ''
-                }
+                },
+                rectangleType: rectangleType
             };
+        },
+        getFillColorByRectangleType(rectangleType) {
+            switch (rectangleType) {
+                case 'text':
+                    return '#ff0000'; // Red color for text box
+                case 'box':
+                    return '#00ff00'; // Green color for box
+                case 'mask':
+                    return '#0000ff'; // Brown color for mask box
+                default:
+                    return '#b0c4de'; // Default color for other types
+            }
         },
         // delete shape
         deleteShape(name) {
@@ -205,8 +222,8 @@ export default {
             }
             // TODO only if focued
             /* if (!this.selectedShapeName) {
-          if (event.key === '+') this.changeScale(0.1);
-      } */
+                if (event.key === '+') this.changeScale(0.1);
+            } */
         },
         // handle scaling of canvas
         handleScroll(e) {
@@ -234,25 +251,7 @@ export default {
             // call update
             this.shapesUpdated();
         },
-        // handleDragBond (event, shape) {
-        //   console.log(shape.width * shape.scaleX, shape.height * shape.scaleY)
-        //   if (event.currentTarget.attrs.x < 0) {
-        //     event.target.x(0)
-        //   }
-        //   if (event.currentTarget.attrs.y < 0) {
-        //     event.target.y(0)
-        //   }
-        //   if (event.currentTarget.attrs.x + shape.width > this.image.width) {
-        //     event.target.x(this.image.width - shape.width * shape.scaleX)
-        //   }
-        //   if (event.currentTarget.attrs.y + shape.height > this.image.height) {
-        //     event.target.y(this.image.height - shape.height * shape.scaleY)
-        //   }
-        //   // call update
-        //   this.shapesUpdated();
-        // },
         handleTransform(event, shape) {
-            console.log(shape.width, shape.height);
             shape.scaleX = event.currentTarget.attrs.scaleX;
             shape.scaleY = event.currentTarget.attrs.scaleY;
             shape.x = event.currentTarget.attrs.x;
@@ -293,17 +292,14 @@ export default {
                 const idx = this.shapes.findIndex((r) => r.name === name);
                 if (idx >= 0) {
                     this.shapes[idx].stroke = '#00f';
-                    this.shapes[idx].fill = '#b0c4de';
+                    this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
                 }
             }
         },
         formSubmitted(name) {
             // save correct color
             const idx = this.shapes.findIndex((r) => r.name === name);
-            if (idx >= 0) {
-                this.shapes[idx].stroke = '#00f';
-                this.shapes[idx].fill = '#b0c4de';
-            }
+            this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
             // callback/persist
             this.shapesUpdated();
         },
@@ -321,19 +317,33 @@ export default {
             }
             // save to local storage, if defined
             if (this.localStorageKey) {
+                console.log('save', this.shapes);
                 localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
             }
         },
         load() {
-            if (this.initialDataId) {
-                const node = document.getElementById(this.initialDataId);
-                if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
-            } else if (this.initialData && this.initialData.length > 0) {
-                this.shapes = JSON.parse(this.initialData);
-            } else if (this.localStorageKey) {
-                const data = localStorage.getItem(this.localStorageKey) || '[]';
-                this.shapes = JSON.parse(data);
+            // load from initial data
+            if (this.initialData) {
+                this.shapes = this.initialData;
+                // if we only show data, remove draggable from it
+                if (!this.editMode) {
+                    this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
+                }
+                return;
             }
+            // load from local storage, if defined
+            let data = [];
+            if (this.localStorageKey === 'all') {
+                const keys = ['text', 'box', 'mask'];
+                for (let i = 0; i < keys.length; i++) {
+                    const value = localStorage.getItem(keys[i]) || '[]';
+                    data.push(...JSON.parse(value));
+                }
+            } else {
+                const value = localStorage.getItem(this.localStorageKey) || '[]';
+                data = JSON.parse(value);
+            }
+            this.shapes = data;
             // if we only show data, remove draggable from it
             if (!this.editMode) {
                 this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
@@ -350,7 +360,7 @@ export default {
                 <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
                 <hr />
                 <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-                <a href="#" @click.prevent="addRectangle" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+                <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
             </div>
             <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
 

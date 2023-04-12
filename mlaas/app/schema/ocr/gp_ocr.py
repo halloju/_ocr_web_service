@@ -1,11 +1,7 @@
 import os
 from typing import Optional, List
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
-
-
-filepath = os.path.join(os.getcwd(), "app", "image-base64-string.txt")
-with open(filepath, 'r') as f:
-    img_base64_string = f.read()
+from app.schema.common import img_base64_string
 
 
 class GpocrRequest(BaseModel):
@@ -111,4 +107,4 @@ class GpocrResponse(BaseModel):
         ''',
         example='2022/09/20/19/30/438ffd10-1090-4687-be84-8f6c36be463a'
     )
-    ocr_results: Optional[List[OcrPredict]]
+    data_results: Optional[List[OcrPredict]]

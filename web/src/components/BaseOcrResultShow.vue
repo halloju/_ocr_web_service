@@ -148,7 +148,7 @@ export default {
             }
         }
 
-        // ocr結果轉成 annotation 的格式
+        // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row) {
             axios
                 .get(`/${props.baseUrl}/get_image/${row.image_id}`)
@@ -173,18 +173,29 @@ export default {
             initialData.value = getShapeData(ocr_results);
         }
 
+        function generatePointsList(points) {
+            // find the min and max x and y
+            let minX = Math.min(...points.map((point) => point[0]));
+            let maxX = Math.max(...points.map((point) => point[0]));
+            let minY = Math.min(...points.map((point) => point[1]));
+            let maxY = Math.max(...points.map((point) => point[1]));
+
+            return {
+                label_x: minX,
+                label_y: minY,
+                label_width: maxX - minX,
+                label_height: maxY - minY
+            };
+        }
+
         function getShapeData(regData) {
             let myShapes = [];
-            // 使用正規表達式將 regData 中的所有 ' 符號替換為 " 符號
-            regData = JSON.parse(regData.replace(/'/g, '"'));
+
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
                 var points = Object.values(label[0]);
                 var myContent = label[1];
-                var label_x = points[0][0];
-                var label_y = points[0][1];
-                var label_width = points[1][0] - label_x;
-                var label_height = points[2][1] - label_y;
+                var { label_x, label_y, label_width, label_height } = generatePointsList(points);
                 var image_cv_id = label[2];
                 myShapes.push({
                     type: 'rect',
@@ -204,10 +215,11 @@ export default {
                     x: label_x,
                     y: label_y,
                     width: label_width,
-                    height: label_height
+                    height: label_height,
+                    rectangleType: 'text'
                 });
             });
-            return JSON.stringify(myShapes);
+            return myShapes;
         }
 
         function back() {
@@ -233,7 +245,7 @@ export default {
         }
 
         function downloadFile() {
-            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
+            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData.value);
             const workBook = {
                 SheetNames: ['jsonWorkSheet'],
                 Sheets: {

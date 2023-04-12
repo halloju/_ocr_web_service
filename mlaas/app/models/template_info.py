@@ -9,6 +9,6 @@ class TemplateInfo(Base):
     user_id = Column(String, nullable=False)
     template_name = Column(String, nullable=False)
     points_list = Column(ARRAY(JSON(String)), nullable=False)
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    is_public = Column(Boolean, nullable=False)
+    creation_time = Column(String, nullable=False)
+    expiration_time = Column(String, nullable=True)
     is_no_ttl = Column(Boolean, nullable=False)

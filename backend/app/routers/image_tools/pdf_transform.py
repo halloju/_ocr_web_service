@@ -1,9 +1,7 @@
-from app.database import get_db
 from app.exceptions import CustomException
 from fastapi import APIRouter, UploadFile, Request, Response, File
 from pydantic.typing import List
 from fastapi import Depends
-from sqlalchemy.orm import Session
 from fastapi.responses import StreamingResponse
 from pdf2image import convert_from_bytes
 import zipfile
@@ -58,7 +56,7 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
     for doc in files:
         # Read and encode the file data as base64
         if doc.content_type == 'application/pdf':
-            filename = doc.filename.split('/')[-1].replace('.pdf', '').replace('.PDF', '.jpg')
+            filename = doc.filename.split('/')[-1].replace('.pdf', '').replace('.PDF', '')
             # pdf_file = await file.read()  # byte
             try:
                 with tempfile.TemporaryDirectory() as path:

@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 import logging
 import pytz
@@ -41,14 +41,15 @@ def create_template(template, db: Session):
         )
         print(f"service template create <template>: {template}")
         # Step 2. 將 template 其餘資訊寫入 DB
+        expiration_time = (today + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
         template_info = TemplateInfo(
             template_id=template_id,
             user_id=template.user_id,
             template_name=template.template_name,
             points_list=jsonable_encoder(template.points_list),
-            updated_at=today,
-            is_public=template.is_public,
-            is_no_ttl=template.is_no_ttl
+            creation_time=today.strftime("%Y-%m-%d %H:%M:%S"),
+            expiration_time=expiration_time,
+            is_no_ttl=False
         )
         db.add(template_info)
         db.commit()
