@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
 import { ElLoading, ElMessageBox } from 'element-plus';
+import { API_TIMEOUT } from '@/constants.js';
 
 export default {
     name: 'pdf2image',
@@ -60,7 +61,8 @@ export default {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
-                    responseType: 'blob' // Set the response type to 'blob'
+                    responseType: 'blob', // Set the response type to 'blob'
+                    timeout: API_TIMEOUT // Set the timeout to 10 seconds
                 })
                 .then((response) => {
                     // Create anchor element

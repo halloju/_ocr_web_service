@@ -150,7 +150,6 @@ export default {
                 return JSON.stringify(myShapes);
             }
             let fill = this.getFillColorByRectangleType(bbox[0].type);
-            console.log(bbox);
             bbox.forEach((element) => {
                 var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
                 var { label_x, label_y, label_width, label_height } = this.generatePointsList(element.points);

@@ -191,10 +191,7 @@ export default {
         function getShapeData(regData) {
             let myShapes = [];
             // 使用正規表達式將 regData 中的所有 ' 符號替換為 " 符號
-            
-            // regData = regData.replace(/"/g, "\"");
-            // console.log(regData.replace(/"/g, '\\\"').replace(/'/g, '"'));
-            regData = JSON.parse(regData.replace(/"/g, '\\\"').replace(/'/g, '"'));
+            regData = JSON.parse(JSON.stringify(regData));
             
             regData.forEach(function (element, index) {
                 var label = Object.values(element);
