@@ -15,34 +15,14 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/features/general/ocr',
-                    name: 'GeneralOCR',
-                    component: () => import('@/views/pages/features/general/GeneralOCR.vue')
-                },
-                {
-                    path: '/features/general/template',
-                    name: 'TemplateOCR',
-                    component: () => import('@/views/pages/features/general/TemplateOCR.vue')
+                    path: '/features/ocr/:type',
+                    name: 'OCR',
+                    component: () => import('@/views/pages/features/OCR.vue')
                 },
                 {
                     path: '/features/general/model-list',
                     name: 'Model-List',
                     component: () => import('@/views/pages/features/general/ModelList.vue')
-                },
-                {
-                    path: '/features/br/remittance',
-                    name: 'RemittanceOCR',
-                    component: () => import('@/views/pages/features/br/RemittanceOCR.vue')
-                },
-                {
-                    path: '/features/br/check',
-                    name: 'CheckOCR',
-                    component: () => import('@/views/pages/features/br/CheckOCR.vue')
-                },
-                {
-                    path: '/features/br/check-back',
-                    name: 'CheckBackOCR',
-                    component: () => import('@/views/pages/features/br/CheckBackOCR.vue')
                 },
                 {
                     path: '/features/test',

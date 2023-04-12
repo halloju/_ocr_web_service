@@ -14,7 +14,7 @@ const model = ref([
                     {
                         label: '全文辨識',
                         icon: 'pi pi-th-large',
-                        to: '/features/general/ocr'
+                        to: '/features/ocr/general'
                     },
                     {
                         label: '模板辨識',
@@ -30,17 +30,17 @@ const model = ref([
                     {
                         label: '匯款單辨識',
                         icon: 'pi pi-th-large',
-                        to: '/features/br/remittance'
+                        to: '/features/ocr/remittance'
                     },
                     {
                         label: '支票正面辨識',
                         icon: 'pi pi-list',
-                        to: '/features/br/check'
+                        to: '/features/ocr/check_front'
                     },
                     {
                         label: '支票背面辨識',
                         icon: 'pi pi-list',
-                        to: '/features/br/check-back'
+                        to: '/features/ocr/check_back'
                 },
                 ]
             },

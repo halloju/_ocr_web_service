@@ -182,7 +182,7 @@ export default {
         },
         templateOCR(template_id) {
             this.$store.commit('TemplateIdUpdate', template_id);
-            this.$router.push({ name: 'TemplateOCR' });
+            this.$router.push({ path: '/features/ocr/template' });
         },
         async handleLook(template_id, userType) {
             this.template_id = template_id;
