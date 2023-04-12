@@ -48,11 +48,11 @@ export default {
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
-                <h5>支票正面辨識</h5>
+                <h5>支票背面辨識</h5>
                 <p>請上傳一張，下一步會進行全部辨識並可以進行檢視。</p>
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/check_front_ocr/check_front" :category="category" />
-    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="check_front_ocr" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/check_back_ocr/check_back" :category="category" />
+    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="check_back_ocr" />
 </template>

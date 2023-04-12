@@ -33,10 +33,15 @@ const model = ref([
                         to: '/features/br/remittance'
                     },
                     {
-                        label: '支票辨識',
+                        label: '支票正面辨識',
                         icon: 'pi pi-list',
                         to: '/features/br/check'
-                    }
+                    },
+                    {
+                        label: '支票背面辨識',
+                        icon: 'pi pi-list',
+                        to: '/features/br/check-back'
+                },
                 ]
             },
             {
