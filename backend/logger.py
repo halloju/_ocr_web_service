@@ -5,21 +5,20 @@ from datetime import datetime
 import yaml
 
 
-def config_logging():
+def config_logging(filename='log_config.yml'):
     log_filename = f"./app/logger/{datetime.now().strftime('%Y-%m-%d')}.log"
-    with open('config.yml') as f:
+    with open(filename) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
         # print(config)
         config['handlers']['file']['filename'] = log_filename
         log_config.dictConfig(config)
 
 class Logger(object):
-    def __init__(self, section_name) -> None:
+    def __init__(self, section_name, project_name='if_gp_ocr_system_backend') -> None:
         config_logging()
-        self.logger = logging.getLogger('if_gp_ocr_system_backend')
+        self.logger = logging.getLogger(project_name)
         self.section_name = section_name
         self.log_dict = dict()
-        self.logger.info('success')
 
     def check_msg(self, log_msg):
         if isinstance(log_msg, dict):
