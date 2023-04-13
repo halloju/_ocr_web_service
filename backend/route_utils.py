@@ -6,7 +6,7 @@ from app.exceptions import MlaasRequestError
 
 
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
-    logger.info({'call_mlaas_function': 'start'})
+    logger.info({'call_mlaas_function': {'action': action, 'request_id': request['request_id']}})
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
     if os.environ.get('MODE') == 'dev':
         connection_url = f'{mlaas_url}/{action}'
@@ -38,5 +38,5 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
 def get_user_id() -> str:
     return '13520'
 
-def get_request_id() -> str:
+def get_request_id() -> str:  # celery with task_id
     return 'gpocr_system_test'
