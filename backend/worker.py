@@ -7,7 +7,7 @@ import requests
 from celery import Celery, Task
 from celery.signals import after_setup_logger
 from logger import config_logging
-from route_utils import call_mlaas_function, get_request_id
+from route_utils import call_mlaas_function
 
 # 設定 celery
 celery = Celery(__name__)
@@ -24,7 +24,6 @@ class PredictTask(Task):
     def __init__(self):
         super().__init__()
         self.business_unit = "C170"
-        self.request_id = get_request_id()
         self.project_names = {
             'gp_ocr': 'GP',
             'template_ocr': 'GP',
@@ -48,7 +47,7 @@ class PredictTask(Task):
             encoded_data = celery.backend.get(image_id)
             input_data = {
                 "business_unit": self.business_unit,
-                "request_id": self.request_id,
+                "request_id": self.request.id,
                 "inputs": {
                     "image": encoded_data.decode("utf-8"),
                     **input_params
