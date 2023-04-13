@@ -1,9 +1,13 @@
 <script>
-import moment from 'moment';
-import axios from 'axios';
-import PhotoService from '@/service/PhotoService';
+import { ref, computed, onMounted } from 'vue';
 import AnnotationVertical from '@/components/AnnotationVertical.vue';
-import { ElMessageBox } from 'element-plus';
+import axios from 'axios';
+import moment from 'moment';
+import { ElMessageBox, ElMessage } from 'element-plus';
+import { usePhotoService } from '@/service/PhotoService.js';
+import useAnnotator from '@/mixins/useAnnotator.js';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 const item = {
     name: '',
@@ -13,6 +17,7 @@ const item = {
     address: '',
     phone: ''
 };
+
 const header = {
     prop: 'key',
     label: '自定義',
@@ -21,86 +26,87 @@ const header = {
 };
 
 export default {
-    name: 'public',
+    name: 'ModelList',
     components: {
         AnnotationVertical
     },
-    created() {
-        this.galleriaService = new PhotoService();
-        this.getAvailableTemplate().then((tableData) => {
-            this.tableData = tableData;
+
+    setup() {
+        const store = useStore();
+        const router = useRouter();
+        const { rectangleTypes, parseTemplateDetail } = useAnnotator();
+        const { getImages } = usePhotoService();
+
+        const images = ref(null);
+        const tableData = ref([]);
+
+        onMounted(async () => {
+            images.value = await getImages();
+            tableData.value = await getAvailableTemplate();
         });
-    },
-    mounted() {
-        this.galleriaService.getImages().then((data) => (this.images = data));
-    },
-    computed: {
-        formattedTableData() {
-            if (this.tableData.length === 0) {
+
+        const formattedTableData = computed(() => {
+            if (tableData.value.length === 0) {
                 return [];
             }
-            return this.tableData.map((row) => {
+            return tableData.value.map((row) => {
                 return {
                     ...row,
-                    created_at: this.formatDate(row.creation_time),
-                    expired_at: this.formatDate(row.expiration_time)
+                    created_at: formatDate(row.creation_time),
+                    expired_at: formatDate(row.expiration_time)
                 };
             });
-        }
-    },
-    data() {
-        return {
-            models: [
-                { name: '文字', code: 'text' },
-                { name: '方塊', code: 'box' },
-                { name: '遮罩', code: 'mask' }
-            ],
-            myModel: { name: '文字', code: 'text' },
-            width: 1000,
-            height: 600,
-            images: null,
-            imageSrc: '',
-            tableHeader: [
-                {
-                    prop: 'template_id',
-                    label: '編號',
-                    editable: false,
-                    type: 'number',
-                    width: '200px'
-                },
-                {
-                    prop: 'template_name',
-                    label: '姓名',
-                    editable: false,
-                    type: 'input',
-                    width: '150px'
-                },
-                {
-                    prop: 'creation_time',
-                    label: '創建日期',
-                    editable: false,
-                    type: 'date',
-                    width: '200px'
-                },
-                {
-                    prop: 'expiration_time',
-                    label: '到期日期',
-                    editable: false,
-                    type: 'date',
-                    width: '200px'
-                }
-            ],
-            tableData: [],
-            template_id: '',
-            template: '',
-            initialData: ''
-        };
-    },
-    methods: {
-        formatDate(date) {
+        });
+
+        const selectedRectangleType = ref({
+            name: '文字',
+            code: 'text'
+        });
+        const width = ref(1000);
+        const height = ref(600);
+        const imageSrc = ref('');
+
+        const tableHeader = ref([
+            {
+                prop: 'template_id',
+                label: '編號',
+                editable: false,
+                type: 'number',
+                width: '200px'
+            },
+            {
+                prop: 'template_name',
+                label: '姓名',
+                editable: false,
+                type: 'input',
+                width: '150px'
+            },
+            {
+                prop: 'creation_time',
+                label: '創建日期',
+                editable: false,
+                type: 'date',
+                width: '200px'
+            },
+            {
+                prop: 'expiration_time',
+                label: '到期日期',
+                editable: false,
+                type: 'date',
+                width: '200px'
+            }
+        ]);
+
+        const template_id = ref('');
+        const template = ref('');
+        const initialData = ref('');
+
+        // Methods
+        function formatDate(date) {
             return moment(date).format('YYYY-MM-DD HH:mm:ss');
-        },
-        async getAvailableTemplate() {
+        }
+
+        async function getAvailableTemplate() {
             let user_id = '13520';
             let tableData = [];
             try {
@@ -113,215 +119,189 @@ export default {
                 }
                 return error;
             }
-        },
-        handleEdit(row) {
-            row.editable = true;
-        },
-        getFillColorByRectangleType(rectangleType) {
-            console.log(rectangleType);
-            switch (rectangleType) {
-                case 'text':
-                    return '#ff0000'; // Red color for text box
-                case 'box':
-                    return '#00ff00'; // Green color for box
-                case 'mask':
-                    return '#0000ff'; // Brown color for mask box
-                default:
-                    return '#b0c4de'; // Default color for other types
-            }
-        },
-        generatePointsList(points) {
-            // find the min and max x and y
-            let minX = Math.min(...points.map((point) => point[0]));
-            let maxX = Math.max(...points.map((point) => point[0]));
-            let minY = Math.min(...points.map((point) => point[1]));
-            let maxY = Math.max(...points.map((point) => point[1]));
+        }
 
-            return {
-                label_x: minX,
-                label_y: minY,
-                label_width: maxX - minX,
-                label_height: maxY - minY
-            };
-        },
-        generateTemplate(template_id, bbox) {
-            let myShapes = [];
-            if (bbox.length === 0) {
-                return JSON.stringify(myShapes);
-            }
-            let fill = this.getFillColorByRectangleType(bbox[0].type);
-            bbox.forEach((element) => {
-                var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
-                var { label_x, label_y, label_width, label_height } = this.generatePointsList(element.points);
-                console.log(label_x, label_y, label_width, label_height);
-                myShapes.push({
-                    type: 'rect',
-                    name: template_id,
-                    fill: fill,
-                    opacity: 0.5,
-                    stroke: '#0ff',
-                    draggable: true,
-                    strokeWidth: 2,
-                    strokeScaleEnabled: false,
-                    annotation: {
-                        title: myContent,
-                        text: '',
-                        linkTitle: '',
-                        link: ''
-                    },
-                    x: label_x,
-                    y: label_y,
-                    width: label_width,
-                    height: label_height,
-                    scaleX: 1,
-                    scaleY: 1,
-                    rectangleType: bbox[0].type
-                });
-            });
-            return JSON.stringify(myShapes);
-        },
-        templateOCR(template_id) {
-            this.$store.commit('TemplateIdUpdate', template_id);
-            this.$router.push({ path: '/features/ocr/template' });
-        },
-        async handleLook(template_id, userType) {
-            this.template_id = template_id;
+        function handleConfirm(row) {
+            row.editable = false;
+        }
+
+        async function handleLook(templateid, userType) {
+            template_id.value = templateid;
             try {
-                const response = await axios.get('/template_crud/get_template_detail/' + this.template_id);
-                this.template = response['data'];
-                let bbox = this.template.points_list.filter((item) => item.type === userType);
-                this.initialData = this.generateTemplate(template_id, bbox);
-                this.imageSrc = 'data:image/png;base64,' + this.template.image;
+                const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+                initialData.value = parseTemplateDetail(response['data'], userType);
+                imageSrc.value = 'data:image/png;base64,' + response['data'].image;
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
-                    this.status = 'network';
+                    status.value = 'network';
                 }
                 return error;
             }
-        },
-        handleConfirm(row) {
-            row.editable = false;
-        },
-        handleDelete(template_id) {
-            ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
-                confirmButtonText: '確定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-                .then(async () => {
-                    try {
-                        const response = await axios.delete('/template_crud/delete_template/' + template_id);
-                        if (!response.error) {
-                            this.$message({
-                                type: 'success',
-                                message: '刪除成功!'
-                            });
-                            this.tableData = await this.getAvailableTemplate();
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                message: '刪除失敗!'
-                            });
-                        }
-                    } catch (error) {
-                        this.$message({
-                            type: 'error',
-                            message: '刪除失敗!'
-                        });
-                        return error;
-                    }
-                })
-                .catch(() => {
-                    this.$message({
+        }
+
+        async function handleDelete(template_id) {
+            try {
+                await ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
+                    confirmButtonText: '確定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                });
+
+                const response = await axios.delete('/template_crud/delete_template/' + template_id.value);
+                if (!response.error) {
+                    ElMessage({
+                        type: 'success',
+                        message: '刪除成功!'
+                    });
+                    tableData.value = await getAvailableTemplate();
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: '刪除失敗!'
+                    });
+                }
+            } catch (error) {
+                if (error instanceof ElMessageBox.MessageBoxClosedError) {
+                    ElMessage({
                         type: 'info',
                         message: '已取消刪除'
                     });
-                });
-        },
-        prepend(index) {
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: '刪除失敗!'
+                    });
+                    return error;
+                }
+            }
+        }
+
+        function prepend(index) {
             item.editable = true;
-            this.tableData.splice(index, 0, item);
-        },
-        append(index) {
+            tableData.value.splice(index, 0, item);
+        }
+
+        function append(index) {
             item.editable = true;
-            this.tableData.splice(index + 1, 0, item);
-        },
-        deleteCurrentColumn(index) {
-            this.tableHeader.splice(index, 1);
-        },
-        insertBefore(index) {
+            tableData.value.splice(index + 1, 0, item);
+        }
+
+        function deleteCurrentColumn(index) {
+            tableHeader.value.splice(index, 1);
+        }
+
+        function insertBefore(index) {
             header.editable = true;
-            this.tableHeader.splice(index, 0, header);
-        },
-        createTemplate() {
-            this.$store.commit('createNewUpdate', true);
-            this.$router.push({ name: 'SelfDefine' });
-        },
-        async editTemplate() {
+            tableHeader.value.splice(index, 0, header);
+        }
+
+        function createTemplate() {
+            store.commit('createNewUpdate', true);
+            router.push({ name: 'SelfDefine' });
+        }
+
+        async function editTemplate() {
             // clear local storage
             localStorage.clear();
+            // get template detail
+            const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+            //template.value = response['data'];
+
             // set local storage
-            const response = await axios.get('/template_crud/get_template_detail/' + this.template_id);
-            this.template = response['data'];
-            localStorage.imageSource = 'data:image/png;base64,' + this.template.image;
-            for (let i = 0; i < this.models.length; i++) {
-                let bbox = this.template.points_list.filter((item) => item['type'] === this.models[i].code);
-                let data = this.generateTemplate(this.template_id, bbox);
-                localStorage.setItem(this.models[i].code, data);
+            localStorage.imageSource = 'data:image/png;base64,' + response['data'].image;
+            for (let i = 0; i < rectangleTypes.value.length; i++) {
+                let data = parseTemplateDetail(response['data'], rectangleTypes.value[i].code);
+                localStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
             }
-            this.$store.commit('templateNameUpdate', this.template.template_name);
-            localStorage.setItem('template_id', this.template_id);
-            this.$store.commit('createNewUpdate', false);
-            this.$router.push({ path: '/features/general/self-define/step' });
-        },
-        downloadTemplate() {
-            let template_info_json = JSON.stringify(this.template);
+            localStorage.setItem('template_id', template_id.value);
+            store.commit('templateNameUpdate', response['data'].template_name);
+            store.commit('createNewUpdate', false);
+            router.push({ path: '/features/general/self-define/step' });
+        }
+
+        function downloadTemplate() {
+            let template_info_json = JSON.stringify(template.value);
             let blob = new Blob([template_info_json], { type: 'text/plain;charset=utf-8' });
             let url = URL.createObjectURL(blob);
             let link = document.createElement('a');
             link.href = url;
-            link.download = `${this.template.template_name}.json`;
+            link.download = `${template.value.template_name}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
-        },
-        deleteTemplate() {
-            ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
-                confirmButtonText: '確定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-                .then(async () => {
-                    try {
-                        const response = await axios.delete('/template_crud/delete_template/' + this.template_id);
-                        if (!response.error) {
-                            this.$message({
-                                type: 'success',
-                                message: '刪除成功!'
-                            });
-                            this.tableData = await this.getAvailableTemplate();
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                message: '刪除失敗!'
-                            });
-                        }
-                    } catch (error) {
-                        this.$message({
-                            type: 'error',
-                            message: '刪除失敗!'
-                        });
-                        return error;
-                    }
-                })
-                .catch(() => {
-                    this.$message({
+        }
+
+        async function deleteTemplate() {
+            try {
+                await ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
+                    confirmButtonText: '確定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                });
+
+                const response = await axios.delete('/template_crud/delete_template/' + template_id.value);
+                if (!response.error) {
+                    ElMessage({
+                        type: 'success',
+                        message: '刪除成功!'
+                    });
+                    tableData.value = await getAvailableTemplate();
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: '刪除失敗!'
+                    });
+                }
+            } catch (error) {
+                if (error instanceof ElMessageBox.MessageBoxClosedError) {
+                    ElMessage({
                         type: 'info',
                         message: '已取消刪除'
                     });
-                });
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        message: '刪除失敗!'
+                    });
+                    return error;
+                }
+            }
         }
+
+        function templateOCR(template_id) {
+            store.commit('TemplateIdUpdate', template_id);
+            router.push({ path: '/features/ocr/template' });
+        }
+
+        return {
+            // Data
+            rectangleTypes,
+            selectedRectangleType,
+            width,
+            height,
+            imageSrc,
+            tableData,
+            tableHeader,
+            formattedTableData,
+            formatDate,
+            getAvailableTemplate,
+            handleConfirm,
+            handleLook,
+            handleDelete,
+            prepend,
+            append,
+            deleteCurrentColumn,
+            insertBefore,
+            createTemplate,
+            editTemplate,
+            downloadTemplate,
+            deleteTemplate,
+            template,
+            template_id,
+            initialData,
+            templateOCR
+        };
     }
 };
 </script>
@@ -362,7 +342,7 @@ export default {
                             <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
                             <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="big" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
-                            <el-button size="big" type="info" @click="handleLook(scope.row.template_id, this.myModel.code)">檢視</el-button>
+                            <el-button size="big" type="info" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
                             <el-button size="big" type="danger" @click="handleDelete(scope.row.template_id)">刪除</el-button>
                         </template>
                     </el-table-column>
@@ -375,7 +355,7 @@ export default {
                 <h5>請選擇標註模式</h5>
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                        <SelectButton v-model="myModel" :options="models" optionLabel="name" @change="handleLook(this.template_id, this.myModel.code)" />
+                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType.code)" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
                         <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="downloadTemplate" />

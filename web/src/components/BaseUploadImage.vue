@@ -18,13 +18,7 @@ export default {
         },
         // The default category is 'general' with limited file number to be 20
         category: {
-            type: Object,
-            default: () => {
-                return {
-                    name: 'general',
-                    limit: 20
-                };
-            }
+            type: Object
         }
     },
     setup(props, { emit }) {

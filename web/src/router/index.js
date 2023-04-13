@@ -21,7 +21,7 @@ const router = createRouter({
                 },
                 {
                     path: '/features/general/model-list',
-                    name: 'Model-List',
+                    name: 'ModelList',
                     component: () => import('@/views/pages/features/general/ModelList.vue')
                 },
                 {

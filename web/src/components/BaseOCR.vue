@@ -23,17 +23,27 @@ export default {
         updateUploadConfig({ image_complexity, selectedLang }) {
             this.image_complexity = image_complexity;
             this.selectedLang = selectedLang;
+        },
+        reset() {
+            this.imageUploadKey += 1;
+            this.step = 1;
         }
     },
     data() {
         return {
             step: 1,
             image_complexity: '',
-            selectedLang: ''
+            selectedLang: '',
+            imageUploadKey: 0
         };
     },
-    mounted() {
-        console.log(this.title);
+    watch: {
+        $route: {
+            handler() {
+                this.reset();
+            },
+            immediate: true
+        }
     }
 };
 </script>
@@ -58,6 +68,6 @@ export default {
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :key="imageUploadKey" />
     <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" :baseUrl="baseUrl" />
 </template>

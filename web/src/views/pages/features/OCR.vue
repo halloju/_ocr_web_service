@@ -8,8 +8,8 @@ export default {
     data() {
         return {
             category: {
-                name: 'limited',
-                limit: 1
+                name: 'general',
+                limit: 20
             },
             title: '',
             subtitle: '',
