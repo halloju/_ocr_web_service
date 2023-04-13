@@ -7,6 +7,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
 import { useStore } from 'vuex';
+import useAnnotator from '@/mixins/useAnnotator.js';
 
 export default {
     components: {
@@ -20,6 +21,7 @@ export default {
         }
     },
     setup(props, { emit }) {
+        const { generatePointsList, parseOcrDetail } = useAnnotator();
         const store = useStore();
 
         const containerId = ref('my-pic-annotation');
@@ -170,63 +172,7 @@ export default {
             file_name.value = fileInfo[0].file_name;
             num.value = fileInfo[0].num;
             let ocr_results = general_upload_res.value.filter((item) => item.task_id === row.task_id)[0].ocr_results;
-            initialData.value = getShapeData(ocr_results);
-        }
-
-        function generatePointsList(points) {
-            // find the min and max x and y
-            let minX = Math.min(...points.map((point) => point[0]));
-            let maxX = Math.max(...points.map((point) => point[0]));
-            let minY = Math.min(...points.map((point) => point[1]));
-            let maxY = Math.max(...points.map((point) => point[1]));
-
-            return {
-                label_x: minX,
-                label_y: minY,
-                label_width: maxX - minX,
-                label_height: maxY - minY
-            };
-        }
-
-        function getShapeData(regData) {
-            let myShapes = [];
-
-            regData.forEach(function (element, index) {
-                var label = Object.values(element);
-                var points = Object.values(element['points']);
-                var myContent = element['text'];
-                var { label_x, label_y, label_width, label_height } = generatePointsList(points);
-                var image_cv_id = "image_cv_id";  // 不知道這個是做什麼用的
-                var tagtitle;
-
-                if (element.hasOwnProperty('tag')){
-                    tagtitle = element['tag'];
-                }else{
-                    tagtitle = index + 1;
-                }
-                myShapes.push({
-                    type: 'rect',
-                    name: image_cv_id,
-                    fill: '#b0c4de',
-                    opacity: 0.5,
-                    stroke: '#0ff',
-                    draggable: true,
-                    strokeWidth: 2,
-                    strokeScaleEnabled: false,
-                    annotation: {
-                        title: tagtitle,
-                        text: myContent,
-                        linkTitle: '',
-                        link: ''
-                    },
-                    x: label_x,
-                    y: label_y,
-                    width: label_width,
-                    height: label_height,
-                    rectangleType: 'text'
-                });
-            });
-            return myShapes;
+            initialData.value = parseOcrDetail(ocr_results);
         }
 
         function back() {
@@ -295,7 +241,6 @@ export default {
             getOcrResults,
             waitUntilOcrComplete,
             handleButtonClick,
-            getShapeData,
             back,
             downloadFile
         };

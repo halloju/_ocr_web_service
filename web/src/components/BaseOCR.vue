@@ -7,24 +7,42 @@ export default {
         BaseUploadImage,
         BaseOcrResultShow
     },
-    name: 'TemplateOCR',
+    name: 'BaseOCR',
+    props: {
+        title: String,
+        subtitle: String,
+        description: String,
+        apiUrl: String,
+        category: Object,
+        baseUrl: String
+    },
+    methods: {
+        nextStep(step) {
+            this.step = step;
+        },
+        updateUploadConfig({ image_complexity, selectedLang }) {
+            this.image_complexity = image_complexity;
+            this.selectedLang = selectedLang;
+        },
+        reset() {
+            this.imageUploadKey += 1;
+            this.step = 1;
+        }
+    },
     data() {
         return {
             step: 1,
             image_complexity: '',
             selectedLang: '',
-            template_id: this.$store.state.template_id
+            imageUploadKey: 0
         };
     },
-    watch: {},
-    computed: {},
-    methods: {
-        nextStep(step) {
-            this.step = step;
-        },
-        getUploadConfig(image_complexity, selectedLang) {
-            this.image_complexity = image_complexity;
-            this.selectedLang = selectedLang;
+    watch: {
+        $route: {
+            handler() {
+                this.reset();
+            },
+            immediate: true
         }
     }
 };
@@ -37,8 +55,7 @@ export default {
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item>選擇模板</el-breadcrumb-item>
+                    <el-breadcrumb-item>{{ title }}</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />
                 <!-- Step -->
@@ -46,11 +63,11 @@ export default {
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
-                <h5>選擇模板編號：{{ template_id }}</h5>
-                <p>請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。</p>
+                <h5>{{ subtitle }}</h5>
+                <p>{{ description }}</p>
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="getUploadConfig" apiUrl="/template_ocr/predict_images" />
-    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" baseUrl="template_ocr" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :key="imageUploadKey" />
+    <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" :baseUrl="baseUrl" />
 </template>

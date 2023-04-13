@@ -2,6 +2,7 @@
 import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';
 import SideBarEntry from '@/components/SideBarEntry.vue';
+import useAnnotator from '@/mixins/useAnnotator.js';
 export default {
     components: {
         SideBarEntry,
@@ -68,6 +69,16 @@ export default {
     },
     beforeUnmount() {
         document.removeEventListener('keydown', this.handleKeyEvent);
+    },
+    setup() {
+        // Use the useAnnotator function
+        const { getFillColorByRectangleType, rectangleTypes } = useAnnotator();
+
+        // Expose the methods to the template and Options API methods
+        return {
+            rectangleTypes,
+            getFillColorByRectangleType
+        };
     },
     methods: {
         loadImage() {
@@ -166,8 +177,6 @@ export default {
             this.shapesUpdated();
         },
         getBaseShape(type, rectangleType) {
-            // const fillColor = this.getFillColorByRectangleType(rectangleType);
-
             return {
                 type: type,
                 name: 'shape-' + new Date().valueOf(),
@@ -187,18 +196,6 @@ export default {
                 },
                 rectangleType: rectangleType
             };
-        },
-        getFillColorByRectangleType(rectangleType) {
-            switch (rectangleType) {
-                case 'text':
-                    return '#ff0000'; // Red color for text box
-                case 'box':
-                    return '#00ff00'; // Green color for box
-                case 'mask':
-                    return '#0000ff'; // Brown color for mask box
-                default:
-                    return '#b0c4de'; // Default color for other types
-            }
         },
         // delete shape
         deleteShape(name) {
