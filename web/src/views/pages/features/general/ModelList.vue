@@ -214,7 +214,7 @@ export default {
                 localStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
             }
             localStorage.setItem('template_id', template_id.value);
-            store.commit('templateNameUpdate', response['data'].template_name);
+            localStorage.setItem('templateName', response['data'].template_name);
             store.commit('createNewUpdate', false);
             router.push({ path: '/features/general/self-define/step' });
         }

@@ -47,7 +47,7 @@ export default {
             isEditing: false,
             disableInput: false,
             templateNameEdit: false,
-            input: this.$store.state.selfDefinedRecs.name,
+            input: localStorage.getItem('templateName') || '',
             imageSrc: localStorage.getItem('imageSource') || '',
             initialData: {
                 text: [],
@@ -213,7 +213,7 @@ export default {
         toggleEditSave() {
             this.templateNameEdit = !this.templateNameEdit;
             this.disableInput = !this.disableInput;
-            this.$store.commit('templateNameUpdate', this.input);
+            localStorage.setItem('templateName', this.input);
         },
         Upload(val) {
             this.isOK = val;
