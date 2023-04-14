@@ -1,15 +1,16 @@
-from celery.result import AsyncResult
-from fastapi import APIRouter, File, Request, UploadFile, Form
-from fastapi.responses import JSONResponse
-from pydantic.typing import List
-from worker import predict_image
 import base64
-import logging
 import uuid
 
-logger = logging.getLogger(__name__)
+from celery.result import AsyncResult
+from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi.responses import JSONResponse
+from logger import Logger
+from pydantic.typing import List
+from worker import predict_image
+
 
 router = APIRouter()
+logger = Logger(__name__)
 
 @router.get("/get_image/{image_id}", summary="拉圖片")
 async def get_images(image_id: str, request: Request):
@@ -25,7 +26,7 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
         for file in files:
             try:
                 image_id = str(uuid.uuid4())
-
+                task_id = ''
                 # Read and encode the file data as base64
                 image_data = await file.read()
                 encoded_data = base64.b64encode(image_data).decode("utf-8")
@@ -43,15 +44,13 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
                 # start task prediction
                 task_id = predict_image.delay(image_id, action='gp_ocr', input_params={'image_complexity': image_complexity, 'model_name': model_name})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
-                
             except Exception as ex:
-                logger.info(ex)
+                logger.error({'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
                 tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=202, content=tasks)
     except Exception as ex:
-        logger.info(ex)
+        logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
-    
 
 @router.get('/result/{task_id}')
 async def result(task_id: str):
@@ -60,7 +59,6 @@ async def result(task_id: str):
     # Task Not Ready
     if not task.ready():
         return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
-    
     task_result = task.get()
     if task_result is None:
         return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': 'FAIL', 'result': 'Task result is None', 'file_name': ''})
