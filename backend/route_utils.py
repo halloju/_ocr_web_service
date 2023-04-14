@@ -37,12 +37,12 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
 
 
 def init_log(action: str, logger, uid=None, rid=None):
-    if uid:
+    if not uid:
         uid = get_user_id()
 
-    if rid:
+    if not rid:
         rid = get_request_id()
-    action = 'template_create'
+    action = action
     log_main = {'user_id': uid, 'request_id': rid, 'action': action}
     logger.info(log_main)
     return uid, rid, log_main
