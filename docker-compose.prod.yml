@@ -33,10 +33,12 @@ services:
         restart: always
     web:
         container_name: web
-        image: halloju/if_gp_ocr_system_web:v1.0.1
-        # build:
-        #  context: ./web
-        #  dockerfile: Dockerfile.prod
+        # image: halloju/if_gp_ocr_system_web:v1.0.1
+        build:
+          context: ./web
+          dockerfile: Dockerfile.prod
+          args:
+            - VITE_API_URL=http://10.240.245.22/backend
         ports:
           - '80:80'
         environment:
@@ -91,17 +93,4 @@ services:
       depends_on:
         - backend
         - redis
-        - rabbitmq
-    flower:
-      container_name: flower
-      build: ./backend
-      command:  flower --app=worker.celery --port=5555 --broker=amqp://rabbitmq
-      ports:
-        - 5555:5555
-      environment:
-        - CELERY_BROKER_URL=amqp://rabbitmq
-        - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      depends_on:
-        - redis
-        - worker
         - rabbitmq

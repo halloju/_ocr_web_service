@@ -4,6 +4,7 @@ import axios from 'axios';
 import { mapState } from 'vuex';
 import { ElMessageBox } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
+import useAnnotator from '@/mixins/useAnnotator.js';
 
 export default {
     components: {
@@ -65,6 +66,12 @@ export default {
     mounted() {
         this.isFinalStep();
     },
+    setup() {
+        const { rectangleTypes } = useAnnotator();
+        return {
+            rectangleTypes
+        };
+    },
     methods: {
         next() {
             if (this.isEditing) {
@@ -74,11 +81,8 @@ export default {
                 });
                 return;
             }
-            // const nextStep = this.step + 1;
-            // this.$router.push({ path: `/features/general/self-define/step/${nextStep}` });
             if (this.currentStep < 5) {
                 this.currentStep++;
-                //localStorage.removeItem(this.localStorageKey); // Clear localStorage for the next step
             }
         },
         previous() {
@@ -87,15 +91,13 @@ export default {
             }
         },
         getRecsFromLocalStorage() {
-            const keys = ['text', 'box', 'mask'];
             const recs = [];
-            keys.forEach((key) => {
-                const rec = JSON.parse(localStorage.getItem(key) || '[]');
+            this.rectangleTypes.forEach((type) => {
+                const rec = JSON.parse(localStorage.getItem(type.code) || '[]');
                 if (rec) {
                     recs.push(...rec);
                 }
             });
-            console.log(recs);
             return recs;
         },
         upload() {
@@ -109,9 +111,6 @@ export default {
             // clear state
             this.boxes = [];
             this.getRecsFromLocalStorage().forEach((box) => {
-                //calculate amd round the points
-                // let endX = Math.round(box.x + box.width * box.scaleX);
-                // let endY = Math.round(box.y + box.height * box.scaleY);
                 this.boxes.push({
                     type: box.rectangleType,
                     tag: box.annotation.title,

@@ -15,100 +15,20 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/features/general/ocr',
-                    name: 'GeneralOCR',
-                    component: () => import('@/views/pages/features/general/GeneralOCR.vue')
-                },
-                {
-                    path: '/features/general/template',
-                    name: 'TemplateOCR',
-                    component: () => import('@/views/pages/features/general/TemplateOCR.vue')
+                    path: '/features/ocr/:type',
+                    name: 'OCR',
+                    component: () => import('@/views/pages/features/OCR.vue')
                 },
                 {
                     path: '/features/general/model-list',
-                    name: 'Model-List',
+                    name: 'ModelList',
                     component: () => import('@/views/pages/features/general/ModelList.vue')
-                },
-                {
-                    path: '/features/br/remittance',
-                    name: 'RemittanceOCR',
-                    component: () => import('@/views/pages/features/br/RemittanceOCR.vue')
-                },
-                {
-                    path: '/features/br/check',
-                    name: 'CheckOCR',
-                    component: () => import('@/views/pages/features/br/CheckOCR.vue')
-                },
-                {
-                    path: '/features/test',
-                    name: 'TEST',
-                    component: () => import('@/views/pages/features/TEST.vue')
                 },
                 {
                     path: '/features/general/self-define/step',
                     name: 'SelfDefine',
                     component: () => import('@/views/pages/features/self-define/step.vue')
                 },
-                // {
-                //     path: '/features/general/self-define/step/2',
-                //     component: () => import('@/views/pages/features/self-define/step.vue'),
-                //     props: { Boxes: [{ name: 'text', title: '文字辨識位置', step: 2, fillColor: { r: 0, g: 255, b: 0, a: 0.5 } }],
-                //              step: 2, pageTitle: '文字辨識位置', pageDesc: '請選擇文字辨識位置'}
-                // },
-                // {
-                //     path: '/features/general/self-define/step/3',
-                //     component: () => import('@/views/pages/features/self-define/step.vue'),
-                //     props: { Boxes: [{ name: 'box', title: '核取方塊位置', step: 3, fillColor: { r: 0, g: 0, b: 255, a: 0.5 }, isShapeVisible: true }],
-                //              step: 3, pageTitle: '方塊位置', pageDesc: '請選擇方塊辨識位置' }
-                // },  
-                // {
-                //     path: '/features/general/self-define/step/4',
-                //     component: () => import('@/views/pages/features/self-define/step.vue'),
-                //     props: { Boxes: [{ name: 'mask', title: '遮罩位置', step: 4, fillColor: { r: 0, g: 0, b: 0, a: 0.5 }, isShapeVisible: true }],
-                //              step: 4, pageTitle: '遮罩位置', pageDesc: '請選擇遮罩位置' }
-                // },
-                // {
-                //     path: '/features/general/self-define/step/5',
-                //     component: () => import('@/views/pages/features/self-define/step.vue'),
-                //     props: {
-                //         Boxes: [
-                //             {
-                //                 name: 'text',
-                //                 title: '文字辨識位置',
-                //                 fillColor: {
-                //                     r: 0,
-                //                     g: 255,
-                //                     b: 0,
-                //                     a: 0.5
-                //                 },
-                //                 isShapeVisible: true
-                //             },
-                //             {
-                //                 name: 'box',
-                //                 title: '核取方塊位置',
-                //                 fillColor: {
-                //                     r: 0,
-                //                     g: 0,
-                //                     b: 255,
-                //                     a: 0.5
-                //                 },
-                //                 isShapeVisible: true
-                //             },
-                //             {
-                //                 name: 'mask',
-                //                 title: '遮罩位置',
-                //                 fillColor: {
-                //                     r: 0,
-                //                     g: 0,
-                //                     b: 0,
-                //                     a: 0.5
-                //                 },
-                //                 isShapeVisible: true
-                //             }
-                //         ],
-                //         step: 5
-                //     },
-                // },
                 {
                     path: '/features/pdf2image',
                     name: 'pdf2image',
