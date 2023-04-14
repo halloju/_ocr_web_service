@@ -15,7 +15,7 @@ def get_available_templates(user_id: str):
     '''
     取得該 user_id 可用的 template 清單
     '''
-    uid, rid, log_main = init_log('get_available_templates', logger, uid=user_id)
+    uid, rid, log_main = init_log('get_available_templates', logger)
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
