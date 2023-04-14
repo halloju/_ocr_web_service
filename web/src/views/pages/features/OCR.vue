@@ -15,7 +15,6 @@ export default {
             subtitle: '',
             description: '',
             apiUrl: '',
-            baseUrl: '',
             template_id: this.$store.state.template_id
         };
     },
@@ -25,7 +24,6 @@ export default {
 
         this.title = ocrConfig.title;
         this.apiUrl = ocrConfig.apiUrl;
-        this.baseUrl = ocrConfig.baseUrl;
         this.subtitle = ocrConfig.subtitle;
         this.description = ocrConfig.description;
         this.useModelComplexity = ocrConfig.useModelComplexity;
@@ -37,7 +35,6 @@ export default {
 
             this.title = ocrConfig.title;
             this.apiUrl = ocrConfig.apiUrl;
-            this.baseUrl = ocrConfig.baseUrl;
             this.subtitle = ocrConfig.subtitle;
             this.description = ocrConfig.description;
             this.useModelComplexity = ocrConfig.useModelComplexity;
@@ -50,16 +47,14 @@ export default {
                     title: '全文辨識',
                     subtitle: '通用辨識',
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/gp_ocr/predict_images',
-                    baseUrl: 'gp_ocr',
+                    apiUrl: '/ocr/gp_ocr',
                     useModelComplexity: true
                 },
                 template: {
                     title: '模板辨識',
                     subtitle: `模板編號：${this.template_id}`,
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/template_ocr/predict_images',
-                    baseUrl: 'template_ocr',
+                    apiUrl: '/ocr/template_ocr',
                     useModelComplexity: false
                 },
                 remittance: {
@@ -67,23 +62,20 @@ export default {
                     subtitle: '匯款單辨識',
                     description: '請上傳一張，下一步會進行辨識並可以進行檢視。',
                     apiUrl: '/remittance_ocr/remittance',
-                    baseUrl: 'remittance_ocr',
                     useModelComplexity: false
                 },
                 check_front: {
                     title: '票據辨識',
                     subtitle: '支票正面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/check_front_ocr/check_front',
-                    baseUrl: 'check_front_ocr',
+                    apiUrl: '/ocr/check_front',
                     useModelComplexity: false
                 },
                 check_back: {
                     title: '票據辨識',
                     subtitle: '支票背面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/check_back_ocr/check_back',
-                    baseUrl: 'check_back_ocr',
+                    apiUrl: '/ocr/check_back',
                     useModelComplexity: false
                 }
                 // Add more OCR types here
@@ -96,6 +88,6 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :baseUrl="baseUrl" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" />
+        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" />
     </div>
 </template>
