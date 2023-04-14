@@ -25,11 +25,6 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/general/ModelList.vue')
                 },
                 {
-                    path: '/features/test',
-                    name: 'TEST',
-                    component: () => import('@/views/pages/features/TEST.vue')
-                },
-                {
                     path: '/features/general/self-define/step',
                     name: 'SelfDefine',
                     component: () => import('@/views/pages/features/self-define/step.vue')
