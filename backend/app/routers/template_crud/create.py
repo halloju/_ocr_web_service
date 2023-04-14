@@ -33,7 +33,7 @@ async def create_template(request: CreateTemplateRequest):
             "inputs": jsonable_encoder(inputs)
         }
 
-        outputs = call_mlaas_function(input_data, 'template_ocr/create_template', project='GP', logger=logger, timeout=60)
+        outputs = call_mlaas_function(input_data, 'template_crud/create_template', project='GP', logger=logger, timeout=60)
         status_code = outputs['outputs']['status_code']
         if status_code == '0000':
             return CreateTemplateResponse(
