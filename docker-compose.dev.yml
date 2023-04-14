@@ -44,6 +44,7 @@ services:
         environment:
           - MODE=development
           - VITE_API_URL=http://localhost/backend
+          - TZ=Asia/Taipei
     backend:
         container_name: backend
         build: "backend/."
@@ -57,6 +58,7 @@ services:
           - MODE=dev
           - CELERY_BROKER_URL=amqp://rabbitmq
           - CELERY_RESULT_BACKEND=redis://redis:6379/0
+          - TZ=Asia/Taipei
         env_file:
           - 'variable.env'
         depends_on:
@@ -100,13 +102,14 @@ services:
     worker:
       container_name: worker
       build: ./backend
-      command: celery worker --app=worker.celery
+      command: celery worker --app=worker.celery --loglevel=INFO
       volumes:
         - ./backend:/code
       environment:
         - MODE=dev
         - CELERY_BROKER_URL=amqp://rabbitmq
         - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        - TZ=Asia/Taipei
       env_file:
         - 'variable.env'
       depends_on:
