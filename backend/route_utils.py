@@ -35,6 +35,19 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
     }})
     raise MlaasRequestError(inp_post_response.status_code, inp_post_response.text)
 
+
+def init_log(action: str, logger, uid=None, rid=None):
+    if uid:
+        uid = get_user_id()
+
+    if rid:
+        rid = get_request_id()
+    action = 'template_create'
+    log_main = {'user_id': uid, 'request_id': rid, 'action': action}
+    logger.info(log_main)
+    return uid, rid, log_main
+
+
 def get_user_id() -> str:
     return '13520'
 

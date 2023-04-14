@@ -1,14 +1,14 @@
-from app.exceptions import CustomException
-from celery.result import AsyncResult
-from fastapi import APIRouter, Depends, File, Request, UploadFile, Form
-from fastapi.responses import JSONResponse
-from pydantic.typing import List
-from worker import predict_image
 import base64
-import logging
 import uuid
 
-logger = logging.getLogger(__name__)
+from celery.result import AsyncResult
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi.responses import JSONResponse
+from logger import Logger
+from pydantic.typing import List
+from worker import predict_image
+
+logger = Logger(__name__)
 
 router = APIRouter()
 
@@ -45,15 +45,14 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
                 image_complexity = "" # template 的 image_complexity 設定空值
                 task_id = predict_image.delay(image_id, action='template_ocr', input_params={'template_id': template_id, 'model_name': model_name})
                 tasks.append({'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id})
-                
             except Exception as ex:
-                logger.info(ex)
+                logger.error({'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
                 tasks.append({'task_id': str(task_id), 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=202, content=tasks)
     except Exception as ex:
-        logger.info(ex)
+        logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
-    
+
 
 @router.get('/result/{task_id}')
 async def result(task_id: str):
@@ -63,7 +62,6 @@ async def result(task_id: str):
     if not task.ready():
         return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
 
-    
     # Task done: return the value
     task_result = task.get()
     # Task Result is None
