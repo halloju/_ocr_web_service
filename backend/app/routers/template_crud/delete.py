@@ -1,33 +1,31 @@
-from app.exceptions import CustomException
+from app import response_table
+from app.exceptions import MlaasRequestError
 from app.schema.common import Response
 from fastapi import APIRouter
-from fastapi import Depends
-
-from app.schema.template_crud.delete import DeleteTemplateRequest
-from app.forms.template_crud.delete import DeleteTemplateForm
-from route_utils import get_user_id, call_mlaas_function, get_request_id
-from app.exceptions import MlaasRequestError
-from app import response_table
+from logger import Logger
+from route_utils import call_mlaas_function, init_log
 
 router = APIRouter()
-
+logger = Logger(__name__)
 
 @router.delete("/delete_template/{template_id}")
 async def delete_template(template_id: str):
     '''
-    將 Feature DB 中的 template 資訊刪除
+    刪除給定的 template_id 在 mlaas Feature DB 中的 template 資訊
     '''
-
+    uid, rid, log_main = init_log('template_create', logger)
     input_data = {
         "business_unit": "C170",
-        "request_id": get_request_id(),
+        "request_id": rid,
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/delete_template', project='GP')
+    outputs = call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return Response(status_code=200)
     elif status_code == '5407':
+        logger.error({**log_main, 'error_msg': response_table.status_templateexisterror})
         raise MlaasRequestError(**response_table.status_templateexisterror)
     else:
+        logger.error({**log_main, 'error_msg': outputs['outputs']})
         raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])

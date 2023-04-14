@@ -3,17 +3,17 @@ from app.schema.common import Response
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
+from logger import Logger
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
-from route_utils import get_user_id, call_mlaas_function, get_request_id
+from route_utils import call_mlaas_function, init_log
 from app.exceptions import MlaasRequestError
 from app import response_table
-# from app.services.template_crud import update as service_update
 
 
 router = APIRouter()
-
+logger = Logger(__name__)
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)
 async def update_template(request: UpdateTemplateRequest):
@@ -23,25 +23,28 @@ async def update_template(request: UpdateTemplateRequest):
     form = UpdateTemplateForm(request)
     await form.load_data()
     if await form.is_valid():
+        uid, rid, log_main = init_log('template_create', logger)
         inputs = {
-            'user_id': get_user_id(),
+            'user_id': uid,
             'template_id': form.template_id,
             'points_list': form.points_list,
             'template_name': form.template_name,
         }
         input_data = {
             "business_unit": "C170",
-            "request_id": get_request_id(),
+            "request_id": rid,
             "inputs": jsonable_encoder(inputs)
         }
-        outputs = call_mlaas_function(input_data, 'template_crud/update_template', project='GP')
+        outputs = call_mlaas_function(input_data, 'template_crud/update_template', project='GP', logger=logger)
         status_code = outputs['outputs']['status_code']
         if status_code == '0000':
-            print(outputs['outputs'])
             new_template_id = outputs['outputs']['template_id']
             return UpdateTemplateResponse(template_id=new_template_id)
         elif status_code == '5407':
+            logger.error({**log_main, 'error_msg': response_table.status_templateexisterror})
             raise MlaasRequestError(**response_table.status_templateexisterror)
         else:
-            raise MlaasRequestError(status_code, outputs['outputs']['status_msg']) 
+            logger.error({**log_main, 'error_msg': outputs['outputs']})
+            raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
+    logger.error({**log_main, 'error_msg': {'form is not valid': {'errors': form.errors}}})
     raise CustomException(status_code=400, message=form.errors)

@@ -1,0 +1,30 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  standard:
+    format: '{"timestamp: "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": "%(message)s"}'
+    datefmt: "%Y-%m-%dT%H:%M:%S"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: standard
+    level: INFO
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.handlers.WatchedFileHandler
+    formatter: standard
+    filename: mylog.log
+    level: INFO
+
+loggers:
+  uvicorn:
+    error:
+      propagate: true
+
+root:
+  level: INFO
+  handlers: [console, file]
+  propagate: no

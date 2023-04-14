@@ -1,29 +1,21 @@
+import os
+
+from aioredis import create_redis_pool
+from app.api_config import http_responses
+from app.exceptions import (CustomException, MlaasRequestError,
+                            exception_handler, mlaas_request_handler)
+from app.routers import docs
+from app.routers.image_tools import pdf_transform
+from app.routers.ocr import (check_back_ocr, check_front_ocr, gp_ocr,
+                             remittance_ocr, template_ocr)
+from app.routers.template_crud import create, delete, read, update
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from aioredis import create_redis_pool
-from app.exceptions import CustomException, exception_handler
-from app.exceptions import MlaasRequestError, mlaas_request_handler
-from app.routers import docs
-from app.routers.ocr import gp_ocr, template_ocr, check_front_ocr, check_back_ocr, remittance_ocr
-from app.routers.image_tools import pdf_transform
-from app.routers.template_crud import create, read, update, delete
-from app.api_config import http_responses
-import os
-import logging
-from datetime import datetime
+from logger import Logger
 
-log_filename = "./app/logger/" + datetime.now().strftime('%Y-%m-%d') + ".log"
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s %(name)s %(levelname)s %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    filename=log_filename,
-    filemode='a'
-)
 # 設定 logger
-logger = logging.getLogger(__name__)
+logger = Logger('main')
 
 def register_redis(app: FastAPI) -> None:
     """
@@ -39,6 +31,7 @@ def register_redis(app: FastAPI) -> None:
         :return:
         """
         app.state.redis = await create_redis_pool(os.getenv("LOCAL_REDIS_URL"))
+        logger.info({'register_redis': 'startup'})
 
     @app.on_event('shutdown')
     async def shutdown_event():
@@ -48,6 +41,7 @@ def register_redis(app: FastAPI) -> None:
         """
         app.state.redis.close()
         await app.state.redis.wait_closed()
+        logger.info({'register_redis': 'shutdown'})
 
 def get_application():
     app = FastAPI(docs_url=None,
@@ -126,7 +120,9 @@ def get_application():
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
     register_redis(app)
+    logger.info({'get_application': 'finish'})
 
     return app
+
 
 app = get_application()
