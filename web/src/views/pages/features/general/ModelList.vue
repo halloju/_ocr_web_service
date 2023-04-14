@@ -4,7 +4,7 @@ import AnnotationVertical from '@/components/AnnotationVertical.vue';
 import axios from 'axios';
 import moment from 'moment';
 import { ElMessageBox, ElMessage } from 'element-plus';
-import { usePhotoService } from '@/service/PhotoService.js';
+import PhotoService from '@/service/PhotoService';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
@@ -35,13 +35,13 @@ export default {
         const store = useStore();
         const router = useRouter();
         const { rectangleTypes, parseTemplateDetail } = useAnnotator();
-        const { getImages } = usePhotoService();
+        const galleriaService = new PhotoService();
 
         const images = ref(null);
         const tableData = ref([]);
 
         onMounted(async () => {
-            images.value = await getImages();
+            images.value = await galleriaService.getImages();
             tableData.value = await getAvailableTemplate();
         });
 
