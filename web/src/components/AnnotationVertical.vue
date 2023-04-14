@@ -333,10 +333,9 @@ export default {
                 const node = document.getElementById(this.initialDataId);
                 if (node && node.innerHTML) this.shapes = JSON.parse(node.innerHTML);
             } else if (this.initialData && this.initialData.length > 0) {
-                this.shapes = JSON.parse(this.initialData);
+                this.shapes = this.initialData;
             } else if (this.localStorageKey) {
-                const data = localStorage.getItem(this.localStorageKey) || '[]';
-                this.shapes = JSON.parse(data);
+                this.shapes = localStorage.getItem(this.localStorageKey) || '[]';
             }
             // if we only show data, remove draggable from it
             if (!this.editMode) {

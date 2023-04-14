@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import axios from 'axios';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
@@ -18,13 +18,7 @@ export default {
         },
         // The default category is 'general' with limited file number to be 20
         category: {
-            type: Object,
-            default: () => {
-                return {
-                    name: 'general',
-                    limit: 20
-                };
-            }
+            type: Object
         }
     },
     setup(props, { emit }) {
@@ -182,7 +176,11 @@ export default {
             imgWidth.value = width;
             dialogWidth.value = width + 40;
         }
-
+        // mounted
+        onMounted(() => {
+            // get languages
+            console.log(props);
+        });
         // watch
         watch(switchValue, (newVal) => {
             if (newVal) {

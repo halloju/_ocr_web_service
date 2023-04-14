@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 import requests
 from app.exceptions import MlaasRequestError
@@ -51,5 +52,7 @@ def init_log(action: str, logger, uid=None, rid=None):
 def get_user_id() -> str:
     return '13520'
 
-def get_request_id() -> str:  # celery with task_id
-    return 'gpocr_system_test'
+
+def get_request_id() -> str: # celery with task_id
+    return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
+
