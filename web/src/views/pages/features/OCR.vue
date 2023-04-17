@@ -61,7 +61,7 @@ export default {
                     title: '票據辨識',
                     subtitle: '匯款單辨識',
                     description: '請上傳一張，下一步會進行辨識並可以進行檢視。',
-                    apiUrl: '/remittance_ocr/remittance',
+                    apiUrl: '/ocr/remittance',
                     useModelComplexity: false
                 },
                 check_front: {
