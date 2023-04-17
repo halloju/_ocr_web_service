@@ -37,10 +37,12 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
 @router.post("/gp_ocr", summary="全文辨識")
 async def process(request: Request, image_complexity: str = Form(...), model_name: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
+    action = 'gp_ocr'
+    logger.info({action: {'upload_file_num': len(files), 'image_complexity': image_complexity, 'model_name': model_name}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action='gp_ocr', input_params={'image_complexity': image_complexity, 'model_name': model_name})
+                task = await process_image(request, file, action=action, input_params={'image_complexity': image_complexity, 'model_name': model_name})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')
@@ -55,10 +57,12 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
 @router.post("/template_ocr", summary="模板辨識")
 async def process(request: Request, model_name: str = Form(...), template_id: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
+    action = 'template_ocr'
+    logger.info({action: {'upload_file_num': len(files), 'template_id': template_id, 'model_name': model_name}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action='template_ocr', input_params={'model_name': model_name, 'template_id': template_id})
+                task = await process_image(request, file, action=action, input_params={'model_name': model_name, 'template_id': template_id})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')
@@ -73,10 +77,12 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
 @router.post("/remittance", summary="匯款單辨識")
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
+    action = 'remittance'
+    logger.info({action: {'upload_file_num': len(files)}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action='remittance', input_params={})
+                task = await process_image(request, file, action=action, input_params={})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')
@@ -91,10 +97,12 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
 @router.post("/check_front", summary="支票正面辨識")
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
+    action = 'check_front'
+    logger.info({action: {'upload_file_num': len(files)}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action='check_front', input_params={})
+                task = await process_image(request, file, action=action, input_params={})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')
@@ -109,10 +117,12 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
 @router.post("/check_back", summary="支票背面辨識")
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
+    action = 'check_back'
+    logger.info({action: {'upload_file_num': len(files)}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action='check_back', input_params={})
+                task = await process_image(request, file, action=action, input_params={})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')
