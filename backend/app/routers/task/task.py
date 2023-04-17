@@ -1,13 +1,7 @@
-import base64
-import uuid
-
 from celery.result import AsyncResult
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from logger import Logger
-from pydantic.typing import List
-from worker import predict_image
-
 
 router = APIRouter()
 logger = Logger(__name__)
@@ -18,7 +12,7 @@ async def get_images(image_id: str, request: Request):
     redis = request.app.state.redis
     image_string = await redis.get(image_id)
     return JSONResponse(status_code=200, content=image_string)
-  
+
 @router.get('/result/{task_id}')
 async def result(task_id: str):
     task = AsyncResult(task_id)
@@ -26,7 +20,7 @@ async def result(task_id: str):
     # Task Not Ready
     if not task.ready():
         return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
-    
+
     task_result = task.get()
     if task_result is None:
         return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': 'FAIL', 'result': 'Task result is None', 'file_name': ''})
