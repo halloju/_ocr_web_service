@@ -6,8 +6,8 @@ from app.exceptions import (CustomException, MlaasRequestError,
                             exception_handler, mlaas_request_handler)
 from app.routers import docs
 from app.routers.image_tools import pdf_transform
-from app.routers.ocr import (check_back_ocr, check_front_ocr, gp_ocr,
-                             remittance_ocr, template_ocr)
+from app.routers.ocr import ocr
+from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -87,29 +87,14 @@ def get_application():
         responses=http_responses
     )
     app.include_router(
-        gp_ocr.router,
-        prefix="/gp_ocr",
-        tags=["gp_ocr"],
+        ocr.router,
+        prefix="/ocr",
+        tags=["ocr"],
     )
     app.include_router(
-        template_ocr.router,
-        prefix="/template_ocr",
-        tags=["template_ocr"],
-    )
-    app.include_router(
-        check_back_ocr.router,
-        prefix="/check_back_ocr",
-        tags=["check_back_ocr"],
-    )
-    app.include_router(
-        check_front_ocr.router,
-        prefix="/check_front_ocr",
-        tags=["check_front_ocr"],
-    )
-    app.include_router(
-        remittance_ocr.router,
-        prefix="/remittance_ocr",
-        tags=["remittance_ocr"],
+        task.router,
+        prefix="/task",
+        tags=["task"],
     )
     app.include_router(
         pdf_transform.router,

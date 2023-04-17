@@ -14,14 +14,8 @@ export default {
         Annotation
     },
     name: 'BaseOcrResultShow',
-    props: {
-        baseUrl: {
-            type: String,
-            required: true
-        }
-    },
     setup(props, { emit }) {
-        const { generatePointsList, parseOcrDetail } = useAnnotator();
+        const { parseOcrDetail } = useAnnotator();
         const store = useStore();
 
         const containerId = ref('my-pic-annotation');
@@ -87,7 +81,7 @@ export default {
 
         async function getOcrStatus(item) {
             axios
-                .get(`/${props.baseUrl}/status/${general_upload_res.value[item].task_id}`)
+                .get(`/task/status/${general_upload_res.value[item].task_id}`)
                 .then(async (res) => {
                     console.log('getOcrStatus', res);
                     if (res.data.status === 'SUCCESS') {
@@ -108,7 +102,7 @@ export default {
 
         async function getOcrResults(item) {
             axios
-                .get(`/${props.baseUrl}/result/${general_upload_res.value[item].task_id}`)
+                .get(`/task/result/${general_upload_res.value[item].task_id}`)
                 .then((res) => {
                     if (res.data.status === 'SUCCESS') {
                         store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
@@ -153,7 +147,7 @@ export default {
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row) {
             axios
-                .get(`/${props.baseUrl}/get_image/${row.image_id}`)
+                .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
                     if (res !== null) {
                         imageSrc.value = 'data:image/png;base64,' + res.data;
