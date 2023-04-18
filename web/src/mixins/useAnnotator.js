@@ -34,11 +34,11 @@ export default function useAnnotator() {
     const getFillColorByRectangleType = (rectangleType) => {
         switch (rectangleType) {
             case 'text':
-                return '#ff0000'; // Red color for text box
+                return '#b0c4de'; // blue color for text box
             case 'box':
-                return '#00ff00'; // Green color for box
+                return '#7eff70'; // Green color for box
             case 'mask':
-                return '#0000ff'; // Brown color for mask box
+                return '#d1a46a'; // Brown color for mask box
             default:
                 return '#b0c4de'; // Default color for other types
         }
@@ -53,7 +53,7 @@ export default function useAnnotator() {
             name: 'shape_' + new Date().valueOf(),
             fill: fill,
             opacity: 0.5,
-            stroke: '#0ff',
+            stroke: '#0000ff',
             draggable: true,
             strokeWidth: 2,
             strokeScaleEnabled: false,
@@ -107,7 +107,7 @@ export default function useAnnotator() {
                 name: 'shape_' + index,
                 fill: '#b0c4de',
                 opacity: 0.5,
-                stroke: '#0ff',
+                stroke: '#0000ff',
                 draggable: true,
                 strokeWidth: 2,
                 strokeScaleEnabled: false,

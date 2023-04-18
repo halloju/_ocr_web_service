@@ -286,8 +286,8 @@ export default {
             if (!this.isAddingPolygon) {
                 const idx = this.shapes.findIndex((r) => r.name === name);
                 if (idx >= 0) {
-                    this.shapes[idx].stroke = '#c00';
-                    this.shapes[idx].fill = '#dec4b0';
+                    this.shapes[idx].stroke = '#ff0000';
+                    this.shapes[idx].fill = '#ff4747';
                 }
             }
         },
@@ -295,7 +295,8 @@ export default {
             if (!this.isAddingPolygon) {
                 const idx = this.shapes.findIndex((r) => r.name === name);
                 if (idx >= 0) {
-                    this.shapes[idx].stroke = '#00f';
+                    this.shapes[idx].stroke = '#0000ff';
+                    
                     this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
                 }
             }
