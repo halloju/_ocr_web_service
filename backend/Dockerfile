@@ -5,7 +5,7 @@ FROM python:3.9.5-alpine
 WORKDIR /code
 
 # Install required packages and build dependencies
-RUN apk --no-cache add libpq gcc vim poppler-utils musl-dev
+RUN apk --no-cache add libpq gcc vim poppler-utils poppler-data musl-dev
 
 # Copy the requirements file
 COPY ./requirements.txt .
