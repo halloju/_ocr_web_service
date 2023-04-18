@@ -43,7 +43,7 @@ export default {
                 excelData.value.push({
                     filename: item.file_name,
                     image_id: item.image_id,
-                    ocr_results: item.ocr_results
+                    ocr_results: JSON.stringify(item.ocr_results)
                 });
                 tableData.value.push({
                     num: index + 1,
