@@ -1,6 +1,6 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
-import AnnotationVertical from '@/components/AnnotationVertical.vue';
+import Annotation from '@/components/Annotation.vue';
 import axios from 'axios';
 import moment from 'moment';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -28,7 +28,7 @@ const header = {
 export default {
     name: 'ModelList',
     components: {
-        AnnotationVertical
+        Annotation
     },
 
     setup() {
@@ -363,7 +363,7 @@ export default {
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="deleteTemplate" />
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                        <AnnotationVertical
+                        <Annotation
                             ref="child"
                             containerId="my-pic-annotation-output"
                             :editMode="false"
@@ -374,7 +374,8 @@ export default {
                             :initialData="initialData"
                             :initialDataId="initialDataId"
                             :justShow="true"
-                        ></AnnotationVertical>
+                            :isVertical="true"
+                        ></Annotation>
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                         <!-- <BoxCard boxName="text" :boxTitle="myModel.name" /> -->
