@@ -419,6 +419,7 @@ export default {
                 :justShow="justShow"
                 :selected-shape-name="selectedShapeName"
                 :current-hover-shape="currentHoverShape"
+                :rectangleType="rectangleType"
                 v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
                 v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
                 v-on:sidebar-entry-delete="deleteShape($event)"
