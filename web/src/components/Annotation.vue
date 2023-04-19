@@ -9,7 +9,7 @@ export default {
         Icon,
         Loader
     },
-    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow', 'rectangleType'],
+    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow', 'rectangleType', 'isVertical'],
     data() {
         return {
             image: null,
@@ -59,6 +59,13 @@ export default {
         this.stageSize.height = parseInt(this.height);
         if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
         if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
+        if (this.isVertical) {
+            this.containerClass = 'pa-containerVert'
+            this.infoBarClass = 'pa-infobarVert'
+        } else{
+            this.containerClass = 'pa-container'
+            this.infoBarClass = 'pa-infobar'
+        }
         // load image
         this.loadImage();
     },
@@ -279,8 +286,7 @@ export default {
             if (!this.isAddingPolygon) {
                 const idx = this.shapes.findIndex((r) => r.name === name);
                 if (idx >= 0) {
-                    this.shapes[idx].stroke = '#c00';
-                    this.shapes[idx].fill = '#dec4b0';
+                    this.shapes[idx].fill = '#ff4747';
                 }
             }
         },
@@ -288,7 +294,6 @@ export default {
             if (!this.isAddingPolygon) {
                 const idx = this.shapes.findIndex((r) => r.name === name);
                 if (idx >= 0) {
-                    this.shapes[idx].stroke = '#00f';
                     this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
                 }
             }
@@ -350,7 +355,7 @@ export default {
 };
 </script>
 <template>
-    <div :id="containerId" class="pa-container" :style="{ width: width + 'px', height: height + 'px' }">
+    <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
         <div class="pa-canvas">
             <div class="pa-controls">
                 <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
@@ -405,7 +410,7 @@ export default {
 
             <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
         </div>
-        <div class="pa-infobar">
+        <div :class="infoBarClass">
             <side-bar-entry
                 v-for="shape in shapes"
                 :key="shape.name"
@@ -428,6 +433,12 @@ export default {
   display: grid
   grid-template-columns: 2fr 1fr
   overflow: hidden
+.pa-containerVert	
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif	
+  display: grid	
+  grid-template-rows: 4fr 6fr	
+  overflow: hidden
+
 .pa-canvas
   border: 1px solid #ccc
   position: relative
@@ -460,6 +471,9 @@ export default {
   font-size: 90%
 .pa-infobar
   margin-left: 5px
+  overflow-y: scroll
+.pa-infobarVert
+  margin-top: 10px	
   overflow-y: scroll
 // Loader component
 .pa-loader

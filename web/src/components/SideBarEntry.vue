@@ -101,8 +101,6 @@ export default {
                 <form class="pa-annotation-form" @submit.prevent.stop="submitted">
                     <label :for="shape.name + '-title'">{{ annotation_title }}</label>
                     <input type="text" name="title" :id="shape.name + '-title'" v-model="formData.title" />
-                    <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-                    <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" />
                     <button type="submit">{{ submit }}</button>
                 </form>
             </template>
