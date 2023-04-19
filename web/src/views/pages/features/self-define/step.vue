@@ -74,6 +74,18 @@ export default {
     },
     methods: {
         next() {
+            if(this.rectangleType != 'mask'){
+                this.getRecsFromLocalStorage().every((box) => {
+                if(box.annotation.title == undefined || box.annotation.title == ''){
+                    this.isEditing = true;
+                    return false;
+                }else{
+                    return true;
+                }
+            });
+                    
+            }
+            
             if (this.isEditing) {
                 this.$message({
                     message: '請先完成編輯',
@@ -84,6 +96,7 @@ export default {
             if (this.currentStep < 5) {
                 this.currentStep++;
             }
+            this.isEditing = false;
         },
         previous() {
             if (this.currentStep > 0) {
