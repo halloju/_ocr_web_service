@@ -101,7 +101,7 @@ export default {
             <template v-if="editMode">
                 <form class="pa-annotation-form" v-if="rectangleType != 'mask'"  @submit.prevent.stop="submitted">
                     <label :for="shape.name + '-title'">{{ annotation_title }}</label>
-                    <input type="text" name="title" :id="shape.name + '-title'" v-model="formData.title" />
+                    <input type="text" name="title" :id="shape.name + '-title'"  required v-model="formData.title" />
                     <button  type="submit">{{ submit }}</button>
                 </form>
             </template>
