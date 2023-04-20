@@ -172,7 +172,8 @@ export default {
                                             name: 'rect' + index,
                                             fill: fill,
                                             opacity: 0.5,
-                                            stroke: '#0ff',
+                                            rectangleType: element['type'],
+                                            stroke: '#0000ff',
                                             draggable: true,
                                             strokeWidth: 2,
                                             strokeScaleEnabled: false,
@@ -200,6 +201,7 @@ export default {
                         this.filesize = data.image.length / 1024;
                         this.imageSource = `data:image/jpeg;base64,${data.image}`;
                         this.isFileUploaded = !this.isFileUploaded;
+                        this.createNew = false;
                     } catch (error) {
                         console.error('Error parsing JSON data:', error);
                     }

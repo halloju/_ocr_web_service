@@ -74,17 +74,18 @@ export default {
     },
     methods: {
         next() {
-            if(this.rectangleType != 'mask'){
+            this.isEditing = false;
+            if(this.rectangleType != 'mask' && this.rectangleType != undefined){
                 this.getRecsFromLocalStorage().every((box) => {
-                if(box.annotation.title == undefined || box.annotation.title == ''){
-                    this.isEditing = true;
-                    return false;
-                }else{
-                    return true;
-                }
-            });
-                    
-            }
+                    if(box.rectangleType != 'mask'){
+                        if(box.annotation.title == undefined || box.annotation.title == ''){
+                            this.isEditing = true;
+                            return false;
+                        }
+                    }
+                return true;
+                })
+            };
             
             if (this.isEditing) {
                 this.$message({
@@ -183,6 +184,7 @@ export default {
                         this.clearState();
                         this.$router.push({ path: '/features/general/model-list' });
                     } else {
+                        console.log(err);
                         ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
@@ -195,6 +197,7 @@ export default {
                     }
                 })
                 .catch((err) => {
+                    console.log(err);
                     ElMessageBox.confirm(err, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',

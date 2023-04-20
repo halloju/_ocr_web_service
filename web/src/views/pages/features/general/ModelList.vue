@@ -76,7 +76,7 @@ export default {
             },
             {
                 prop: 'template_name',
-                label: '姓名',
+                label: '名稱',
                 editable: false,
                 type: 'input',
                 width: '150px'
@@ -129,11 +129,13 @@ export default {
             template_id.value = templateid;
             try {
                 const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+                template.value = response['data'];
                 initialData.value = parseTemplateDetail(response['data'], userType);
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
-                    status.value = 'network';
+                    // status.value = 'network';
+                    console.error('ERR_NETWORK');
                 }
                 return error;
             }
@@ -147,7 +149,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await axios.delete('/template_crud/delete_template/' + template_id.value);
+                const response = await axios.delete('/template_crud/delete_template/' + template_id);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',
@@ -161,6 +163,7 @@ export default {
                     });
                 }
             } catch (error) {
+                console.log(error);
                 if (error instanceof ElMessageBox.MessageBoxClosedError) {
                     ElMessage({
                         type: 'info',
@@ -225,7 +228,7 @@ export default {
             let url = URL.createObjectURL(blob);
             let link = document.createElement('a');
             link.href = url;
-            link.download = `${template.value.template_name}.json`;
+            link.download = `${template_id.value}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -372,7 +375,6 @@ export default {
                             :height="height"
                             dataCallback=""
                             :initialData="initialData"
-                            :initialDataId="initialDataId"
                             :justShow="true"
                             :isVertical="true"
                         ></Annotation>

@@ -9,7 +9,7 @@ export default {
         Icon,
         Loader
     },
-    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow', 'rectangleType', 'isVertical'],
+    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'image_cv_id', 'justShow', 'rectangleType', 'isVertical'],
     data() {
         return {
             image: null,
