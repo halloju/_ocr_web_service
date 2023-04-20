@@ -2,7 +2,7 @@
 import Annotation from '@/components/Annotation.vue';
 import axios from 'axios';
 import { mapState } from 'vuex';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 
@@ -47,8 +47,8 @@ export default {
             isEditing: false,
             disableInput: false,
             templateNameEdit: false,
-            input: localStorage.getItem('templateName') || '',
-            imageSrc: localStorage.getItem('imageSource') || '',
+            input: sessionStorage.getItem('templateName') || '',
+            imageSrc: sessionStorage.getItem('imageSource') || '',
             initialData: {
                 text: [],
                 box: [],
@@ -56,12 +56,13 @@ export default {
             },
             currentStep: 0,
             createNew: this.$store.state.createNew,
-            template_id: localStorage.getItem('template_id') || ''
+            template_id: sessionStorage.getItem('template_id') || ''
         };
     },
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
+        sessionStorage.clear();
     },
     mounted() {
         this.isFinalStep();
@@ -75,21 +76,34 @@ export default {
     methods: {
         next() {
             this.isEditing = false;
-            if(this.rectangleType != 'mask' && this.rectangleType != undefined){
-                this.getRecsFromLocalStorage().every((box) => {
-                    if(box.rectangleType != 'mask'){
-                        if(box.annotation.title == undefined || box.annotation.title == ''){
-                            this.isEditing = true;
-                            return false;
+            var warning_message;
+            if(this.currentStep != 0){
+                if(this.rectangleType != 'mask' && this.rectangleType != undefined){
+                    this.getRecsFromLocalStorage().every((box) => {
+                        if(box.rectangleType != 'mask'){
+                            if(box.annotation.title == undefined || box.annotation.title == ''){
+                                this.isEditing = true;
+                                return false;
+                            }
                         }
-                    }
-                return true;
-                })
-            };
+                    return true;
+                    })
+                };
+                warning_message = '請先完成編輯';
+            }else{
+                
+                if(sessionStorage.getItem('imageSource')){
+                    this.imageSrc = sessionStorage.getItem('imageSource');
+                }else{
+                    this.isEditing = true;
+                }
+                warning_message = '請先上傳圖片';
+            }
+            
             
             if (this.isEditing) {
                 this.$message({
-                    message: '請先完成編輯',
+                    message: warning_message,
                     type: 'warning'
                 });
                 return;
@@ -100,14 +114,33 @@ export default {
             this.isEditing = false;
         },
         previous() {
-            if (this.currentStep > 0) {
+            if(this.currentStep == 1){
+                ElMessageBox({
+                    title: '回到上一步會清空所有編輯紀錄', //MessageBox 标题
+                    message: '是否確定刪除?', //MessageBox 消息正文内容
+                    confirmButtonText: '確定', //确定按钮的文本内容
+                    cancelButtonText: '取消', //取消按钮的文本内容
+                    showCancelButton: true, //是否显示取消按钮
+                    closeOnClickModal: false, //是否可通过点击遮罩关闭
+                    type: 'warning', //消息类型，用于显示图标
+                }).then(() => {
+                    ElMessage.success('回到上一頁!');
+                    sessionStorage.clear();
+                    this.currentStep--;
+                }).catch(() => {
+                    ElMessage.info('已取消');
+                    return;
+                });
+                
+            }
+            else if (this.currentStep > 1) {
                 this.currentStep--;
             }
         },
         getRecsFromLocalStorage() {
             const recs = [];
             this.rectangleTypes.forEach((type) => {
-                const rec = JSON.parse(localStorage.getItem(type.code) || '[]');
+                const rec = JSON.parse(sessionStorage.getItem(type.code) || '[]');
                 if (rec) {
                     recs.push(...rec);
                 }
@@ -147,9 +180,9 @@ export default {
 
             let body;
             let action;
-            if (this.createNew) {
+            if (!this.template_id) {
                 const image = new window.Image();
-                image.src = localStorage.imageSource;
+                image.src = sessionStorage.imageSource;
                 body = {
                     user_id: 12345,
                     image: image.src.split(',').pop(),
@@ -218,7 +251,7 @@ export default {
         },
         clearState() {
             // remove all localStorage
-            localStorage.clear();
+            sessionStorage.clear();
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;
@@ -229,7 +262,7 @@ export default {
         toggleEditSave() {
             this.templateNameEdit = !this.templateNameEdit;
             this.disableInput = !this.disableInput;
-            localStorage.setItem('templateName', this.input);
+            sessionStorage.setItem('templateName', this.input);
         },
         Upload(val) {
             this.isOK = val;
@@ -248,12 +281,15 @@ export default {
         },
         editMode() {
             return this.currentStep < 4;
+        },
+        tooltip_text() {
+            if(this.currentStep == 0) return "請上傳圖片後點我";
+            else return "請框好位置後點我";
         }
     },
     watch: {
         currentStep() {
             this.isFinalStep();
-            this.imageSrc = localStorage.getItem('imageSource');
         }
     },
     props: {
@@ -300,7 +336,7 @@ export default {
                     </div>
                     <div class="col-6">
                         <el-button v-if="currentStep != 0" class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
-                        <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="'請框好位置好點我'" type="success">下一步</el-button>
+                        <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="this.tooltip_text" type="success">下一步</el-button>
                         <el-button v-else class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
                             提交
                         </el-button>
@@ -326,9 +362,6 @@ export default {
                     containerId="my-pic-annotation-output"
                     :imageSrc="imageSrc"
                     :editMode="editMode"
-                    :language="en"
-                    :width="width"
-                    :height="height"
                     dataCallback=""
                     initialDataId=""
                     image_cv_id=""
