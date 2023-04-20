@@ -219,7 +219,8 @@ export default {
             sessionStorage.setItem('template_id', template_id.value);
             sessionStorage.setItem('templateName', response['data'].template_name);
             store.commit('createNewUpdate', false);
-            router.push({ path: '/features/general/self-define/step' });
+            console.log(sessionStorage);
+            router.push({ name: 'SelfDefine' });
         }
 
         function downloadTemplate() {
@@ -342,7 +343,7 @@ export default {
                     </el-table-column>
                     <el-table-column label="操作" width="350px">
                         <template #default="scope">
-                            <el-button v-show="!scope.row.editable" size="" @click="scope.row.editable = true">編輯</el-button>
+                            <!-- <el-button v-show="!scope.row.editable" size="" @click="scope.row.editable = true">編輯</el-button> -->
                             <el-button v-show="scope.row.editable" size="" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="" type="info" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>

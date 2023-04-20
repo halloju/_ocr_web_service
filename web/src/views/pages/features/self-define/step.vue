@@ -62,7 +62,6 @@ export default {
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
-        sessionStorage.clear();
     },
     mounted() {
         this.isFinalStep();
