@@ -18,9 +18,9 @@ async def create_template(request: CreateTemplateRequest):
     將前端標注的點位和上傳的圖片傳至 mlaas 對應的 api
     '''
     form = CreateTemplateForm(request)
+    uid, rid, log_main = init_log('template_create', logger)
     await form.load_data()
     if await form.is_valid():
-        uid, rid, log_main = init_log('template_create', logger)
         inputs = {
             'user_id': uid,
             'image': form.image,
