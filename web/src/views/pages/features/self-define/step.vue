@@ -1,5 +1,6 @@
 <script>
 import Annotation from '@/components/Annotation.vue';
+import { onBeforeRouteLeave } from 'vue-router'
 import axios from 'axios';
 import { mapState } from 'vuex';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -67,6 +68,15 @@ export default {
         this.isFinalStep();
     },
     setup() {
+        onBeforeRouteLeave((to, from) => {
+            const answer = window.confirm(
+                '回到上一步會清空所有編輯紀錄，是否確定刪除?'
+            )
+            if (!answer){
+                sessionStorage.clear();
+                return false;
+            } 
+        })
         const { rectangleTypes } = useAnnotator();
         return {
             rectangleTypes
@@ -114,22 +124,16 @@ export default {
         },
         previous() {
             if(this.currentStep == 1){
-                ElMessageBox({
-                    title: '回到上一步會清空所有編輯紀錄', //MessageBox 标题
-                    message: '是否確定刪除?', //MessageBox 消息正文内容
-                    confirmButtonText: '確定', //确定按钮的文本内容
-                    cancelButtonText: '取消', //取消按钮的文本内容
-                    showCancelButton: true, //是否显示取消按钮
-                    closeOnClickModal: false, //是否可通过点击遮罩关闭
-                    type: 'warning', //消息类型，用于显示图标
-                }).then(() => {
-                    ElMessage.success('回到上一頁!');
+                const answer = window.confirm(
+                '回到上一步會清空所有編輯紀錄，是否確定刪除?'
+                )
+                if (answer){
                     sessionStorage.clear();
                     this.currentStep--;
-                }).catch(() => {
+                } else{
                     ElMessage.info('已取消');
                     return;
-                });
+                }
                 
             }
             else if (this.currentStep > 1) {
