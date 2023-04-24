@@ -69,13 +69,16 @@ export default {
     },
     setup() {
         onBeforeRouteLeave((to, from) => {
-            const answer = window.confirm(
-                '回到上一步會清空所有編輯紀錄，是否確定刪除?'
-            )
-            if (!answer){
-                sessionStorage.clear();
-                return false;
-            } 
+            console.log(to.path);
+            if(to.path != '/features/general/model-list'){
+                const answer = window.confirm(
+                    '回到上一步會清空所有編輯紀錄，是否確定刪除?'
+                )
+                if (!answer){
+                    sessionStorage.clear();
+                    return false;
+                } 
+            }
         })
         const { rectangleTypes } = useAnnotator();
         return {
