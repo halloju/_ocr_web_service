@@ -1,11 +1,11 @@
 # Use an alias for the base image
-FROM python:3.9.5-alpine
+FROM python:3.9-slim
 
 # Set the working directory
 WORKDIR /code
 
 # Install required packages and build dependencies
-RUN apk --no-cache add libpq gcc vim poppler-utils poppler-data musl-dev
+RUN apt-get update && apt-get -y install libpq-dev gcc && apt-get -y install vim && apt-get -y install poppler-utils && apt-get -y install poppler-data && apt-get -y install musl-dev
 
 # Copy the requirements file
 COPY ./requirements.txt .

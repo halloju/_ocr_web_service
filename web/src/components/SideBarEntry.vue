@@ -7,7 +7,7 @@ export default {
         Icon,
         Nl2br
     },
-    props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow'],
+    props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow', 'rectangleType'],
     data() {
         return {
             annotation_title: '要項名稱：',
@@ -24,6 +24,7 @@ export default {
         };
     },
     created() {
+        console.log(this.rectangleType);
         if (this.shape) {
             this.formData.title = this.shape.annotation.title;
             this.formData.text = this.shape.annotation.text;
@@ -98,16 +99,16 @@ export default {
         </button>
         <div class="pa-panel" ref="panel">
             <template v-if="editMode">
-                <form class="pa-annotation-form" @submit.prevent.stop="submitted">
+                <form class="pa-annotation-form" v-if="rectangleType != 'mask'"  @submit.prevent.stop="submitted">
                     <label :for="shape.name + '-title'">{{ annotation_title }}</label>
-                    <input type="text" name="title" :id="shape.name + '-title'" v-model="formData.title" />
-                    <button type="submit">{{ submit }}</button>
+                    <input type="text" name="title" :id="shape.name + '-title'"  required v-model="formData.title" />
+                    <button  type="submit">{{ submit }}</button>
                 </form>
             </template>
             <template v-else>
-                <form class="pa-annotation-form" @submit.prevent.stop="submitted">
+                <form  v-if="formData.text != undefined && formData.text != ''" class="pa-annotation-form" @submit.prevent.stop="submitted">
                     <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-                    <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly />
+                    <textarea  name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly />
                 </form>
             </template>
         </div>

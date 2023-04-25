@@ -9,7 +9,7 @@ export default {
         Icon,
         Loader
     },
-    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'initialDataId', 'image_cv_id', 'justShow', 'rectangleType', 'isVertical'],
+    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'image_cv_id', 'justShow', 'rectangleType', 'isVertical'],
     data() {
         return {
             image: null,
@@ -320,7 +320,7 @@ export default {
             // save to local storage, if defined
             if (this.localStorageKey) {
                 console.log('save', this.shapes);
-                localStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
+                sessionStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
             }
         },
         load() {
@@ -338,11 +338,11 @@ export default {
             if (this.localStorageKey === 'all') {
                 const keys = ['text', 'box', 'mask'];
                 for (let i = 0; i < keys.length; i++) {
-                    const value = localStorage.getItem(keys[i]) || '[]';
+                    const value = sessionStorage.getItem(keys[i]) || '[]';
                     data.push(...JSON.parse(value));
                 }
             } else {
-                const value = localStorage.getItem(this.localStorageKey) || '[]';
+                const value = sessionStorage.getItem(this.localStorageKey) || '[]';
                 data = JSON.parse(value);
             }
             this.shapes = data;
@@ -419,6 +419,7 @@ export default {
                 :justShow="justShow"
                 :selected-shape-name="selectedShapeName"
                 :current-hover-shape="currentHoverShape"
+                :rectangleType="rectangleType"
                 v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
                 v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
                 v-on:sidebar-entry-delete="deleteShape($event)"

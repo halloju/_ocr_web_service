@@ -21,9 +21,10 @@ async def update_template(request: UpdateTemplateRequest):
     將 Feature DB 中的 template 資訊更新
     '''
     form = UpdateTemplateForm(request)
+    uid, rid, log_main = init_log('template_upload', logger)
     await form.load_data()
     if await form.is_valid():
-        uid, rid, log_main = init_log('template_create', logger)
+        
         inputs = {
             'user_id': uid,
             'template_id': form.template_id,

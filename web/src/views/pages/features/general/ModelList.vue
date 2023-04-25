@@ -30,7 +30,6 @@ export default {
     components: {
         Annotation
     },
-
     setup() {
         const store = useStore();
         const router = useRouter();
@@ -76,7 +75,7 @@ export default {
             },
             {
                 prop: 'template_name',
-                label: '姓名',
+                label: '名稱',
                 editable: false,
                 type: 'input',
                 width: '150px'
@@ -129,11 +128,13 @@ export default {
             template_id.value = templateid;
             try {
                 const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+                template.value = response['data'];
                 initialData.value = parseTemplateDetail(response['data'], userType);
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
-                    status.value = 'network';
+                    // status.value = 'network';
+                    console.error('ERR_NETWORK');
                 }
                 return error;
             }
@@ -147,7 +148,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await axios.delete('/template_crud/delete_template/' + template_id.value);
+                const response = await axios.delete('/template_crud/delete_template/' + template_id);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',
@@ -161,6 +162,7 @@ export default {
                     });
                 }
             } catch (error) {
+                console.log(error);
                 if (error instanceof ElMessageBox.MessageBoxClosedError) {
                     ElMessage({
                         type: 'info',
@@ -196,27 +198,29 @@ export default {
         }
 
         function createTemplate() {
+            sessionStorage.clear();
             store.commit('createNewUpdate', true);
             router.push({ name: 'SelfDefine' });
         }
 
         async function editTemplate() {
             // clear local storage
-            localStorage.clear();
+            sessionStorage.clear();
             // get template detail
             const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
             //template.value = response['data'];
 
             // set local storage
-            localStorage.imageSource = 'data:image/png;base64,' + response['data'].image;
+            sessionStorage.imageSource = 'data:image/png;base64,' + response['data'].image;
             for (let i = 0; i < rectangleTypes.value.length; i++) {
                 let data = parseTemplateDetail(response['data'], rectangleTypes.value[i].code);
-                localStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
+                sessionStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
             }
-            localStorage.setItem('template_id', template_id.value);
-            localStorage.setItem('templateName', response['data'].template_name);
+            sessionStorage.setItem('template_id', template_id.value);
+            sessionStorage.setItem('templateName', response['data'].template_name);
             store.commit('createNewUpdate', false);
-            router.push({ path: '/features/general/self-define/step' });
+            console.log(sessionStorage);
+            router.push({ name: 'SelfDefine' });
         }
 
         function downloadTemplate() {
@@ -225,7 +229,7 @@ export default {
             let url = URL.createObjectURL(blob);
             let link = document.createElement('a');
             link.href = url;
-            link.download = `${template.value.template_name}.json`;
+            link.download = `${template_id.value}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -321,7 +325,7 @@ export default {
                         <h2>模板檢視</h2>
                     </div>
                     <div class="flex align-items-center justify-content-center mt-1 mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="createTemplate" :disabled="isUploadDisabled"> ＋新增 </el-button>
+                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="createTemplate"> ＋新增 </el-button>
                     </div>
                 </div>
                 <el-table :data="formattedTableData" style="width: 100%">
@@ -339,11 +343,11 @@ export default {
                     </el-table-column>
                     <el-table-column label="操作" width="350px">
                         <template #default="scope">
-                            <el-button v-show="!scope.row.editable" size="big" @click="scope.row.editable = true">編輯</el-button>
-                            <el-button v-show="scope.row.editable" size="small" type="success" @click="handleConfirm(scope.row)">確認</el-button>
-                            <el-button class="mr-1" size="big" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
-                            <el-button size="big" type="info" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
-                            <el-button size="big" type="danger" @click="handleDelete(scope.row.template_id)">刪除</el-button>
+                            <!-- <el-button v-show="!scope.row.editable" size="" @click="scope.row.editable = true">編輯</el-button> -->
+                            <el-button v-show="scope.row.editable" size="" type="success" @click="handleConfirm(scope.row)">確認</el-button>
+                            <el-button class="mr-1" size="" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
+                            <el-button size="" type="info" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
+                            <el-button size="" type="danger" @click="handleDelete(scope.row.template_id)">刪除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -372,7 +376,6 @@ export default {
                             :height="height"
                             dataCallback=""
                             :initialData="initialData"
-                            :initialDataId="initialDataId"
                             :justShow="true"
                             :isVertical="true"
                         ></Annotation>

@@ -6,9 +6,9 @@ export default {
     created() {
         if (!this.createNew) {
             this.isOK = true;
-            this.imageSource = localStorage.imageSource;
-            this.filename = localStorage.filename;
-            this.filesize = localStorage.filesize;
+            this.imageSource = sessionStorage.imageSource;
+            this.filename = sessionStorage.filename;
+            this.filesize = sessionStorage.filesize;
         }
     },
     data() {
@@ -69,9 +69,9 @@ export default {
                         this.isOK = true;
                         this.filename = file.name;
                         this.filesize = file.size / 1024;
-                        localStorage.imageSource = this.imageSource;
-                        localStorage.filename = this.filename;
-                        localStorage.filesize = this.filesize;
+                        sessionStorage.imageSource = this.imageSource;
+                        sessionStorage.filename = this.filename;
+                        sessionStorage.filesize = this.filesize;
                         this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
@@ -90,7 +90,7 @@ export default {
             let input = e.target;
             this.wrongFile = false;
             // clear local storage
-            localStorage.clear();
+            sessionStorage.clear();
             // allows only 1 file
             if (input.files.length === 1) {
                 let file = input.files[0];
@@ -103,9 +103,9 @@ export default {
                         this.isOK = true;
                         this.filename = file.name;
                         this.filesize = file.size / 1024;
-                        localStorage.imageSource = this.imageSource;
-                        localStorage.filename = this.filename;
-                        localStorage.filesize = this.filesize;
+                        sessionStorage.imageSource = this.imageSource;
+                        sessionStorage.filename = this.filename;
+                        sessionStorage.filesize = this.filesize;
                         this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
@@ -122,7 +122,7 @@ export default {
             this.preview = null;
             this.isOK = false;
             this.wrongFile = false;
-            localStorage.clear();
+            sessionStorage.clear();
             this.$refs.inputFile.value = '';
             this.$store.commit('recsClear');
         },
@@ -142,7 +142,7 @@ export default {
             }
         },
         handleFileInputChange(event) {
-            localStorage.clear();
+            sessionStorage.clear();
             let file = event.target.files[0];
             if (file && file.type === 'application/json') {
                 let reader = new FileReader();
@@ -153,9 +153,9 @@ export default {
                         if (data.image) {
                             this.isDragging = false;
                             this.isOK = true;
-                            localStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
-                            localStorage.setItem('filename', data.template_name);
-                            localStorage.setItem('filesize', data.image.length / 1024);
+                            sessionStorage.setItem('imageSource', `data:image/jpeg;base64,${data.image}`);
+                            sessionStorage.setItem('filename', data.template_name);
+                            sessionStorage.setItem('filesize', data.image.length / 1024);
                             for (let i = 0; i < 3; i++) {
                                 let bbox = data.points_list.filter((item) => item['type'] === types[i]);
                                 let myShapes = [];
@@ -172,7 +172,8 @@ export default {
                                             name: 'rect' + index,
                                             fill: fill,
                                             opacity: 0.5,
-                                            stroke: '#0ff',
+                                            rectangleType: element['type'],
+                                            stroke: '#0000ff',
                                             draggable: true,
                                             strokeWidth: 2,
                                             strokeScaleEnabled: false,
@@ -191,7 +192,7 @@ export default {
                                             rectangleType: types[i]
                                         });
                                     });
-                                    localStorage.setItem(types[i], JSON.stringify(myShapes));
+                                    sessionStorage.setItem(types[i], JSON.stringify(myShapes));
                                 }
                             }
                         }
@@ -200,6 +201,7 @@ export default {
                         this.filesize = data.image.length / 1024;
                         this.imageSource = `data:image/jpeg;base64,${data.image}`;
                         this.isFileUploaded = !this.isFileUploaded;
+                        this.createNew = false;
                     } catch (error) {
                         console.error('Error parsing JSON data:', error);
                     }
