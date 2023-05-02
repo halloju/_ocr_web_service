@@ -83,7 +83,6 @@ export default {
             axios
                 .get(`/task/status/${general_upload_res.value[item].task_id}`)
                 .then(async (res) => {
-                    console.log('getOcrStatus', res);
                     if (res.data.status === 'SUCCESS') {
                         await getOcrResults(item);
                     } else {
@@ -257,7 +256,7 @@ export default {
                                     <el-button class="my-button" type="primary" :icon="Download" circle @click="downloadFile"></el-button>
                                 </el-tooltip>
                             </div>
-                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功辨識：{{ general_upload_res.length }} 張</div>
+                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功上傳：{{ general_upload_res.length }} 張</div>
                         </div>
                     </div>
                     <div class="col-12">
@@ -286,7 +285,6 @@ export default {
                                 containerId="my-pic-annotation-output"
                                 :imageSrc="imageSrc"
                                 :editMode="false"
-                                :language="en"
                                 :width="width"
                                 :height="height"
                                 dataCallback=""

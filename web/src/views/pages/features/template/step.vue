@@ -69,7 +69,6 @@ export default {
     },
     setup() {
         onBeforeRouteLeave((to, from) => {
-            console.log(to.path);
             if(to.path != '/features/general/model-list'){
                 const answer = window.confirm(
                     '回到上一步會清空所有編輯紀錄，是否確定刪除?'

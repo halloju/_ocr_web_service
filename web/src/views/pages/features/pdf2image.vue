@@ -36,7 +36,6 @@ export default {
                 reader.readAsDataURL(file.raw);
                 this.fileList.push(file);
             }
-            console.log(file.name);
         },
         handleRemove(file) {
             for (let i = 0; i < this.fileList.length; i++) {

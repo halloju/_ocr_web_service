@@ -176,11 +176,6 @@ export default {
             imgWidth.value = width;
             dialogWidth.value = width + 40;
         }
-        // mounted
-        onMounted(() => {
-            // get languages
-            console.log(props);
-        });
         // watch
         watch(switchValue, (newVal) => {
             if (newVal) {
@@ -197,6 +192,9 @@ export default {
             languages,
             fileList,
             dialogVisible,
+            imgWidth,
+            dialogWidth,
+            dialogImageUrl,
             isUploadDisabled,
             category: props.category,
             useModelComplexity: props.useModelComplexity,

@@ -17,6 +17,7 @@ export default {
         }
     }
 };
+
 </script>
 
 <template>
@@ -326,7 +327,7 @@ export default {
                             <div class="col-12 md:col-3 mt-4 md:mt-0">
                                 <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Community</h4>
                                 <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Discord</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Events<img src="/demo/images/landing/new-badge.svg" class="ml-2" /></a>
+                                <!-- <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Events<img src="/demo/images/landing/new-badge.svg" class="ml-2" /></a> -->
                                 <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">FAQ</a>
                                 <a class="line-height-3 text-xl block cursor-pointer text-700">Blog</a>
                             </div>
@@ -343,7 +344,6 @@ export default {
             </div>
         </div>
     </div>
-    <AppConfig simple />
 </template>
 
 <style scoped>
