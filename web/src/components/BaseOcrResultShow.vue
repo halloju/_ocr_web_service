@@ -286,7 +286,6 @@ export default {
                                 containerId="my-pic-annotation-output"
                                 :imageSrc="imageSrc"
                                 :editMode="false"
-                                :language="en"
                                 :width="width"
                                 :height="height"
                                 dataCallback=""
