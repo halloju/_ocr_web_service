@@ -219,6 +219,7 @@ export default {
                     list-type="picture-card"
                     :on-change="beforeUpload"
                     :on-remove="handleRemove"
+                    multiple
                     :limit="category.limit"
                     :on-exceed="handleExceed"
                     :auto-upload="false"
