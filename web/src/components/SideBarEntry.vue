@@ -7,7 +7,7 @@ export default {
         Icon,
         Nl2br
     },
-    props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow', 'rectangleType'],
+    props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow', 'rectangleType', 'delete_shape'],
     data() {
         return {
             annotation_title: '要項名稱：',
@@ -24,7 +24,6 @@ export default {
         };
     },
     created() {
-        console.log(this.rectangleType);
         if (this.shape) {
             this.formData.title = this.shape.annotation.title;
             this.formData.text = this.shape.annotation.text;

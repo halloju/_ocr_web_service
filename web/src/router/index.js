@@ -22,12 +22,12 @@ const router = createRouter({
                 {
                     path: '/features/general/model-list',
                     name: 'ModelList',
-                    component: () => import('@/views/pages/features/general/ModelList.vue')
+                    component: () => import('@/views/pages/features/template/ModelList.vue')
                 },
                 {
                     path: '/features/general/self-define/step',
                     name: 'SelfDefine',
-                    component: () => import('@/views/pages/features/self-define/step.vue')
+                    component: () => import('@/views/pages/features/template/step.vue')
                 },
                 {
                     path: '/features/pdf2image',
@@ -52,7 +52,7 @@ const router = createRouter({
                 {
                     path: '/pages/crud',
                     name: 'crud',
-                    component: () => import('@/views/pages/Crud.vue')
+                    component: () => import('@/views/pages/template/Crud.vue')
                 }
             ]
         },
