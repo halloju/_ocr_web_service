@@ -38,6 +38,8 @@ export default {
 
         const images = ref(null);
         const tableData = ref([]);
+        const dialogVisible = ref(false);
+        const dialogWidth = ref('');
 
         onMounted(async () => {
             images.value = await galleriaService.getImages();
@@ -62,7 +64,7 @@ export default {
             code: 'text'
         });
         const width = ref(1000);
-        const height = ref(600);
+        const height = ref(1000);
         const imageSrc = ref('');
 
         const tableHeader = ref([
@@ -80,13 +82,13 @@ export default {
                 type: 'input',
                 width: '150px'
             },
-            {
-                prop: 'creation_time',
-                label: '創建日期',
-                editable: false,
-                type: 'date',
-                width: '200px'
-            },
+            // {
+            //     prop: 'creation_time',
+            //     label: '創建日期',
+            //     editable: false,
+            //     type: 'date',
+            //     width: '200px'
+            // },
             {
                 prop: 'expiration_time',
                 label: '到期日期',
@@ -99,6 +101,7 @@ export default {
         const template_id = ref('');
         const template = ref('');
         const initialData = ref('');
+        const creation_time = ref('');
 
         // Methods
         function formatDate(date) {
@@ -125,12 +128,17 @@ export default {
         }
 
         async function handleLook(templateid, userType) {
+            console.log('handleLook');
             template_id.value = templateid;
             try {
                 const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
                 template.value = response['data'];
                 initialData.value = parseTemplateDetail(response['data'], userType);
+                creation_time.value = template.value.creation_time;
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
+                dialogVisible.value = true;
+                dialogWidth.value = '850px';
+                console.log('dialogVisible');
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
                     // status.value = 'network';
@@ -287,6 +295,8 @@ export default {
             tableData,
             tableHeader,
             formattedTableData,
+            dialogWidth,
+            dialogVisible,
             formatDate,
             getAvailableTemplate,
             handleConfirm,
@@ -303,6 +313,7 @@ export default {
             template,
             template_id,
             initialData,
+            creation_time,
             templateOCR
         };
     }
@@ -311,7 +322,7 @@ export default {
 
 <template>
     <div class="grid">
-        <div class="col-7">
+        <div class="col-12">
             <div class="card" style="height: 850px; overflow-y: scroll">
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
@@ -340,51 +351,49 @@ export default {
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="350px">
+                    <el-table-column label="操作" width="500px">
                         <template #default="scope">
-                            <!-- <el-button v-show="!scope.row.editable" size="" @click="scope.row.editable = true">編輯</el-button> -->
+                            
                             <el-button v-show="scope.row.editable" size="" type="success" @click="handleConfirm(scope.row)">確認</el-button>
-                            <el-button class="mr-1" size="" type="success" @click="templateOCR(scope.row.template_id)">辨識</el-button>
-                            <el-button size="" type="info" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
-                            <el-button size="" type="danger" @click="handleDelete(scope.row.template_id)">刪除</el-button>
+                            <el-button class="mr-1" size="" type="primary" @click="templateOCR(scope.row.template_id)">辨識</el-button>
+                            <el-button size="" type="success" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
+                            <el-button size="" type="danger"  @click="handleDelete(scope.row.template_id)">刪除</el-button>
+                            <el-button size="" type="warning"  plain @click="editTemplate">編輯</el-button>
+                            <el-button size="" type="info" plain @click="downloadTemplate">下載</el-button>
+                            
+
                         </template>
                     </el-table-column>
                 </el-table>
+                <el-dialog v-model="dialogVisible" :width="dialogWidth" >
+                    <div class="card" style="height: 850px; overflow-y: scroll">
+                        <h4> template id: {{ template_id }} </h4>
+                        <h5> 創建日期: {{ creation_time }} </h5>
+                        <div class="flex flex-column card-container">
+                            <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
+                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType.code)" />
+                            </div>
+                            <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                                <Annotation
+                                    ref="child"
+                                    containerId="my-pic-annotation-output"
+                                    :editMode="false"
+                                    :imageSrc="imageSrc"
+                                    :width="dialogWidth"
+                                    :height="height"
+                                    dataCallback=""
+                                    :initialData="initialData"
+                                    :justShow="true"
+                                    :isVertical="true"
+                                ></Annotation>
+                            </div>
+                            <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                                <!-- <BoxCard boxName="text" :boxTitle="myModel.name" /> -->
+                            </div>
+                        </div>
+                    </div>
+                </el-dialog>
             </div>
-        </div>
-        <div class="col-5">
-            <div v-if="(formattedTableData.length >= 1) & !template_id" class="card flex justify-content-center align-items-center" style="height: 850px">請點選檢視</div>
-            <div v-else-if="template_id" class="card" style="height: 850px; overflow-y: scroll">
-                <h5>請選擇標註模式</h5>
-                <div class="flex flex-column card-container">
-                    <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType.code)" />
-                    </div>
-                    <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-4">
-                        <Button icon="pi pi-download" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'下載模板設定檔'" @click="downloadTemplate" />
-                        <Button icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'編輯模版'" @click="editTemplate" />
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-info mr-2 mb-2" v-tooltip="'刪除模板'" @click="deleteTemplate" />
-                    </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                        <Annotation
-                            ref="child"
-                            containerId="my-pic-annotation-output"
-                            :editMode="false"
-                            :imageSrc="imageSrc"
-                            :width="width"
-                            :height="height"
-                            dataCallback=""
-                            :initialData="initialData"
-                            :justShow="true"
-                            :isVertical="true"
-                        ></Annotation>
-                    </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                        <!-- <BoxCard boxName="text" :boxTitle="myModel.name" /> -->
-                    </div>
-                </div>
-            </div>
-            <div v-else class="card flex justify-content-center align-items-center" style="height: 850px">沒有模板可以檢視</div>
         </div>
     </div>
 </template>
