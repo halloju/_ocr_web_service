@@ -47,7 +47,6 @@ export default {
             </div>
         </div>
     </div>
-    <AppConfig simple />
 </template>
 
 <style scoped>
