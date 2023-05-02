@@ -319,7 +319,6 @@ export default {
             }
             // save to local storage, if defined
             if (this.localStorageKey) {
-                console.log('save', this.shapes);
                 sessionStorage.setItem(this.localStorageKey, JSON.stringify(this.shapes));
             }
         },

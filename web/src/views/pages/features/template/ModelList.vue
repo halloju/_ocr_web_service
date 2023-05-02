@@ -219,7 +219,6 @@ export default {
             sessionStorage.setItem('template_id', template_id.value);
             sessionStorage.setItem('templateName', response['data'].template_name);
             store.commit('createNewUpdate', false);
-            console.log(sessionStorage);
             router.push({ name: 'SelfDefine' });
         }
 
