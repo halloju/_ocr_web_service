@@ -73,12 +73,16 @@ export default {
                     downloadLink.click();
                 })
                 .catch((error) => {
-                    console.log(error);
-                    if (error.code === 'ERR_NETWORK') {
+                    var msg = ''
+                    if (error.message && error.message.includes('413')) {
+                        console.log('The file you tried to upload is too large.')
+                        msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)'
+                    }
+                    else if (error.code === 'ERR_NETWORK') {
                         this.status = 'network';
                     }
                     //error alert for the axios request
-                    ElMessageBox.confirm('', '失敗', {
+                    ElMessageBox.confirm(msg, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',
                         center: true,

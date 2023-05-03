@@ -78,8 +78,16 @@ export default {
                 });
                 generalImageResponseList.push(...response.data);
             } catch (error) {
-                console.log(error);
-                ElMessageBox.confirm('', '失敗', {
+                var msg = ''
+                if (error.message && error.message.includes('413')) {
+                    console.log('The file you tried to upload is too large.')
+                    msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)'
+                }
+                else if (error.code === 'ERR_NETWORK') {
+                    this.status = 'network';
+                }
+                //error alert for the axios request
+                ElMessageBox.confirm(msg, '失敗', {
                     confirmButtonText: '確定',
                     type: 'error',
                     center: true,
