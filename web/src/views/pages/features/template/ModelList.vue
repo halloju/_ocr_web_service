@@ -357,8 +357,8 @@ export default {
                             <el-button v-show="scope.row.editable" size="" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="" type="primary" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="" type="success" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
-                            <el-button size="" type="danger"  @click="handleDelete(scope.row.template_id)">刪除</el-button>
-                            <el-button size="" type="warning"  plain @click="editTemplate">編輯</el-button>
+                            <el-button size="" type="info" @click="editTemplate">編輯</el-button>
+                            <el-button size="" type="danger" plain @click="handleDelete(scope.row.template_id)">刪除</el-button>
                             <el-button size="" type="info" plain @click="downloadTemplate">下載</el-button>
                             
 
