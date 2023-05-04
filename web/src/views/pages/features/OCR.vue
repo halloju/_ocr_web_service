@@ -27,6 +27,7 @@ export default {
         this.subtitle = ocrConfig.subtitle;
         this.description = ocrConfig.description;
         this.useModelComplexity = ocrConfig.useModelComplexity;
+        this.useLanguage = ocrConfig.useLanguage;
     },
     watch: {
         $route(to, from) {
@@ -48,35 +49,40 @@ export default {
                     subtitle: '通用辨識',
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/gp_ocr',
-                    useModelComplexity: true
+                    useModelComplexity: true,
+                    useLanguage: true
                 },
                 template: {
                     title: '模板辨識',
                     subtitle: `模板編號：${this.template_id}`,
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/template_ocr',
-                    useModelComplexity: false
+                    useModelComplexity: false,
+                    useLanguage: true
                 },
                 remittance: {
                     title: '票據辨識',
                     subtitle: '匯款單辨識',
                     description: '請上傳一張，下一步會進行辨識並可以進行檢視。',
                     apiUrl: '/ocr/remittance',
-                    useModelComplexity: false
+                    useModelComplexity: false,
+                    useLanguage: false
                 },
                 check_front: {
                     title: '票據辨識',
                     subtitle: '支票正面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/check_front',
-                    useModelComplexity: false
+                    useModelComplexity: false,
+                    useLanguage: false
                 },
                 check_back: {
                     title: '票據辨識',
                     subtitle: '支票背面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/check_back',
-                    useModelComplexity: false
+                    useModelComplexity: false,
+                    useLanguage: false
                 }
                 // Add more OCR types here
             };
@@ -88,6 +94,6 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" />
+        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity"  :useLanguage="useLanguage"/>
     </div>
 </template>

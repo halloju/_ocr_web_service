@@ -16,6 +16,10 @@ export default {
             type: Boolean,
             default: false
         },
+        useLanguage: {
+            type: Boolean,
+            default: false
+        },
         // The default category is 'general' with limited file number to be 20
         category: {
             type: Object
@@ -24,11 +28,12 @@ export default {
     setup(props, { emit }) {
         const store = useStore();
 
-        const selectedLang = ref(null);
+        
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
             { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
         ];
+        const selectedLang = ref(languages[0]);
         const breadcrumbItems = [
             { label: '主要功能', to: '#' },
             { label: '通用文件辨識', to: '#' },
@@ -46,7 +51,7 @@ export default {
         const imageSource = ref('');
 
         const isUploadDisabled = computed(() => {
-            if ((fileList.value.length === 0) | (selectedLang.value === null)) {
+            if ((fileList.value.length === 0)) {
                 return true;
             } else {
                 return false;
@@ -206,6 +211,7 @@ export default {
             isUploadDisabled,
             category: props.category,
             useModelComplexity: props.useModelComplexity,
+            useLanguage: props.useLanguage,
             switchValue,
             submit,
             beforeUpload,
@@ -244,10 +250,10 @@ export default {
         <div class="col-12 md:col-3">
             <div class="card">
                 <div class="flex flex-column flex-wrap">
-                    <div class="flex justify-content-start mb-1">
+                    <div class="flex justify-content-start mb-1" v-if="useLanguage">
                         <h5>選擇語言</h5>
                     </div>
-                    <div class="flex justify-content-start mb-5">
+                    <div class="flex justify-content-start mb-5" v-if="useLanguage">
                         <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
                     </div>
                     <div v-if="useModelComplexity" class="flex justify-content-start mb-1">
