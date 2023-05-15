@@ -57,3 +57,10 @@ docker ps -a
  python3 -m pytest --cov=./ --cov-report=html
 ```
 打開 htmlcov 資料夾，可參考下列 test case coverage
+
+## kafka
+```sh
+kafka-topics --bootstrap-server broker:9092 \
+             --create \
+             --topic if_gp_ocr.gp_callback
+```
