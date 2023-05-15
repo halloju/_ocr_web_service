@@ -3,7 +3,7 @@ disable_existing_loggers: false
 
 formatters:
   standard:
-    format: '{"timestamp: "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": "%(message)s"}'
+    format: '{"timestamp": "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": "%(message)s"}'
     datefmt: "%Y-%m-%dT%H:%M:%S"
 
 handlers:
