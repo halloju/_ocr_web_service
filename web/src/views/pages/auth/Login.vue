@@ -13,6 +13,11 @@ export default {
         login() {
             this.$router.push({ path: '/home' });
         }
+    },
+    mounted() {
+        const adfsUrl = 'https://sts.365.com.tw/adfs/ls/IdpInitiatedSignOn.aspx';
+        const adfsKey = 'my-relying-party-id';  // Replace this with your actual relying party ID
+        window.location.href = `${adfsUrl}?loginToRp=${adfsKey}`;
     }
 };
 </script>
