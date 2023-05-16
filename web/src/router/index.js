@@ -54,7 +54,8 @@ const router = createRouter({
                     name: 'crud',
                     component: () => import('@/views/pages/template/Crud.vue')
                 }
-            ]
+            ],
+            meta: { requiresAuth: true } // This route requires authentication
         },
         {
             path: '/',
@@ -85,4 +86,15 @@ const router = createRouter({
     ]
 });
 
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const isAuthenticated = false; // TODO: Replace this with real check
+  
+    if (requiresAuth && !isAuthenticated) {
+      next('/login');
+    } else {
+      next();
+    }
+  })
+  
 export default router;
