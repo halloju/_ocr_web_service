@@ -42,11 +42,11 @@ class OcrPredict(BaseModel, extra=Extra.allow):
                              example='2022-04-06 18:11:52')
 
 
-class Inputs(BaseModel, extra=Extra.allow):
+class CALLBACKInput(BaseModel, extra=Extra.allow):
     ocr_results: List[OcrPredict]
 
 
-class Outputs(BaseModel, extra=Extra.allow):
+class CALLBACKOutput(BaseModel, extra=Extra.allow):
     status_code: str = Field(
         title='服務狀況',
         description='''
