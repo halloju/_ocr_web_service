@@ -1,0 +1,37 @@
+import redis
+from app.kafka_server.result_consumer import ResultConsumer
+import os
+import sys
+
+
+def run_consumer(project_name: str, redis_server, kafka_config):
+    if project_name == 'cv_controller':
+        def msg_func(ocr_results) -> list:
+            print(ocr_results)
+            new_results = []
+            for ocr_result in ocr_results:
+                x_min, x_max, y_min, y_max = (ocr_result['x_min'], ocr_result['x_max'], ocr_result['y_min'], ocr_result['y_max'])
+                new_result = {key: value for key, value in ocr_result.items() if key not in ['text', 'x_min', 'x_max', 'y_min', 'y_max', 'etl_dt']}
+                new_result['text'] = ocr_result['label']
+                new_result['points'] = [[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]]  # 順時針
+                new_results.append(new_result)
+            return new_results
+        try:
+            consumer = ResultConsumer(kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func)
+            consumer.dequeue()
+        except Exception as e:
+            print(f'consumer failed to start, error: {e}')
+        
+
+if __name__ == "__main__":
+    project_name = sys.argv[1]
+    redis_server = redis.Redis(host="redis", port=6379, decode_responses=True)
+    kafka_config = {
+        'sasl.username': os.environ.get('KAFKA_ID'),
+        'sasl.password': os.environ.get('KAFKA_PASSWORD'),
+        'bootstrap.servers':  os.environ.get('KAFKA_HOST'),
+        'group.id': "if_gp_ocr_gp_callback_01",
+        'auto.offset.reset': 'earliest',
+        'max.poll.interval.ms': 3600000,
+    }
+    run_consumer(project_name, redis_server, kafka_config)

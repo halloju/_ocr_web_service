@@ -3,11 +3,10 @@ import logging
 import os
 import uuid
 
-import requests
 from celery import Celery, Task
 from celery.signals import after_setup_logger
 from logger import config_logging
-from route_utils import call_mlaas_function
+from route_utils import call_mlaas_function, get_redis_filename, get_redis_taskname
 
 # 設定 celery
 celery = Celery(__name__)
@@ -86,8 +85,7 @@ def upload_to_redis(image_data):
 @celery.task(name="get_from_redis")
 def get_from_redis(task_id):
     try:
-        full_key = f'celery-task-meta-{task_id}'
-        task_result = celery.backend.get(full_key)
+        task_result = celery.backend.get(get_redis_taskname(task_id))
         if task_result is None:
             logger.error({'get_from_redis': f'task_result of id {task_id} is None'})
             return {'status': 'ERROR'}
@@ -106,7 +104,7 @@ def predict_image(self, image_id, action, input_params):
         status = 'SUCCESS' if status_code == '0000' else 'FAIL'
 
         # Get the file name from Redis using the image ID as the key
-        file_name = celery.backend.get(image_id + '_file_name').decode("utf-8")
+        file_name = celery.backend.get(get_redis_filename(image_id)).decode("utf-8")
 
         return {'status': status, 'result': data_pred, 'file_name': file_name}
     except Exception as e:

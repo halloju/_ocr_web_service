@@ -64,3 +64,8 @@ kafka-topics --bootstrap-server broker:9092 \
              --create \
              --topic if_gp_ocr.gp_callback
 ```
+
+## reid
+```sh
+redis-cli --scan | head -10
+```
