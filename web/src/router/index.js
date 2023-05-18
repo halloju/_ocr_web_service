@@ -52,7 +52,7 @@ const router = createRouter({
                 {
                     path: '/pages/crud',
                     name: 'crud',
-                    component: () => import('@/views/pages/template/Crud.vue')
+                    component: () => import('@/views/pages/features/template/Crud.vue')
                 }
             ]
         },
