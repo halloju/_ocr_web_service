@@ -38,7 +38,7 @@ services:
           context: ./web
           dockerfile: Dockerfile.prod
           args:
-            - VITE_API_URL=http://10.240.245.22/backend
+            - VITE_API_URL=http://10.240.211.31/backend
         ports:
           - '80:80'
         environment:
@@ -51,7 +51,6 @@ services:
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
-        #command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
         environment:
           - MODE=dev
           - CELERY_BROKER_URL=amqp://rabbitmq
@@ -65,7 +64,8 @@ services:
         ports:
           - "7777:7777"
         command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 7777 --reload"
-        #command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
+        volumes:
+          - ./log:/code/app/logger
         environment:
           - MODE=dev
         depends_on:
@@ -74,12 +74,12 @@ services:
         restart: always
     redis:
         container_name: redis
-        image: "redis:alpine"
+        image: "redis:6.2.6-alpine"
         ports:
           - "6379:6379"
     rabbitmq:
       container_name: rabbitmq
-      image: rabbitmq:3-management
+      image: rabbitmq:rabbitmq:3.9.11-alpine
       ports:
         - 5672:5672
         - 15672:15672
@@ -87,6 +87,8 @@ services:
       container_name: worker
       build: ./backend
       command: celery worker --app=worker.celery
+      volumes:
+        - ./log:/code/app/logger
       environment:
         - CELERY_BROKER_URL=amqp://rabbitmq
         - CELERY_RESULT_BACKEND=redis://redis:6379/0
