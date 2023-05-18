@@ -24,7 +24,7 @@ class Logger(object):
         if isinstance(log_msg, dict):
             return log_msg
         else:
-            return {f'msg_{type(log_msg).__name__}': str(log_msg)}
+            return {f'msg_{type(log_msg).__name__}': log_msg}
 
     def info(self, log_msg):
         self.log_dict[self.section_name] = self.check_msg(log_msg)

@@ -4,12 +4,12 @@ disable_existing_loggers: false
 formatters:
   standard:
     class: mlaas_log_formatter.OneLineExceptionFormatter
-    format: '{"timestamp": "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": "%(message)s"}'
+    format: '{"timestamp": "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": %(message)s}'
     datefmt: "%Y-%m-%dT%H:%M:%S"
   access:
     class: mlaas_log_formatter.CustomAccessFormator
     format: '{"timestamp":"%(asctime)s.%(msecs)03d", "pid":"%(process)d", "level":"%(levelname)s", "logger":"%(name)s", "client_ip":"%(client_addr)s", "http_method":"%(method)s", "url":"%(full_path)s","status_code":"%(status_code)s"}'
-    datefmt: "%Y-%m-%dT%H:%M:%S"
+    datefmt: "%Y-%m-%dT%docH:%M:%S"
 
 handlers:
   console:
@@ -30,14 +30,9 @@ handlers:
 loggers:
   uvicorn.access:
     level: INFO
-    handlers: [uvicon_console, file]
+    handlers: [uvicon_console]
     propagate: no
-  project_log:
-    level: INFO
-    handlers: [console, file]
-    propagate: no
-
-# root:
-#   level: INFO
-#   handlers: [console, file]
-#   propagate: no
+root:
+  level: INFO
+  handlers: [console, file]
+  propagate: no
