@@ -1,4 +1,6 @@
 <script>
+import axios from 'axios';
+
 export default {
     components: {},
     name: 'Login',
@@ -11,14 +13,31 @@ export default {
     },
     methods: {
         login() {
-            this.$router.push({ path: '/home' });
+            axios
+                .get('/auth/login')
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        this.$router.push({ path: '/home' });
+                    } else {
+                        this.$toast.add({
+                            severity: 'error',
+                            summary: '登入失敗',
+                            detail: res.data.message,
+                            life: 3000
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
-    },
-    mounted() {
-        const adfsUrl = 'https://sts.365.com.tw/adfs/ls/IdpInitiatedSignOn.aspx';
-        const adfsKey = 'my-relying-party-id';  // Replace this with your actual relying party ID
-        window.location.href = `${adfsUrl}?loginToRp=${adfsKey}`;
     }
+    // mounted() {
+    //     const adfsUrl = 'https://sts.365.com.tw/adfs/ls/IdpInitiatedSignOn.aspx';
+    //     const adfsKey = 'my-relying-party-id';  // Replace this with your actual relying party ID
+    //     window.location.href = `${adfsUrl}?loginToRp=${adfsKey}`;
+    // }
 };
 </script>
 <template>

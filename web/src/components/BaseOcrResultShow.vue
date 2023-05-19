@@ -17,6 +17,7 @@ export default {
     setup(props, { emit }) {
         const { parseOcrDetail } = useAnnotator();
         const store = useStore();
+        const accessToken = ref('');
 
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
@@ -202,9 +203,10 @@ export default {
         }
 
         // Start to pull the status
-        onMounted(() => {
+        onMounted(async () => {
+            accessToken.value = await axios.get('/refresh_token').then((res) => res.data.access_token);
             waitUntilOcrComplete();
-        });
+        }); 
 
         return {
             containerId,

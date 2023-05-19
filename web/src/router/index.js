@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
+import axios from 'axios';
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -81,15 +82,23 @@ const router = createRouter({
     ]
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const isAuthenticated = false; // TODO: Replace this with real check
-  
-    if (requiresAuth && !isAuthenticated) {
-      next('/login');
-    } else {
-      next();
+
+    // Call the backend route to check if the user is authenticated
+    try {
+        const response = await axios.get('http://localhost/backend/auth/is_authenticated')
+        const isAuthenticated = response.data.isAuthenticated;
+
+        if (requiresAuth && !isAuthenticated) {
+            next('/auth/login');
+        } else {
+            next();
+        }
+    } catch (error) {
+        console.error(error);
+        next('/auth/login');
     }
-  })
-  
+})
+
 export default router;
