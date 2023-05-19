@@ -33,12 +33,7 @@ const router = createRouter({
                     path: '/features/pdf2image',
                     name: 'pdf2image',
                     component: () => import('@/views/pages/features/pdf2image.vue')
-                },
-                {
-                    path: '/blocks',
-                    name: 'blocks',
-                    component: () => import('@/views/utilities/Blocks.vue')
-                },
+                }, 
                 {
                     path: '/utilities/icons',
                     name: 'icons',
