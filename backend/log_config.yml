@@ -3,8 +3,13 @@ disable_existing_loggers: false
 
 formatters:
   standard:
-    format: '{"timestamp: "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": "%(message)s"}'
+    class: mlaas_log_formatter.OneLineExceptionFormatter
+    format: '{"timestamp": "%(asctime)s.%(msecs)03d", "pid": "%(process)d", "level": "%(levelname)s", "logger": "%(name)s", "line": "%(lineno)d", "file": "%(filename)s", "function": "%(funcName)s", "msg": %(message)s}'
     datefmt: "%Y-%m-%dT%H:%M:%S"
+  access:
+    class: mlaas_log_formatter.CustomAccessFormator
+    format: '{"timestamp":"%(asctime)s.%(msecs)03d", "pid":"%(process)d", "level":"%(levelname)s", "logger":"%(name)s", "client_ip":"%(client_addr)s", "http_method":"%(method)s", "url":"%(full_path)s","status_code":"%(status_code)s"}'
+    datefmt: "%Y-%m-%dT%docH:%M:%S"
 
 handlers:
   console:
@@ -12,18 +17,21 @@ handlers:
     formatter: standard
     level: INFO
     stream: ext://sys.stdout
-
+  uvicon_console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: access
+    stream: ext://sys.stdout
   file:
     class: logging.handlers.WatchedFileHandler
     formatter: standard
     filename: mylog.log
     level: INFO
-
 loggers:
-  uvicorn:
-    error:
-      propagate: true
-
+  uvicorn.access:
+    level: INFO
+    handlers: [uvicon_console]
+    propagate: no
 root:
   level: INFO
   handlers: [console, file]

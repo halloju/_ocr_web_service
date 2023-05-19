@@ -1,0 +1,72 @@
+name: Build Docker image and scan vulnerabilities
+
+on:
+  workflow_dispatch:
+    branches:
+    - 'develop'
+    - 'main'
+    inputs:
+      tags:
+        description: 'Test scenario tags'
+        required: false 
+        type: str
+      component:
+        description: 'Dockerfile path'
+        type: choice
+        required: true 
+        options:
+        - backend
+        - web
+      Dockerfile:
+        description: 'Dockerfile name'
+        type: str
+        required: false 
+        options:
+        - Dockerfile
+        - Dockerfile.dev
+        - Dockerfile.prod
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      component: ${{ github.event.inputs.component }}
+      tags: ${{ github.event.inputs.tags }}
+      Dockerfile: ${{ github.event.inputs.Dockerfile }}
+    steps:
+      - name: Set the value
+        run: |
+          echo "IMAGE=if_gp_ocr_system_${{ env.component }}" >> $GITHUB_ENV
+      - run: echo ${{ env.IMAGE }}
+      - run: echo "${{ env.component }}"
+      - run: echo "${{ env.tags }}"
+      - run: echo "${{ env.Dockerfile }}"
+      - uses: actions/checkout@v3
+
+
+      - name: Build an image from Dockerfile
+        id: buildx
+        run: |
+          # {Your Organization}/{my-app} 請置換成 DockerHub 或 GHCR 喔~~
+          docker build . --file ${{ env.Dockerfile }} --tag ghcr.io/esun-df-develop/ghcr_demo/${{ env.IMAGE }}:${{ env.tags }} # GitHub 為例
+        working-directory: ${{ env.component }}
+  
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/esun-df-develop/ghcr_demo/${{ env.IMAGE }}:${{ env.tags }}'  # GitHub 為例
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+ 
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: esun-df-develop
+          password: ${{secrets.REGISTRY_TOKEN}}    # GitHub 管理員會配發給你並協助您在 UI 設定，您可以直接引用！
+ 
+      - name: push my baseimage to GitHub Container Registry
+        run: docker push ghcr.io/esun-df-develop/ghcr_demo/${{ env.IMAGE }}:${{ env.tags }}  # 您可以換版號喔！
