@@ -315,5 +315,5 @@ const initFilters = () => {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/demo/styles/badges.scss';
+@import '@/assets/badges.scss';
 </style>

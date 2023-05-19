@@ -340,16 +340,11 @@ export default {
                         <p>{{ this.pageDesc }}</p>
                     </div>
                     <div class="col-6">
-                        <div class="next-button"  v-if="currentStep != 0"> 
-                            <el-button class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
-                        </div>
-                        <div class="next-button"  v-if="!this.isFinal"> 
-                            <el-button  :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="this.tooltip_text" type="success">下一步</el-button>
-                        </div>
-                        <div class="next-button"  v-else> 
-                            <el-button  class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
-                            提交</el-button>
-                        </div>
+                        <el-button v-if="currentStep != 0" class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
+                        <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="this.tooltip_text" type="success">下一步</el-button>
+                        <el-button v-else class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
+                            提交
+                        </el-button>
                     </div>
                     <div class="col-6">
                         <div class="input-wrapper">
@@ -427,9 +422,4 @@ export default {
     content: attr(title);
 }
 
-.next-button {
-    width: 200px;
-    padding: 10px;
-    display: inline-block;
-}
 </style>

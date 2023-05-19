@@ -33,12 +33,7 @@ const router = createRouter({
                     path: '/features/pdf2image',
                     name: 'pdf2image',
                     component: () => import('@/views/pages/features/pdf2image.vue')
-                },
-                {
-                    path: '/blocks',
-                    name: 'blocks',
-                    component: () => import('@/views/utilities/Blocks.vue')
-                },
+                }, 
                 {
                     path: '/utilities/icons',
                     name: 'icons',
@@ -52,7 +47,7 @@ const router = createRouter({
                 {
                     path: '/pages/crud',
                     name: 'crud',
-                    component: () => import('@/views/pages/template/Crud.vue')
+                    component: () => import('@/views/pages/features/template/Crud.vue')
                 }
             ],
             meta: { requiresAuth: true } // This route requires authentication
