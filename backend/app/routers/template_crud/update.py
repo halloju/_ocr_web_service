@@ -7,7 +7,7 @@ from logger import Logger
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
-from route_utils import call_mlaas_function, init_log
+from route_utils import call_mlaas_function, init_log, verify_token
 from app.exceptions import MlaasRequestError
 from app import response_table
 
@@ -15,7 +15,7 @@ from app import response_table
 router = APIRouter()
 logger = Logger(__name__)
 
-@router.post("/update_template", response_model=UpdateTemplateResponse)
+@router.post("/update_template", response_model=UpdateTemplateResponse, dependencies=[Depends(verify_token)])
 async def update_template(request: UpdateTemplateRequest):
     '''
     將 Feature DB 中的 template 資訊更新

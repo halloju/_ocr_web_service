@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Depends, File, Response, Request, HTTPException, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Response, Request, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, RedirectResponse
 # from fastapi.security import OAuth2PasswordBearer
 from fastapi import Cookie
@@ -47,7 +47,7 @@ async def login(request: Request):
 
 
 @router.get("/refresh_token")
-async def refresh_token(refresh_token: str):
+async def refresh_token(refresh_token: Optional[str] = Cookie(None)):
     # Decode the refresh token
     try:
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -89,5 +89,4 @@ def is_authenticated(refresh_token: Optional[str] = Cookie(None)):
 
         return {"isAuthenticated": True}
     except Exception as e:
-        print(e)
         return {"isAuthenticated": False}

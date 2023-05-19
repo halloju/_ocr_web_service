@@ -105,7 +105,7 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
-import VueKonva from 'vue-konva';  // canvas
+import VueKonva from 'vue-konva'; // canvas
 
 import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
@@ -113,16 +113,13 @@ import BlockViewer from '@/components/BlockViewer.vue';
 import '@/assets/styles.scss';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
-axios.defaults.withCredentials = true;  //允许跨域携带cookie信息
-const {promiseBaseUrl}=document.querySelector('html').dataset
-if(promiseBaseUrl){
-    axios.defaults.baseURL=`${promiseBaseUrl}`
-    
-}else{
-    axios.defaults.baseURL=import.meta.env.VITE_API_URL
+axios.defaults.withCredentials = true; //允许跨域携带cookie信息
+const { promiseBaseUrl } = document.querySelector('html').dataset;
+if (promiseBaseUrl) {
+    axios.defaults.baseURL = `${promiseBaseUrl}`;
+} else {
+    axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 }
-console.log("axios.defaults.baseURL");
-console.log(axios.defaults.baseURL);
 
 const app = createApp(App);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

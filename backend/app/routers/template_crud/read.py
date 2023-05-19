@@ -2,15 +2,15 @@ from app import response_table
 from app.exceptions import MlaasRequestError
 from app.schema.template_crud.read import (GetAvailableTemplatesResponse,
                                            GetTemplateDetailResponse)
-from fastapi import APIRouter
+from fastapi import APIRouter,  Depends
 from logger import Logger
-from route_utils import call_mlaas_function, init_log
+from route_utils import call_mlaas_function, init_log, verify_token
 
 router = APIRouter()
 logger = Logger(__name__)
 
 
-@router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse)
+@router.get("/get_available_templates/{user_id}", response_model=GetAvailableTemplatesResponse, dependencies=[Depends(verify_token)])
 def get_available_templates(user_id: str):
     '''
     取得該 user_id 可用的 template 清單
@@ -32,7 +32,7 @@ def get_available_templates(user_id: str):
         raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
 
 
-@router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
+@router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse, dependencies=[Depends(verify_token)])
 def get_template_detail(template_id: str):
     '''
     取得該 template 的細節
