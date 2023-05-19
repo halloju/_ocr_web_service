@@ -1,8 +1,5 @@
-import json
 from typing import List, Optional
-from pydantic import BaseModel, Extra, Field, validator
-import re
-import src.config as cfg
+from pydantic import BaseModel, Extra, Field
 
 
 class DefaultInputs(BaseModel, extra=Extra.forbid):
@@ -23,12 +20,12 @@ class DefaultInputs(BaseModel, extra=Extra.forbid):
         example=['OPEN_ACCOUNT_BANK', 'UNSECURED_LOAN']
     )
 
-    @validator('business_category', allow_reuse=True)
-    def confirm_business_category(cls, field_value):
-        if len(field_value) != len(set(field_value)):
-            raise ValueError('business_category不能重複')
-        else:
-            return field_value
+    # @validator('business_category', allow_reuse=True)
+    # def confirm_business_category(cls, field_value):
+    #     if len(field_value) != len(set(field_value)):
+    #         raise ValueError('business_category不能重複')
+    #     else:
+    #         return field_value
 
 
 class CallBackInputs(BaseModel):
@@ -74,31 +71,31 @@ class CallBackInputs(BaseModel):
         example="{\"x-client-id\": \"abcde\"}"
     )
 
-    @validator('callback_body', allow_reuse=True)
-    def confirm_callback_body(cls, field_value):
-        if field_value is not None:
-            keyword_list = re.findall(r"\$\{(.*?)\}", field_value)
-            if not all(x in keyword_list for x in ['image_cv_id', 'recognition_status']):
-                raise ValueError('輸入的callbody字串中沒有包含${image_cv_id}或${recognition_status}')
-            if not any(x in keyword_list for x in ['ocr_results', 'detection_results']):
-                raise ValueError('輸入的callbody字串中沒有包含${ocr_results}或${detection_results}')
-            try:
-                json.loads(field_value)
-            except json.decoder.JSONDecodeError:
-                raise ValueError('輸入的callbody字串無法解譯成json格式')
-        return field_value
+    # @validator('callback_body', allow_reuse=True)
+    # def confirm_callback_body(cls, field_value):
+    #     if field_value is not None:
+    #         keyword_list = re.findall(r"\$\{(.*?)\}", field_value)
+    #         if not all(x in keyword_list for x in ['image_cv_id', 'recognition_status']):
+    #             raise ValueError('輸入的callbody字串中沒有包含${image_cv_id}或${recognition_status}')
+    #         if not any(x in keyword_list for x in ['ocr_results', 'detection_results']):
+    #             raise ValueError('輸入的callbody字串中沒有包含${ocr_results}或${detection_results}')
+    #         try:
+    #             json.loads(field_value)
+    #         except json.decoder.JSONDecodeError:
+    #             raise ValueError('輸入的callbody字串無法解譯成json格式')
+    #     return field_value
 
-    @validator('callback_headers', allow_reuse=True)
-    def confirm_callback_headers(cls, field_value):
-        if field_value is not None:
-            try:
-                json.loads(field_value)
-            except json.decoder.JSONDecodeError:
-                raise ValueError('輸入的headers字串無法解譯成json格式')
-        return field_value
+    # @validator('callback_headers', allow_reuse=True)
+    # def confirm_callback_headers(cls, field_value):
+    #     if field_value is not None:
+    #         try:
+    #             json.loads(field_value)
+    #         except json.decoder.JSONDecodeError:
+    #             raise ValueError('輸入的headers字串無法解譯成json格式')
+    #     return field_value
 
 
-class Inputs(DefaultInputs):
+class CVInputs(DefaultInputs):
     image: str = Field(
         title='base64 字串的影像',
         description='''
@@ -177,48 +174,48 @@ class Inputs(DefaultInputs):
         example='PASSBOOK_COVER'
     )
 
-    @validator('action', allow_reuse=True)
-    def confirm_action(cls, field_value):
-        if field_value not in ['RECOGNITION', 'ONLY_CLASSIFY_CLEARNESS']:
-            raise ValueError('不支援此執行動作')
-        else:
-            return field_value
+    # @validator('action', allow_reuse=True)
+    # def confirm_action(cls, field_value):
+    #     if field_value not in ['RECOGNITION', 'ONLY_CLASSIFY_CLEARNESS']:
+    #         raise ValueError('不支援此執行動作')
+    #     else:
+    #         return field_value
 
-    @validator('source', allow_reuse=True)
-    def confirm_source(cls, field_value, values, field, config):
-        if field_value not in ['EXTERNAL', 'INTERNAL']:
-            raise ValueError('不支援此來源')
-        return field_value.lower()
+    # @validator('source', allow_reuse=True)
+    # def confirm_source(cls, field_value, values, field, config):
+    #     if field_value not in ['EXTERNAL', 'INTERNAL']:
+    #         raise ValueError('不支援此來源')
+    #     return field_value.lower()
 
-    @validator('clearness_type', allow_reuse=True)
-    def confirm_clearness_type(cls, field_value, values, field, config):
-        if field_value not in ['DISABLE', 'MANUAL', 'DEFAULT']:
-            raise ValueError('不支援此清晰度種類')
-        else:
-            return field_value
+    # @validator('clearness_type', allow_reuse=True)
+    # def confirm_clearness_type(cls, field_value, values, field, config):
+    #     if field_value not in ['DISABLE', 'MANUAL', 'DEFAULT']:
+    #         raise ValueError('不支援此清晰度種類')
+    #     else:
+    #         return field_value
 
-    @validator('clearness_threshold', allow_reuse=True)
-    def confirm_clearness_threshold(cls, field_value, values, field, config):
-        if 'clearness_type' in values:
-            if values['clearness_type'] == 'MANUAL':
-                if field_value is None:
-                    raise ValueError('當清晰度種類為 MANUAL 時，clearness_threshold 必須存在')
-                if field_value <= 0:
-                    raise ValueError('清晰度的門檻值必大於0')
-            else:
-                if field_value is not None:
-                    raise ValueError('當清晰度種類為 DEFAULT 和 DISABLE 時，clearness_threshold 不需設定')
-        return field_value
+    # @validator('clearness_threshold', allow_reuse=True)
+    # def confirm_clearness_threshold(cls, field_value, values, field, config):
+    #     if 'clearness_type' in values:
+    #         if values['clearness_type'] == 'MANUAL':
+    #             if field_value is None:
+    #                 raise ValueError('當清晰度種類為 MANUAL 時，clearness_threshold 必須存在')
+    #             if field_value <= 0:
+    #                 raise ValueError('清晰度的門檻值必大於0')
+    #         else:
+    #             if field_value is not None:
+    #                 raise ValueError('當清晰度種類為 DEFAULT 和 DISABLE 時，clearness_threshold 不需設定')
+    #     return field_value
 
-    @validator('image_class', allow_reuse=True)
-    def image_class_check(cls, field_value):
-        if field_value not in cfg.CLASS_CANDIDATE:
-            if field_value is not None:
-                raise ValueError('不支援此影像類別')
-        return field_value
+    # @validator('image_class', allow_reuse=True)
+    # def image_class_check(cls, field_value):
+    #     if field_value not in cfg.CLASS_CANDIDATE:
+    #         if field_value is not None:
+    #             raise ValueError('不支援此影像類別')
+    #     return field_value
 
 
-class Outputs(BaseModel, extra=Extra.forbid):
+class CVOutputs(BaseModel, extra=Extra.forbid):
     status_code: str = Field(
         title='服務狀況',
         description='''

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import CustomException, exception_handler
 from app.routers import docs
-from app.routers.ocr import gp_ocr, template_ocr, check_back_ocr, check_front_ocr, remittance_ocr, callback
+from app.routers.ocr import gp_ocr, template_ocr, check_back_ocr, check_front_ocr, remittance_ocr, callback, cv_upload
 from app.routers.template_crud import create, read, update, delete
 
 
@@ -73,6 +73,12 @@ def get_application():
 
     app.include_router(
         callback.router,
+        prefix="/ocr",
+        tags=["ocr"],
+    )
+
+    app.include_router(
+        cv_upload.router,
         prefix="/ocr",
         tags=["ocr"],
     )
