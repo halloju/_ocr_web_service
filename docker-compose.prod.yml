@@ -37,12 +37,11 @@ services:
         build:
           context: ./web
           dockerfile: Dockerfile.prod
-          args:
-            - VITE_API_URL=http://10.240.211.31/backend
         ports:
           - '80:80'
         environment:
           - MODE=development
+          - VITE_API_URL=http://localhost/backend/happy
         depends_on:
           - backend
     backend:
