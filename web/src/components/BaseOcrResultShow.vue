@@ -270,7 +270,7 @@ export default {
                                             <el-tag :type="getStatusColor(row.status)">{{ row.status }}</el-tag>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column label="動作" width=100px>
+                                    <el-table-column label="動作">
                                         <template v-slot="scope">
                                             <el-button type="primary" v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)" round>檢視</el-button>
                                         </template>
