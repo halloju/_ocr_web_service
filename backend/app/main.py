@@ -9,10 +9,12 @@ from app.routers.ocr import ocr
 from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from app.routers import login
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from logger import Logger
+from route_utils import verify_token
+
 
 # 設定 logger
 logger = Logger('main')
@@ -66,40 +68,47 @@ def get_application():
         create.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         read.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         update.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         delete.router,
         prefix="/template_crud",
         tags=["template_crud"],
+        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         ocr.router,
         prefix="/ocr",
         tags=["ocr"],
+        dependencies=[Depends(verify_token)],
     )
     app.include_router(
         task.router,
         prefix="/task",
         tags=["task"],
+        dependencies=[Depends(verify_token)],
     )
     app.include_router(
         pdf_transform.router,
         prefix="/image_tools",
         tags=["image_tools"],
+        dependencies=[Depends(verify_token)],
     )
     app.include_router(
         login.router,

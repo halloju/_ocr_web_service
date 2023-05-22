@@ -4,12 +4,11 @@ import tempfile
 import zipfile
 
 from app.exceptions import CustomException
-from fastapi import APIRouter, File, Request, Response, UploadFile, Depends
+from fastapi import APIRouter, File, Request, Response, UploadFile
 from logger import Logger
 from pdf2image import convert_from_bytes
 from PIL import Image, ImageFile
 from pydantic.typing import List
-from route_utils import verify_token
 
 # setting
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -48,7 +47,7 @@ def get_bytes_value(image, folder, name):
         f.write(img_byte_arr.getvalue())
     return path
 
-@router.post("/pdf_transform", summary="pdf 轉圖片", dependencies=[Depends(verify_token)])
+@router.post("/pdf_transform", summary="pdf 轉圖片")
 async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout: int = 300):
     '''
     將 pdf 轉成圖片

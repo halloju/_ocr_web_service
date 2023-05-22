@@ -1,11 +1,12 @@
 import axios from 'axios';
+import { API_TIMEOUT } from '@/constants.js';
 
 export async function initializeClient() {
     try {
         const response = await axios.get('/auth/refresh_token');
         const accessToken = response.data.access_token;
         const apiClient = axios.create({
-            timeout: 1000,  // Replace this with your actual timeout
+            timeout: API_TIMEOUT,
             headers: { Authorization: `Bearer ${accessToken}` }
         });
         return apiClient;

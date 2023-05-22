@@ -2,12 +2,11 @@ import base64
 import uuid
 
 from celery.result import AsyncResult
-from fastapi import APIRouter, File, Form, Request, UploadFile, Depends
+from fastapi import APIRouter, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
 from logger import Logger
 from pydantic.typing import List
 from worker import predict_image
-from route_utils import verify_token
 
 
 router = APIRouter()
@@ -35,7 +34,7 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
     task_id = predict_image.delay(image_id, action=action, input_params=input_params)
     return {'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id}
 
-@router.post("/gp_ocr", summary="全文辨識", dependencies=[Depends(verify_token)])
+@router.post("/gp_ocr", summary="全文辨識")
 async def process(request: Request, image_complexity: str = Form(...), model_name: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'gp_ocr'
@@ -55,7 +54,7 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
         logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
 
-@router.post("/template_ocr", summary="模板辨識", dependencies=[Depends(verify_token)])
+@router.post("/template_ocr", summary="模板辨識")
 async def process(request: Request, model_name: str = Form(...), template_id: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'template_ocr'
@@ -75,7 +74,7 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
         logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
 
-@router.post("/remittance", summary="匯款單辨識", dependencies=[Depends(verify_token)])
+@router.post("/remittance", summary="匯款單辨識")
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     action = 'remittance'
@@ -95,7 +94,7 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
         logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
 
-@router.post("/check_front", summary="支票正面辨識", dependencies=[Depends(verify_token)])
+@router.post("/check_front", summary="支票正面辨識")
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     action = 'check_front'
@@ -115,7 +114,7 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
         logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
 
-@router.post("/check_back", summary="支票背面辨識", dependencies=[Depends(verify_token)])
+@router.post("/check_back", summary="支票背面辨識")
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     action = 'check_back'

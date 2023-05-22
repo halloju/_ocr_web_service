@@ -1,14 +1,14 @@
 from app import response_table
 from app.exceptions import MlaasRequestError
 from app.schema.common import Response
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from logger import Logger
-from route_utils import call_mlaas_function, init_log, verify_token
+from route_utils import call_mlaas_function, init_log
 
 router = APIRouter()
 logger = Logger(__name__)
 
-@router.delete("/delete_template/{template_id}", dependencies=[Depends(verify_token)])
+@router.delete("/delete_template/{template_id}")
 async def delete_template(template_id: str):
     '''
     刪除給定的 template_id 在 mlaas Feature DB 中的 template 資訊
