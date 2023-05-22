@@ -48,13 +48,13 @@ jobs:
         id: buildx
         run: |
           # {Your Organization}/{my-app} 請置換成 DockerHub 或 GHCR 喔~~
-          docker build . --file ${{ env.Dockerfile }} --tag ghcr.io/esun-df-develop/ghcr_demo/${{ env.IMAGE }}:${{ env.tags }} # GitHub 為例
+          docker build . --file ${{ env.Dockerfile }} --tag ghcr.io/esun-df-develop/gp-ocr/${{ env.IMAGE }}:${{ env.tags }} # GitHub 為例
         working-directory: ${{ env.component }}
   
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/esun-df-develop/ghcr_demo/${{ env.IMAGE }}:${{ env.tags }}'  # GitHub 為例
+          image-ref: 'ghcr.io/esun-df-develop/gp-ocr/${{ env.IMAGE }}:${{ env.tags }}'  # GitHub 為例
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -69,4 +69,4 @@ jobs:
           password: ${{secrets.REGISTRY_TOKEN}}    # GitHub 管理員會配發給你並協助您在 UI 設定，您可以直接引用！
  
       - name: push my baseimage to GitHub Container Registry
-        run: docker push ghcr.io/esun-df-develop/ghcr_demo/${{ env.IMAGE }}:${{ env.tags }}  # 您可以換版號喔！
+        run: docker push ghcr.io/esun-df-develop/gp-ocr/${{ env.IMAGE }}:${{ env.tags }}  # 您可以換版號喔！
