@@ -20,7 +20,7 @@ Input, Output = mlaas_item_generator('CV', CVInputs, CVOutputs)
 router = APIRouter()
 
 
-@router.post("/cv_upload", response_model=Output, responses=http_responses)  # responses={},
+@router.post("/upload", response_model=Output, responses=http_responses)  # responses={},
 async def callback(request: Input):
     '''
     cv mlaas api

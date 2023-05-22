@@ -6,7 +6,7 @@ from app.exceptions import (CustomException, MlaasRequestError,
                             exception_handler, mlaas_request_handler)
 from app.routers import docs
 from app.routers.image_tools import pdf_transform
-from app.routers.ocr import ocr
+from app.routers.ocr import ocr, asyn_ocr
 from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from fastapi import FastAPI
@@ -91,6 +91,13 @@ def get_application():
         prefix="/ocr",
         tags=["ocr"],
     )
+
+    app.include_router(
+        asyn_ocr.router,
+        prefix="/ocr",
+        tags=["ocr"],
+    )
+
     app.include_router(
         task.router,
         prefix="/task",

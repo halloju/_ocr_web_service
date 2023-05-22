@@ -24,11 +24,11 @@ def run_consumer(project_name: str, redis_server, kafka_config):
         
 
 if __name__ == "__main__":
-    import urlparse
+    from urllib import parse
     project_name = sys.argv[1]
     redis_url = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
-    urlparse.uses_netloc.append('redis')
-    url = urlparse.urlparse(redis_url)
+    parse.uses_netloc.append('redis')
+    url = parse.urlparse(redis_url)
     conn = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)
     kafka_config = {
         'sasl.username': os.environ.get('KAFKA_ID'),
