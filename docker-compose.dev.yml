@@ -32,7 +32,7 @@ services:
         restart: always
     web:
         container_name: web
-        # image: halloju/if_gp_ocr_system_web:latest
+        # image: halloju/if_gp_ocr_system_web
         build: 
           context: ./web
           dockerfile: Dockerfile.dev

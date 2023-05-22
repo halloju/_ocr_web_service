@@ -1,5 +1,5 @@
 <script>
-import axios from 'axios';
+import { initializeClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { API_TIMEOUT } from '@/constants.js';
 
@@ -12,10 +12,13 @@ export default {
             dialogWidth: '50%',
             dialogFileUrl: '',
             embedWidth: '100%',
-            embedHeight: '600px'
+            embedHeight: '600px',
+            apiClient: null
         };
     },
-    watch: {},
+    mounted() {
+        this.initializeClient();
+    },
     computed: {
         isUploadDisabled() {
             if (this.fileList.length === 0) {
@@ -26,6 +29,9 @@ export default {
         }
     },
     methods: {
+        async initializeClient() {
+            this.apiClient = await initializeClient();
+        },
         fileChange(file) {
             const isLt5M = file.size / 1024 / 1024 < 5;
             if (isLt5M) {
@@ -55,7 +61,7 @@ export default {
                 text: 'Loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            await axios
+            await this.apiClient
                 .post('/image_tools/pdf_transform', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -73,12 +79,11 @@ export default {
                     downloadLink.click();
                 })
                 .catch((error) => {
-                    var msg = ''
+                    var msg = '';
                     if (error.message && error.message.includes('413')) {
-                        console.log('The file you tried to upload is too large.')
-                        msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)'
-                    }
-                    else if (error.code === 'ERR_NETWORK') {
+                        console.log('The file you tried to upload is too large.');
+                        msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)';
+                    } else if (error.code === 'ERR_NETWORK') {
                         this.status = 'network';
                     }
                     //error alert for the axios request

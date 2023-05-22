@@ -2,12 +2,13 @@
 import { ref, computed, onMounted } from 'vue';
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
-import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
 import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
+import { API_TIMEOUT } from '@/constants.js';
+import { initializeClient } from '@/service/auth.js';
 
 export default {
     components: {
@@ -17,6 +18,7 @@ export default {
     setup(props, { emit }) {
         const { parseOcrDetail } = useAnnotator();
         const store = useStore();
+        const apiClient = ref(null);
 
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
@@ -80,13 +82,12 @@ export default {
         }
 
         async function getOcrStatus(item) {
-            axios
+            apiClient.value
                 .get(`/task/status/${general_upload_res.value[item].task_id}`)
                 .then(async (res) => {
                     if (res.data.status === 'SUCCESS') {
                         await getOcrResults(item);
                     } else {
-                        console.log('getOcrResults', res.data.status);
                         store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
                     }
                 })
@@ -100,7 +101,7 @@ export default {
         }
 
         async function getOcrResults(item) {
-            axios
+            apiClient.value
                 .get(`/task/result/${general_upload_res.value[item].task_id}`)
                 .then((res) => {
                     if (res.data.status === 'SUCCESS') {
@@ -145,7 +146,7 @@ export default {
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row) {
-            axios
+            apiClient.value
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
                     if (res !== null) {
@@ -202,7 +203,8 @@ export default {
         }
 
         // Start to pull the status
-        onMounted(() => {
+        onMounted(async () => {
+            apiClient.value = await initializeClient();
             waitUntilOcrComplete();
         });
 
@@ -281,17 +283,7 @@ export default {
                         <div v-if="imageSrc !== null">
                             <p>號碼：{{ num }}</p>
                             <p>檔名：{{ file_name }}</p>
-                            <Annotation
-                                containerId="my-pic-annotation-output"
-                                :imageSrc="imageSrc"
-                                :editMode="false"
-                                :width="width"
-                                :height="height"
-                                dataCallback=""
-                                :initialData="initialData"
-                                initialDataId=""
-                                image_cv_id=""
-                            ></Annotation>
+                            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" dataCallback="" :initialData="initialData" initialDataId="" image_cv_id=""></Annotation>
                         </div>
                     </div>
                 </div>

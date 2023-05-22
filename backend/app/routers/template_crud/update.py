@@ -1,7 +1,6 @@
 from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter
-from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from logger import Logger
 
