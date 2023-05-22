@@ -29,7 +29,7 @@ if __name__ == "__main__":
     redis_url = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
     parse.uses_netloc.append('redis')
     url = parse.urlparse(redis_url)
-    conn = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)
+    redis_server = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)
     kafka_config = {
         'sasl.username': os.environ.get('KAFKA_ID'),
         'sasl.password': os.environ.get('KAFKA_PASSWORD'),
