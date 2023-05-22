@@ -7,7 +7,6 @@ import sys
 def run_consumer(project_name: str, redis_server, kafka_config):
     if project_name == 'cv_controller':
         def msg_func(ocr_results) -> list:
-            print(ocr_results)
             new_results = []
             for ocr_result in ocr_results:
                 x_min, x_max, y_min, y_max = (ocr_result['x_min'], ocr_result['x_max'], ocr_result['y_min'], ocr_result['y_max'])
@@ -26,7 +25,7 @@ def run_consumer(project_name: str, redis_server, kafka_config):
 if __name__ == "__main__":
     from urllib import parse
     project_name = sys.argv[1]
-    redis_url = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
+    redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
     parse.uses_netloc.append('redis')
     url = parse.urlparse(redis_url)
     redis_server = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)

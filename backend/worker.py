@@ -104,7 +104,7 @@ def predict_image(self, image_id, action, input_params):
         status = 'SUCCESS' if status_code == '0000' else 'FAIL'
 
         # Get the file name from Redis using the image ID as the key
-        file_name = celery.backend.get(get_redis_filename(image_id))
+        file_name = celery.backend.get(get_redis_filename(image_id)).decode("utf-8")
 
         return {'status': status, 'result': data_pred, 'file_name': file_name}
     except Exception as e:

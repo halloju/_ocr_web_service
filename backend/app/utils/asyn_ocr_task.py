@@ -20,10 +20,10 @@ class AsynPredictTask(object):
         self.conn = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)
         self.business_unit = "C170"
         self.project_names = {
-            'cv_ocr': 'CV',
+            'cv-ocr': 'CV',
         }
         self.endpoints = {
-            'cv_ocr': 'ocr/upload',
+            'cv-ocr': 'ocr/upload',
         }
         self.logger = logger
 
@@ -70,7 +70,7 @@ class AsynPredictTask(object):
             # Return the prediction result
             return data_pred
         except Exception as e:
-            self.logger.error({**log_main, 'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input+params': input_params}})
+            self.logger.error({**log_main, 'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
             raise e
 
     def upload_to_redis(self, image_data):
@@ -122,4 +122,6 @@ class AsynPredictTask(object):
         self.conn.set(get_redis_filename(image_id), file.filename, ex=86400)
         # start task prediction
         upload_result = self.predict_image(image_id, action=action, input_params=input_params)
-        return {'task_id': str(upload_result["image_cv_id"]), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}
+        task_id = str(upload_result["image_cv_id"])
+        self.conn.set(task_id, json.dumps({'task_id': task_id, 'status': 'PENDING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
+        return {'task_id': task_id, 'status': 'PROCESSING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}

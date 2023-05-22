@@ -18,23 +18,24 @@ class ResultConsumer(BaseConsumer):
 
     def consumer_process(self, msg):
         # check id exist
-        if ('request_id' not in msg):
-            self.logger_tool.warning({'error_msg': 'request_id not exist in msg'})
+        if ('ocr_results' not in msg):
+            self.logger_tool.warning({'error_msg': 'ocr_results not exist in msg'})
             return False
         try:
-            full_key = get_redis_taskname(msg['request_id'])
+            full_key = msg['ocr_results'][0]['image_cv_id']
             old_data = self.redis_server.get(full_key)
             if (not old_data):
-                self.logger_tool.warning({'request_id': msg['request_id'], 'error_msg': 'not exist in redis'})
+                self.logger_tool.warning({'request_id': full_key, 'error_msg': 'not exist in redis'})
                 return False
             else:
                 old_data = json.loads(old_data)
                 self.logger_tool.info(msg['ocr_results'])
                 self.logger_tool.info(old_data)
-                old_data['ocr_results'] = self.msg_func(msg['ocr_results'])
-                self.logger_tool.info({'request_id': msg['request_id'], 'msg': 'msg_func'})
+                old_data['result'] = self.msg_func(msg['ocr_results'])
+                old_data['status'] = 'SUCCESS'
+                self.logger_tool.info({'request_id': full_key, 'msg': 'msg_func'})
                 self.redis_server.set(full_key, json.dumps(old_data))  # replace
-                self.logger_tool.info({'request_id': msg['request_id'], 'msg': 'upload to redis'})
+                self.logger_tool.info({'request_id': full_key, 'msg': 'upload to redis'})
             return True
         except Exception as e:
             self.logger_tool.error({'request_id': msg['request_id'], 'error_msg': str(e)})

@@ -28,10 +28,10 @@ print('Kafka Producer has been initiated...')
 
 for i in range(10):
     data = {
-        'request_id': 'c703d6e3-4e9a-4657-9cd4-640990c95d5b',
+        'request_id': '0129979143656',
         "ocr_results": [
         {
-            "image_cv_id": "test_ws_encrypt",
+            "image_cv_id": "0129979143656",
             "ocr_type": "WITHHOLDING_STATEMENT",
             "tag": "id",
             "model": "attention",

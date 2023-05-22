@@ -2,7 +2,6 @@ from fastapi import APIRouter, File, Form, Request, UploadFile
 from pydantic.typing import List
 from logger import Logger
 from app.utils.asyn_ocr_task import AsynPredictTask
-from route_utils import get_redis_filename
 from fastapi.responses import JSONResponse
 
 
@@ -11,13 +10,13 @@ logger = Logger(__name__)
 Asyn_worker = AsynPredictTask(logger)
 
 
-@router.post("/cv_ocr", summary="controller 辨識")  # responses={},
-async def cv_upload(request: Request, image_class: str, files: List[UploadFile] = File(...)):
+@router.post("/cv-ocr", summary="controller 辨識")  # responses={},
+async def cv_upload(request: Request, image_class: str = Form(...), files: List[UploadFile] = File(...)):
     '''
     call cv_controller api
     '''
     tasks = []
-    action = 'cv_ocr'
+    action = 'cv-ocr'
     logger.info({action: {'upload_file_num': len(files), 'image_class': image_class}})
     try:
         for file in files:

@@ -91,7 +91,7 @@ export default {
                     title: '人證辨識',
                     subtitle: '身分證辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv_ocr',
+                    apiUrl: '/ocr/cv-ocr',
                     imageClass: 'ID',
                     useModelComplexity: false,
                     useLanguage: false
@@ -100,7 +100,7 @@ export default {
                     title: '人證辨識',
                     subtitle: '駕照辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv_ocr',
+                    apiUrl: '/ocr/cv-ocr',
                     imageClass: 'DRIVER_LICENSE',
                     useModelComplexity: false,
                     useLanguage: false
@@ -109,7 +109,7 @@ export default {
                     title: '人證辨識',
                     subtitle: '健保卡辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv_ocr',
+                    apiUrl: '/ocr/cv-ocr',
                     imageClass: 'HEALTH_INSURANCE',
                     useModelComplexity: false,
                     useLanguage: false
@@ -118,7 +118,7 @@ export default {
                     title: '財證辨識',
                     subtitle: '扣繳憑單辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv_ocr',
+                    apiUrl: '/ocr/cv-ocr',
                     imageClass: 'WITHHOLDING_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false
@@ -127,7 +127,7 @@ export default {
                     title: '財證辨識',
                     subtitle: '國稅局個人所得清單辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv_ocr',
+                    apiUrl: '/ocr/cv-ocr',
                     imageClass: 'NTB_FINANCIAL_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false

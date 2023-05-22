@@ -17,10 +17,10 @@ class BaseConsumer(object):
         self.kafka_config = kafka_configs
         self.logger_tool.info(kafka_configs)
         self.consumer = Consumer(self.kafka_config)
-        self.logger_tool.info(self.consumer.list_topics().topics)
+        self.logger_tool.info({'msg': str(self.consumer.list_topics().topics)})
         # self.logger_tool.info({'Available topics to consume: ', self.consumer.list_topics().topics})
         self.consumer.subscribe(topics)
-        self.logger_tool.info({'msg', 'Kafka Consumer has been initiated...'})
+        self.logger_tool.info({'msg': 'Kafka Consumer has been initiated...'})
 
     def consumer_process(self, msg):
         raise NotImplementedError
