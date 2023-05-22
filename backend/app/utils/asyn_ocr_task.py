@@ -1,13 +1,14 @@
-
-
+"""
+task asyn ocr (like cv controller)
+"""
+import base64
 import json
 import os
 import uuid
-import redis
-import base64
-from route_utils import call_mlaas_function, get_redis_filename, init_log
-
 from urllib import parse
+
+import redis
+from route_utils import call_mlaas_function, get_redis_filename, init_log
 
 
 class AsynPredictTask(object):
@@ -122,4 +123,3 @@ class AsynPredictTask(object):
         # start task prediction
         upload_result = self.predict_image(image_id, action=action, input_params=input_params)
         return {'task_id': str(upload_result["image_cv_id"]), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}
-
