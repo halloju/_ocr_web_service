@@ -5,6 +5,12 @@ from datetime import datetime
 import requests
 from app.exceptions import MlaasRequestError
 
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
+import jwt
+from datetime import datetime
+
 
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
     logger.info({'call_mlaas_function': {'action': action, 'request_id': request['request_id']}})
@@ -56,8 +62,28 @@ def get_user_id() -> str:
 def get_request_id() -> str: # celery with task_id
     return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
 
+
 def get_redis_filename(image_id: str) -> str:
     return f'celery-upload-img-meta-{image_id}'
 
 def get_redis_taskname(task_id: str) -> str:
     return f'celery-task-meta-{task_id}'
+
+SECRET_KEY = "your-secret-key"  # Replace with your actual secret key
+ALGORITHM = "HS256"  # Or another algorithm like "RS256"
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+async def verify_token(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: Optional[str] = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except jwt.PyJWTError:
+        raise credentials_exception
+    return username

@@ -1,13 +1,13 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import Annotation from '@/components/Annotation.vue';
-import axios from 'axios';
 import moment from 'moment';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import PhotoService from '@/service/PhotoService';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { initializeClient } from '@/service/auth.js';
 
 const item = {
     name: '',
@@ -40,8 +40,10 @@ export default {
         const tableData = ref([]);
         const dialogVisible = ref(false);
         const dialogWidth = ref('');
+        const apiClient = ref(null);
 
         onMounted(async () => {
+            apiClient.value = await initializeClient();
             images.value = await galleriaService.getImages();
             tableData.value = await getAvailableTemplate();
         });
@@ -112,7 +114,7 @@ export default {
             let user_id = '13520';
             let tableData = [];
             try {
-                const response = await axios.get('/template_crud/get_available_templates/' + user_id);
+                const response = await apiClient.value.get('/template_crud/get_available_templates/' + user_id);
                 tableData = response['data']['template_infos'];
                 return tableData;
             } catch (error) {
@@ -131,7 +133,7 @@ export default {
             console.log('handleLook');
             template_id.value = templateid;
             try {
-                const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+                const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id.value);
                 template.value = response['data'];
                 initialData.value = parseTemplateDetail(response['data'], userType);
                 creation_time.value = template.value.creation_time;
@@ -156,7 +158,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await axios.delete('/template_crud/delete_template/' + template_id);
+                const response = await apiClient.value.delete('/template_crud/delete_template/' + template_id);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',
@@ -215,7 +217,7 @@ export default {
             // clear local storage
             sessionStorage.clear();
             // get template detail
-            const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+            const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id.value);
             //template.value = response['data'];
 
             // set local storage
@@ -251,7 +253,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await axios.delete('/template_crud/delete_template/' + template_id.value);
+                const response = await apiClient.value.delete('/template_crud/delete_template/' + template_id.value);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',
@@ -353,22 +355,19 @@ export default {
                     </el-table-column>
                     <el-table-column label="操作" width="500px">
                         <template #default="scope">
-                            
                             <el-button v-show="scope.row.editable" size="" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="" type="primary" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="" type="success" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
                             <el-button size="" type="info" @click="editTemplate">編輯</el-button>
                             <el-button size="" type="danger" plain @click="handleDelete(scope.row.template_id)">刪除</el-button>
                             <el-button size="" type="info" plain @click="downloadTemplate">下載</el-button>
-                            
-
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-dialog v-model="dialogVisible" :width="dialogWidth" >
+                <el-dialog v-model="dialogVisible" :width="dialogWidth">
                     <div class="card" style="height: 850px; overflow-y: scroll">
-                        <h4> template id: {{ template_id }} </h4>
-                        <h5> 創建日期: {{ creation_time }} </h5>
+                        <h4>template id: {{ template_id }}</h4>
+                        <h5>創建日期: {{ creation_time }}</h5>
                         <div class="flex flex-column card-container">
                             <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                                 <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType.code)" />
