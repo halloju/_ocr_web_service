@@ -16,6 +16,7 @@ export default {
         category: Object,
         useModelComplexity: Boolean,
         useLanguage: Boolean,
+        imageClass: String
     },
     methods: {
         nextStep(step) {
@@ -35,7 +36,7 @@ export default {
             step: 1,
             image_complexity: '',
             selectedLang: '',
-            imageUploadKey: 0
+            imageUploadKey: 0,
         };
     },
     watch: {
@@ -69,6 +70,6 @@ export default {
             </div>
         </div>
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :key="imageUploadKey" />
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :key="imageUploadKey" :imageClass="imageClass" />
     <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" />
 </template>

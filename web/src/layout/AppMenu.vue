@@ -50,15 +50,18 @@ const model = ref([
                 items: [
                     {
                         label: '身份證辨識',
-                        icon: 'pi pi-id-card'
+                        icon: 'pi pi-id-card',
+                        to: '/features/ocr/id'
                     },
                     {
                         label: '駕照辨識',
-                        icon: 'pi pi-car'
+                        icon: 'pi pi-car',
+                        to: '/features/ocr/driver_license'
                     },
                     {
                         label: '健保卡辨識',
-                        icon: 'pi pi-credit-card'
+                        icon: 'pi pi-credit-card',
+                        to: '/features/ocr/health_insurance'
                     }
                 ]
             },
@@ -68,11 +71,13 @@ const model = ref([
                 items: [
                     {
                         label: '所得清單辨識',
-                        icon: 'pi pi-id-card'
+                        icon: 'pi pi-id-card',
+                        to: '/features/ocr/financial_statement'
                     },
                     {
                         label: '扣繳憑單辨識',
-                        icon: 'pi pi-envelope'
+                        icon: 'pi pi-envelope',
+                        to: '/features/ocr/withholding'
                     }
                 ]
             },

@@ -28,6 +28,7 @@ export default {
         this.description = ocrConfig.description;
         this.useModelComplexity = ocrConfig.useModelComplexity;
         this.useLanguage = ocrConfig.useLanguage;
+        this.imageClass = ocrConfig.imageClass;
     },
     watch: {
         $route(to, from) {
@@ -39,6 +40,8 @@ export default {
             this.subtitle = ocrConfig.subtitle;
             this.description = ocrConfig.description;
             this.useModelComplexity = ocrConfig.useModelComplexity;
+            this.useLanguage = ocrConfig.useLanguage;
+            this.imageClass = ocrConfig.imageClass;
         }
     },
     methods: {
@@ -83,6 +86,51 @@ export default {
                     apiUrl: '/ocr/check_back',
                     useModelComplexity: false,
                     useLanguage: false
+                },
+                id: {
+                    title: '人證辨識',
+                    subtitle: '身分證辨識',
+                    description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
+                    apiUrl: '/ocr/cv_ocr',
+                    imageClass: 'ID',
+                    useModelComplexity: false,
+                    useLanguage: false
+                },
+                driver_license: {
+                    title: '人證辨識',
+                    subtitle: '駕照辨識',
+                    description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
+                    apiUrl: '/ocr/cv_ocr',
+                    imageClass: 'DRIVER_LICENSE',
+                    useModelComplexity: false,
+                    useLanguage: false
+                },
+                health_insurance: {
+                    title: '人證辨識',
+                    subtitle: '健保卡辨識',
+                    description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
+                    apiUrl: '/ocr/cv_ocr',
+                    imageClass: 'HEALTH_INSURANCE',
+                    useModelComplexity: false,
+                    useLanguage: false
+                },
+                withholding: {
+                    title: '財證辨識',
+                    subtitle: '扣繳憑單辨識',
+                    description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
+                    apiUrl: '/ocr/cv_ocr',
+                    imageClass: 'WITHHOLDING_STATEMENT',
+                    useModelComplexity: false,
+                    useLanguage: false
+                },
+                financial_statement: {
+                    title: '財證辨識',
+                    subtitle: '國稅局個人所得清單辨識',
+                    description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
+                    apiUrl: '/ocr/cv_ocr',
+                    imageClass: 'NTB_FINANCIAL_STATEMENT',
+                    useModelComplexity: false,
+                    useLanguage: false
                 }
                 // Add more OCR types here
             };
@@ -94,6 +142,6 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity"  :useLanguage="useLanguage"/>
+        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" />
     </div>
 </template>

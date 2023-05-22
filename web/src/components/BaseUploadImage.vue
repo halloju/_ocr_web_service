@@ -23,12 +23,13 @@ export default {
         // The default category is 'general' with limited file number to be 20
         category: {
             type: Object
+        },
+        imageClass: {
+            type: String
         }
     },
     setup(props, { emit }) {
         const store = useStore();
-
-        
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
             { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
@@ -40,7 +41,7 @@ export default {
             { label: '通用辨識', to: '#' },
             { label: '圖檔上傳', to: '#' }
         ];
-        const image_complexity = ref('medium');
+        const imageComplexity = ref('medium');
         const switchValue = ref(false);
         // upload 參數
         const fileList = ref([]);
@@ -66,13 +67,17 @@ export default {
             responseData['fileName'] = fileList.value[0].name;
             // 打 API
             const formData = new FormData();
-            formData.append('image_complexity', image_complexity.value);
-            formData.append('model_name', selectedLang.value.code);
-            formData.append('template_id', store.state.template_id);
+            if(props.useLanguage) {
+                formData.append('image_complexity', imageComplexity.value);
+                formData.append('model_name', selectedLang.value.code);
+                formData.append('template_id', store.state.template_id);
+            }
+            if (props.imageClass) {
+                formData.append('image_class', props.imageClass);
+            }
             fileList.value.forEach((file) => {
                 formData.append('files', file.raw);
             });
-
             // predict_images
             try {
                 const response = await axios.post(props.apiUrl, formData, {
@@ -113,7 +118,7 @@ export default {
             // 顯示結果
             setTimeout(() => {
                 store.commit('generalImageResponse', generalImageResponseList);
-                emit('uploadConfig', image_complexity, selectedLang.value.code);
+                emit('uploadConfig', imageComplexity, selectedLang.value.code);
                 loading.close();
                 emit('nextStepEmit', 2);
             }, 1000);
@@ -192,15 +197,15 @@ export default {
         // watch
         watch(switchValue, (newVal) => {
             if (newVal) {
-                image_complexity.value = 'high';
+                imageComplexity.value = 'high';
             } else {
-                image_complexity.value = 'medium';
+                imageComplexity.value = 'medium';
             }
         });
 
         return {
             breadcrumbItems,
-            image_complexity,
+            imageComplexity,
             selectedLang,
             languages,
             fileList,
