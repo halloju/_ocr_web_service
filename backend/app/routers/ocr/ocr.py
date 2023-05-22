@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from logger import Logger
 from pydantic.typing import List
 from worker import predict_image
+from route_utils import get_redis_filename
 
 
 router = APIRouter()
@@ -26,9 +27,9 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
     await request.app.state.redis.expire(image_id, 86400)
 
     # Store the file name in Redis using the image ID as the key
-    await request.app.state.redis.set(image_id + '_file_name', file.filename)
+    await request.app.state.redis.set(get_redis_filename(image_id), file.filename)
     # Set an expiration time of 1 day (86400 seconds) for the key
-    await request.app.state.redis.expire(image_id + '_file_name', 86400)
+    await request.app.state.redis.expire(get_redis_filename(image_id), 86400)
 
     # start task prediction
     task_id = predict_image.delay(image_id, action=action, input_params=input_params)

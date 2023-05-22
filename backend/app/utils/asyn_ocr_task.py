@@ -3,12 +3,11 @@
 import json
 import os
 import uuid
-from logger import Logger
 import redis
+import base64
 from route_utils import call_mlaas_function, get_redis_filename, init_log
 
 from urllib import parse
-
 
 
 class AsynPredictTask(object):
@@ -30,7 +29,7 @@ class AsynPredictTask(object):
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
 
-    async def predict(self, image_id, action, input_params):
+    def predict(self, image_id, action, input_params):
         uid, rid, log_main = init_log('asynOcr', self.logger)
         try:
             encoded_data = self.conn.get(image_id)
@@ -73,7 +72,7 @@ class AsynPredictTask(object):
             self.logger.error({**log_main, 'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input+params': input_params}})
             raise e
 
-    async def upload_to_redis(self, image_data):
+    def upload_to_redis(self, image_data):
         image_id = str(uuid.uuid4())
         try:
             # Store image data in Redis with 1-day expiration
@@ -83,7 +82,7 @@ class AsynPredictTask(object):
             self.logger.error({'upload_to_redis': {'error_msg': str(e), 'image_id': image_id}})
             return {'status': 'FAIL'}
 
-    async def get_from_redis(self, task_id):
+    def get_from_redis(self, task_id):
         try:
             task_result = self.conn.get(self.get_redis_taskname(task_id))
             if task_result is None:
@@ -95,20 +94,32 @@ class AsynPredictTask(object):
             self.logger.error({'get_from_redis': {'error_msg': str(e), 'task_id': task_id}})
             return {'status': 'FAIL'}
 
-    async def predict_image(self, image_id, action, input_params):
+    def predict_image(self, image_id, action, input_params):
         try:
             response = self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
             status = 'SUCCESS' if status_code == '0000' else 'FAIL'
             # Get the file name from Redis using the image ID as the key
-            file_name = self.conn.get(get_redis_filename(image_id)).decode("utf-8")
+            file_name = self.conn.get(get_redis_filename(image_id))
+            if status_code == '0000':
+                image_cv_id = response['outputs']['image_cv_id']
+                predict_class = response['outputs']['predict_class']
+                return {'status': status, 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
         except Exception as e:
             self.logger.error({'predict_image': {'error_msg': str(e), 'image_id': image_id, 'action': action}})
+        return {'status': 'FAIL', 'err_msg': str(response['outputs']['status_msg']), 'image_cv_id': ''}
 
-        if status_code == '0000':
-            image_cv_id = response['outputs']['image_cv_id']
-            predict_class = response['outputs']['predict_class']
-            return {'status': status, 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
-        else:
-            return {'status': 'FAIL', 'err_msg': str(response['outputs']['status_msg']), 'image_cv_id': ''}
+    def process_image(self, request, file, action: str, input_params: dict):
+        image_id = str(uuid.uuid4())
+        # Read and encode the file data as base64
+        image_data = file.file.read()
+        encoded_data = base64.b64encode(image_data).decode("utf-8")
+
+        # Store the encoded image data in Redis using the image ID as the key
+        self.conn.set(image_id, encoded_data, ex=86400)
+        # Store the file name in Redis using the image ID as the key
+        self.conn.set(get_redis_filename(image_id), file.filename, ex=86400)
+        # start task prediction
+        upload_result = self.predict_image(image_id, action=action, input_params=input_params)
+        return {'task_id': str(upload_result["image_cv_id"]), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}
 
