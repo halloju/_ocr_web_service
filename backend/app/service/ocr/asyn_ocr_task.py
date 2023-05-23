@@ -66,43 +66,22 @@ class AsynPredictTask(object):
                 timeout=60
             )
 
-            self.logger.debug({**log_main, 'predict': {'image_id': image_id, 'image_status': list(data_pred.keys())}})
+            self.logger.debug({**log_main, 'predict': {'image_id': image_id, 'response_index ': list(data_pred.keys())}})
             # Return the prediction result
             return data_pred
         except Exception as e:
             self.logger.error({**log_main, 'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
             raise e
 
-    def upload_to_redis(self, image_data):
-        image_id = str(uuid.uuid4())
-        try:
-            # Store image data in Redis with 1-day expiration
-            self.conn.set(image_id, image_data, ex=86400)
-            return {'status': 'SUCCESS', 'image_id': image_id}
-        except Exception as e:
-            self.logger.error({'upload_to_redis': {'error_msg': str(e), 'image_id': image_id}})
-            return {'status': 'FAIL'}
-
-    def get_from_redis(self, task_id):
-        try:
-            task_result = self.conn.get(self.get_redis_taskname(task_id))
-            if task_result is None:
-                self.logger.error({'get_from_redis': f'task_result of id {task_id} is None'})
-                return {'status': 'ERROR'}
-            task_result_dict = json.loads(task_result.decode('utf-8'))
-            return task_result_dict["result"]
-        except Exception as e:
-            self.logger.error({'get_from_redis': {'error_msg': str(e), 'task_id': task_id}})
-            return {'status': 'FAIL'}
 
     def predict_image(self, image_id, action, input_params):
         try:
             response = self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
-            status = 'SUCCESS' if status_code == '0000' else 'FAIL'
+            status = 'PROCESSING' if status_code == '0000' else 'FAIL'
             # Get the file name from Redis using the image ID as the key
             file_name = self.conn.get(get_redis_filename(image_id))
-            if status_code == '0000':
+            if status == 'PROCESSING':
                 image_cv_id = response['outputs']['image_cv_id']
                 predict_class = response['outputs']['predict_class']
                 return {'status': status, 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
@@ -123,5 +102,5 @@ class AsynPredictTask(object):
         # start task prediction
         upload_result = self.predict_image(image_id, action=action, input_params=input_params)
         task_id = str(upload_result["image_cv_id"])
-        self.conn.set(task_id, json.dumps({'task_id': task_id, 'status': 'PENDING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
-        return {'task_id': task_id, 'status': 'PROCESSING', 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}
+        self.conn.set(task_id, json.dumps({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
+        return {'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}

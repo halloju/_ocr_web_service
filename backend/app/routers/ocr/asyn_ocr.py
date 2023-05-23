@@ -1,7 +1,7 @@
 from fastapi import APIRouter, File, Form, Request, UploadFile
 from pydantic.typing import List
 from logger import Logger
-from app.utils.asyn_ocr_task import AsynPredictTask
+from app.service.ocr.asyn_ocr_task import AsynPredictTask
 from fastapi.responses import JSONResponse
 
 

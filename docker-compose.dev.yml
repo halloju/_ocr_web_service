@@ -106,6 +106,8 @@ services:
       command: python project_consume.py cv_controller
       volumes:
         - ./backend:/code
+      env_file:
+        - 'variable.env'
       depends_on:
         - zookeeper
         - broker

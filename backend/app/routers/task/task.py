@@ -1,8 +1,9 @@
+import json
+
 from celery.result import AsyncResult
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from logger import Logger
-import json
 
 router = APIRouter()
 logger = Logger(__name__)
@@ -18,7 +19,7 @@ async def get_images(image_id: str, request: Request):
 async def result(task_id: str, request: Request):
     redis = request.app.state.redis
     result = await redis.get(task_id)
-    if(result):
+    if (result):
         result = json.loads(result)
         return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': result['result'], 'file_name': result['file_name']})
     task = AsyncResult(task_id)
@@ -38,7 +39,7 @@ async def result(task_id: str, request: Request):
 async def status(task_id: str, request: Request):
     redis = request.app.state.redis
     result = await redis.get(task_id)
-    if(result):
+    if (result):
         result = json.loads(result)
         return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': '', 'file_name': ''})
     task = AsyncResult(task_id)

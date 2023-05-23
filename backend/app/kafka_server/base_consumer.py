@@ -2,8 +2,10 @@
 Consumer Class
 """
 import json
+
 from confluent_kafka import Consumer
 from logger import Logger
+
 
 class BaseConsumer(object):
     """
@@ -13,7 +15,7 @@ class BaseConsumer(object):
     def __init__(self, kafka_configs: dict, topics: list):
         self.dequeue_status = True
         self.logger_tool = Logger(__name__)
-        
+
         self.kafka_config = kafka_configs
         self.logger_tool.info(kafka_configs)
         self.consumer = Consumer(self.kafka_config)
@@ -49,9 +51,3 @@ class BaseConsumer(object):
             # raise KafkaToolsException
         finally:
             self.consumer.close()
-
-
-
-if __name__ == "__main__":
-    consumer = BaseConsumer()
-    consumer.dequeue()
