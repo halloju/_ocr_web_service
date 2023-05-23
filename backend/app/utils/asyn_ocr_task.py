@@ -50,9 +50,9 @@ class AsynPredictTask(object):
                     "clearness_threshold": 2,
                     "callback": [
                         {
-                            "callback_url": f"{os.environ.get(f'GP_MLAAS_URL')}\callback",
-                            "callback_body": "{\"business_unit\": \"C170\", \"inputs\": {\"id\": \"${image_cv_id}\", \"status\": \"${recognition_status}\", \"results\": \"${ocr_results}\"}}",
-                            "callback_headers": json.dumps({"x-client-id": os.environ.get(f'GP_MLAAS_URL')})
+                            "callback_url": f"{os.environ.get(f'GP_MLAAS_URL')}\callback/controller_callback/v1",
+                            "callback_body": "{\"business_unit\": \"B31\", \"request_id\": \"test\", \"inputs\": {\"ocr_results\": \"${ocr_results}\"}}",
+                            "callback_headers": json.dumps({"x-client-id": os.environ.get(f'GP_MLAAS_XClient')})
                         }
                     ],
                     **input_params  # "image_class": "PASSBOOK_COVER"

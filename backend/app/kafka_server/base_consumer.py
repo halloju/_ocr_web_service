@@ -44,16 +44,6 @@ class BaseConsumer(object):
                         msg_decode = json.loads(msg.value().decode("utf-8"))
                         consume_status = self.consumer_process(msg_decode)
                         self.logger_tool.info(msg_decode)
-                        # self.logger_tool.info({"consumer": {
-                        #     "topic": msg.topic(),
-                        #     "partition": msg.partition(),
-                        #     "consume_status": consume_status,
-                        #     "timestamp": {
-                        #         "type": msg.timestamp()[0],
-                        #         "value": msg.timestamp()[1]
-                        #     }
-                        # }})
-
         except Exception as e:
             self.logger_tool.error({"consumer": {"error_info": str(e)}})
             # raise KafkaToolsException
