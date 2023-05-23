@@ -31,21 +31,20 @@ class BaseConsumer(object):
         try:
             while self.dequeue_status:
                 msg = self.consumer.poll(timeout=timeout)
-                if msg is not None:
-                    # if message occured error
-                    if msg.error():
-                        self.logger_tool.error(msg.error().str())
-                        self.logger_tool.error({
-                            'consumer': {
-                                'error_code': msg.error().code(),
-                                'error_info': str(msg.error().str())
-                            }
-                        })
-                        continue
-                    else:
-                        msg_decode = json.loads(msg.value().decode("utf-8"))
-                        consume_status = self.consumer_process(msg_decode)
-                        self.logger_tool.info(msg_decode)
+                if not msg: continue
+                if msg.error():
+                    self.logger_tool.error(msg.error().str())
+                    self.logger_tool.error({
+                        'consumer': {
+                            'error_code': msg.error().code(),
+                            'error_info': str(msg.error().str())
+                        }
+                    })
+                    continue
+                else:
+                    msg_decode = json.loads(msg.value().decode("utf-8"))
+                    consume_status = self.consumer_process(msg_decode)
+                    self.logger_tool.info(msg_decode)
         except Exception as e:
             self.logger_tool.error({"consumer": {"error_info": str(e)}})
             # raise KafkaToolsException
