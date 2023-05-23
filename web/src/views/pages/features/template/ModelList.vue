@@ -202,20 +202,20 @@ export default {
             router.push({ name: 'SelfDefine' });
         }
 
-        async function editTemplate() {
+        async function editTemplate(template_id) {
             // clear local storage
             sessionStorage.clear();
             // get template detail
-            const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
+            const response = await axios.get('/template_crud/get_template_detail/' + template_id);
             //template.value = response['data'];
 
             // set local storage
-            sessionStorage.imageSource = 'data:image/png;base64,' + response['data'].image;
+            sessionStorage.imageSource = 'data:image/png;base64,' + response['data'].image
             for (let i = 0; i < rectangleTypes.value.length; i++) {
                 let data = parseTemplateDetail(response['data'], rectangleTypes.value[i].code);
                 sessionStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
             }
-            sessionStorage.setItem('template_id', template_id.value);
+            sessionStorage.setItem('template_id', template_id);
             sessionStorage.setItem('templateName', response['data'].template_name);
             store.commit('createNewUpdate', false);
             router.push({ name: 'SelfDefine' });
@@ -348,7 +348,7 @@ export default {
                             <el-button v-show="scope.row.editable" size="" type="success" @click="handleConfirm(scope.row)">確認</el-button>
                             <el-button class="mr-1" size="" type="primary" @click="templateOCR(scope.row.template_id)">辨識</el-button>
                             <el-button size="" type="success" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
-                            <el-button size="" type="info" @click="editTemplate">編輯</el-button>
+                            <el-button size="" type="info" @click="editTemplate(scope.row.template_id)">編輯</el-button>
                             <el-button size="" type="danger" plain @click="handleDelete(scope.row.template_id)">刪除</el-button>
                             <el-button size="" type="info" plain @click="downloadTemplate">下載</el-button>
                             
