@@ -62,6 +62,13 @@ def get_user_id() -> str:
 def get_request_id() -> str: # celery with task_id
     return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
 
+
+def get_redis_filename(image_id: str) -> str:
+    return f'celery-upload-img-meta-{image_id}'
+
+def get_redis_taskname(task_id: str) -> str:
+    return f'celery-task-meta-{task_id}'
+
 SECRET_KEY = "your-secret-key"  # Replace with your actual secret key
 ALGORITHM = "HS256"  # Or another algorithm like "RS256"
 

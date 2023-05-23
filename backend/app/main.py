@@ -5,7 +5,7 @@ from app.exceptions import (CustomException, MlaasRequestError,
                             exception_handler, mlaas_request_handler)
 from app.routers import docs
 from app.routers.image_tools import pdf_transform
-from app.routers.ocr import ocr
+from app.routers.ocr import ocr, asyn_ocr
 from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from app.routers import login
@@ -97,7 +97,17 @@ def get_application():
         prefix="/ocr",
         tags=["ocr"],
         dependencies=[Depends(verify_token)],
+        responses=http_responses
     )
+
+    app.include_router(
+        asyn_ocr.router,
+        prefix="/ocr",
+        tags=["ocr"],
+        dependencies=[Depends(verify_token)],
+        responses=http_responses
+    )
+
     app.include_router(
         task.router,
         prefix="/task",
@@ -109,6 +119,7 @@ def get_application():
         prefix="/image_tools",
         tags=["image_tools"],
         dependencies=[Depends(verify_token)],
+        responses=http_responses
     )
     app.include_router(
         login.router,

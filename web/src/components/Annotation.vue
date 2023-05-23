@@ -399,7 +399,7 @@ export default {
                             @mouseenter="handleMouseEnter(shape.name)"
                             @mouseleave="handleMouseLeave"
                         />
-                        <v-text :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                        <v-text v-if="!editMode" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                     </template>
                     <v-transformer ref="transformer" :rotateEnabled="false"  :keepRatio="false"  v-if="editMode" />
                 </v-layer>
