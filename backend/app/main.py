@@ -97,12 +97,15 @@ def get_application():
         prefix="/ocr",
         tags=["ocr"],
         dependencies=[Depends(verify_token)],
+        responses=http_responses
     )
 
     app.include_router(
         asyn_ocr.router,
         prefix="/ocr",
         tags=["ocr"],
+        dependencies=[Depends(verify_token)],
+        responses=http_responses
     )
 
     app.include_router(
@@ -116,6 +119,7 @@ def get_application():
         prefix="/image_tools",
         tags=["image_tools"],
         dependencies=[Depends(verify_token)],
+        responses=http_responses
     )
     app.include_router(
         login.router,
