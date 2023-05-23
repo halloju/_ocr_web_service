@@ -87,7 +87,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Call the backend route to check if the user is authenticated
     try {
-        const response = await axios.get('http://localhost/backend/auth/is_authenticated')
+        const response = await axios.get('/auth/is_authenticated')
         const isAuthenticated = response.data.isAuthenticated;
 
         if (requiresAuth && !isAuthenticated) {
