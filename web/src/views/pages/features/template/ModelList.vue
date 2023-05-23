@@ -128,7 +128,6 @@ export default {
         }
 
         async function handleLook(templateid, userType) {
-            console.log('handleLook');
             template_id.value = templateid;
             try {
                 const response = await axios.get('/template_crud/get_template_detail/' + template_id.value);
@@ -138,7 +137,6 @@ export default {
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
                 dialogVisible.value = true;
                 dialogWidth.value = '850px';
-                console.log('dialogVisible');
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
                     // status.value = 'network';
