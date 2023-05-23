@@ -14,7 +14,7 @@ from route_utils import call_mlaas_function, get_redis_filename, init_log
 class AsynPredictTask(object):
     def __init__(self, logger):
         super().__init__()
-        redis_url = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
+        redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
         parse.uses_netloc.append('redis')
         url = parse.urlparse(redis_url)
         self.conn = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)
