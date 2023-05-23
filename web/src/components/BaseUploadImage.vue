@@ -1,6 +1,6 @@
 <script>
 import { ref, computed, watch, onMounted } from 'vue';
-import axios from 'axios';
+import { initializeClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
 import { useStore } from 'vuex';
@@ -30,6 +30,8 @@ export default {
     },
     setup(props, { emit }) {
         const store = useStore();
+        const apiClient = ref(null);
+
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
             { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
@@ -52,7 +54,7 @@ export default {
         const imageSource = ref('');
 
         const isUploadDisabled = computed(() => {
-            if ((fileList.value.length === 0)) {
+            if (fileList.value.length === 0) {
                 return true;
             } else {
                 return false;
@@ -80,7 +82,7 @@ export default {
             });
             // predict_images
             try {
-                const response = await axios.post(props.apiUrl, formData, {
+                const response = await apiClient.value.post(props.apiUrl, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -88,12 +90,11 @@ export default {
                 });
                 generalImageResponseList.push(...response.data);
             } catch (error) {
-                var msg = ''
+                var msg = '';
                 if (error.message && error.message.includes('413')) {
-                    console.log('The file you tried to upload is too large.')
-                    msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)'
-                }
-                else if (error.code === 'ERR_NETWORK') {
+                    console.log('The file you tried to upload is too large.');
+                    msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)';
+                } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
                 }
                 //error alert for the axios request
@@ -201,6 +202,11 @@ export default {
             } else {
                 imageComplexity.value = 'medium';
             }
+        });
+
+        // on mounted create apiClient with access token
+        onMounted(async () => {
+            apiClient.value = await initializeClient();
         });
 
         return {

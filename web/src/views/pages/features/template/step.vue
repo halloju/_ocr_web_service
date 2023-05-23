@@ -1,11 +1,11 @@
 <script>
 import Annotation from '@/components/Annotation.vue';
-import { onBeforeRouteLeave } from 'vue-router'
-import axios from 'axios';
+import { onBeforeRouteLeave } from 'vue-router';
 import { mapState } from 'vuex';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
+import { initializeClient } from '@/service/auth.js';
 
 export default {
     components: {
@@ -15,28 +15,6 @@ export default {
     name: 'SelfDefine',
     data() {
         return {
-            nestedRouteItems: [
-                {
-                    label: '模板圖檔上傳',
-                    to: '/features/general/self-define/step/1'
-                },
-                {
-                    label: '文字位置標註',
-                    to: '/features/general/self-define/step/2'
-                },
-                {
-                    label: '方塊位置標註',
-                    to: '/features/general/self-define/step/3'
-                },
-                {
-                    label: '遮罩位置標註',
-                    to: '/features/general/self-define/step/4'
-                },
-                {
-                    label: '確認',
-                    to: '/features/general/self-define/step/5'
-                }
-            ],
             isFinal: false,
             boxes: [],
             boxNames: ['text', 'box', 'mask', 'all'],
@@ -57,7 +35,8 @@ export default {
             },
             currentStep: 0,
             createNew: this.$store.state.createNew,
-            template_id: sessionStorage.getItem('template_id') || ''
+            template_id: sessionStorage.getItem('template_id') || '',
+            apiClient: null
         };
     },
     created() {
@@ -66,52 +45,52 @@ export default {
     },
     mounted() {
         this.isFinalStep();
+        this.initializeClient();
     },
     setup() {
         onBeforeRouteLeave((to, from) => {
-            if(to.path != '/features/general/model-list'){
-                const answer = window.confirm(
-                    '回到上一步會清空所有編輯紀錄，是否確定刪除?'
-                )
-                if (!answer){
+            if (to.path != '/features/general/model-list') {
+                const answer = window.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?');
+                if (!answer) {
                     sessionStorage.clear();
                     return false;
-                } 
+                }
             }
-        })
+        });
         const { rectangleTypes } = useAnnotator();
         return {
             rectangleTypes
         };
     },
     methods: {
+        async initializeClient() {
+            this.apiClient = await initializeClient();
+        },
         next() {
             this.isEditing = false;
             var warning_message;
-            if(this.currentStep != 0){
-                if(this.rectangleType != 'mask' && this.rectangleType != undefined){
+            if (this.currentStep != 0) {
+                if (this.rectangleType != 'mask' && this.rectangleType != undefined) {
                     this.getRecsFromLocalStorage().every((box) => {
-                        if(box.rectangleType != 'mask'){
-                            if(box.annotation.title == undefined || box.annotation.title == ''){
+                        if (box.rectangleType != 'mask') {
+                            if (box.annotation.title == undefined || box.annotation.title == '') {
                                 this.isEditing = true;
                                 return false;
                             }
                         }
-                    return true;
-                    })
-                };
+                        return true;
+                    });
+                }
                 warning_message = '請先完成編輯';
-            }else{
-                
-                if(sessionStorage.getItem('imageSource')){
+            } else {
+                if (sessionStorage.getItem('imageSource')) {
                     this.imageSrc = sessionStorage.getItem('imageSource');
-                }else{
+                } else {
                     this.isEditing = true;
                 }
                 warning_message = '請先上傳圖片';
             }
-            
-            
+
             if (this.isEditing) {
                 this.$message({
                     message: warning_message,
@@ -125,20 +104,16 @@ export default {
             this.isEditing = false;
         },
         previous() {
-            if(this.currentStep == 1){
-                const answer = window.confirm(
-                '回到上一步會清空所有編輯紀錄，是否確定刪除?'
-                )
-                if (answer){
+            if (this.currentStep == 1) {
+                const answer = window.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?');
+                if (answer) {
                     sessionStorage.clear();
                     this.currentStep--;
-                } else{
+                } else {
                     ElMessage.info('已取消');
                     return;
                 }
-                
-            }
-            else if (this.currentStep > 1) {
+            } else if (this.currentStep > 1) {
                 this.currentStep--;
             }
         },
@@ -206,7 +181,7 @@ export default {
                 };
                 action = 'update_template';
             }
-            axios
+            this.apiClient
                 .post(`/template_crud/${action}`, body)
                 .then((res) => {
                     if (res.status === 200) {
@@ -288,8 +263,8 @@ export default {
             return this.currentStep < 4;
         },
         tooltip_text() {
-            if(this.currentStep == 0) return "請上傳圖片後點我";
-            else return "請框好位置後點我";
+            if (this.currentStep == 0) return '請上傳圖片後點我';
+            else return '請框好位置後點我';
         }
     },
     watch: {
@@ -362,17 +337,7 @@ export default {
     <div v-if="currentStep > 0" class="grid p-fluid">
         <div class="col-12">
             <div class="card">
-                <Annotation
-                    :key="currentStep"
-                    containerId="my-pic-annotation-output"
-                    :imageSrc="imageSrc"
-                    :editMode="editMode"
-                    dataCallback=""
-                    initialDataId=""
-                    image_cv_id=""
-                    :rectangleType="rectangleType"
-                    :localStorageKey="localStorageKey"
-                />
+                <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="editMode" dataCallback="" initialDataId="" image_cv_id="" :rectangleType="rectangleType" :localStorageKey="localStorageKey" />
             </div>
         </div>
     </div>
@@ -421,5 +386,4 @@ export default {
 .el-button[disabled]:before {
     content: attr(title);
 }
-
 </style>

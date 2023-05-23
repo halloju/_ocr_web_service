@@ -1,4 +1,6 @@
 <script>
+import axios from 'axios';
+
 export default {
     components: {},
     name: 'Login',
@@ -11,7 +13,24 @@ export default {
     },
     methods: {
         login() {
-            this.$router.push({ path: '/home' });
+            axios
+                .get('/auth/login')
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status === 'success') {
+                        this.$router.push({ path: '/home' });
+                    } else {
+                        this.$toast.add({
+                            severity: 'error',
+                            summary: '登入失敗',
+                            detail: res.data.message,
+                            life: 3000
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         }
     }
 };
