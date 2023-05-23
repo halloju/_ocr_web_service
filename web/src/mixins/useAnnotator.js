@@ -44,13 +44,13 @@ export default function useAnnotator() {
         }
     };
 
-    const createShape = (fill, element) => {
+    const createShape = (fill, element, index) => {
         const myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
         const { label_x, label_y, label_width, label_height } = generatePointsList(element.points);
 
         return {
             type: 'rect',
-            name: 'shape_' + new Date().valueOf(),
+            name: 'shape_' + index,
             fill: fill,
             opacity: 0.5,
             stroke: '#0000ff',
@@ -76,7 +76,7 @@ export default function useAnnotator() {
     const generateShapeList = (rectangleType, boxes) => {
         // Create shapes(list) from the data according to the element type
         let fill = getFillColorByRectangleType(rectangleType);
-        const shapeList = boxes.map((element) => createShape(fill, element));
+        const shapeList = boxes.map((element, index) => createShape(fill, element, index));
         return shapeList;
     };
 
