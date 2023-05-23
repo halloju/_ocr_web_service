@@ -82,13 +82,6 @@ export default {
                 type: 'input',
                 width: '150px'
             },
-            // {
-            //     prop: 'creation_time',
-            //     label: '創建日期',
-            //     editable: false,
-            //     type: 'date',
-            //     width: '200px'
-            // },
             {
                 prop: 'expiration_time',
                 label: '到期日期',
