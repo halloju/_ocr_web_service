@@ -36,5 +36,7 @@ if __name__ == "__main__":
         'group.id': "if_gp_ocr_gp_callback_01",
         'auto.offset.reset': 'earliest',
         'max.poll.interval.ms': 3600000,
+    	'security.protocol': 'SASL_PLAINTEXT',
+        'sasl.mechanism': 'SCRAM-SHA-512'
     }
     run_consumer(project_name, redis_server, kafka_config)
