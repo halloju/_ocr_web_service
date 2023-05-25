@@ -14,8 +14,8 @@ export default {
         imageSrc: String,
         dataCallback: String,
         localStorageKey: String,
-        width: Number,
-        height: Number,
+        width: String,
+        height: String,
         editMode: Boolean,
         initialData: Object,
         image_cv_id: String,
@@ -114,6 +114,9 @@ export default {
                 // set image only when it is loaded
                 this.image = image;
                 // adapt initial scale to fit canvas
+                console.log(this.stageSize.width)
+                console.log(image.width)
+                console.log(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height))
                 this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
                 // loading finished
                 this.isLoading = false;
