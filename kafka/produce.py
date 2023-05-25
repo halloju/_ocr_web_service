@@ -55,6 +55,6 @@ for i in range(10):
     }
     m = json.dumps(data)
     p.poll(1)
-    p.produce('if_gp_ocr.gp_callback', m.encode('utf-8'),callback=receipt)
+    p.produce('if_gp_ocr.cv_controller_callback', m.encode('utf-8'),callback=receipt)
     p.flush()
     time.sleep(2)
