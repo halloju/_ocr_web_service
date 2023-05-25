@@ -8,7 +8,7 @@ import uuid
 from urllib import parse
 
 import redis
-from route_utils import call_mlaas_function, get_redis_filename, init_log
+from route_utils import call_mlaas_function, get_redis_filename, init_log, get_redis_taskname
 
 
 class AsynPredictTask(object):
@@ -51,7 +51,7 @@ class AsynPredictTask(object):
                     "callback": [
                         {
                             "callback_url": f"{os.environ.get(f'GP_MLAAS_URL')}\callback/controller_callback/v1",
-                            "callback_body": "{\"business_unit\": \"B31\", \"request_id\": \"test\", \"inputs\": {\"ocr_results\": \"${ocr_results}\"}}",
+                            "callback_body": "{\"business_unit\": \"B31\", \"request_id\": \"test\", \"inputs\": {\"image_cv_id\": \"${image_cv_id}\", \"recognition_status\": \"${recognition_status}\", \"ocr_results\": \"${ocr_results}\"}}",
                             "callback_headers": json.dumps({"x-client-id": os.environ.get(f'GP_MLAAS_XClient')})
                         }
                     ],
@@ -72,7 +72,6 @@ class AsynPredictTask(object):
         except Exception as e:
             self.logger.error({**log_main, 'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
             raise e
-
 
     def predict_image(self, image_id, action, input_params):
         try:
@@ -101,6 +100,6 @@ class AsynPredictTask(object):
         self.conn.set(get_redis_filename(image_id), file.filename, ex=86400)
         # start task prediction
         upload_result = self.predict_image(image_id, action=action, input_params=input_params)
-        task_id = str(upload_result["image_cv_id"])
-        self.conn.set(task_id, json.dumps({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
-        return {'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{upload_result["image_cv_id"]}', 'image_id': image_id}
+        task_id = str(upload_result["image_cv_id"]).replace('/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
+        self.conn.set(get_redis_taskname(task_id), json.dumps({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
+        return {'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id}
