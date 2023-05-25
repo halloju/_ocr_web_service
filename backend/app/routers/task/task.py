@@ -4,6 +4,7 @@ from celery.result import AsyncResult
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from logger import Logger
+from route_utils import get_redis_taskname
 
 router = APIRouter()
 logger = Logger(__name__)
@@ -18,12 +19,12 @@ async def get_images(image_id: str, request: Request):
 @router.get('/result/{task_id}')
 async def result(task_id: str, request: Request):
     redis = request.app.state.redis
-    result = await redis.get(task_id)
+    result = await redis.get(get_redis_taskname(task_id))
     if (result):
         result = json.loads(result)
-        return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': result['result'], 'file_name': result['file_name']})
+        if ('file_name' in result and 'result' in result): 
+            return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': result['result'], 'file_name': result['file_name']})
     task = AsyncResult(task_id)
-
     # Task Not Ready
     if not task.ready():
         return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
@@ -38,9 +39,10 @@ async def result(task_id: str, request: Request):
 @router.get('/status/{task_id}')
 async def status(task_id: str, request: Request):
     redis = request.app.state.redis
-    result = await redis.get(task_id)
+    result = await redis.get(get_redis_taskname(task_id))
     if (result):
         result = json.loads(result)
-        return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': '', 'file_name': ''})
+        if ('status' not in result):
+            return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': '', 'file_name': ''})
     task = AsyncResult(task_id)
     return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'file_name': ''})
