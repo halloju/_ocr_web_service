@@ -6,6 +6,7 @@ import sys
 
 def run_consumer(project_name: str, redis_server, kafka_config):
     if project_name == 'cv_controller':
+        kafka_config['group.id'] = "if_gp_ocr_cv_controller_callback_02",
         def msg_func(ocr_results) -> list:
             new_results = []
             for ocr_result in ocr_results:
@@ -16,7 +17,7 @@ def run_consumer(project_name: str, redis_server, kafka_config):
                 new_results.append(new_result)
             return new_results
         try:
-            consumer = ResultConsumer(kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func)
+            consumer = ResultConsumer(kafka_config, ['if_gp_ocr.cv_controller_callback'], redis_server, msg_func)
             consumer.dequeue()
         except Exception as e:
             print(f'consumer failed to start, error: {e}')
@@ -33,7 +34,6 @@ if __name__ == "__main__":
         'sasl.username': os.environ.get('KAFKA_ID'),
         'sasl.password': os.environ.get('KAFKA_PASSWORD'),
         'bootstrap.servers': os.environ.get('KAFKA_HOST'),
-        'group.id': "if_gp_ocr_gp_callback_01",
         'auto.offset.reset': 'earliest',
         'max.poll.interval.ms': 3600000,
     	'security.protocol': 'SASL_PLAINTEXT',

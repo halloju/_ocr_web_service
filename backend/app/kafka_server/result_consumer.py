@@ -3,7 +3,7 @@ OCR result Consumer Class
 """
 import json
 from app.kafka_server.base_consumer import BaseConsumer
-from route_utils import get_redis_filename, get_redis_taskname
+from route_utils import get_redis_taskname
 
 class ResultConsumer(BaseConsumer):
     """
@@ -22,7 +22,7 @@ class ResultConsumer(BaseConsumer):
             self.logger_tool.warning({'error_msg': 'ocr_results not exist in msg'})
             return False
         try:
-            full_key = msg['ocr_results'][0]['image_cv_id']
+            full_key = get_redis_taskname(msg['ocr_results'][0]['image_cv_id'].replace('/', '-'))
             old_data = self.redis_server.get(full_key)
             if (not old_data):
                 self.logger_tool.warning({'request_id': full_key, 'error_msg': 'not exist in redis'})
@@ -39,8 +39,3 @@ class ResultConsumer(BaseConsumer):
             return True
         except Exception as e:
             self.logger_tool.error({'request_id': msg['request_id'], 'error_msg': str(e)})
-
-
-if __name__ == "__main__":
-    consumer = BaseConsumer()
-    consumer.dequeue()
