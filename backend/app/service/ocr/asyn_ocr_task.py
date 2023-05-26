@@ -64,8 +64,7 @@ class AsynPredictTask(object):
                 input_data,
                 action=self.endpoints[action],
                 project=self.project_names[action],
-                logger=self.logger,
-                timeout=60
+                logger=self.logger
             )
 
             self.logger.debug({**log_main, 'predict': {'image_id': image_id, 'response_index ': list(data_pred.keys())}})
@@ -76,19 +75,22 @@ class AsynPredictTask(object):
             raise e
 
     def predict_image(self, image_id, action, input_params):
+        file_name = self.conn.get(get_redis_filename(image_id))
         try:
             response = self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
-            status = 'PROCESSING' if status_code == '0000' else 'FAIL'
             # Get the file name from Redis using the image ID as the key
-            file_name = self.conn.get(get_redis_filename(image_id))
-            if status == 'PROCESSING':
-                image_cv_id = response['outputs']['image_cv_id']
-                predict_class = response['outputs']['predict_class']
-                return {'status': status, 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
+            image_cv_id = response['outputs']['image_cv_id']
+            predict_class = response['outputs']['predict_class']
+            if status_code == '0000':
+                return {'status': 'PROCESSING', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
+            elif status_code == '5421':  # class check error
+                return {'status': 'FAIL', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
+            else:
+                self.logger.warning({'predict_image': {'image_id': image_id, 'response': response}})
         except Exception as e:
             self.logger.error({'predict_image': {'error_msg': str(e), 'image_id': image_id, 'action': action}})
-        return {'status': 'FAIL', 'err_msg': str(response['outputs']['status_msg']), 'image_cv_id': ''}
+        return {'status': 'FAIL', 'err_msg': str(response['outputs']['status_msg']), 'image_cv_id': '', 'file_name': file_name}
 
     def process_image(self, request, file, action: str, input_params: dict):
         image_id = str(uuid.uuid4())
