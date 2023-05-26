@@ -49,7 +49,8 @@ export default {
                 linkTitle: '',
                 link: ''
             },
-            isShowText: this.setShowText
+            isShowText: this.setShowText,
+            createStartPoint: { x: 80, y: 50 }
         };
     },
     watch: {
@@ -114,9 +115,6 @@ export default {
                 // set image only when it is loaded
                 this.image = image;
                 // adapt initial scale to fit canvas
-                console.log(this.stageSize.width)
-                console.log(image.width)
-                console.log(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height))
                 this.changeScale(-1 + Math.min(this.stageSize.width / image.width, this.stageSize.height / image.height));
                 // loading finished
                 this.isLoading = false;
@@ -149,6 +147,13 @@ export default {
                     this.selectedShapeName = '';
                     this.updateTransformer();
                     return;
+                } else {
+                    const stage = e.target.getStage();
+                    const pos = stage.position();
+                    this.createStartPoint = {
+                        x: - pos.x + e.evt.offsetX,
+                        y: - pos.y + e.evt.offsetY
+                    };
                 }
                 // clicked on transformer - do nothing
                 const clickedOnTransformer = e.target.getParent().className === 'Transformer';
@@ -195,8 +200,8 @@ export default {
             if (this.isAddingPolygon) return;
             this.shapes.push({
                 ...this.getBaseShape('rect', rectangleType),
-                x: 80 / this.scale,
-                y: 50 / this.scale,
+                x: this.createStartPoint.x,
+                y: this.createStartPoint.y,
                 width: 200 / this.scale,
                 height: 200 / this.scale
             });
@@ -334,7 +339,6 @@ export default {
         },
         toggleShowTexts() {
             // toggle
-            console.log(this.isShowText)
             this.isShowText = !this.isShowText;
         },
         // callback on update
@@ -380,7 +384,7 @@ export default {
 </script>
 <template>
     <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
-        <div class="pa-canvas">
+        <div class="pa-canvas" :ref="'main'">
             <div class="pa-controls">
                 <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
                 <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
