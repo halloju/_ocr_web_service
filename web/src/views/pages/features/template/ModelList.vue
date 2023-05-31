@@ -208,7 +208,7 @@ export default {
             // clear local storage
             sessionStorage.clear();
             // get template detail
-            const response = await axios.get('/template_crud/get_template_detail/' + template_id);
+            const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id);
             //template.value = response['data'];
 
             // set local storage

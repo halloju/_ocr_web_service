@@ -106,6 +106,15 @@ export default {
         };
     },
     methods: {
+        getMiddlePosition() {
+            const image = this.$refs.stage.getNode();
+            const width = image.width();
+            const height = image.height();
+            const scaleX = image.scaleX();
+            const scaleY = image.scaleY();
+            const position = {x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y()};
+            return position;
+        },
         loadImage() {
             // reset scale to 1
             this.scale = 1;
@@ -198,10 +207,12 @@ export default {
         },
         addRectangle(rectangleType) {
             if (this.isAddingPolygon) return;
+            const pos = this.getMiddlePosition();
+            console.log('add rectangle', pos);
             this.shapes.push({
                 ...this.getBaseShape('rect', rectangleType),
-                x: this.createStartPoint.x,
-                y: this.createStartPoint.y,
+                x: pos.x,
+                y: pos.y,
                 width: 200 / this.scale,
                 height: 200 / this.scale
             });
