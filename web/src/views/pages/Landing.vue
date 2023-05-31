@@ -2,7 +2,6 @@
 export default {
     name: 'landing',
     data() {
-        console.log(import.meta.env)
         return {
             logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
             version: import.meta.env.VITE_APP_VERSION
