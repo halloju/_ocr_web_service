@@ -22,20 +22,20 @@ class ResultConsumer(BaseConsumer):
             self.logger_tool.warning({'error_msg': 'ocr_results not exist in msg'})
             return False
         try:
-            full_key = get_redis_taskname(msg['ocr_results'][0]['image_cv_id'].replace('/', '-'))
+            full_key = get_redis_taskname(msg['image_cv_id'].replace('/', '-'))
             old_data = self.redis_server.get(full_key)
             if (not old_data):
                 self.logger_tool.warning({'request_id': full_key, 'error_msg': 'not exist in redis'})
                 return False
+            if msg['recognition_status'] == 'FAIL':
+                old_data['status'] = 'FAIL'
             else:
                 old_data = json.loads(old_data)
-                self.logger_tool.info(msg['ocr_results'])
                 self.logger_tool.info(old_data)
                 old_data['result'] = self.msg_func(msg['ocr_results'])
                 old_data['status'] = 'SUCCESS'
-                self.logger_tool.info({'request_id': full_key, 'msg': 'msg_func'})
-                self.redis_server.set(full_key, json.dumps(old_data))  # replace
-                self.logger_tool.info({'request_id': full_key, 'msg': 'upload to redis'})
+            self.redis_server.set(full_key, json.dumps(old_data))  # replace
+            self.logger_tool.info({'request_id': full_key, 'msg': 'upload to redis'})
             return True
         except Exception as e:
             self.logger_tool.error({'request_id': msg['request_id'], 'error_msg': str(e)})

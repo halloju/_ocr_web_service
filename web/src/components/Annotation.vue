@@ -9,7 +9,23 @@ export default {
         Icon,
         Loader
     },
-    props: ['containerId', 'imageSrc', 'dataCallback', 'localStorageKey', 'width', 'height', 'editMode', 'initialData', 'image_cv_id', 'justShow', 'rectangleType', 'isVertical'],
+    props: {
+        containerId: String,
+        imageSrc: String,
+        dataCallback: String,
+        localStorageKey: String,
+        width: String,
+        height: String,
+        editMode: Boolean,
+        initialData: Object,
+        image_cv_id: String,
+        justShow: Boolean,
+        rectangleType: String,
+        isVertical: Boolean,
+        setShowText: {
+            type: Boolean,
+            default: false
+        }},
     data() {
         return {
             image: null,
@@ -32,7 +48,8 @@ export default {
                 text: '',
                 linkTitle: '',
                 link: ''
-            }
+            },
+            isShowText: this.setShowText
         };
     },
     watch: {
@@ -88,6 +105,15 @@ export default {
         };
     },
     methods: {
+        getMiddlePosition() {
+            const image = this.$refs.stage.getNode();
+            const width = image.width();
+            const height = image.height();
+            const scaleX = image.scaleX();
+            const scaleY = image.scaleY();
+            const position = {x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y()};
+            return position;
+        },
         loadImage() {
             // reset scale to 1
             this.scale = 1;
@@ -173,10 +199,12 @@ export default {
         },
         addRectangle(rectangleType) {
             if (this.isAddingPolygon) return;
+            const pos = this.getMiddlePosition();
+            console.log('add rectangle', pos);
             this.shapes.push({
                 ...this.getBaseShape('rect', rectangleType),
-                x: 80 / this.scale,
-                y: 50 / this.scale,
+                x: pos.x,
+                y: pos.y,
                 width: 200 / this.scale,
                 height: 200 / this.scale
             });
@@ -312,6 +340,10 @@ export default {
             // TODO: fade animation
             this.isShapesVisible = !this.isShapesVisible;
         },
+        toggleShowTexts() {
+            // toggle
+            this.isShowText = !this.isShowText;
+        },
         // callback on update
         shapesUpdated() {
             if (this.callback && typeof this.callback === 'function') {
@@ -355,13 +387,14 @@ export default {
 </script>
 <template>
     <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
-        <div class="pa-canvas">
+        <div class="pa-canvas" :ref="'main'">
             <div class="pa-controls">
                 <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
                 <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
                 <hr />
                 <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
                 <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+                <a href="#" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
             </div>
             <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
 
@@ -399,7 +432,7 @@ export default {
                             @mouseenter="handleMouseEnter(shape.name)"
                             @mouseleave="handleMouseLeave"
                         />
-                        <v-text v-if="!editMode" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                        <v-text v-if="isShowText" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                     </template>
                     <v-transformer ref="transformer" :rotateEnabled="false"  :keepRatio="false"  v-if="editMode" />
                 </v-layer>

@@ -8,6 +8,10 @@ RUN npm config set unsafe-perm true
 
 RUN npm install --force
 
+# Set environment variables using the ARG values
+ENV VITE_API_URL=http://localhost/backend/
+ENV VITE_APP_VERSION=v1.0.14
+
 COPY . /app
 
 RUN chown -R node:node /app/node_modules

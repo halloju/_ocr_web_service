@@ -7,7 +7,6 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
 import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
-import { API_TIMEOUT } from '@/constants.js';
 import { initializeClient } from '@/service/auth.js';
 
 export default {
@@ -24,7 +23,7 @@ export default {
         const imageSrc = ref(null);
         const imageResult = ref('');
         const localStorageKey = ref('storage');
-        const width = ref(1200);
+        const width = ref('1200');
         const height = ref(600);
         const dataCallback = ref('');
         const initialData = ref('');
@@ -206,6 +205,8 @@ export default {
         onMounted(async () => {
             apiClient.value = await initializeClient();
             waitUntilOcrComplete();
+            const col12Width = document.querySelector('.col-12').clientWidth*4/5;
+            width.value = col12Width - parseInt('4rem');
         });
 
         return {
@@ -294,14 +295,5 @@ export default {
 <style scoped>
 .my-button {
     margin: 10px;
-}
-.el-carousel {
-    width: 1200px;
-}
-.el-carousel__item:nth-child(2n) {
-    background-color: #99a9bf;
-}
-.el-carousel__item:nth-child(2n + 1) {
-    background-color: #d3dce6;
 }
 </style>

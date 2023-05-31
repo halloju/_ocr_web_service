@@ -42,6 +42,7 @@ services:
         ports:
           - '3000:3000'
         environment:
+          - VITE_APP_VERSION=v1.0.15
           - MODE=development
           - VITE_API_URL=http://localhost/backend
           - TZ=Asia/Taipei
@@ -52,8 +53,8 @@ services:
           - ./backend:/code
           - ./log:/code/app/logger
         ports:
-          - "5000:5000"
-        command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
+          - "5001:5001"
+        command: uvicorn app.main:app --host 0.0.0.0 --port 5001 --reload
         # command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
         environment:
           - MODE=dev
