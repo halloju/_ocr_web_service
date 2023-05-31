@@ -37,6 +37,8 @@ services:
         build:
           context: ./web
           dockerfile: Dockerfile.prod
+          args: 
+            - VITE_APP_VERSION=v1.0.15
         ports:
           - '80:80'
         environment:
