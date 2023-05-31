@@ -49,8 +49,7 @@ export default {
                 linkTitle: '',
                 link: ''
             },
-            isShowText: this.setShowText,
-            createStartPoint: { x: 80, y: 50 }
+            isShowText: this.setShowText
         };
     },
     watch: {
@@ -156,13 +155,6 @@ export default {
                     this.selectedShapeName = '';
                     this.updateTransformer();
                     return;
-                } else {
-                    const stage = e.target.getStage();
-                    const pos = stage.position();
-                    this.createStartPoint = {
-                        x: - pos.x + e.evt.offsetX,
-                        y: - pos.y + e.evt.offsetY
-                    };
                 }
                 // clicked on transformer - do nothing
                 const clickedOnTransformer = e.target.getParent().className === 'Transformer';
