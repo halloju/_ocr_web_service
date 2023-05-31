@@ -5,13 +5,88 @@ from fastapi import Cookie
 from typing import Optional
 import jwt
 from datetime import datetime, timedelta
+from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from onelogin.saml2.settings import OneLogin_Saml2_Settings
+from onelogin.saml2.utils import OneLogin_Saml2_Utils
+
 
 SECRET_KEY = "your-secret-key"  # Replace with your actual secret key
 ALGORITHM = "HS256"  # Or another algorithm like "RS256"
 
+saml_config = {
+    "strict": True,
+    "debug": False,
+    "sp": {
+        "entityId": "https://sp.example.com/metadata",
+        "assertionConsumerService": {
+            "url": "https://sp.example.com/acs",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+        },
+        "singleLogoutService": {
+            "url": "https://sp.example.com/sls",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "NameIDFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+        "x509cert": "",
+        "privateKey": ""
+    },
+    "idp": {
+        "entityId": "https://idp.example.com/metadata",
+        "singleSignOnService": {
+            "url": "https://idp.example.com/sso",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "singleLogoutService": {
+            "url": "https://idp.example.com/slo",
+            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+        },
+        "x509cert": ""
+    }
+}
 
 router = APIRouter()
 # oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
+@router.get("/sso")
+async def sso(request: Request):
+    print("saml")
+    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    saml_auth.login()
+    return Response(saml_auth.get_last_response_xml(), media_type="application/xml")
+
+@router.post("/acs")
+async def acs(request: Request):
+    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    saml_auth.process_response()
+    
+    if not saml_auth.is_authenticated():
+        return {"error": "Not authenticated"}
+
+    # Get user attributes from the SAML response
+    user_attributes = saml_auth.get_attributes()
+
+    # Create a JWT with the user attributes as the payload
+    jwt_secret = "your_jwt_secret"
+    jwt_algorithm = "HS256"
+    jwt_payload = {
+        "user": user_attributes,
+    }
+    jwt_token = jwt.encode(jwt_payload, jwt_secret, algorithm=jwt_algorithm)
+    return {"success": "Authenticated", "token": jwt_token}
+
+@router.get("/slo")
+async def slo(request: Request):
+    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    saml_auth.logout()
+    return Response(saml_auth.get_last_response_xml(), media_type="application/xml")
+
+@router.post("/sls")
+async def sls(request: Request):
+    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    saml_auth.process_slo()
+    if not saml_auth.is_authenticated():
+        return {"success": "Logged out"}
+    return {"error": "Logout failed"}
 
 @router.get("/login")
 async def login(request: Request):
