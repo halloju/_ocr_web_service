@@ -26,9 +26,10 @@ p = Producer({
     'sasl.password': '1313'})
 print('Kafka Producer has been initiated...')
 
-for i in range(10):
+for i in range(1):
     data = {
-        'request_id': '0129979143656',
+        "image_cv_id": "0129979143656",
+        "recognition_status": "SUCCESS",
         "ocr_results": [
         {
             "image_cv_id": "0129979143656",
