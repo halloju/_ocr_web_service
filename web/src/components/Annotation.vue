@@ -49,8 +49,7 @@ export default {
                 linkTitle: '',
                 link: ''
             },
-            isShowText: this.setShowText,
-            createStartPoint: { x: 80, y: 50 }
+            isShowText: this.setShowText
         };
     },
     watch: {
@@ -106,6 +105,15 @@ export default {
         };
     },
     methods: {
+        getMiddlePosition() {
+            const image = this.$refs.stage.getNode();
+            const width = image.width();
+            const height = image.height();
+            const scaleX = image.scaleX();
+            const scaleY = image.scaleY();
+            const position = {x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y()};
+            return position;
+        },
         loadImage() {
             // reset scale to 1
             this.scale = 1;
@@ -147,13 +155,6 @@ export default {
                     this.selectedShapeName = '';
                     this.updateTransformer();
                     return;
-                } else {
-                    const stage = e.target.getStage();
-                    const pos = stage.position();
-                    this.createStartPoint = {
-                        x: - pos.x + e.evt.offsetX,
-                        y: - pos.y + e.evt.offsetY
-                    };
                 }
                 // clicked on transformer - do nothing
                 const clickedOnTransformer = e.target.getParent().className === 'Transformer';
@@ -198,10 +199,12 @@ export default {
         },
         addRectangle(rectangleType) {
             if (this.isAddingPolygon) return;
+            const pos = this.getMiddlePosition();
+            console.log('add rectangle', pos);
             this.shapes.push({
                 ...this.getBaseShape('rect', rectangleType),
-                x: this.createStartPoint.x,
-                y: this.createStartPoint.y,
+                x: pos.x,
+                y: pos.y,
                 width: 200 / this.scale,
                 height: 200 / this.scale
             });
