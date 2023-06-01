@@ -40,6 +40,7 @@ export default {
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
             pageDesc: ['框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
                 '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！', '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！'],
+            pageImg: ['src/assets/img/create_template_step2.jpg', 'src/assets/img/create_template_step3.jpg', 'src/assets/img/create_template_step4.jpg']
         };
     },
     created() {
@@ -310,6 +311,7 @@ export default {
                     <div class="col-12">
                         <h5>{{ this.pageTitle[this.currentStep - 1]  }}</h5>
                         <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
+                        <img :src="this.pageImg[this.currentStep - 1]" height="200"/>
                         <img v-if="this.currentStep == 0" :src="this.imageSource" class="img-fluid" />
                     </div>
                     <div class="col-6">
