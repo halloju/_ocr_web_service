@@ -36,7 +36,7 @@ class AsynPredictTask(object):
             encoded_data = self.conn.get(image_id)
             input_data = {
                 "business_unit": self.business_unit,
-                "request_id": '5421',
+                "request_id": rid,
                 "inputs": {
                     "system_id": "CH0052_OLIU",
                     "business_category": [
