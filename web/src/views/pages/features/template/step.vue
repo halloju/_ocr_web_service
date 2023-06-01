@@ -13,6 +13,11 @@ export default {
         UploadImage
     },
     name: 'SelfDefine',
+    props: {
+        Boxes: {
+            type: Array
+        }
+    },
     data() {
         return {
             isFinal: false,
@@ -33,8 +38,8 @@ export default {
                 box: [],
                 mask: []
             },
-            currentStep: 0,
             createNew: this.$store.state.createNew,
+            currentStep: this.$store.state.createNew? 0: 1,
             template_id: sessionStorage.getItem('template_id') || '',
             apiClient: null,
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
@@ -274,14 +279,6 @@ export default {
     watch: {
         currentStep() {
             this.isFinalStep();
-        }
-    },
-    props: {
-        step: {
-            type: Number
-        },
-        Boxes: {
-            type: Array
         }
     }
 };
