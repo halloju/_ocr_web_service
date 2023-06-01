@@ -122,8 +122,8 @@ export default {
             row.editable = false;
         }
 
-        async function handleLook(templateid, userType) {
-            template_id.value = templateid;
+        async function handleLook(template_id, userType) {
+            this.template_id = template_id;
             const response = await getTemplateDetail(template_id);
             template.value = response['data'];
             initialData.value = parseTemplateDetail(response['data'], userType);
@@ -368,7 +368,7 @@ export default {
                         <h5>創建日期: {{ creation_time }}</h5>
                         <div class="flex flex-column card-container">
                             <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType.code)" />
+                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(this.template_id, selectedRectangleType.code)" />
                             </div>
                             <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                                 <Annotation
