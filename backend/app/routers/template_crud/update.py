@@ -1,12 +1,12 @@
 from app.exceptions import CustomException
 from app.schema.common import Response
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from logger import Logger
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
-from route_utils import call_mlaas_function, init_log
+from route_utils import call_mlaas_function, init_log, verify_token
 from app.exceptions import MlaasRequestError
 from app import response_table
 
@@ -15,17 +15,17 @@ router = APIRouter()
 logger = Logger(__name__)
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)
-async def update_template(request: UpdateTemplateRequest):
+async def update_template(request: UpdateTemplateRequest, user_id: str=Depends(verify_token)):
     '''
     將 Feature DB 中的 template 資訊更新
     '''
     form = UpdateTemplateForm(request)
-    uid, rid, log_main = init_log('template_upload', logger)
+    rid, log_main = init_log('template_upload', user_id, logger)
     await form.load_data()
     if await form.is_valid():
         
         inputs = {
-            'user_id': uid,
+            'user_id': user_id,
             'template_id': form.template_id,
             'points_list': form.points_list,
             'template_name': form.template_name,

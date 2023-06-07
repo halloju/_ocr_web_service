@@ -104,10 +104,9 @@ export default {
         }
 
         async function getAvailableTemplate() {
-            let user_id = '13520';
             let tableData = [];
             try {
-                const response = await apiClient.value.get('/template_crud/get_available_templates/' + user_id);
+                const response = await apiClient.value.get('/template_crud/get_available_templates');
                 tableData = response['data']['template_infos'];
                 return tableData;
             } catch (error) {
@@ -208,7 +207,7 @@ export default {
             // clear local storage
             sessionStorage.clear();
             // get template detail
-            const response = await axios.get('/template_crud/get_template_detail/' + template_id);
+            const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id);
             //template.value = response['data'];
 
             // set local storage
@@ -223,13 +222,14 @@ export default {
             router.push({ name: 'SelfDefine' });
         }
 
-        function downloadTemplate() {
-            let template_info_json = JSON.stringify(template.value);
+        async function downloadTemplate(template_id) {
+            const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id);
+            let template_info_json = JSON.stringify(response['data']);
             let blob = new Blob([template_info_json], { type: 'text/plain;charset=utf-8' });
             let url = URL.createObjectURL(blob);
             let link = document.createElement('a');
             link.href = url;
-            link.download = `${template_id.value}.json`;
+            link.download = `${response['data'].template_name}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -351,7 +351,7 @@ export default {
                             <el-button size="" type="success" @click="handleLook(scope.row.template_id, rectangleTypes[0].code)">檢視</el-button>
                             <el-button size="" type="info" @click="editTemplate(scope.row.template_id)">編輯</el-button>
                             <el-button size="" type="danger" plain @click="handleDelete(scope.row.template_id)">刪除</el-button>
-                            <el-button size="" type="info" plain @click="downloadTemplate">下載</el-button>
+                            <el-button size="" type="info" plain @click="downloadTemplate(scope.row.template_id)">下載</el-button>
                         </template>
                     </el-table-column>
                 </el-table>

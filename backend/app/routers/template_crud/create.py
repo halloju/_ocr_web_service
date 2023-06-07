@@ -3,26 +3,26 @@ from app.exceptions import CustomException, MlaasRequestError
 from app.forms.template_crud.create import CreateTemplateForm
 from app.schema.template_crud.create import (CreateTemplateRequest,
                                              CreateTemplateResponse)
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from logger import Logger
-from route_utils import call_mlaas_function, init_log
+from route_utils import call_mlaas_function, init_log, verify_token
 
 router = APIRouter()
 logger = Logger(__name__)
 
 
 @router.post("/create_template", response_model=CreateTemplateResponse)  # responses={},
-async def create_template(request: CreateTemplateRequest):
+async def create_template(request: CreateTemplateRequest, user_id: str = Depends(verify_token)):
     '''
     將前端標注的點位和上傳的圖片傳至 mlaas 對應的 api
     '''
     form = CreateTemplateForm(request)
-    uid, rid, log_main = init_log('template_create', logger)
+    rid, log_main = init_log('template_create', user_id, logger)
     await form.load_data()
     if await form.is_valid():
         inputs = {
-            'user_id': uid,
+            'user_id': user_id,
             'image': form.image,
             'points_list': form.points_list,
             'template_name': form.template_name

@@ -13,7 +13,7 @@ async def delete_template(template_id: str):
     '''
     刪除給定的 template_id 在 mlaas Feature DB 中的 template 資訊
     '''
-    uid, rid, log_main = init_log('template_create', logger)
+    rid, log_main = init_log('template_create', 0, logger)
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
