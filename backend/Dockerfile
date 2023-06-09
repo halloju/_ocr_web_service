@@ -26,6 +26,9 @@ WORKDIR /code
 # Install required packages and build dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
+    libxslt-dev \
+    python3-dev \
+    build-essential \
     gcc \
     libxml2-dev \
     libxmlsec1-dev \
