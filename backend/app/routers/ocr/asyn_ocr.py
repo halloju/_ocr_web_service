@@ -32,4 +32,3 @@ async def cv_upload(request: Request, image_class: str = Form(...), files: List[
     except Exception as ex:
         logger.error({'error_msg': str(ex)})
         return JSONResponse(status_code=400, content=[])
-

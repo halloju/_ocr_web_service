@@ -11,7 +11,9 @@ import {
     mdiEyeOffOutline,
     mdiCircleOutline,
     mdiSquareOutline,
-    mdiAccountOutline
+    mdiAccountOutline,
+    mdiClipboardTextOffOutline,
+    mdiClipboardTextOutline
 } from '@mdi/js';
 
 /**
@@ -59,6 +61,10 @@ export default {
                     return mdiEyeOutline;
                 case 'shapes-off':
                     return mdiEyeOffOutline;
+                case 'texts-on':
+                    return mdiClipboardTextOutline;
+                case 'texts-off':
+                    return mdiClipboardTextOffOutline;
                 case 'add-polygon':
                     return mdiShapePolygonPlus;
                 case 'add-polygon-accept':

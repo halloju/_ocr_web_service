@@ -39,6 +39,7 @@ async def callback(request: Input):
     status_dict = {
         '0001': 'code error',
         '5401': 'unique violation',
+        '5421': 'image check error'
     }
     if req_data['request_id'] in status_dict:
         end_time = time.time()

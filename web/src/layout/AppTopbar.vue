@@ -8,6 +8,7 @@ const { onMenuToggle } = useLayout();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const version = import.meta.env.VITE_APP_VERSION;
 
 onMounted(() => {
     bindOutsideClickListener();
@@ -60,7 +61,10 @@ const isOutsideClicked = (event) => {
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img src="@/assets/img/esun-ocr-logo.svg" alt="logo" />
-            <span style="width: 400px; color: #09747a; margin-left: 10px">智能辨識服務</span>
+            <div style="width: 400px; margin-left: 10px">
+                <span style="width: 380px; color: #09747a">智能OCR服務</span>
+                <h6  style="margin: 0;"> {{version}} </h6> 
+            </div>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

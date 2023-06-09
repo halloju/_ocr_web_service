@@ -121,23 +121,15 @@ export default {
             row.editable = false;
         }
 
-        async function handleLook(templateid, userType) {
-            template_id.value = templateid;
-            try {
-                const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id.value);
-                template.value = response['data'];
-                initialData.value = parseTemplateDetail(response['data'], userType);
-                creation_time.value = template.value.creation_time;
-                imageSrc.value = 'data:image/png;base64,' + response['data'].image;
-                dialogVisible.value = true;
-                dialogWidth.value = '850px';
-            } catch (error) {
-                if (error.code === 'ERR_NETWORK') {
-                    // status.value = 'network';
-                    console.error('ERR_NETWORK');
-                }
-                return error;
-            }
+        async function handleLook(template_id, userType) {
+            this.template_id = template_id;
+            const response = await getTemplateDetail(template_id);
+            template.value = response['data'];
+            initialData.value = parseTemplateDetail(response['data'], userType);
+            creation_time.value = template.value.creation_time;
+            imageSrc.value = 'data:image/png;base64,' + response['data'].image;
+            dialogVisible.value = true;
+            dialogWidth.value = '850px';
         }
 
         async function handleDelete(template_id) {
@@ -203,6 +195,19 @@ export default {
             router.push({ name: 'SelfDefine' });
         }
 
+        function getTemplateDetail(template_id) {
+            try {
+                const response = apiClient.value.get('/template_crud/get_template_detail/' + template_id);
+                return response;
+            } catch (error) {
+                if (error.code === 'ERR_NETWORK') {
+                    // status.value = 'network';
+                    console.error('ERR_NETWORK');
+                }
+                return error;
+            }
+        }
+
         async function editTemplate(template_id) {
             // clear local storage
             sessionStorage.clear();
@@ -223,13 +228,14 @@ export default {
         }
 
         async function downloadTemplate(template_id) {
-            const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id);
-            let template_info_json = JSON.stringify(response['data']);
+            const response = await getTemplateDetail(template_id);
+            template.value = response['data'];
+            let template_info_json = JSON.stringify(template.value);
             let blob = new Blob([template_info_json], { type: 'text/plain;charset=utf-8' });
             let url = URL.createObjectURL(blob);
             let link = document.createElement('a');
             link.href = url;
-            link.download = `${response['data'].template_name}.json`;
+            link.download = `${template_id}.json`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -361,7 +367,7 @@ export default {
                         <h5>創建日期: {{ creation_time }}</h5>
                         <div class="flex flex-column card-container">
                             <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType.code)" />
+                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(this.template_id, selectedRectangleType.code)" />
                             </div>
                             <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                                 <Annotation
