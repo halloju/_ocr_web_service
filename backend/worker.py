@@ -8,6 +8,8 @@ from celery.signals import after_setup_logger
 from logger import config_logging
 from route_utils import call_mlaas_function, get_redis_filename, get_redis_taskname
 
+from app.constants import remittance_points
+
 # 設定 celery
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "amqp://rabbitmq")
@@ -61,9 +63,11 @@ class PredictTask(Task):
             )
 
             logger.debug({'predict': {'image_id': image_id, 'data_pred': list(data_pred.keys())}})
-            if action in ['check_front', 'check_back', 'remittance']:
-                if data_pred['outputs']['status_code'] == '0000':
+            if data_pred['outputs']['status_code'] == '0000':
+                if action in ['check_front', 'check_back']:
                     data_pred['outputs']['data_results'] = [{'tag': key, 'text': value} for key, value in data_pred['outputs'].items() if key not in ['status_code', 'status_msg', 'err_detail']]
+                elif action == 'remittance':
+                    data_pred['outputs']['data_results'] = [{'tag': key, 'text': value, 'points': remittance_points[key]} for key, value in data_pred['outputs'].items() if key not in ['status_code', 'status_msg', 'err_detail']]
             # Return the prediction result
             return data_pred
         except Exception as e:
@@ -104,7 +108,6 @@ def predict_image(self, image_id, action, input_params):
         status_code = response['outputs']['status_code']
         data_pred = response['outputs']['data_results'] if status_code == '0000' else str(response['outputs']['status_msg'])
         status = 'SUCCESS' if status_code == '0000' else 'FAIL'
-
         return {'status': status, 'result': data_pred, 'file_name': file_name}
     except Exception as e:
         logger.error({'predict_image': {'error_msg': str(e), 'image_id': image_id, 'action': action}})
