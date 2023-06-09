@@ -72,10 +72,6 @@ export default {
     // created live cycle hook
     created() {
         // set defaults
-        this.stageSize.width = (parseInt(this.width) / 3) * 2 - 2; // - 2 for border
-        this.stageSize.height = parseInt(this.height);
-        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
-        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
         if (this.isVertical) {
             this.containerClass = 'pa-containerVert'
             this.infoBarClass = 'pa-infobarVert'
@@ -87,6 +83,10 @@ export default {
         this.loadImage();
     },
     mounted() {
+        this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
+        this.stageSize.height = this.$refs.main.clientHeight;
+        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
+        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
@@ -200,7 +200,6 @@ export default {
         addRectangle(rectangleType) {
             if (this.isAddingPolygon) return;
             const pos = this.getMiddlePosition();
-            console.log('add rectangle', pos);
             this.shapes.push({
                 ...this.getBaseShape('rect', rectangleType),
                 x: pos.x,
