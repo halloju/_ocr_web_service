@@ -97,15 +97,15 @@ def get_from_redis(task_id):
 
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
 def predict_image(self, image_id, action, input_params):
+    # Get the file name from Redis using the image ID as the key
+    file_name = celery.backend.get(get_redis_filename(image_id)).decode("utf-8")
     try:
         response = self.predict(image_id, action=action, input_params=input_params)
         status_code = response['outputs']['status_code']
         data_pred = response['outputs']['data_results'] if status_code == '0000' else str(response['outputs']['status_msg'])
         status = 'SUCCESS' if status_code == '0000' else 'FAIL'
 
-        # Get the file name from Redis using the image ID as the key
-        file_name = celery.backend.get(get_redis_filename(image_id)).decode("utf-8")
-
         return {'status': status, 'result': data_pred, 'file_name': file_name}
     except Exception as e:
         logger.error({'predict_image': {'error_msg': str(e), 'image_id': image_id, 'action': action}})
+        return {'status': 'FAIL', 'file_name': file_name}
