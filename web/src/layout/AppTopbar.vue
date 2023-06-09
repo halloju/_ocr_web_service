@@ -62,7 +62,7 @@ const isOutsideClicked = (event) => {
         <router-link to="/" class="layout-topbar-logo">
             <img src="@/assets/img/esun-ocr-logo.svg" alt="logo" />
             <div style="width: 400px; margin-left: 10px">
-                <span style="width: 380px; color: #09747a">玉山智能辨識服務</span>
+                <span style="width: 380px; color: #09747a">智能OCR服務</span>
                 <h6  style="margin: 0;"> {{version}} </h6> 
             </div>
         </router-link>

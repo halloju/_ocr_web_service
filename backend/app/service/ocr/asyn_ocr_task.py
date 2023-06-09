@@ -76,21 +76,23 @@ class AsynPredictTask(object):
 
     def predict_image(self, image_id, action, input_params):
         file_name = self.conn.get(get_redis_filename(image_id))
+        image_cv_id = 'cv-'+str(uuid.uuid4())
         try:
             response = self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
             # Get the file name from Redis using the image ID as the key
-            image_cv_id = response['outputs']['image_cv_id']
+            if (response['outputs']['image_cv_id']):
+                image_cv_id = response['outputs']['image_cv_id']
             predict_class = response['outputs']['predict_class']
             if status_code == '0000':
                 return {'status': 'PROCESSING', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
             elif status_code == '5421':  # class check error
-                return {'status': 'FAIL', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': image_cv_id}
+                return {'status': 'FAIL', 'predict_class': predict_class, 'file_name': file_name+'-image-check-error', 'image_cv_id': image_cv_id}
             else:
                 self.logger.warning({'predict_image': {'image_id': image_id, 'response': response}})
         except Exception as e:
             self.logger.error({'predict_image': {'error_msg': str(e), 'image_id': image_id, 'action': action}})
-        return {'status': 'FAIL', 'err_msg': str(response['outputs']['status_msg']), 'image_cv_id': '', 'file_name': file_name}
+        return {'status': 'FAIL', 'err_msg': str(response['outputs']['status_msg']), 'image_cv_id': image_cv_id, 'file_name': file_name}
 
     def process_image(self, request, file, action: str, input_params: dict):
         image_id = str(uuid.uuid4())
@@ -106,4 +108,4 @@ class AsynPredictTask(object):
         upload_result = self.predict_image(image_id, action=action, input_params=input_params)
         task_id = str(upload_result["image_cv_id"]).replace('/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
         self.conn.set(get_redis_taskname(task_id), json.dumps({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
-        return {'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id}
+        return {'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'file_name': upload_result["file_name"]}

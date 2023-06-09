@@ -6,7 +6,8 @@ import sys
 
 def run_consumer(project_name: str, redis_server, kafka_config):
     if project_name == 'cv_controller':
-        kafka_config['group.id'] = "if_gp_ocr_cv_controller_callback_02",
+        kafka_config['group.id'] = "if_gp_ocr_cv_controller_callback_02"
+
         def msg_func(ocr_results) -> list:
             new_results = []
             for ocr_result in ocr_results:

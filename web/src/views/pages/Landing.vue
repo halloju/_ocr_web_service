@@ -2,7 +2,6 @@
 export default {
     name: 'landing',
     data() {
-        console.log(import.meta.env)
         return {
             logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
             version: import.meta.env.VITE_APP_VERSION
@@ -27,7 +26,7 @@ export default {
         <div id="home" class="landing-wrapper overflow-hidden">
             <div class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3">
                 <a class="flex align-items-center" href="#">
-                    <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<div style="width: 300px"><span class="text-900 font-medium text-4xl line-height-3 mr-8" style="width: 250px">玉山智能辨識系統</span> {{version}} <span>  </span></div>
+                    <img :src="logoUrl" alt="esun" height="50" class="mr-0 lg:mr-2" />&nbsp;&nbsp;&nbsp;<div style="width: 300px"><span class="text-900 font-medium text-4xl line-height-3 mr-8" style="width: 250px">智能OCR服務</span> {{version}} <span>  </span></div>
                 </a>
                 <a class="cursor-pointer block lg:hidden text-700 p-ripple" v-ripple v-styleclass="{ selector: '@next', enterClass: 'hidden', leaveToClass: 'hidden', hideOnOutsideClick: true }">
                     <i class="pi pi-bars text-4xl"></i>
@@ -69,7 +68,7 @@ export default {
             >
                 <div class="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center">
                     <section>
-                        <span class="block text-6xl font-bold mb-1">玉山智能辨識系統</span>
+                        <span class="block text-6xl font-bold mb-1">智能OCR服務</span>
                         <div class="text-6xl text-primary font-bold mb-3">Esun.OCR</div>
                         <p class="mt-0 mb-4 text-3xl text-700 line-height-3">由智金處電腦視覺專家研發設計，解決行內 PDF、身份證、健保卡圖片辨識等問題。</p>
 
@@ -304,7 +303,7 @@ export default {
                     <div class="col-12 md:col-2" style="margin-top: -1.5rem; width: 350px">
                         <a @click="smoothScroll('#home')" class="flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer">
                             <img :src="logoUrl" alt="footer sections" width="200" height="50" class="mr-2" />
-                            <h4 class="font-medium text-3xl text-900">玉山智能辨識系統</h4>
+                            <h4 class="font-medium text-3xl text-900">智能OCR服務</h4>
                         </a>
                     </div>
 
