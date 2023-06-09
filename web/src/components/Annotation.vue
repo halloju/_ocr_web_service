@@ -85,8 +85,9 @@ export default {
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
         this.stageSize.height = this.$refs.main.clientHeight;
-        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = window.innerWidth;
-        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = window.innerHeight;
+        console.log(this.stageSize.width, this.stageSize.height)
+        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width)-parseInt("4rem");
+        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height)*0.6;
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
@@ -468,7 +469,7 @@ export default {
 .pa-containerVert	
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif	
   display: grid	
-  grid-template-rows: 4fr 6fr	
+  grid-template-rows: 6fr 4fr	
   overflow: hidden
 
 .pa-canvas
