@@ -9,6 +9,7 @@ from logger import config_logging
 from route_utils import call_mlaas_function, get_redis_filename, get_redis_taskname
 
 from app.constants import remittance_points
+import mlaas_log_formatter
 
 # 設定 celery
 celery = Celery(__name__)
