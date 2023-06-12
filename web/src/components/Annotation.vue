@@ -85,7 +85,6 @@ export default {
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
         this.stageSize.height = this.$refs.main.clientHeight;
-        console.log(this.stageSize.width, this.stageSize.height)
         if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width)-parseInt("4rem");
         if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height)*0.6;
         document.addEventListener('keydown', this.handleKeyEvent);
