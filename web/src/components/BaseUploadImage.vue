@@ -93,7 +93,7 @@ export default {
                 var msg = '';
                 if (error.message && error.message.includes('413')) {
                     console.log('The file you tried to upload is too large.');
-                    msg = 'The files you tried to upload are too large. \n (total exceed 8 MB)';
+                    msg = 'The files you tried to upload are too large. \n (total exceed 20 MB)';
                 } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
                 }

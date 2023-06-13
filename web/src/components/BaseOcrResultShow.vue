@@ -41,11 +41,19 @@ export default {
             excelData.value = [];
             tableData.value = [];
             general_upload_res.value.forEach((item, index) => {
-                excelData.value.push({
-                    filename: item.file_name,
-                    image_id: item.image_id,
-                    ocr_results: JSON.stringify(item.ocr_results)
-                });
+                if (item.ocr_results) {
+                    item.ocr_results.forEach((result_dic) => {
+                        let cols = {
+                            filename: item.file_name,
+                            image_id: item.image_id
+                        }
+                        for (const key in result_dic) {
+                            console.log(key, result_dic[key], typeof result_dic[key]);
+                            cols[key] = typeof result_dic[key] == `object` ? JSON.stringify(result_dic[key]): result_dic[key];
+                        }
+                        excelData.value.push(cols);
+                    });
+                }
                 tableData.value.push({
                     num: index + 1,
                     task_id: item.task_id,

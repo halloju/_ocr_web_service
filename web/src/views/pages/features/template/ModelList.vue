@@ -66,7 +66,7 @@ export default {
             code: 'text'
         });
         const width = ref(1000);
-        const height = ref(1000);
+        const height = ref("600");
         const imageSrc = ref('');
 
         const tableHeader = ref([
@@ -129,7 +129,7 @@ export default {
             creation_time.value = template.value.creation_time;
             imageSrc.value = 'data:image/png;base64,' + response['data'].image;
             dialogVisible.value = true;
-            dialogWidth.value = '850px';
+            dialogWidth.value = '850';
         }
 
         async function handleDelete(template_id) {
