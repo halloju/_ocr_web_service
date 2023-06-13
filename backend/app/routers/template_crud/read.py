@@ -33,11 +33,11 @@ def get_available_templates(user_id: str=Depends(verify_token)):
 
 
 @router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str):
+def get_template_detail(template_id: str, user_id: str=Depends(verify_token)):
     '''
     取得該 template 的細節
     '''
-    rid, log_main = init_log('get_template_detail', 0, logger)
+    rid, log_main = init_log('get_template_detail', user_id, logger)
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
