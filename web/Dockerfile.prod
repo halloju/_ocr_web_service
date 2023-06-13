@@ -19,7 +19,7 @@ USER node
 RUN npm run build
 
 # Stage 2: Set up Nginx reverse proxy and static file server
-FROM nginx:stable-alpine-slim as web
+FROM nginx:stable as web
 
 # Copy built web application from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
