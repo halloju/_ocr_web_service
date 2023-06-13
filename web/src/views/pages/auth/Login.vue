@@ -11,6 +11,17 @@ export default {
             checked: false
         };
     },
+    mounted() {
+        axios
+            .get('/auth/sso')
+            .then((res) => {
+                const url = res.url
+                window.location.href = url
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    },
     methods: {
         login() {
             axios

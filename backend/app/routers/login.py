@@ -1,124 +1,105 @@
-from fastapi import APIRouter, Body, Depends, File, Response, Request, HTTPException, UploadFile, status
-from fastapi.responses import JSONResponse, RedirectResponse
-# from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Response, Request, HTTPException, UploadFile, status
+from fastapi.responses import JSONResponse
 from fastapi import Cookie
 from typing import Optional
 import jwt
 from datetime import datetime, timedelta
+import os
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
-from onelogin.saml2.settings import OneLogin_Saml2_Settings
-from onelogin.saml2.utils import OneLogin_Saml2_Utils
 
 
-SECRET_KEY = "your-secret-key"  # Replace with your actual secret key
-ALGORITHM = "HS256"  # Or another algorithm like "RS256"
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 
-saml_config = {
-    "strict": True,
-    "debug": False,
-    "sp": {
-        "entityId": "https://sp.example.com/metadata",
-        "assertionConsumerService": {
-            "url": "https://sp.example.com/acs",
-            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-        },
-        "singleLogoutService": {
-            "url": "https://sp.example.com/sls",
-            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        },
-        "NameIDFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
-        "x509cert": "",
-        "privateKey": ""
-    },
-    "idp": {
-        "entityId": "https://idp.example.com/metadata",
-        "singleSignOnService": {
-            "url": "https://idp.example.com/sso",
-            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        },
-        "singleLogoutService": {
-            "url": "https://idp.example.com/slo",
-            "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-        },
-        "x509cert": ""
+
+async def prepare_from_fastapi_request(request, debug=False):
+    form_data = await request.form()
+    x_forwarded_proto = request.headers.get('x-forwarded-proto')
+
+    rv = {
+        "http_host": request.headers.get('x-forwarded-host', request.client.host),
+        "server_port": request.url.port,
+        "script_name": "/backend" + request.url.path,
+        "post_data": { },
+        "get_data": { },
+        "https": "on" if x_forwarded_proto == "https" else "off",  # Add this line
     }
-}
+
+    if (request.query_params):
+        rv["get_data"] = request.query_params,
+    if "SAMLResponse" in form_data:
+        SAMLResponse = form_data["SAMLResponse"]
+        rv["post_data"]["SAMLResponse"] = SAMLResponse
+    if "RelayState" in form_data:
+        RelayState = form_data["RelayState"]
+        rv["post_data"]["RelayState"] = RelayState
+    return rv
+
+
+def init_saml_auth(req):
+    auth = OneLogin_Saml2_Auth(req, custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static'))
+    return auth
+
 
 router = APIRouter()
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
 
 @router.get("/sso")
 async def sso(request: Request):
-    print("saml")
-    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
-    saml_auth.login()
-    return Response(saml_auth.get_last_response_xml(), media_type="application/xml")
+    req = await prepare_from_fastapi_request(request)
+    saml_auth = init_saml_auth(req)
+    callback_url = saml_auth.login()
+    response = Response(callback_url)
+    return response
+
 
 @router.post("/acs")
 async def acs(request: Request):
-    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    req = await prepare_from_fastapi_request(request)
+    saml_auth = init_saml_auth(req)
     saml_auth.process_response()
-    
     if not saml_auth.is_authenticated():
-        return {"error": "Not authenticated"}
+        return Response(headers={"Location": f"/#/home"}, status_code=400, content={"detail": "Not authenticated"})
 
     # Get user attributes from the SAML response
     user_attributes = saml_auth.get_attributes()
 
     # Create a JWT with the user attributes as the payload
-    jwt_secret = "your_jwt_secret"
-    jwt_algorithm = "HS256"
-    jwt_payload = {
-        "user": user_attributes,
+    refresh_token_payload = {
+            "exp": datetime.utcnow() + timedelta(days=7),  # Expires in 7 days
+            "iat": datetime.utcnow(),
+            "sub": user_attributes['EmployeeID'],  # Replace with the actual user ID
+            "type": "refresh",  # Add a type to distinguish between access and refresh tokens
     }
-    jwt_token = jwt.encode(jwt_payload, jwt_secret, algorithm=jwt_algorithm)
-    return {"success": "Authenticated", "token": jwt_token}
+    
+     # Generate the JWTs
+    refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    # Redirect the user back to the Vue application
+    response = Response(headers={"Location": f"/#/home"}, status_code=303)
+
+    # Set the tokens as secure, HttpOnly cookies in the response
+    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="strict")
+
+    return response
+
 
 @router.get("/slo")
 async def slo(request: Request):
-    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    req = await prepare_from_fastapi_request(request)
+    saml_auth = init_saml_auth(req)
     saml_auth.logout()
     return Response(saml_auth.get_last_response_xml(), media_type="application/xml")
 
+
 @router.post("/sls")
 async def sls(request: Request):
-    saml_auth = OneLogin_Saml2_Auth(request, saml_config)
+    req = await prepare_from_fastapi_request(request)
+    saml_auth = init_saml_auth(req)
     saml_auth.process_slo()
     if not saml_auth.is_authenticated():
         return {"success": "Logged out"}
     return {"error": "Logout failed"}
-
-@router.get("/login")
-async def login(request: Request):
-    # Parse the SAML response from the request body
-    # form_data = await request.form()
-    # SAMLResponse = form_data.get('SAMLResponse')
-    SAMLResponse = True
-
-    if SAMLResponse:
-        # TODO: Parse and validate the SAMLResponse
-        # If it's valid, create a JWT for the user
-
-        refresh_token_payload = {
-            "exp": datetime.utcnow() + timedelta(days=7),  # Expires in 7 days
-            "iat": datetime.utcnow(),
-            "sub": "user-id",  # Replace with the actual user ID
-            "type": "refresh",  # Add a type to distinguish between access and refresh tokens
-        }
-
-        # Generate the JWTs
-        refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm=ALGORITHM)
-
-        # Redirect the user back to the Vue application
-        response = JSONResponse(content={"status": "success"}, status_code=200)
-
-        # Set the tokens as secure, HttpOnly cookies in the response
-        response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="strict")
-
-        return response
-
-    else:
-        return JSONResponse(status_code=400, content={"detail": "Invalid SAML response"})
 
 
 @router.get("/refresh_token")
@@ -155,7 +136,7 @@ def is_authenticated(refresh_token: Optional[str] = Cookie(None)):
         # Decode the token and check if it's valid
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
 
-        # You could also add additional checks here (e.g., is the token expired?)
+        # is the token expired?
         if payload.get("type") != "refresh":
             raise HTTPException(status_code=400, detail="Invalid token type")
         

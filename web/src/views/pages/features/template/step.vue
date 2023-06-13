@@ -173,7 +173,6 @@ export default {
                 const image = new window.Image();
                 image.src = sessionStorage.imageSource;
                 body = {
-                    user_id: 12345,
                     image: image.src.split(',').pop(),
                     is_no_ttl: false,
                     points_list: this.boxes,
@@ -183,7 +182,6 @@ export default {
                 action = 'create_template';
             } else {
                 body = {
-                    user_id: 12345,
                     points_list: this.boxes,
                     template_name: this.input,
                     template_id: this.template_id

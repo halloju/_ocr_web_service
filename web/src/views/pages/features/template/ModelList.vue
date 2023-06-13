@@ -104,10 +104,9 @@ export default {
         }
 
         async function getAvailableTemplate() {
-            let user_id = '13520';
             let tableData = [];
             try {
-                const response = await apiClient.value.get('/template_crud/get_available_templates/' + user_id);
+                const response = await apiClient.value.get('/template_crud/get_available_templates');
                 tableData = response['data']['template_infos'];
                 return tableData;
             } catch (error) {

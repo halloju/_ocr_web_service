@@ -26,6 +26,9 @@ WORKDIR /code
 # Install required packages and build dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
+    libxslt-dev \
+    python3-dev \
+    build-essential \
     gcc \
     libxml2-dev \
     libxmlsec1-dev \
@@ -42,7 +45,9 @@ COPY ./requirements.txt .
 
 # Upgrade pip and install the required packages from the requirements file
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip uninstall lxml -y && \
+    pip install --no-binary lxml lxml==4.9.1
 
 # Copy the rest of the application code
 COPY . .

@@ -1,15 +1,17 @@
 import json
 import os
 from datetime import datetime
-
 import requests
 from app.exceptions import MlaasRequestError
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 import jwt
 from datetime import datetime
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 
 
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
@@ -43,34 +45,22 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
     raise MlaasRequestError(inp_post_response.status_code, inp_post_response.text)
 
 
-def init_log(action: str, logger, uid=None, rid=None):
-    if not uid:
-        uid = get_user_id()
-
+def init_log(action: str, uid: str, logger, rid=None):
     if not rid:
         rid = get_request_id()
     action = action
     log_main = {'user_id': uid, 'request_id': rid, 'action': action}
     logger.info(log_main)
-    return uid, rid, log_main
-
-
-def get_user_id() -> str:
-    return '13520'
-
+    return rid, log_main
 
 def get_request_id() -> str: # celery with task_id
     return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
-
 
 def get_redis_filename(image_id: str) -> str:
     return f'celery-upload-img-meta-{image_id}'
 
 def get_redis_taskname(task_id: str) -> str:
     return f'celery-task-meta-{task_id}'
-
-SECRET_KEY = "your-secret-key"  # Replace with your actual secret key
-ALGORITHM = "HS256"  # Or another algorithm like "RS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 async def verify_token(token: str = Depends(oauth2_scheme)):
@@ -81,9 +71,9 @@ async def verify_token(token: str = Depends(oauth2_scheme)):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: Optional[str] = payload.get("sub")
-        if username is None:
+        user_id: Optional[str] = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
-    return username
+    return user_id
