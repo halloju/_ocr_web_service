@@ -31,41 +31,28 @@ export default {
         const file_name = ref('');
         const num = ref('');
         const isDownload = ref(false);
-        const excelData = ref([]);
-        const tableData = ref([]);
         const reloadAnnotator = ref(false);
         const isRunning = ref(false);
         const finishedStatus = ref(['SUCCESS', 'FAIL']);
         const general_upload_res = computed(() => store.state.general_upload_res);
-        const getTaskData = computed(() => {
-            excelData.value = [];
-            tableData.value = [];
-            general_upload_res.value.forEach((item, index) => {
+        const getExcelData = () => {
+            let excelData = [];
+            general_upload_res.value.forEach((item) => {
                 if (item.ocr_results) {
                     item.ocr_results.forEach((result_dic) => {
                         let cols = {
                             filename: item.file_name,
                             image_id: item.image_id
-                        }
+                        };
                         for (const key in result_dic) {
-                            console.log(key, result_dic[key], typeof result_dic[key]);
-                            cols[key] = typeof result_dic[key] == `object` ? JSON.stringify(result_dic[key]): result_dic[key];
+                            cols[key] = typeof result_dic[key] == `object` ? JSON.stringify(result_dic[key]) : result_dic[key];
                         }
-                        excelData.value.push(cols);
+                        excelData.push(cols);
                     });
                 }
-                tableData.value.push({
-                    num: index + 1,
-                    task_id: item.task_id,
-                    status: item.status,
-                    image_id: item.image_id,
-                    file_name: item.file_name,
-                    isFinished: item.status === 'SUCCESS' ? true : false
-                });
             });
-            return tableData.value;
-        });
-
+            return excelData;
+        };
         function callback(data, image_cv_id) {
             for (let i = 0; i < general_upload_res.value.length; i++) {
                 if (image_cv_id === general_upload_res[i].image_id) {
@@ -152,7 +139,7 @@ export default {
         }
 
         // ocr 結果轉成 annotation 的格式
-        function handleButtonClick(row) {
+        function handleButtonClick(row, tableData) {
             apiClient.value
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
@@ -169,7 +156,7 @@ export default {
                         type: 'warning'
                     });
                 });
-            let fileInfo = tableData.value.filter((item) => item.task_id === row.task_id);
+            let fileInfo = tableData.filter((item) => item.task_id === row.task_id);
             file_name.value = fileInfo[0].file_name;
             num.value = fileInfo[0].num;
             let ocr_results = general_upload_res.value.filter((item) => item.task_id === row.task_id)[0].ocr_results;
@@ -199,7 +186,7 @@ export default {
         }
 
         function downloadFile() {
-            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData.value);
+            const jsonWorkSheet = XLSX.utils.json_to_sheet(getExcelData());
             const workBook = {
                 SheetNames: ['jsonWorkSheet'],
                 Sheets: {
@@ -213,7 +200,7 @@ export default {
         onMounted(async () => {
             apiClient.value = await initializeClient();
             waitUntilOcrComplete();
-            const col12Width = document.querySelector('.col-12').clientWidth*4/5;
+            const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
             width.value = col12Width - parseInt('4rem');
         });
 
@@ -232,12 +219,10 @@ export default {
             isDownload,
             Download,
             Back,
-            excelData,
-            tableData,
             reloadAnnotator,
             isRunning,
             finishedStatus,
-            getTaskData,
+            getExcelData,
             general_upload_res,
             callback,
             getStatusColor,
@@ -248,6 +233,22 @@ export default {
             back,
             downloadFile
         };
+    },
+    computed: {
+        tableData() {
+            let tempTableData = [];
+            this.general_upload_res.forEach((item, index) => {
+                tempTableData.push({
+                    num: index + 1,
+                    task_id: item.task_id,
+                    status: item.status,
+                    image_id: item.image_id,
+                    file_name: item.file_name,
+                    isFinished: item.status === 'SUCCESS' ? true : false
+                });
+            });
+            return tempTableData;
+        }
     }
 };
 </script>
@@ -273,7 +274,7 @@ export default {
                     <div class="col-12">
                         <div class="card">
                             <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-                                <el-table :data="getTaskData" style="width: 100%" :key="isRunning">
+                                <el-table :data="tableData" style="width: 100%" :key="isRunning">
                                     <el-table-column prop="num" label="號碼" sortable width="100" />
                                     <el-table-column prop="file_name" label="檔名" sortable width="200" />
                                     <el-table-column prop="status" label="辨識狀態" width="180">
@@ -283,7 +284,7 @@ export default {
                                     </el-table-column>
                                     <el-table-column label="動作">
                                         <template v-slot="scope">
-                                            <el-button type="primary" v-if="scope.row.isFinished" @click="handleButtonClick(scope.row)" round>檢視</el-button>
+                                            <el-button type="primary" v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" round>檢視</el-button>
                                         </template>
                                     </el-table-column>
                                 </el-table>
