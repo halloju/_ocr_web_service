@@ -7,18 +7,23 @@ from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from logger import Logger
 from route_utils import call_mlaas_function, init_log, verify_token
+from starlette.requests import Request
+
 
 router = APIRouter()
 logger = Logger(__name__)
 
 
 @router.post("/create_template", response_model=CreateTemplateResponse)  # responses={},
-async def create_template(request: CreateTemplateRequest, user_id: str = Depends(verify_token)):
+async def create_template(data: CreateTemplateRequest, request: Request):
     '''
     將前端標注的點位和上傳的圖片傳至 mlaas 對應的 api
     '''
-    form = CreateTemplateForm(request)
-    rid, log_main = init_log('template_create', user_id, logger)
+    form = CreateTemplateForm(data)
+    user_id = request.state.user_id
+    rid = request.state.request_id
+    logger = request.state.logger
+    
     await form.load_data()
     if await form.is_valid():
         inputs = {
@@ -42,13 +47,13 @@ async def create_template(request: CreateTemplateRequest, user_id: str = Depends
                 status_msg='OK'
             )
         elif status_code == '5401':
-            logger.error({**log_main, 'error_msg': response_table.status_uniqueviolation})
+            logger.error({'error_msg': response_table.status_uniqueviolation})
             raise MlaasRequestError(**response_table.status_uniqueviolation)
         elif status_code == '5402':
-            logger.error({**log_main, 'error_msg': response_table.status_image_type_error})
+            logger.error({'error_msg': response_table.status_image_type_error})
             raise MlaasRequestError(**response_table.status_image_type_error)
         else:
-            logger.error({**log_main, 'error_msg': outputs['outputs']})
+            logger.error({'error_msg': outputs['outputs']})
             raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
-    logger.error({**log_main, 'error_msg': {'form is not valid': {'errors': form.errors}}})
+    logger.error({'error_msg': {'form is not valid': {'errors': form.errors}}})
     raise CustomException(status_code=400, message=form.errors)

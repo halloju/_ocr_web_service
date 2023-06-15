@@ -1,18 +1,17 @@
 import json
 import os
 from datetime import datetime
+
 import requests
 from app.exceptions import MlaasRequestError
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 import jwt
 from datetime import datetime
-
-
-SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
-ALGORITHM = os.environ.get("ALGORITHM", "HS256")
-
+from starlette.requests import Request
+from aioredis import Redis
 
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
     logger.info({'call_mlaas_function': {'action': action, 'request_id': request['request_id']}})
@@ -45,7 +44,7 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
     raise MlaasRequestError(inp_post_response.status_code, inp_post_response.text)
 
 
-def init_log(action: str, uid: str, logger, rid=None):
+def init_log(action: str, logger, uid=None, rid=None):
     if not rid:
         rid = get_request_id()
     action = action
@@ -53,8 +52,13 @@ def init_log(action: str, uid: str, logger, rid=None):
     logger.info(log_main)
     return rid, log_main
 
+def get_user_id() -> str:
+    return '13520'
+
+
 def get_request_id() -> str: # celery with task_id
     return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
+
 
 def get_redis_filename(image_id: str) -> str:
     return f'celery-upload-img-meta-{image_id}'
@@ -62,6 +66,12 @@ def get_redis_filename(image_id: str) -> str:
 def get_redis_taskname(task_id: str) -> str:
     return f'celery-task-meta-{task_id}'
 
+
+def get_redis(request: Request) -> Redis:
+    return request.app.state.redis
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 async def verify_token(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -71,9 +81,9 @@ async def verify_token(token: str = Depends(oauth2_scheme)):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: Optional[str] = payload.get("sub")
-        if user_id is None:
+        username: Optional[str] = payload.get("sub")
+        if username is None:
             raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
-    return user_id
+    return username

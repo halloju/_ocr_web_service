@@ -146,3 +146,24 @@ def is_authenticated(refresh_token: Optional[str] = Cookie(None)):
         return {"isAuthenticated": True}
     except Exception as e:
         return {"isAuthenticated": False}
+
+@router.get("/login")
+def login(request: Request):
+    # Decode the refresh token
+    refresh_token_payload = {
+        "exp": datetime.utcnow() + timedelta(days=7),  # Expires in 7 days
+        "iat": datetime.utcnow(),
+        "sub": '13520',  # Replace with the actual user ID
+        "type": "refresh",  # Add a type to distinguish between access and refresh tokens
+    }
+    
+    # Generate the JWTs
+    refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    # Redirect the user back to the Vue application
+    response = Response(status_code=200)
+
+    # Set the tokens as secure, HttpOnly cookies in the response
+    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="strict")
+
+    return response

@@ -12,32 +12,22 @@ export default {
         };
     },
     mounted() {
-        axios
-            .get('/auth/sso')
-            .then((res) => {
-                const url = res.url
-                window.location.href = url
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        // axios
+        //     .get('/auth/sso')
+        //     .then((res) => {
+        //         const url = res.data
+        //         window.location.href = url
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //     });
     },
     methods: {
         login() {
             axios
                 .get('/auth/login')
                 .then((res) => {
-                    console.log(res);
-                    if (res.data.status === 'success') {
-                        this.$router.push({ path: '/home' });
-                    } else {
-                        this.$toast.add({
-                            severity: 'error',
-                            summary: '登入失敗',
-                            detail: res.data.message,
-                            life: 3000
-                        });
-                    }
+                    this.$router.push({ path: '/home' });
                 })
                 .catch((err) => {
                     console.log(err);
