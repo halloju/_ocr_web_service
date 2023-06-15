@@ -14,10 +14,6 @@ from route_utils import call_mlaas_function, get_redis_filename, init_log, get_r
 class AsyncPredictTask(object):
     def __init__(self, redis_pool, request):
         super().__init__()
-        # redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
-        # parse.uses_netloc.append('redis')
-        # url = parse.urlparse(redis_url)
-        # self.conn = redis.Redis(host=url.hostname, port=url.port, db=0, password=url.password, decode_responses=True)
         self.conn = redis_pool
         self.business_unit = "C170"
         self.project_names = {
@@ -54,8 +50,8 @@ class AsyncPredictTask(object):
                             "callback_url": f"{os.environ.get(f'GP_CALLBACK_MLAAS_URL')}\callback/controller_callback/v1",
                             "callback_body": "{\"business_unit\": \"B31\", \"request_id\": \"test\", \"inputs\": {\"image_cv_id\": \"${image_cv_id}\", \"recognition_status\": \"${recognition_status}\", \"ocr_results\": \"${ocr_results}\"}}",
                             "callback_headers": json.dumps({
-                                "x-client-id": os.environ.get(f'GP_MLAAS_XClient'),
-                                "Authorization": os.environ.get(f'GP_MLAAS_JWT')})
+                                "x-client-id": os.environ.get(f'GP_CALLBACK_MLAAS_XClient'),
+                                "Authorization": os.environ.get(f'GP_CALLBACK_MLAAS_JWT')})
                         }
                     ],
                     **input_params  # "image_class": "PASSBOOK_COVER"
