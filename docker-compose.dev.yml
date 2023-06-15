@@ -105,17 +105,17 @@ services:
       ports:
         - 5672:5672
         - 15672:15672
-    # consumer:
-    #   container_name: consumer
-    #   build: ./backend
-    #   command: python project_consume.py cv_controller
-    #   volumes:
-    #     - ./backend:/code
-    #   env_file:
-    #     - 'variable.env'
-    #   depends_on:
-    #     - zookeeper
-    #     - broker
+    consumer:
+      container_name: consumer
+      build: ./backend
+      command: python project_consume.py cv_controller
+      volumes:
+        - ./backend:/code
+      env_file:
+        - 'variable.env'
+      depends_on:
+        - zookeeper
+        - broker
     worker:
       container_name: worker
       build: ./backend
@@ -134,46 +134,46 @@ services:
         - backend
         - redis
         - rabbitmq
-    # zookeeper:
-    #   image: confluentinc/cp-zookeeper:7.0.1
-    #   container_name: zookeeper
-    #   ports:
-    #       - "2181:2181"
-    #   environment:
-    #     ZOOKEEPER_CLIENT_PORT: 2181
-    #     ZOOKEEPER_TICK_TIME: 2000
-    #     ZOOKEEPER_AUTHPROVIDER.1: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
-    #     ZOOKEEPER_REQUIRECLIENTAUTHSCHEME: sasl
-    #     KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
-    #   volumes:
-    #     - ./kafka:/etc/kafka/secrets
-    # broker:
-    #   image: confluentinc/cp-kafka:7.0.1
-    #   container_name: broker
-    #   depends_on:
-    #     - zookeeper
-    #   ports:
-    #     - "29092:29092"
-    #     - "9092:9092"
-    #     - "9101:9101"
-    #   volumes:
-    #     - ./kafka:/etc/kafka/secrets
-    #   environment:
-    #     KAFKA_BROKER_ID: 1
-    #     KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-    #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-    #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-    #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    #     KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-    #     KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-    #     KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-    #     KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true" #设置为true，ACL机制为黑名单机制
-    #     KAFKA_JMX_PORT: 9101
-    #     KAFKA_JMX_HOSTNAME: localhost
-    #     KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
-    #     KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
-    #     KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
-    #     KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
-    #     KAFKA_SUPER_USERS: User:admin
+    zookeeper:
+      image: confluentinc/cp-zookeeper:7.0.1
+      container_name: zookeeper
+      ports:
+          - "2181:2181"
+      environment:
+        ZOOKEEPER_CLIENT_PORT: 2181
+        ZOOKEEPER_TICK_TIME: 2000
+        ZOOKEEPER_AUTHPROVIDER.1: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        ZOOKEEPER_REQUIRECLIENTAUTHSCHEME: sasl
+        KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+      volumes:
+        - ./kafka:/etc/kafka/secrets
+    broker:
+      image: confluentinc/cp-kafka:7.0.1
+      container_name: broker
+      depends_on:
+        - zookeeper
+      ports:
+        - "29092:29092"
+        - "9092:9092"
+        - "9101:9101"
+      volumes:
+        - ./kafka:/etc/kafka/secrets
+      environment:
+        KAFKA_BROKER_ID: 1
+        KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+        KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true" #设置为true，ACL机制为黑名单机制
+        KAFKA_JMX_PORT: 9101
+        KAFKA_JMX_HOSTNAME: localhost
+        KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+        KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+        KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+        KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+        KAFKA_SUPER_USERS: User:admin
       
 

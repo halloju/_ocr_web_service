@@ -1,7 +1,7 @@
 from fastapi import APIRouter, File, Form, Request, UploadFile, Depends
 from pydantic.typing import List
 from logger import Logger
-from app.service.ocr.asyn_ocr_task import AsyncPredictTask
+from app.service.ocr.async_ocr_task import AsyncPredictTask
 from fastapi.responses import JSONResponse
 from route_utils import get_redis
 from aioredis import Redis
