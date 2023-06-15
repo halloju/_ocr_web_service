@@ -12,15 +12,15 @@ export default {
         };
     },
     mounted() {
-        // axios
-        //     .get('/auth/sso')
-        //     .then((res) => {
-        //         const url = res.data
-        //         window.location.href = url
-        //     })
-        //     .catch((err) => {
-        //         console.log(err);
-        //     });
+        axios
+            .get('/auth/sso')
+            .then((res) => {
+                const url = res.data
+                window.location.href = url
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     },
     methods: {
         login() {
