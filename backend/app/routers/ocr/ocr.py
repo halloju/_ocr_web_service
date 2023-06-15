@@ -11,7 +11,7 @@ from route_utils import get_redis_filename
 
 
 router = APIRouter()
-logger = Logger(__name__)
+# logger = Logger(__name__)
 
 async def process_image(request: Request, file: UploadFile, action: str, input_params: dict):
     image_id = str(uuid.uuid4())
@@ -39,6 +39,7 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
 async def process(request: Request, image_complexity: str = Form(...), model_name: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'gp_ocr'
+    logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files), 'image_complexity': image_complexity, 'model_name': model_name}})
     try:
         for file in files:
@@ -59,6 +60,7 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
 async def process(request: Request, model_name: str = Form(...), template_id: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'template_ocr'
+    logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files), 'template_id': template_id, 'model_name': model_name}})
     try:
         for file in files:
@@ -79,6 +81,7 @@ async def process(request: Request, model_name: str = Form(...), template_id: st
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     action = 'remittance'
+    logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files)}})
     try:
         for file in files:
@@ -99,6 +102,7 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     action = 'check_front'
+    logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files)}})
     try:
         for file in files:
@@ -119,6 +123,7 @@ async def process(request: Request, files: List[UploadFile] = File(...)):
 async def process(request: Request, files: List[UploadFile] = File(...)):
     tasks = []
     action = 'check_back'
+    logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files)}})
     try:
         for file in files:

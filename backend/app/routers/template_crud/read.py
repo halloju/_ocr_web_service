@@ -5,17 +5,20 @@ from app.schema.template_crud.read import (GetAvailableTemplatesResponse,
 from fastapi import APIRouter, Depends
 from logger import Logger
 from route_utils import call_mlaas_function, init_log, verify_token
+from starlette.requests import Request
 
 router = APIRouter()
 logger = Logger(__name__)
 
 
 @router.get("/get_available_templates", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(user_id: str=Depends(verify_token)):
+def get_available_templates(request: Request):
     '''
     取得該 user_id 可用的 template 清單
     '''
-    rid, log_main = init_log('get_available_templates', user_id, logger)
+    user_id = request.state.user_id
+    rid = request.state.request_id
+    logger = request.state.logger
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
@@ -28,16 +31,17 @@ def get_available_templates(user_id: str=Depends(verify_token)):
             template_infos=outputs['outputs']['template_infos']
         )
     else:
-        logger.error({**log_main, 'error_msg': outputs['outputs']})
+        logger.error({'error_msg': outputs['outputs']})
         raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
 
 
 @router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str, user_id: str=Depends(verify_token)):
+def get_template_detail(template_id: str, request: Request):
     '''
     取得該 template 的細節
     '''
-    rid, log_main = init_log('get_template_detail', user_id, logger)
+    rid = request.state.request_id
+    logger = request.state.logger
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
@@ -56,8 +60,8 @@ def get_template_detail(template_id: str, user_id: str=Depends(verify_token)):
             expiration_time=template_detail['expiration_time']
         )
     elif status_code == '5407':
-        logger.error({**log_main, 'error_msg': response_table.status_templateexisterror})
+        logger.error({'error_msg': response_table.status_templateexisterror})
         raise MlaasRequestError(**response_table.status_templateexisterror)
     else:
-        logger.error({**log_main, 'error_msg': outputs['outputs']})
+        logger.error({'error_msg': outputs['outputs']})
         raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])

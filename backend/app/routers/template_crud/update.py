@@ -2,25 +2,25 @@ from app.exceptions import CustomException
 from app.schema.common import Response
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
-from logger import Logger
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
 from route_utils import call_mlaas_function, init_log, verify_token
 from app.exceptions import MlaasRequestError
 from app import response_table
-
+from starlette.requests import Request
 
 router = APIRouter()
-logger = Logger(__name__)
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)
-async def update_template(request: UpdateTemplateRequest, user_id: str=Depends(verify_token)):
+async def update_template(data: UpdateTemplateRequest, request: Request):
     '''
     將 Feature DB 中的 template 資訊更新
     '''
-    form = UpdateTemplateForm(request)
-    rid, log_main = init_log('template_upload', user_id, logger)
+    user_id = request.state.user_id
+    rid = request.state.request_id
+    logger = request.state.logger
+    form = UpdateTemplateForm(data)
     await form.load_data()
     if await form.is_valid():
         
@@ -41,10 +41,10 @@ async def update_template(request: UpdateTemplateRequest, user_id: str=Depends(v
             new_template_id = outputs['outputs']['template_id']
             return UpdateTemplateResponse(template_id=new_template_id)
         elif status_code == '5407':
-            logger.error({**log_main, 'error_msg': response_table.status_templateexisterror})
+            logger.error({'error_msg': response_table.status_templateexisterror})
             raise MlaasRequestError(**response_table.status_templateexisterror)
         else:
-            logger.error({**log_main, 'error_msg': outputs['outputs']})
+            logger.error({'error_msg': outputs['outputs']})
             raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
-    logger.error({**log_main, 'error_msg': {'form is not valid': {'errors': form.errors}}})
+    logger.error({'error_msg': {'form is not valid': {'errors': form.errors}}})
     raise CustomException(status_code=400, message=form.errors)

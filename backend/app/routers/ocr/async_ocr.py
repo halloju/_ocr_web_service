@@ -1,29 +1,31 @@
-from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi import APIRouter, File, Form, Request, UploadFile, Depends
 from pydantic.typing import List
 from logger import Logger
-from app.service.ocr.asyn_ocr_task import AsynPredictTask
+from app.service.ocr.async_ocr_task import AsyncPredictTask
 from fastapi.responses import JSONResponse
-
+from route_utils import get_redis
+from aioredis import Redis
 
 router = APIRouter()
-logger = Logger(__name__)
-Asyn_worker = AsynPredictTask(logger)
 
 
 @router.post("/cv-ocr", summary="controller 辨識")  # responses={},
-async def cv_upload(request: Request, image_class: str = Form(...), files: List[UploadFile] = File(...)):
+async def cv_upload(request: Request, image_class: str = Form(...), files: List[UploadFile] = File(...), redis: Redis = Depends(get_redis)):
     '''
     call cv_controller api
     '''
+    async_worker = AsyncPredictTask(redis_pool=redis, request=request)
     tasks = []
     action = 'cv-ocr'
+    logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files), 'image_class': image_class}})
     try:
         for file in files:
             try:
-                task = Asyn_worker.process_image(request, file, action=action, input_params={'image_class': image_class})
+                task = await async_worker.process_image(file, action=action, input_params={'image_class': image_class})
                 tasks.append(task)
             except Exception as ex:
+                logger.error({'error_msg': str(ex)})
                 task_id = task.get('task_id', '')
                 image_id = task.get('image_id', '')
                 logger.error({'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})

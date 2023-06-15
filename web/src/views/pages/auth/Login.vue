@@ -15,7 +15,7 @@ export default {
         axios
             .get('/auth/sso')
             .then((res) => {
-                const url = res.url
+                const url = res.data
                 window.location.href = url
             })
             .catch((err) => {
@@ -27,17 +27,7 @@ export default {
             axios
                 .get('/auth/login')
                 .then((res) => {
-                    console.log(res);
-                    if (res.data.status === 'success') {
-                        this.$router.push({ path: '/home' });
-                    } else {
-                        this.$toast.add({
-                            severity: 'error',
-                            summary: '登入失敗',
-                            detail: res.data.message,
-                            life: 3000
-                        });
-                    }
+                    this.$router.push({ path: '/home' });
                 })
                 .catch((err) => {
                     console.log(err);

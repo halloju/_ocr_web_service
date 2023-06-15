@@ -5,15 +5,18 @@ from app.exceptions import (CustomException, MlaasRequestError,
                             exception_handler, mlaas_request_handler)
 from app.routers import docs
 from app.routers.image_tools import pdf_transform
-from app.routers.ocr import ocr, asyn_ocr
+from app.routers.ocr import ocr
 from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from app.routers import login
+from app.routers.ocr import async_ocr
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from logger import Logger
 from route_utils import verify_token
+from app.middleware.auth_middleware import AuthMiddleware
+from app.middleware.log_middleware import LogMiddleware
 
 
 # 設定 logger
@@ -21,7 +24,7 @@ logger = Logger('main')
 
 def register_redis(app: FastAPI) -> None:
     """
-    把 redis 掛載到 app 上面
+    Register Redis with the FastAPI application.
     :param app:
     :return:
     """
@@ -29,21 +32,28 @@ def register_redis(app: FastAPI) -> None:
     @app.on_event('startup')
     async def startup_event():
         """
-        Get Redis Connection
+        Get Redis Connection Pool
         :return:
         """
-        app.state.redis = await create_redis_pool(os.getenv("LOCAL_REDIS_URL"))
-        logger.info({'register_redis': 'startup'})
+        try:
+            app.state.redis = await create_redis_pool(os.getenv("LOCAL_REDIS_URL", "redis://localhost:6379"))
+            logger.info({'register_redis': 'startup'})
+        except Exception as e:
+            logger.error({'register_redis': 'startup failed', 'error': str(e)})
 
     @app.on_event('shutdown')
     async def shutdown_event():
         """
-        Close Redis Connection
+        Close Redis Connection Pool
         :return:
         """
-        app.state.redis.close()
-        await app.state.redis.wait_closed()
-        logger.info({'register_redis': 'shutdown'})
+        try:
+            app.state.redis.close()
+            await app.state.redis.wait_closed()
+            logger.info({'register_redis': 'shutdown'})
+        except Exception as e:
+            logger.error({'register_redis': 'shutdown failed', 'error': str(e)})
+     
 
 def get_application():
     app = FastAPI(docs_url=None,
@@ -58,7 +68,8 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
+    app.add_middleware(LogMiddleware)
+    app.add_middleware(AuthMiddleware)
     app.add_exception_handler(CustomException, exception_handler)
     app.add_exception_handler(MlaasRequestError, mlaas_request_handler)
 
@@ -68,43 +79,37 @@ def get_application():
         create.router,
         prefix="/template_crud",
         tags=["template_crud"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         read.router,
         prefix="/template_crud",
         tags=["template_crud"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         update.router,
         prefix="/template_crud",
         tags=["template_crud"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         delete.router,
         prefix="/template_crud",
         tags=["template_crud"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(
         ocr.router,
         prefix="/ocr",
         tags=["ocr"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
 
     app.include_router(
-        asyn_ocr.router,
+        async_ocr.router,
         prefix="/ocr",
         tags=["ocr"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
 
@@ -112,13 +117,11 @@ def get_application():
         task.router,
         prefix="/task",
         tags=["task"],
-        dependencies=[Depends(verify_token)],
     )
     app.include_router(
         pdf_transform.router,
         prefix="/image_tools",
         tags=["image_tools"],
-        dependencies=[Depends(verify_token)],
         responses=http_responses
     )
     app.include_router(

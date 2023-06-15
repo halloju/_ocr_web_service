@@ -9,12 +9,13 @@ from logger import Logger
 from pdf2image import convert_from_bytes
 from PIL import Image, ImageFile
 from pydantic.typing import List
+from starlette.requests import Request
+
 
 # setting
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 router = APIRouter()
-logger = Logger(__name__)
 
 def zipfiles(filenames):
     zip_filename = "archive.zip"
@@ -55,6 +56,7 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
     success_file_num = 0
     all_img_files = []
     zip_dir = tempfile.mkdtemp()
+    logger = request.state.logger
     logger.info({'upload_file_num': len(files)})
     for doc in files:
         # Read and encode the file data as base64
