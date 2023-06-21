@@ -201,7 +201,7 @@ export default {
                         this.filesize = data.image.length / 1024;
                         this.imageSource = `data:image/jpeg;base64,${data.image}`;
                         this.isFileUploaded = !this.isFileUploaded;
-                        this.createNew = false;
+                        // this.createNew = false;
                     } catch (error) {
                         console.error('Error parsing JSON data:', error);
                     }
