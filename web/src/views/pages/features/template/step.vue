@@ -31,7 +31,7 @@ export default {
             isEditing: false,
             disableInput: false,
             templateNameEdit: false,
-            input: sessionStorage.getItem('templateName') || '',
+            input: this.$store.state.templateName || '',
             imageSrc: sessionStorage.getItem('imageSource') || '',
             initialData: {
                 text: [],
@@ -51,6 +51,7 @@ export default {
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
+        this.$store.commit('templateNameUpdate', '');
     },
     mounted() {
         this.isFinalStep();
@@ -204,7 +205,7 @@ export default {
                         this.clearState();
                         this.$router.push({ path: '/features/general/model-list' });
                     } else {
-                        console.log(err);
+                        console.log(res);
                         ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
@@ -256,7 +257,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['selfDefinedRecs']),
+        ...mapState(['templateName']),
         buttonText() {
             return this.templateNameEdit ? '編輯' : '確認';
         },
@@ -277,6 +278,9 @@ export default {
     watch: {
         currentStep() {
             this.isFinalStep();
+        },
+        templateName(newName) {
+            this.input = newName;
         }
     }
 };

@@ -358,7 +358,7 @@ export default {
             // load from initial data
             if (this.initialData) {
                 this.shapes = this.initialData;
-                if(this.shapes[0].annotation.title == '') this.isTitle = false;
+                if (this.shapes[0].annotation.title == '') this.isTitle = false;
                 // if we only show data, remove draggable from it
                 if (!this.editMode) {
                     this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
