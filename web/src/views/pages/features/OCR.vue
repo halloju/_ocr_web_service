@@ -7,10 +7,6 @@ export default {
     },
     data() {
         return {
-            category: {
-                name: 'general',
-                limit: 20
-            },
             title: '',
             subtitle: '',
             description: '',
@@ -30,6 +26,7 @@ export default {
         this.useLanguage = ocrConfig.useLanguage;
         this.imageClass = ocrConfig.imageClass;
         this.defaultImgURL = ocrConfig.defaultImgURL;
+        this.category = ocrConfig.category;
     },
     watch: {
         $route(to, from) {
@@ -44,6 +41,7 @@ export default {
             this.useLanguage = ocrConfig.useLanguage;
             this.imageClass = ocrConfig.imageClass;
             this.defaultImgURL = ocrConfig.defaultImgURL;
+            this.category = ocrConfig.category;
         }
     },
     methods: {
@@ -56,7 +54,11 @@ export default {
                     apiUrl: '/ocr/gp_ocr',
                     useModelComplexity: true,
                     useLanguage: true,
-                    defaultImgURL: ''
+                    defaultImgURL: '',
+                    category: {
+                        name: 'general',
+                        limit: 20
+                    }
                 },
                 template: {
                     title: '模板辨識',
@@ -65,7 +67,11 @@ export default {
                     apiUrl: '/ocr/template_ocr',
                     useModelComplexity: false,
                     useLanguage: true,
-                    defaultImgURL: ''
+                    defaultImgURL: '',
+                    category: {
+                        name: 'general',
+                        limit: 20
+                    }
                 },
                 remittance: {
                     title: '票據辨識',
@@ -74,7 +80,11 @@ export default {
                     apiUrl: '/ocr/remittance',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/remittance.jpg'
+                    defaultImgURL: 'src/assets/img/example/remittance.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 check_front: {
                     title: '票據辨識',
@@ -83,7 +93,11 @@ export default {
                     apiUrl: '/ocr/check_front',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/check_front.jpg'
+                    defaultImgURL: 'src/assets/img/example/check_front.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 check_back: {
                     title: '票據辨識',
@@ -102,7 +116,11 @@ export default {
                     imageClass: 'ID',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/id.jpg'
+                    defaultImgURL: 'src/assets/img/example/id.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 driver_license: {
                     title: '人證辨識',
@@ -112,7 +130,11 @@ export default {
                     imageClass: 'DRIVER_LICENSE',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/driver_license.jpg'
+                    defaultImgURL: 'src/assets/img/example/driver_license.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 health_insurance: {
                     title: '人證辨識',
@@ -122,7 +144,11 @@ export default {
                     imageClass: 'HEALTH_INSURANCE',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/health_insurance.jpg'
+                    defaultImgURL: 'src/assets/img/example/health_insurance.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 withholding: {
                     title: '財證辨識',
@@ -132,7 +158,11 @@ export default {
                     imageClass: 'WITHHOLDING_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/ws.jpg'
+                    defaultImgURL: 'src/assets/img/example/ws.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 financial_statement: {
                     title: '財證辨識',
@@ -142,7 +172,11 @@ export default {
                     imageClass: 'NTB_FINANCIAL_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/fs.jpg'
+                    defaultImgURL: 'src/assets/img/example/fs.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 }
                 // Add more OCR types here
             };
