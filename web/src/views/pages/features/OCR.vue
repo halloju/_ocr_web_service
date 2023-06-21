@@ -29,6 +29,7 @@ export default {
         this.useModelComplexity = ocrConfig.useModelComplexity;
         this.useLanguage = ocrConfig.useLanguage;
         this.imageClass = ocrConfig.imageClass;
+        this.defaultImgURL = ocrConfig.defaultImgURL;
     },
     watch: {
         $route(to, from) {
@@ -42,6 +43,7 @@ export default {
             this.useModelComplexity = ocrConfig.useModelComplexity;
             this.useLanguage = ocrConfig.useLanguage;
             this.imageClass = ocrConfig.imageClass;
+            this.defaultImgURL = ocrConfig.defaultImgURL;
         }
     },
     methods: {
@@ -53,7 +55,8 @@ export default {
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/gp_ocr',
                     useModelComplexity: true,
-                    useLanguage: true
+                    useLanguage: true,
+                    defaultImgURL: ''
                 },
                 template: {
                     title: '模板辨識',
@@ -61,7 +64,8 @@ export default {
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/template_ocr',
                     useModelComplexity: false,
-                    useLanguage: true
+                    useLanguage: true,
+                    defaultImgURL: ''
                 },
                 remittance: {
                     title: '票據辨識',
@@ -69,7 +73,8 @@ export default {
                     description: '請上傳一張，下一步會進行辨識並可以進行檢視。',
                     apiUrl: '/ocr/remittance',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/remittance.jpg'
                 },
                 check_front: {
                     title: '票據辨識',
@@ -77,7 +82,8 @@ export default {
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/check_front',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/check_front.jpg'
                 },
                 check_back: {
                     title: '票據辨識',
@@ -85,7 +91,8 @@ export default {
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/check_back',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/check_back.jpg'
                 },
                 id: {
                     title: '人證辨識',
@@ -94,7 +101,8 @@ export default {
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'ID',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/id.jpg'
                 },
                 driver_license: {
                     title: '人證辨識',
@@ -103,7 +111,8 @@ export default {
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'DRIVER_LICENSE',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/driver_license.jpg'
                 },
                 health_insurance: {
                     title: '人證辨識',
@@ -112,7 +121,8 @@ export default {
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'HEALTH_INSURANCE',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/health_insurance.jpg'
                 },
                 withholding: {
                     title: '財證辨識',
@@ -121,7 +131,8 @@ export default {
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'WITHHOLDING_STATEMENT',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/ws.jpg'
                 },
                 financial_statement: {
                     title: '財證辨識',
@@ -130,7 +141,8 @@ export default {
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'NTB_FINANCIAL_STATEMENT',
                     useModelComplexity: false,
-                    useLanguage: false
+                    useLanguage: false,
+                    defaultImgURL: 'src/assets/img/example/fs.jpg'
                 }
                 // Add more OCR types here
             };
@@ -142,6 +154,6 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" />
+        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" :defaultImgURL="defaultImgURL" />
     </div>
 </template>
