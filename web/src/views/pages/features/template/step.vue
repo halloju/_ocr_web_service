@@ -2,7 +2,7 @@
 import Annotation from '@/components/Annotation.vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { mapState } from 'vuex';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { initializeClient } from '@/service/auth.js';
@@ -189,6 +189,11 @@ export default {
                 };
                 action = 'update_template';
             }
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             this.apiClient
                 .post(`/template_crud/${action}`, body)
                 .then((res) => {
@@ -229,6 +234,7 @@ export default {
                         roundButton: true
                     });
                 });
+                loading.close();
         },
         isFinalStep() {
             if (this.currentStep === 4) {

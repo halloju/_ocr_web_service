@@ -106,7 +106,11 @@ export default {
                     apiUrl: '/ocr/check_back',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/check_back.jpg'
+                    defaultImgURL: 'src/assets/img/example/check_back.jpg',
+                    category: {
+                        name: 'special',
+                        limit: 1
+                    }
                 },
                 id: {
                     title: '人證辨識',
