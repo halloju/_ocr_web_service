@@ -14,6 +14,11 @@ class LogMiddleware(BaseHTTPMiddleware):
     ):
         super().__init__(app)
     async def dispatch(self, request: Request, call_next):
+        bypass_auth_paths = ["/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json", "/auth"]
+        if any(request.url.path.startswith(path) for path in bypass_auth_paths):
+            print('Docs')
+            return await call_next(request)
+        
         uid = request.state.user_id
         #uid = getattr(request.state, "user_id", None)
         rid = get_request_id()
