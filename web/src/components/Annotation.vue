@@ -49,7 +49,8 @@ export default {
                 linkTitle: '',
                 link: ''
             },
-            isShowText: this.setShowText
+            isShowText: this.setShowText,
+            isTitle: true
         };
     },
     watch: {
@@ -357,6 +358,7 @@ export default {
             // load from initial data
             if (this.initialData) {
                 this.shapes = this.initialData;
+                if(this.shapes[0].annotation.title == '') this.isTitle = false;
                 // if we only show data, remove draggable from it
                 if (!this.editMode) {
                     this.shapes.forEach((shape) => shape.draggable && delete shape.draggable);
@@ -393,7 +395,7 @@ export default {
                 <hr />
                 <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
                 <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-                <a href="#" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
+                <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
             </div>
             <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
 
