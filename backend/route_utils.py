@@ -23,8 +23,8 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
         action = action.split('/')[1]
         connection_url = f'{mlaas_url}/{action}'
         headers = {
-            'X-Client-Id': os.environ.get(f'{project}_MLAAS_XClient'),
-            'Authorization': os.environ.get(f'{project}_MLAAS_JWT'),
+            'X-Client-Id': os.environ.get(f'MLAAS_XClient'),
+            'Authorization': os.environ.get(f'MLAAS_JWT'),
             'Content-Type': 'application/json'
         }
         inp_post_response = requests.post(f'{connection_url}/v1', json=request, headers=headers, timeout=timeout, verify=False)

@@ -2,7 +2,7 @@
 import Annotation from '@/components/Annotation.vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { mapState } from 'vuex';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { initializeClient } from '@/service/auth.js';
@@ -31,7 +31,7 @@ export default {
             isEditing: false,
             disableInput: false,
             templateNameEdit: false,
-            input: sessionStorage.getItem('templateName') || '',
+            input: this.$store.state.templateName || '',
             imageSrc: sessionStorage.getItem('imageSource') || '',
             initialData: {
                 text: [],
@@ -51,6 +51,7 @@ export default {
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
+        this.$store.commit('templateNameUpdate', '');
     },
     mounted() {
         this.isFinalStep();
@@ -188,6 +189,11 @@ export default {
                 };
                 action = 'update_template';
             }
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             this.apiClient
                 .post(`/template_crud/${action}`, body)
                 .then((res) => {
@@ -204,7 +210,7 @@ export default {
                         this.clearState();
                         this.$router.push({ path: '/features/general/model-list' });
                     } else {
-                        console.log(err);
+                        console.log(res);
                         ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
@@ -228,6 +234,7 @@ export default {
                         roundButton: true
                     });
                 });
+                loading.close();
         },
         isFinalStep() {
             if (this.currentStep === 4) {
@@ -256,7 +263,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['selfDefinedRecs']),
+        ...mapState(['templateName']),
         buttonText() {
             return this.templateNameEdit ? '編輯' : '確認';
         },
@@ -277,6 +284,9 @@ export default {
     watch: {
         currentStep() {
             this.isFinalStep();
+        },
+        templateName(newName) {
+            this.input = newName;
         }
     }
 };

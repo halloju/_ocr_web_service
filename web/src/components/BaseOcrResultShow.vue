@@ -193,7 +193,7 @@ export default {
                     jsonWorkSheet: jsonWorkSheet
                 }
             };
-            XLSX.writeFile(workBook, '通用辨識結果.xlsx');
+            XLSX.writeFile(workBook, '辨識結果.xlsx');
         }
 
         // Start to pull the status

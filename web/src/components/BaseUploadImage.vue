@@ -26,12 +26,14 @@ export default {
         },
         imageClass: {
             type: String
+        },
+        defaultImgURL: {
+            type: String
         }
     },
     setup(props, { emit }) {
         const store = useStore();
         const apiClient = ref(null);
-
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
             { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
@@ -60,7 +62,6 @@ export default {
                 return false;
             }
         });
-
         async function submit() {
             const generalImageResponseList = [];
             const responseData = {};
@@ -124,7 +125,26 @@ export default {
                 emit('nextStepEmit', 2);
             }, 1000);
         }
+        async function takeDefault() {
+            const imageUrl = props.defaultImgURL;
 
+            // Fetch the image data from the URL
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+
+            // Create a File object from Blob
+            const file = new File([blob], 'default.jpg', {type: 'image/jpeg'});
+            const fileDict = {
+                name: 'default.jpeg',
+                url: imageUrl,
+                raw: file,
+                size: file.size,
+                type: file.type
+            }
+            console.log(file)
+
+            beforeUpload(fileDict)
+        }
         function beforeUpload(file) {
             // Check file size && file type
             const isIMAGE = file.type === 'image/jpeg' || 'image/png';
@@ -219,11 +239,13 @@ export default {
             imgWidth,
             dialogWidth,
             dialogImageUrl,
+            defaultImgURL: props.defaultImgURL,
             isUploadDisabled,
             category: props.category,
             useModelComplexity: props.useModelComplexity,
             useLanguage: props.useLanguage,
             switchValue,
+            takeDefault,
             submit,
             beforeUpload,
             handleRemove,
@@ -239,6 +261,7 @@ export default {
     <div class="grid p-fluid">
         <div class="col-12 md:col-9">
             <div class="card">
+                <el-button type="plain" class="mr-2 mb-2" style="width: 20%" @click="takeDefault" v-if="(fileList.length == 0) & (defaultImgURL != '')"> 帶入範例圖片 </el-button>
                 <el-upload
                     :file-list="fileList"
                     list-type="picture-card"

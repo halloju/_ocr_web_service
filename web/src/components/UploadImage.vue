@@ -72,7 +72,7 @@ export default {
                         sessionStorage.imageSource = this.imageSource;
                         sessionStorage.filename = this.filename;
                         sessionStorage.filesize = this.filesize;
-                        this.$store.commit('recsClear');
+                        // this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
                 } else {
@@ -106,7 +106,7 @@ export default {
                         sessionStorage.imageSource = this.imageSource;
                         sessionStorage.filename = this.filename;
                         sessionStorage.filesize = this.filesize;
-                        this.$store.commit('recsClear');
+                        // this.$store.commit('recsClear');
                     };
                     reader.readAsDataURL(file);
                 } else {
@@ -124,7 +124,7 @@ export default {
             this.wrongFile = false;
             sessionStorage.clear();
             this.$refs.inputFile.value = '';
-            this.$store.commit('recsClear');
+            // this.$store.commit('recsClear');
         },
         openfolder() {
             this.$refs.inputFile.click();
