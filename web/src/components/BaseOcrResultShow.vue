@@ -35,6 +35,7 @@ export default {
         const isRunning = ref(false);
         const finishedStatus = ref(['SUCCESS', 'FAIL']);
         const general_upload_res = computed(() => store.state.general_upload_res);
+        const image_cv_id = ref('');
         const getExcelData = () => {
             let excelData = [];
             general_upload_res.value.forEach((item) => {
@@ -54,15 +55,9 @@ export default {
             return excelData;
         };
         function callback(data, image_cv_id) {
-            for (let i = 0; i < general_upload_res.value.length; i++) {
-                if (image_cv_id === general_upload_res[i].image_id) {
-                    for (let j = 0; j < general_upload_res[i].ocr_results.length; j++) {
-                        general_upload_res[i].ocr_results[j].text = data[j].annotation.text;
-                    }
-                    break;
-                }
-            }
+            store.dispatch('updateGeneralImageOcrResults', { data, image_cv_id });
         }
+        
 
         function getStatusColor(status) {
             switch (status) {
@@ -161,6 +156,7 @@ export default {
             num.value = fileInfo[0].num;
             let ocr_results = general_upload_res.value.filter((item) => item.task_id === row.task_id)[0].ocr_results;
             initialData.value = parseOcrDetail(ocr_results);
+            image_cv_id.value = row.image_id;
         }
 
         function back() {
@@ -231,7 +227,8 @@ export default {
             waitUntilOcrComplete,
             handleButtonClick,
             back,
-            downloadFile
+            downloadFile,
+            image_cv_id
         };
     },
     computed: {
@@ -293,7 +290,7 @@ export default {
                         <div v-if="imageSrc !== null">
                             <p>號碼：{{ num }}</p>
                             <p>檔名：{{ file_name }}</p>
-                            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" dataCallback="" :initialData="initialData" initialDataId="" image_cv_id=""></Annotation>
+                            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" :dataCallback="callback" :initialData="initialData" initialDataId="" :image_cv_id="image_cv_id"></Annotation>
                         </div>
                     </div>
                 </div>

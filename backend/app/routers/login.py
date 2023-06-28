@@ -47,19 +47,29 @@ router = APIRouter()
 @router.get("/sso")
 async def sso(request: Request):
     req = await prepare_from_fastapi_request(request)
-    saml_auth = init_saml_auth(req)
-    callback_url = saml_auth.login()
+    try:
+        saml_auth = init_saml_auth(req)
+        callback_url = saml_auth.login()
+    except Exception as e:
+        request.state.logger.error(e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
     response = Response(callback_url)
     return response
 
-
 @router.post("/acs")
 async def acs(request: Request):
-    req = await prepare_from_fastapi_request(request)
-    saml_auth = init_saml_auth(req)
+    try:
+        req = await prepare_from_fastapi_request(request)
+        saml_auth = init_saml_auth(req)
+    except Exception as e:
+        request.state.logger.error(e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
     saml_auth.process_response()
     if not saml_auth.is_authenticated():
-        return Response(headers={"Location": f"/#/home"}, status_code=400, content={"detail": "Not authenticated"})
+        request.state.logger.error(saml_auth.get_last_error_reason())
+        return Response(headers={"Location": f"/"}, status_code=400)
 
     # Get user attributes from the SAML response
     user_attributes = saml_auth.get_attributes()

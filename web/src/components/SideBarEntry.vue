@@ -20,7 +20,8 @@ export default {
                 text: '',
                 linkTitle: '',
                 link: ''
-            }
+            },
+            shouldBeDisabled: false
         };
     },
     created() {
@@ -105,9 +106,12 @@ export default {
                 </form>
             </template>
             <template v-else>
-                <form  v-if="formData.text != undefined && formData.text != ''" class="pa-annotation-form" @submit.prevent.stop="submitted">
+                <!-- v-if="formData.text != undefined && formData.text != ''" -->
+                <form  v-if="formData.text != undefined" class="pa-annotation-form" @submit.prevent.stop="submitted">
                     <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-                    <textarea  name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly />
+                    <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="shouldBeDisabled" />
+                    <button  type="submit">{{ submit }}</button>
+                    <!-- <textarea  name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly /> -->
                 </form>
             </template>
         </div>
