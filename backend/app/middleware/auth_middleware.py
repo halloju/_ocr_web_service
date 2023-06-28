@@ -22,7 +22,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         # Check if the requested path starts with any of the paths in the bypass_auth_paths list
         if any(request.url.path.startswith(path) for path in bypass_auth_paths):
-            print('Docs')
+            request.state.user_id = 'nan'
             return await call_next(request)
 
         # Extract the token from the headers
