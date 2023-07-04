@@ -14,7 +14,7 @@ def config_logging(filename='log_config.yml'):
         log_config.dictConfig(config)
 
 class Logger(object):
-    def __init__(self, section_name, project_name='if_gp_ocr_system_backend') -> None:
+    def __init__(self, section_name, project_name='gp_ocr') -> None:
         config_logging()
         self.logger = logging.getLogger(project_name)
         self.section_name = section_name

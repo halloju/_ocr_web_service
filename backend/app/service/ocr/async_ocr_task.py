@@ -5,10 +5,8 @@ import base64
 import json
 import os
 import uuid
-from urllib import parse
 
-import redis
-from route_utils import call_mlaas_function, get_redis_filename, init_log, get_redis_taskname, get_redis
+from route_utils import call_mlaas_function, get_redis_filename, get_redis_taskname
 
 
 class AsyncPredictTask(object):

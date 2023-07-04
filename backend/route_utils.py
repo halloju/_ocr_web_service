@@ -9,7 +9,6 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 import jwt
-from datetime import datetime
 from starlette.requests import Request
 from aioredis import Redis
 
@@ -43,22 +42,6 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
         'error_msg': inp_post_response.text
     }})
     raise MlaasRequestError(inp_post_response.status_code, inp_post_response.text)
-
-
-def init_log(action: str, logger, uid=None, rid=None):
-    if not rid:
-        rid = get_request_id()
-    action = action
-    log_main = {'user_id': uid, 'request_id': rid, 'action': action}
-    logger.info(log_main)
-    return rid, log_main
-
-def get_user_id() -> str:
-    return '13520'
-
-
-def get_request_id() -> str: # celery with task_id
-    return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_system_test'
 
 
 def get_redis_filename(image_id: str) -> str:

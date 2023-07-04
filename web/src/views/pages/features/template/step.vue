@@ -51,7 +51,6 @@ export default {
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
-        this.$store.commit('templateNameUpdate', '');
     },
     mounted() {
         this.isFinalStep();
@@ -246,6 +245,7 @@ export default {
         clearState() {
             // remove all localStorage
             sessionStorage.clear();
+            this.$store.commit('setTemplateName', '');
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;

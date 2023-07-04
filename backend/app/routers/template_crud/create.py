@@ -6,7 +6,7 @@ from app.schema.template_crud.create import (CreateTemplateRequest,
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from logger import Logger
-from route_utils import call_mlaas_function, init_log, verify_token
+from route_utils import call_mlaas_function, verify_token
 from starlette.requests import Request
 
 

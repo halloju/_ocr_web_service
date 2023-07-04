@@ -192,6 +192,7 @@ export default {
         function createTemplate() {
             sessionStorage.clear();
             store.commit('createNewUpdate', true);
+            store.commit('templateNameUpdate', '');
             router.push({ name: 'SelfDefine' });
         }
 
@@ -222,7 +223,8 @@ export default {
                 sessionStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
             }
             sessionStorage.setItem('template_id', template_id);
-            sessionStorage.setItem('templateName', response['data'].template_name);
+            // sessionStorage.setItem('templateName', response['data'].template_name);
+            store.commit('templateNameUpdate', response['data'].template_name);
             store.commit('createNewUpdate', false);
             router.push({ name: 'SelfDefine' });
         }

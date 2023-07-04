@@ -1,12 +1,13 @@
 # auth_middleware.py
-import jwt
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.requests import Request
-from starlette.responses import Response, JSONResponse
-import os
-from fastapi import HTTPException, status
 import fnmatch
+import os
 
+import jwt
+from fastapi import HTTPException, status
+from starlette.middleware.base import (BaseHTTPMiddleware,
+                                       RequestResponseEndpoint)
+from starlette.requests import Request
+from starlette.responses import JSONResponse, Response
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
@@ -15,7 +16,7 @@ ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
-    
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # List of paths that should bypass authentication
         bypass_auth_paths = ["/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json", "/auth"]

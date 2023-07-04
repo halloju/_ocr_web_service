@@ -3,8 +3,7 @@ from app.exceptions import MlaasRequestError
 from app.schema.common import Response
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
-from logger import Logger
-from route_utils import call_mlaas_function, init_log, verify_token
+from route_utils import call_mlaas_function
 
 router = APIRouter()
 # logger = Logger(__name__)
