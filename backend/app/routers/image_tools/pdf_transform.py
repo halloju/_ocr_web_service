@@ -52,7 +52,6 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
     all_img_files = []
     zip_dir = tempfile.mkdtemp()
     logger = request.state.logger
-    logger.info(os.listdir(zip_dir))
     logger.info({'upload_file_num': len(files)})
     for doc in files:
         # Read and encode the file data as base64
