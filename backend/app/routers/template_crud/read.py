@@ -2,13 +2,11 @@ from app import response_table
 from app.exceptions import MlaasRequestError
 from app.schema.template_crud.read import (GetAvailableTemplatesResponse,
                                            GetTemplateDetailResponse)
-from fastapi import APIRouter, Depends
-from logger import Logger
-from route_utils import call_mlaas_function, init_log, verify_token
+from fastapi import APIRouter
+from route_utils import call_mlaas_function
 from starlette.requests import Request
 
 router = APIRouter()
-logger = Logger(__name__)
 
 
 @router.get("/get_available_templates", response_model=GetAvailableTemplatesResponse)

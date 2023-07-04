@@ -1,11 +1,10 @@
 from app.exceptions import CustomException
-from app.schema.common import Response
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.encoders import jsonable_encoder
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
-from route_utils import call_mlaas_function, init_log, verify_token
+from route_utils import call_mlaas_function
 from app.exceptions import MlaasRequestError
 from app import response_table
 from starlette.requests import Request

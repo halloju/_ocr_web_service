@@ -31,7 +31,6 @@ class ResultConsumer(BaseConsumer):
                 old_data['status'] = 'FAIL'
             else:
                 old_data = json.loads(old_data)
-                self.logger_tool.info(old_data)
                 old_data['result'] = self.msg_func(msg['ocr_results'])
                 old_data['status'] = 'SUCCESS'
             self.redis_server.set(full_key, json.dumps(old_data))  # replace

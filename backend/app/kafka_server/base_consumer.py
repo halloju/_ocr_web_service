@@ -17,7 +17,6 @@ class BaseConsumer(object):
         self.logger_tool = Logger(__name__)
 
         self.kafka_config = kafka_configs
-        self.logger_tool.info(kafka_configs)
         self.consumer = Consumer(self.kafka_config)
         self.logger_tool.info({'msg': str(self.consumer.list_topics().topics)})
         # self.logger_tool.info({'Available topics to consume: ', self.consumer.list_topics().topics})
@@ -34,7 +33,6 @@ class BaseConsumer(object):
                 if not msg:
                     continue
                 if msg.error():
-                    self.logger_tool.error(msg.error().str())
                     self.logger_tool.error({
                         'consumer': {
                             'error_code': msg.error().code(),
