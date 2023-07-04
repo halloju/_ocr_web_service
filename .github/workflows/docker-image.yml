@@ -64,7 +64,7 @@ jobs:
         id: buildx
         run: |
           # {Your Organization}/{my-app} 請置換成 DockerHub 或 GHCR 喔~~
-          docker build . --file ${{ env.Dockerfile }} --tag docker.io/${{ env.username }}/${{ env.IMAGE }}:${{ env.tags }} 
+          docker build {{env.args}} . --file ${{ env.Dockerfile }} --tag docker.io/${{ env.username }}/${{ env.IMAGE }}:${{ env.tags }} 
         working-directory: ${{ env.component }}
   
       - name: Run Trivy vulnerability scanner
