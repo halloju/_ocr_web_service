@@ -37,7 +37,7 @@ async def prepare_from_fastapi_request(request, debug=False):
 
 
 def init_saml_auth(req):
-    auth = OneLogin_Saml2_Auth(req, custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static')) ## saml
+    auth = OneLogin_Saml2_Auth(req, custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'smal'))  # saml
     return auth
 
 
