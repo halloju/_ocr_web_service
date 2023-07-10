@@ -34,10 +34,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             uid = payload.get("sub")
             if uid is None:
                 return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": "Could not validate credentials"})
-            if (type(uid) == list):
-                request.state.user_id = uid[0]  # list
-            else:
-                request.state.user_id = uid
+            request.state.user_id = uid
         except jwt.PyJWTError:
             return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": "Could not validate credentials"})
         except Exception as e:
