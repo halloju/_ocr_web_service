@@ -55,7 +55,7 @@ class AsyncPredictTask(object):
                     **input_params  # "image_class": "PASSBOOK_COVER"
                 }
             } 
-            data_pred = call_mlaas_function(
+            data_pred = await call_mlaas_function(
                 input_data,
                 action=self.endpoints[action],
                 project=self.project_names[action],

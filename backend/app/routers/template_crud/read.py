@@ -3,14 +3,14 @@ from app.exceptions import MlaasRequestError
 from app.schema.template_crud.read import (GetAvailableTemplatesResponse,
                                            GetTemplateDetailResponse)
 from fastapi import APIRouter
-from route_utils import call_mlaas_function
+from route_utils import async_call_mlaas_function
 from starlette.requests import Request
 
 router = APIRouter()
 
 
 @router.get("/get_available_templates", response_model=GetAvailableTemplatesResponse)
-def get_available_templates(request: Request):
+async def get_available_templates(request: Request):
     '''
     取得該 user_id 可用的 template 清單
     '''
@@ -22,7 +22,7 @@ def get_available_templates(request: Request):
         "request_id": rid,
         "inputs": {'user_id': user_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/get_available_templates', project='GP', logger=logger)
+    outputs = await async_call_mlaas_function(input_data, 'template_crud/get_available_templates', project='GP', logger=logger)
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return GetAvailableTemplatesResponse(
@@ -34,7 +34,7 @@ def get_available_templates(request: Request):
 
 
 @router.get("/get_template_detail/{template_id}", response_model=GetTemplateDetailResponse)
-def get_template_detail(template_id: str, request: Request):
+async def get_template_detail(template_id: str, request: Request):
     '''
     取得該 template 的細節
     '''
@@ -45,7 +45,7 @@ def get_template_detail(template_id: str, request: Request):
         "request_id": rid,
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/get_template_detail', project='GP', logger=logger)
+    outputs = await async_call_mlaas_function(input_data, 'template_crud/get_template_detail', project='GP', logger=logger)
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         template_detail = outputs['outputs']['template_detail']
