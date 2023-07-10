@@ -78,7 +78,7 @@ async def acs(request: Request):
     refresh_token_payload = {
             "exp": datetime.utcnow() + timedelta(days=7),  # Expires in 7 days
             "iat": datetime.utcnow(),
-            "sub": user_attributes['EmployeeID'],  # Replace with the actual user ID
+            "sub": user_attributes['EmployeeID'][0],  # Replace with the actual user ID
             "type": "refresh",  # Add a type to distinguish between access and refresh tokens
     }
     
