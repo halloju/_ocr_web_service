@@ -232,8 +232,10 @@ export default {
                         closeOnClickModal: false,
                         roundButton: true
                     });
+                })
+                .finally(() => {
+                    loading.close();
                 });
-                loading.close();
         },
         isFinalStep() {
             if (this.currentStep === 4) {
