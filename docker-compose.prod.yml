@@ -33,12 +33,13 @@ services:
         restart: always
     web:
         container_name: web
+        image: 70804/if_gp_ocr_system_web:v1.0.15-prod
         # image: halloju/if_gp_ocr_system_web:v1.0.1
-        build:
-          context: ./web
-          dockerfile: Dockerfile.prod
-          args: 
-            - VITE_APP_VERSION=v1.0.14
+        # build:
+        #   context: ./web
+        #   dockerfile: Dockerfile.prod
+        #   args: 
+        #     - VITE_APP_VERSION=v1.0.14
         ports:
           - '80:80'
         environment:
@@ -48,10 +49,13 @@ services:
           - backend
     backend:
         container_name: backend
-        build: "backend/."
+        # build: "backend/."
+        image: 70804/if_gp_ocr_system_backend:v1.0.18
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
+        volumes:
+          - ./log:/code/app/log
         environment:
           - MODE=dev
           - CELERY_BROKER_URL=amqp://rabbitmq
@@ -78,6 +82,10 @@ services:
         image: "redis:6.2.6-alpine"
         ports:
           - "6379:6379"
+        volumes:
+          - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+        command:
+          redis-server /usr/local/etc/redis/redis.conf
     rabbitmq:
       container_name: rabbitmq
       image: rabbitmq:rabbitmq:3.9.11-alpine
@@ -89,7 +97,7 @@ services:
       build: ./backend
       command: celery worker --app=worker.celery
       volumes:
-        - ./log:/code/app/logger
+        - ./log:/code/app/log
       environment:
         - CELERY_BROKER_URL=amqp://rabbitmq
         - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -97,3 +105,10 @@ services:
         - backend
         - redis
         - rabbitmq
+    consumer:
+      container_name: consumer
+      build: ./backend
+      command: python project_consume.py cv_controller
+      volumes:
+        - ./backend:/code
+        - ./log:/code/app/log
