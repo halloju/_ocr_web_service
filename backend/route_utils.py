@@ -36,7 +36,7 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
         'call_mlaas_function': {'response': inp_post_response.json()}
     })
     if inp_post_response.status_code == 200:
-        print("inp_post_response.content.decode('utf-8')", inp_post_response.content.decode('utf-8'))
+        # print("inp_post_response.content.decode('utf-8')", inp_post_response.content.decode('utf-8'))
         return json.loads(inp_post_response.content.decode('utf-8'))
     logger.error({'call_mlaas_function': {
         'error_msg': inp_post_response.text
