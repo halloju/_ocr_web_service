@@ -33,13 +33,13 @@ services:
         restart: always
     web:
         container_name: web
-        image: 70804/if_gp_ocr_system_web:v1.0.15-prod
+        # image: 70804/if_gp_ocr_system_web:v1.0.15-prod
         # image: halloju/if_gp_ocr_system_web:v1.0.1
-        # build:
-        #   context: ./web
-        #   dockerfile: Dockerfile.prod
-        #   args: 
-        #     - VITE_APP_VERSION=v1.0.14
+        build:
+          context: ./web
+          dockerfile: Dockerfile.prod
+          args: 
+            - VITE_APP_VERSION=v1.0.14
         ports:
           - '80:80'
         environment:
@@ -49,8 +49,8 @@ services:
           - backend
     backend:
         container_name: backend
-        # build: "backend/."
-        image: 70804/if_gp_ocr_system_backend:v1.0.18
+        build: "backend/."
+        # image: 70804/if_gp_ocr_system_backend:v1.0.18
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
