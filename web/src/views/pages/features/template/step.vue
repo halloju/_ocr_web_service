@@ -342,7 +342,7 @@ export default {
     <div v-if="currentStep > 0" class="grid p-fluid">
         <div class="col-12">
             <div class="card">
-                <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="editMode" dataCallback="" initialDataId="" image_cv_id="" :rectangleType="rectangleType" :localStorageKey="localStorageKey" :setShowText="true" height="600" />
+                <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="editMode" dataCallback="" initialDataId="" image_cv_id="" :rectangleType="rectangleType" :localStorageKey="localStorageKey" :setShowText="true" height="600" :justShow="true" />
             </div>
         </div>
     </div>

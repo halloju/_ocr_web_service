@@ -108,8 +108,8 @@ export default {
             <template v-else>
                 <!-- v-if="formData.text != undefined && formData.text != ''" -->
                 <form  v-if="formData.text != undefined" class="pa-annotation-form" @submit.prevent.stop="submitted">
-                    <label :for="shape.name + '-text'">{{ annotation_text }}</label>
-                    <textarea name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" />
+                    <label v-if="!justShow" :for="shape.name + '-text'">{{ annotation_text }}</label>
+                    <textarea v-if="!justShow" name="text" :id="shape.name + '-text'" v-model="formData.text" />
                     <button v-if="!justShow" type="submit">{{ submit }}</button>
                     <!-- <textarea  name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly /> -->
                 </form>
