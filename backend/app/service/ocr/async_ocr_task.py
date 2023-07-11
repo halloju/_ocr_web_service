@@ -55,7 +55,7 @@ class AsyncPredictTask(object):
                     **input_params  # "image_class": "PASSBOOK_COVER"
                 }
             } 
-            data_pred = await call_mlaas_function(
+            data_pred = call_mlaas_function(
                 input_data,
                 action=self.endpoints[action],
                 project=self.project_names[action],
@@ -72,7 +72,7 @@ class AsyncPredictTask(object):
         file_name = await self.conn.get(get_redis_filename(image_id))
         image_cv_id = 'cv-'+str(uuid.uuid4())
         try:
-            response = await self.predict(image_id, action=action, input_params=input_params)
+            response = self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
             # Get the file name from Redis using the image ID as the key
             if (response['outputs']['image_cv_id']):
