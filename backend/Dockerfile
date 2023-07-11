@@ -24,7 +24,7 @@ FROM python:3.9-slim as base
 WORKDIR /code
 
 # Install required packages and build dependencies
-RUN apt-get update && apt-get upgrade && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libpq-dev \
     libxslt-dev \
     python3-dev \
