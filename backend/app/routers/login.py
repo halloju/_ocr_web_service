@@ -37,7 +37,7 @@ async def prepare_from_fastapi_request(request, debug=False):
 
 
 def init_saml_auth(req):
-    auth = OneLogin_Saml2_Auth(req, custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static'))
+    auth = OneLogin_Saml2_Auth(req, custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml'))  # saml
     return auth
 
 
@@ -78,7 +78,7 @@ async def acs(request: Request):
     refresh_token_payload = {
             "exp": datetime.utcnow() + timedelta(days=7),  # Expires in 7 days
             "iat": datetime.utcnow(),
-            "sub": user_attributes['EmployeeID'],  # Replace with the actual user ID
+            "sub": user_attributes['EmployeeID'][0],  # Replace with the actual user ID
             "type": "refresh",  # Add a type to distinguish between access and refresh tokens
     }
     

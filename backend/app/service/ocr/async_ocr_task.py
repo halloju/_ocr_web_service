@@ -45,7 +45,7 @@ class AsyncPredictTask(object):
                     "clearness_threshold": 2,
                     "callback": [
                         {
-                            "callback_url": f"{os.environ.get(f'GP_CALLBACK_MLAAS_URL')}\callback/controller_callback/v1",
+                            "callback_url": f"{os.environ.get(f'GP_CALLBACK_MLAAS_URL')}/callback/controller_callback/v1",
                             "callback_body": "{\"business_unit\": \"B31\", \"request_id\": \"test\", \"inputs\": {\"image_cv_id\": \"${image_cv_id}\", \"recognition_status\": \"${recognition_status}\", \"ocr_results\": \"${ocr_results}\"}}",
                             "callback_headers": json.dumps({
                                 "x-client-id": os.environ.get(f'MLAAS_XClient'),
@@ -72,7 +72,7 @@ class AsyncPredictTask(object):
         file_name = await self.conn.get(get_redis_filename(image_id))
         image_cv_id = 'cv-'+str(uuid.uuid4())
         try:
-            response = await self.predict(image_id, action=action, input_params=input_params)
+            response = self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
             # Get the file name from Redis using the image ID as the key
             if (response['outputs']['image_cv_id']):

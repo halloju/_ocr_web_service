@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 
 from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplateResponse
 from app.forms.template_crud.update import UpdateTemplateForm
-from route_utils import call_mlaas_function
+from route_utils import async_call_mlaas_function
 from app.exceptions import MlaasRequestError
 from app import response_table
 from starlette.requests import Request
@@ -34,7 +34,7 @@ async def update_template(data: UpdateTemplateRequest, request: Request):
             "request_id": rid,
             "inputs": jsonable_encoder(inputs)
         }
-        outputs = call_mlaas_function(input_data, 'template_crud/update_template', project='GP', logger=logger)
+        outputs = await async_call_mlaas_function(input_data, 'template_crud/update_template', project='GP', logger=logger)
         status_code = outputs['outputs']['status_code']
         if status_code == '0000':
             new_template_id = outputs['outputs']['template_id']

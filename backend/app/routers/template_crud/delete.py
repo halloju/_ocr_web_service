@@ -3,7 +3,7 @@ from app.exceptions import MlaasRequestError
 from app.schema.common import Response
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
-from route_utils import call_mlaas_function
+from route_utils import async_call_mlaas_function
 
 router = APIRouter()
 # logger = Logger(__name__)
@@ -20,7 +20,7 @@ async def delete_template(template_id: str, request: Request):
         "request_id": rid,
         "inputs": {'template_id': template_id}
     }
-    outputs = call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)
+    outputs = await async_call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)
     status_code = outputs['outputs']['status_code']
     if status_code == '0000':
         return Response(status_code=200)

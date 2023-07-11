@@ -14,7 +14,6 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from logger import Logger
-from route_utils import verify_token
 from app.middleware.auth_middleware import AuthMiddleware
 from app.middleware.log_middleware import LogMiddleware
 
