@@ -16,7 +16,7 @@ import requests
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
     logger.info({'call_mlaas_function': {'action': action, 'request_id': request['request_id']}})
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
-    with httpx.Client() as client:
+    with httpx.Client(verify=False) as client:
         if os.environ.get('MODE') == 'dev':
             connection_url = f'{mlaas_url}/{action}'
         else:
@@ -63,7 +63,7 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
 async def async_call_mlaas_function(request, action: str, project, logger, timeout=5):
     logger.info({'call_mlaas_function': {'action': action, 'request_id': request['request_id']}})
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(verify=False) as client:
         if os.environ.get('MODE') == 'dev':
             connection_url = f'{mlaas_url}/{action}'
         else:

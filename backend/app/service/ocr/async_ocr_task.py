@@ -72,7 +72,7 @@ class AsyncPredictTask(object):
         file_name = await self.conn.get(get_redis_filename(image_id))
         image_cv_id = 'cv-'+str(uuid.uuid4())
         try:
-            response = self.predict(image_id, action=action, input_params=input_params)
+            response = await self.predict(image_id, action=action, input_params=input_params)
             status_code = response['outputs']['status_code']
             # Get the file name from Redis using the image ID as the key
             if (response['outputs']['image_cv_id']):
