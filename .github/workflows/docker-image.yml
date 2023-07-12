@@ -33,6 +33,10 @@ on:
         description: 'DockerHub password'
         type: str
         required: true
+      args:
+        description: 'Docker build args，e.g. --build-arg VITE_APP_VERSION=v1.0.15'
+        type: str
+        required: false
 
 jobs:
   build:
@@ -43,6 +47,7 @@ jobs:
       Dockerfile: ${{ github.event.inputs.Dockerfile }}
       username: ${{ github.event.inputs.username }}
       password: ${{ github.event.inputs.password }}
+      args: ${{ github.event.inputs.args }}
     steps:
       - name: Set the value
         run: |
@@ -59,7 +64,7 @@ jobs:
         id: buildx
         run: |
           # {Your Organization}/{my-app} 請置換成 DockerHub 或 GHCR 喔~~
-          docker build . --file ${{ env.Dockerfile }} --tag docker.io/${{ env.username }}/${{ env.IMAGE }}:${{ env.tags }}
+          docker build ${{env.args}} . --file ${{ env.Dockerfile }} --tag docker.io/${{ env.username }}/${{ env.IMAGE }}:${{ env.tags }} 
         working-directory: ${{ env.component }}
   
       - name: Run Trivy vulnerability scanner
