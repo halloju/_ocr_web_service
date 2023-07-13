@@ -15,7 +15,7 @@ class ImageTypeError(Exception):
 class MlaasRequestError(HTTPException):
     """mlaas request error """
     def __init__(self, status_code: str = '0001', status_msg: str = "") -> None:
-        super().__init__(status_code=500)
+        super().__init__(status_code=500)  # internal error
         self.message = status_msg
         self.mlaas_code = status_code
 
