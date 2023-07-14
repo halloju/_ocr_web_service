@@ -55,6 +55,17 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+const logout = () => {
+    axios
+        .get('/auth/slo')
+        .then((res) => {
+            this.router.push('/');
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
 </script>
 
 <template>
@@ -76,11 +87,8 @@ const isOutsideClicked = (event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
+            <Button label="Logout" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="logout"></Button>
             <!-- <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-calendar"></i>
-                <span>Calendar</span>
-            </button>
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
                 <i class="pi pi-user"></i>
                 <span>Profile</span>
             </button>
