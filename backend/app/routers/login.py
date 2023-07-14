@@ -99,7 +99,7 @@ async def acs(request: Request):
     refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm=ALGORITHM)
 
     # Redirect the user back to the Vue application
-    response = Response(headers={"Location": f"/#/home"}, status_code=303)
+    response = Response(headers={"Location": f"/"}, status_code=303)
 
     # Set the tokens as secure, HttpOnly cookies in the response
     response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="strict")

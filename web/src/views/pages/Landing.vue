@@ -1,11 +1,13 @@
 <script>
+import axios from 'axios';
 export default {
     name: 'landing',
     data() {
         return {
             logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
             version: import.meta.env.VITE_APP_VERSION,
-            isHovered: {}
+            isHovered: {},
+            loggedIn: false
         };
     },
     methods: {
@@ -25,7 +27,14 @@ export default {
         },
         goToPage(page) {
             this.$router.push({ path: page });
+        },
+        async checkLoggedIn() {
+            const response = await axios.get('/auth/is_authenticated')
+            this.loggedIn = response.data.isAuthenticated;
         }
+    },
+    mounted() {
+        this.checkLoggedIn();
     }
 };
 
@@ -65,8 +74,8 @@ export default {
                         </li>
                     </ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="goLogin"></Button>
-                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 text-xl bg-blue-500"></Button>
+                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="goLogin" v-if="!loggedIn"></Button>
+                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 text-xl bg-blue-500" v-if="!loggedIn"></Button>
                     </div>
                 </div>
             </div>
