@@ -4,7 +4,8 @@ export default {
     data() {
         return {
             logoUrl: `../src/assets/img/esun-ocr-logo.svg`,
-            version: import.meta.env.VITE_APP_VERSION
+            version: import.meta.env.VITE_APP_VERSION,
+            isHovered: {}
         };
     },
     methods: {
@@ -15,6 +16,15 @@ export default {
             document.querySelector(id).scrollIntoView({
                 behavior: 'smooth'
             });
+        },
+        over(id) {
+            this.isHovered[id] = true;
+        },
+        leave(id) {
+            this.isHovered[id] = false;
+        },
+        goToPage(page) {
+            this.$router.push({ path: page });
         }
     }
 };
@@ -88,144 +98,131 @@ export default {
                         <span class="text-600 text-2xl">這是一款致力於解決行內通用光學字元辨識的問題。</span>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0"
+                        @mouseover="over('general')"
+                        @mouseleave="leave('general')"
+                        @click="goToPage('/features/ocr/general')">
                         <div
                             style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2))"
                         >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
+                            <div v-if="isHovered['general']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <h3 class="mb-2 text-900">全文辨識</h3>
+                                <h5>將影像中所有文字內容以及標註位置提取出來</h5>
+                            </div>
+                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
                                 <div class="flex align-items-center justify-content-center bg-yellow-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-users text-2xl text-yellow-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">Easy to Use</h5>
-                                <span class="text-600">Posuere morbi leo urna molestie.</span>
+                                <h5 class="mb-2 text-900">全文辨識</h5>
+                                <span class="text-600">Intelligent OCR</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0"
+                        @mouseover="over('template')"
+                        @mouseleave="leave('template')"
+                        @click="goToPage('features/general/model-list')">
                         <div
                             style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2))"
                         >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
+                            <div v-if="isHovered['template']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <h3 class="mb-2 text-900">模板辨識</h3>
+                                <h5>透過建立模板，可辨識影像中的特定要項。適用於固定樣式或格式的圖片及表單</h5>
+                            </div>
+                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
                                 <div class="flex align-items-center justify-content-center bg-cyan-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-palette text-2xl text-cyan-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">Fresh Design</h5>
-                                <span class="text-600">Semper risus in hendrerit.</span>
+                                <h5 class="mb-2 text-900">模板辨識</h5>
+                                <span class="text-600">Template OCR</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pb-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(172, 180, 223, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(246, 158, 188, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-indigo-200" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-map text-2xl text-indigo-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Well Documented</h5>
-                                <span class="text-600">Non arcu risus quis varius quam quisque.</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0"
+                        @mouseover="over('id')"
+                        @mouseleave="leave('id')"
+                        @click="goToPage('features/ocr/id')">
                         <div
                             style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(145, 210, 204, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
+                        >   
+                            <div v-if="isHovered['id']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <h3 class="mb-2 text-900">人證辨識</h3>
+                                <h5>已預設常見模板，提供身分證正反面、駕照、健保卡等影像進行OCR辨識以提取要項內容</h5>
+                            </div>
+                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
                                 <div class="flex align-items-center justify-content-center bg-bluegray-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-id-card text-2xl text-bluegray-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">Responsive Layout</h5>
-                                <span class="text-600">Nulla malesuada pellentesque elit.</span>
+                                <h5 class="mb-2 text-900">人證辨識</h5>
+                                <span class="text-600">ID OCR</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0"
+                        @mouseover="over('financial')"
+                        @mouseleave="leave('financial')"
+                        @click="goToPage('features/ocr/financial_statement')">
                         <div
                             style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(145, 226, 237, 0.2), rgba(160, 210, 250, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
+                        >   
+                            <div v-if="isHovered['financial']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <h3 class="mb-2 text-900">財證辨識</h3>
+                                <h5>已預設常見模板，提供所得清單、扣繳憑單、存摺等影像進行OCR辨識以提取要項內容</h5>
+                            </div>
+                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
                                 <div class="flex align-items-center justify-content-center bg-orange-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-star text-2xl text-orange-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">Clean Code</h5>
-                                <span class="text-600">Condimentum lacinia quis vel eros.</span>
+                                <h5 class="mb-2 text-900">財證辨識</h5>
+                                <span class="text-600">Financial Statement OCR</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0"
+                        @mouseover="over('bill')"
+                        @mouseleave="leave('bill')"
+                        @click="goToPage('features/ocr/remittance')">
                         <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(251, 199, 145, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(212, 162, 221, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-pink-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-moon text-2xl text-pink-700"></i>
+                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(145, 226, 237, 0.2), rgba(160, 210, 250, 0.2))"
+                        >   
+                            <div v-if="isHovered['bill']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <h3 class="mb-2 text-900">票據辨識</h3>
+                                <h5>已預設常見模板，提供提回支票正面、提回支票背面、匯款單影像進行OCR辨識以提取要項內容</h5>
+                            </div>
+                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <div class="flex align-items-center justify-content-center bg-orange-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
+                                    <i class="pi pi-fw pi-star text-2xl text-orange-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">Dark Mode</h5>
-                                <span class="text-600">Convallis tellus id interdum velit laoreet.</span>
+                                <h5 class="mb-2 text-900">票據辨識</h5>
+                                <span class="text-600">Bill OCR</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(160, 210, 250, 0.2)), linear-gradient(180deg, rgba(187, 199, 205, 0.2), rgba(145, 210, 204, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-teal-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-shopping-cart text-2xl text-teal-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Ready to Use</h5>
-                                <span class="text-600">Mauris sit amet massa vitae.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(212, 162, 221, 0.2)), linear-gradient(180deg, rgba(251, 199, 145, 0.2), rgba(160, 210, 250, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-blue-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-globe text-2xl text-blue-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Modern Practices</h5>
-                                <span class="text-600">Elementum nibh tellus molestie nunc non.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg-4 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(160, 210, 250, 0.2), rgba(212, 162, 221, 0.2)), linear-gradient(180deg, rgba(246, 158, 188, 0.2), rgba(212, 162, 221, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-purple-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-eye text-2xl text-purple-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Privacy</h5>
-                                <span class="text-600">Neque egestas congue quisque.</span>
-                            </div>
-                        </div>
-                    </div>
-
+                    <div class="col-12 md:col-12 lg:col-6 p-0 lg:pb-5 mt-4 lg:mt-0"
+                        @mouseover="over('bill2')"
+                        @mouseleave="leave('bill2')">
                     <div
-                        class="col-12 mt-8 mb-8 p-2 md:p-8"
-                        style="border-radius: 20px; background: linear-gradient(0deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #efe1af 0%, #c3dcfa 100%)"
+                        style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(251, 199, 145, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(212, 162, 221, 0.2))"
                     >
-                        <div class="flex flex-column justify-content-center align-items-center text-center px-3 py-3 md:py-0">
-                            <h3 class="text-gray-900 mb-2">=v=</h3>
-                            <span class="text-gray-600 text-2xl">A_A</span>
-                            <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-4" style="max-width: 800px">
-                                “Be Happy.”
-                            </p>
+                        <div v-if="isHovered['bill2']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                            <span></span>
+                        </div>
+                        <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
+                            <div class="flex align-items-center justify-content-center bg-pink-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
+                                <i class="pi pi-fw pi-moon text-2xl text-pink-700"></i>
+                            </div>
+                            <h5 class="mb-2 text-900"></h5>
+                            <span class="text-600"></span>
                         </div>
                     </div>
+                </div>
+
                 </div>
             </div>
 
@@ -235,37 +232,6 @@ export default {
                     <span class="text-600 text-2xl">齊心齊力打造更完善、優良的服務體驗</span>
                 </div>
 
-                <div class="grid mt-8 pb-2 md:pb-8">
-                    <div class="flex justify-content-center col-12 lg:col-6 bg-purple-100 p-0 flex-order-1 lg:flex-order-0" style="border-radius: 8px">
-                        <img src="/demo/images/landing/mockup.svg" class="w-11" alt="mockup mobile" />
-                    </div>
-
-                    <div class="col-12 lg:col-6 my-auto flex flex-column lg:align-items-end text-center lg:text-right">
-                        <div class="flex align-items-center justify-content-center bg-purple-200 align-self-center lg:align-self-end" style="width: 4.2rem; height: 4.2rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-mobile text-5xl text-purple-700"></i>
-                        </div>
-                        <h2 class="line-height-1 text-900 text-4xl font-normal">手機</h2>
-                        <span class="text-700 text-2xl line-height-3 ml-0 md:ml-2" style="max-width: 650px"
-                            >Lectus arcu bibendum at varius vel pharetra vel turpis nunc. Eget aliquet nibh praesent tristique magna sit amet purus gravida. Sit amet mattis vulputate enim nulla aliquet.</span
-                        >
-                    </div>
-                </div>
-
-                <div class="grid my-8 pt-2 md:pt-8">
-                    <div class="col-12 lg:col-6 my-auto flex flex-column text-center lg:text-left lg:align-items-start">
-                        <div class="flex align-items-center justify-content-center bg-yellow-200 align-self-center lg:align-self-start" style="width: 4.2rem; height: 4.2rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-desktop text-5xl text-yellow-700"></i>
-                        </div>
-                        <h2 class="line-height-1 text-900 text-4xl font-normal">桌機</h2>
-                        <span class="text-700 text-2xl line-height-3 mr-0 md:mr-2" style="max-width: 650px"
-                            >Adipiscing commodo elit at imperdiet dui. Viverra nibh cras pulvinar mattis nunc sed blandit libero. Suspendisse in est ante in. Mauris pharetra et ultrices neque ornare aenean euismod elementum nisi.</span
-                        >
-                    </div>
-
-                    <div class="flex justify-content-end flex-order-1 sm:flex-order-2 col-12 lg:col-6 bg-yellow-100 p-0" style="border-radius: 8px">
-                        <img src="/demo/images/landing/mockup-desktop.svg" class="w-11" alt="mockup" />
-                    </div>
-                </div>
             </div>
 
             <!-- ======= Frequently Asked Questions Section ======= -->
@@ -300,47 +266,6 @@ export default {
 
             <div class="py-4 px-4 mx-0 mt-8 lg:mx-8">
                 <div class="grid justify-content-between">
-                    <div class="col-12 md:col-2" style="margin-top: -1.5rem; width: 350px">
-                        <a @click="smoothScroll('#home')" class="flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer">
-                            <img :src="logoUrl" alt="footer sections" width="200" height="50" class="mr-2" />
-                            <h4 class="font-medium text-3xl text-900">智能OCR服務</h4>
-                        </a>
-                    </div>
-
-                    <div class="col-12 md:col-10 lg:col-7">
-                        <div class="grid text-center md:text-left">
-                            <div class="col-12 md:col-3">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Company</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">About Us</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">News</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Investor Relations</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Careers</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Media Kit</a>
-                            </div>
-
-                            <div class="col-12 md:col-3 mt-4 md:mt-0">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Resources</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Get Started</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Learn</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Case Studies</a>
-                            </div>
-
-                            <div class="col-12 md:col-3 mt-4 md:mt-0">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Community</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Discord</a>
-                                <!-- <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Events<img src="/demo/images/landing/new-badge.svg" class="ml-2" /></a> -->
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">FAQ</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Blog</a>
-                            </div>
-
-                            <div class="col-12 md:col-3 mt-4 md:mt-0">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Legal</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Brand Policy</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Privacy Policy</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Terms of Service</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
