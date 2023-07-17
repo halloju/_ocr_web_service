@@ -15,7 +15,7 @@ def config_logging(filename='log_config.yml'):
 
 
 class Logger(object):
-    def __init__(self, section_name, uid, rid, project_name='gp_ocr') -> None:
+    def __init__(self, section_name, uid, rid, project_name='gp_web') -> None:
         config_logging()
         self.logger = logging.getLogger(project_name)
         self.section_name = section_name
