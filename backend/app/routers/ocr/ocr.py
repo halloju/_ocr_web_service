@@ -11,7 +11,6 @@ from route_utils import get_redis_filename
 
 
 router = APIRouter()
-# logger = Logger(__name__)
 
 async def process_image(request: Request, file: UploadFile, action: str, input_params: dict):
     image_id = str(uuid.uuid4())
