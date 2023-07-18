@@ -62,8 +62,8 @@ export default {
         // fail to fail msg
         function getErrorMsg(row, tableData) {
             let fileInfo = tableData.filter((item) => item.task_id === row.task_id);
-            if (fileInfo[0].status_msg in error_table) return error_table[fileInfo[0].status_msg];
-            else return default_error_msg;
+            if (fileInfo[0].status_msg in error_table) return error_table[fileInfo[0].status_msg]+ '('+fileInfo[0].status_msg+')';
+            else return default_error_msg + '('+fileInfo[0].status_msg+')';
         }
 
         function getStatusColor(status) {
