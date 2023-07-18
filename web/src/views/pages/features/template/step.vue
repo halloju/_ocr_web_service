@@ -6,6 +6,7 @@ import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { initializeClient } from '@/service/auth.js';
+import { error_table, default_error_msg } from '../../../../constants';
 
 export default {
     components: {
@@ -222,8 +223,12 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
-                    ElMessageBox.confirm(err, '失敗', {
+                    let error_msg = default_error_msg;
+                    if (typeof(err.response.data)==='object' && 'mlaas_code' in err.response.data) {
+                        console.log(err.response.data.mlaas_code);
+                        if (err.response.data.mlaas_code in error_table) error_msg = error_table[err.response.data.mlaas_code] + ' (' + err.response.data.mlaas_code + ')';
+                    }
+                    ElMessageBox.confirm(error_msg, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',
                         center: true,

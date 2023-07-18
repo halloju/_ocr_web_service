@@ -38,9 +38,17 @@ async def create_template(data: CreateTemplateRequest, request: Request):
         }
         try:
             outputs = await async_call_mlaas_function(input_data, 'template_crud/create_template', project='GP', logger=logger, timeout=60)
+        except MlaasRequestError as e:
+            logger.info({'error_msg': e.message})
+            raise e
         except Exception as e:
             logger.error({'error_msg': str(e)})
             raise CustomException(status_code=500, message=str(e))
+        return CreateTemplateResponse(
+                template_id=outputs['template_id'],
+                status_code='0000',
+                status_msg='OK'
+            )
 
     logger.error({'error_msg': {'form is not valid': {'errors': form.errors}}})
     raise CustomException(status_code=400, message=form.errors)
