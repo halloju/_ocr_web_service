@@ -1,5 +1,5 @@
 from app import response_table
-from app.exceptions import MlaasRequestError
+from app.exceptions import MlaasRequestError, CustomException
 from app.schema.common import Response
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
@@ -20,13 +20,11 @@ async def delete_template(template_id: str, request: Request):
         "request_id": rid,
         "inputs": {'template_id': template_id}
     }
-    outputs = await async_call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)
-    status_code = outputs['outputs']['status_code']
-    if status_code == '0000':
-        return Response(status_code=200)
-    elif status_code == '5407':
-        logger.error({'error_msg': response_table.status_templateexisterror})
-        raise MlaasRequestError(**response_table.status_templateexisterror)
-    else:
-        logger.error({'error_msg': outputs['outputs']})
-        raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
+    try:
+        await async_call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)
+    except MlaasRequestError as e:
+        raise e
+    except Exception as e:
+        logger.error({'error_msg': str(e)})
+        raise CustomException(status_code=500, message=str(e))
+    return Response(status_code=200)
