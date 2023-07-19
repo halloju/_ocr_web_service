@@ -6,7 +6,7 @@ import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { initializeClient } from '@/service/auth.js';
-import { error_table, default_error_msg } from '../../../../constants';
+import { error_table, default_error_msg } from '@/constants.js';
 
 export default {
     components: {
@@ -252,7 +252,7 @@ export default {
         clearState() {
             // remove all localStorage
             sessionStorage.clear();
-            this.$store.commit('setTemplateName', '');
+            this.$store.commit('templateNameUpdate', '');
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;

@@ -1,7 +1,7 @@
 export const FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5 MB
 export const API_TIMEOUT = 600000; // 5 minutes (in milliseconds)
 export const PULL_INTERVAL = 3000; // xx second (in milliseconds)
-export const MAX_RETRIES = 3; // 30 times
+export const MAX_RETRIES = 30; // 30 times
 export const default_error_msg = '系統非預期錯誤，請聯絡管理員';
 export const error_table = {
     // '0001': '系統非預期錯誤，請聯絡管理員',

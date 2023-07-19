@@ -8,6 +8,7 @@ import useAnnotator from '@/mixins/useAnnotator.js';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { initializeClient } from '@/service/auth.js';
+import { handleErrorMsg } from '@/mixins/useCommon.js';
 
 const item = {
     name: '',
@@ -112,6 +113,12 @@ export default {
             } catch (error) {
                 if (error.response.data.msg === 'available_templates are not found') {
                     return [];
+                } else {
+                    const error_msg = handleErrorMsg(error.response);
+                    ElMessage({
+                        type: 'error',
+                        message: error_msg
+                    });
                 }
                 return error;
             }
@@ -124,46 +131,51 @@ export default {
         async function handleLook(template_id, userType) {
             this.template_id = template_id;
             const response = await getTemplateDetail(template_id);
-            template.value = response['data'];
-            initialData.value = parseTemplateDetail(response['data'], userType);
-            creation_time.value = template.value.creation_time;
-            imageSrc.value = 'data:image/png;base64,' + response['data'].image;
-            dialogVisible.value = true;
-            dialogWidth.value = '850';
+            if (response) {
+                template.value = response['data'];
+                initialData.value = parseTemplateDetail(response['data'], userType);
+                creation_time.value = template.value.creation_time;
+                imageSrc.value = 'data:image/png;base64,' + response['data'].image;
+                dialogVisible.value = true;
+                dialogWidth.value = '850';
+            }
         }
 
         async function handleDelete(template_id) {
             try {
-                await ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
+                const confirmResult = await ElMessageBox.confirm('此操作將永久刪除該模板, 是否繼續?', '提示', {
                     confirmButtonText: '確定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 });
 
-                const response = await apiClient.value.delete('/template_crud/delete_template/' + template_id);
-                if (!response.error) {
-                    ElMessage({
-                        type: 'success',
-                        message: '刪除成功!'
-                    });
-                    tableData.value = await getAvailableTemplate();
+                if (confirmResult) {
+                    const response = await apiClient.value.delete('/template_crud/delete_template/' + template_id);
+                    if (!response.error) {
+                        ElMessage({
+                            type: 'success',
+                            message: '刪除成功!'
+                        });
+                        tableData.value = await getAvailableTemplate();
+                    } else {
+                        ElMessage({
+                            type: 'error',
+                            message: '刪除失敗!'
+                        });
+                    }
                 } else {
-                    ElMessage({
-                        type: 'error',
-                        message: '刪除失敗!'
-                    });
-                }
-            } catch (error) {
-                console.log(error);
-                if (error instanceof ElMessageBox.MessageBoxClosedError) {
                     ElMessage({
                         type: 'info',
                         message: '已取消刪除'
                     });
-                } else {
+                }
+            } catch (error) {
+                if (error != 'cancel') {
+                    const error_msg = handleErrorMsg(error.response);
+                    // console.log(error_msg);
                     ElMessage({
                         type: 'error',
-                        message: '刪除失敗!'
+                        message: '刪除失敗! '+ error_msg
                     });
                     return error;
                 }
@@ -196,16 +208,20 @@ export default {
             router.push({ name: 'SelfDefine' });
         }
 
-        function getTemplateDetail(template_id) {
+        async function getTemplateDetail(template_id) {
             try {
-                const response = apiClient.value.get('/template_crud/get_template_detail/' + template_id);
-                return response;
+                const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id);
+                if (response.status == 200) return response;
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
-                    // status.value = 'network';
                     console.error('ERR_NETWORK');
+                } else {
+                    const error_msg = handleErrorMsg(error.response);
+                    ElMessage({
+                        type: 'error',
+                        message: error_msg
+                    });
                 }
-                return error;
             }
         }
 
@@ -231,17 +247,19 @@ export default {
 
         async function downloadTemplate(template_id) {
             const response = await getTemplateDetail(template_id);
-            template.value = response['data'];
-            let template_info_json = JSON.stringify(template.value);
-            let blob = new Blob([template_info_json], { type: 'text/plain;charset=utf-8' });
-            let url = URL.createObjectURL(blob);
-            let link = document.createElement('a');
-            link.href = url;
-            link.download = `${template_id}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            if (response) {
+                template.value = response['data'];
+                let template_info_json = JSON.stringify(template.value);
+                let blob = new Blob([template_info_json], { type: 'text/plain;charset=utf-8' });
+                let url = URL.createObjectURL(blob);
+                let link = document.createElement('a');
+                link.href = url;
+                link.download = `${template_id}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
         }
 
         async function deleteTemplate() {
@@ -272,9 +290,10 @@ export default {
                         message: '已取消刪除'
                     });
                 } else {
+                    const error_msg = handleErrorMsg(error.response);
                     ElMessage({
                         type: 'error',
-                        message: '刪除失敗!'
+                        message: '刪除失敗!' + error_msg
                     });
                     return error;
                 }
