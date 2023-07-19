@@ -97,8 +97,7 @@ def get_from_redis(task_id):
         logger.error({'get_from_redis': {'error_msg': str(e), 'task_id': task_id}})
         return {'status': 'FAIL', 'status_msg': '5002'}
 
-def get_predict_data(response, action):
-    data_pred = response['data_results']
+def get_predict_data(data_pred, action):
     if action in ['check_front', 'check_back']:
         data_pred['data_results'] = [{'tag': key, 'text': value} for key, value in data_pred.items() if key not in ['status_code', 'status_msg', 'err_detail']]
     elif action == 'remittance':

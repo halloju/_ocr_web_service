@@ -68,9 +68,9 @@ class AsyncPredictTask(object):
             predict_class = data_pred['predict_class']
             self.logger.debug({'predict': {'image_id': image_id, 'response_index ': list(data_pred.keys())}})
             # Return the prediction result
-            return {'status': 'PROCESSING', 'status_msg': '', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': data_pred['image_cv_id']}
+            return {'status': 'PROCESSING', 'status_msg': '', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': data_pred['image_cv_id'], 'status_msg': ''}
         except MlaasRequestError as e:
-            return {'status': 'FAIL', 'status_msg': e.mlaas_code, 'err_msg': e.message, 'image_cv_id': e.image_cv_id, 'file_name': file_name}
+            return {'status': 'FAIL', 'status_msg': e.mlaas_code, 'err_msg': e.message, 'image_cv_id': e.image_cv_id, 'file_name': file_name, 'status_msg': ''}
         except Exception as e:
             self.logger.error({'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
             return {'status': 'FAIL', 'status_msg': '5001', 'err_msg': 'unknown', 'image_cv_id': '', 'file_name': file_name}
@@ -89,5 +89,5 @@ class AsyncPredictTask(object):
         upload_result = await self.predict(image_id, action=action, input_params=input_params)
         task_id = str(upload_result["image_cv_id"]).replace('/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
         self.logger.info({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'file_name': upload_result["file_name"]})
-        await self.conn.set(get_redis_taskname(task_id), json.dumps({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
+        await self.conn.set(get_redis_taskname(task_id), json.dumps({'task_id': task_id, 'status': upload_result["status"], 'status_msg': upload_result["status_msg"],  'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
         return {'task_id': task_id, 'status': upload_result["status"], 'status_msg': upload_result['status_msg'], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'file_name': upload_result["file_name"]}

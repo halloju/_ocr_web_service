@@ -23,7 +23,7 @@ async def result(task_id: str, request: Request):
     result = await redis.get(get_redis_taskname(task_id))
     if (result):
         result = json.loads(result)
-        if ('file_name' in result and 'result' in result): 
+        if ('file_name' in result and 'result' in result):
             return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': result['result'], 'file_name': result['file_name']})
 
     task = AsyncResult(task_id)
