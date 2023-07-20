@@ -39,14 +39,14 @@ async def prepare_from_fastapi_request(request, debug=False):
 
 
 def init_saml_auth(req):
-    filename = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml')  # saml
+    filename = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml') + '/settings.json' # saml
     json_data_file = open(filename, 'r')                      # settings_data dict.
     settings_data = json.load(json_data_file)
     json_data_file.close()
     
     idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(os.environ['SAML_IDP_METADATA_URL'], validate_cert=False)
-    settings_update = OneLogin_Saml2_IdPMetadataParser.merge_settings(settings_data, idp_data['idp'])
-    auth = OneLogin_Saml2_Auth(req, settings_update)  # saml
+    settings_data['idp'] = idp_data['idp']
+    auth = OneLogin_Saml2_Auth(req, settings_data)  # saml
     return auth
 
 
