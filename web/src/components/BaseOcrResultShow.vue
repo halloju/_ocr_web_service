@@ -133,18 +133,25 @@ export default {
             let count = 0;
             while (isRunning) {
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-                for (let i = 0; i < unfinishedItems.length; i++) {
-                    const item = unfinishedItems[i];
-                    await getOcrStatus(general_upload_res.value.indexOf(item));
-                }
                 if (unfinishedItems.length === 0) {
                     isRunning.value = false;
                     break;
                 }
+                for (let i = 0; i < unfinishedItems.length; i++) {
+                    const item = unfinishedItems[i];
+                    await getOcrStatus(general_upload_res.value.indexOf(item));
+                }
                 await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
-                if (count === MAX_RETRIES) break;
+                if (count === MAX_RETRIES) {
+                    const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
+                    for (let i = 0; i < unfinishedItems.length; i++) {
+                        const item = unfinishedItems[i];
+                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name});
+                    }
+                    break;
+                }
             }
         }
 
