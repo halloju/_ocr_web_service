@@ -1,5 +1,13 @@
 <script>
 import BaseOCR from '@/components/BaseOCR.vue';
+import remittance from '@/assets/img/example/remittance.jpg';
+import check_front from '@/assets/img/example/check_front.jpg';
+import check_back from '@/assets/img/example/check_back.jpg';
+import driver_license from '@/assets/img/example/driver_license.jpg';
+import health_insurance from '@/assets/img/example/health_insurance.jpg';
+import id from '@/assets/img/example/id.jpg';
+import fs from '@/assets/img/example/fs.jpg';
+import ws from '@/assets/img/example/ws.jpg';
 
 export default {
     components: {
@@ -11,7 +19,8 @@ export default {
             subtitle: '',
             description: '',
             apiUrl: '',
-            template_id: this.$store.state.template_id
+            template_id: this.$store.state.template_id,
+            idx: null,
         };
     },
     created() {
@@ -27,6 +36,8 @@ export default {
         this.imageClass = ocrConfig.imageClass;
         this.defaultImgURL = ocrConfig.defaultImgURL;
         this.category = ocrConfig.category;
+        this.explanation = ocrConfig.explanation;
+        this.file = ocrConfig.file;
     },
     watch: {
         $route(to, from) {
@@ -42,6 +53,8 @@ export default {
             this.imageClass = ocrConfig.imageClass;
             this.defaultImgURL = ocrConfig.defaultImgURL;
             this.category = ocrConfig.category;
+            this.explanation = ocrConfig.explanation;
+            this.idx = ocrConfig.idx;
         }
     },
     methods: {
@@ -58,7 +71,9 @@ export default {
                     category: {
                         name: 'general',
                         limit: 20
-                    }
+                    },
+                    explanation: '',
+                    idx: 'general'
                 },
                 template: {
                     title: '模板辨識',
@@ -71,7 +86,9 @@ export default {
                     category: {
                         name: 'general',
                         limit: 20
-                    }
+                    },
+                    explanation: '',
+                    idx: 'template'
                 },
                 remittance: {
                     title: '票據辨識',
@@ -80,11 +97,13 @@ export default {
                     apiUrl: '/ocr/remittance',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/remittance.jpg',
+                    defaultImgURL: remittance,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: '1.匯款序號 (remitno)<br/>2.匯款金額 (amount)<br/>3.收款帳號 (receiveacc)<br/>4.收款行帳號 (receivebank)<br/>5.匯款人 ID (remitterid)<br/>6.是否有附言 (remark)<br/>7.代理人 ID (agentid)',
+                    idx: 7
                 },
                 check_front: {
                     title: '票據辨識',
@@ -93,11 +112,13 @@ export default {
                     apiUrl: '/ocr/check_front',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/check_front.jpg',
+                    defaultImgURL: check_front,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: '1.支票金額 (amount)<br/>2.支票到期日 (due_date)',
+                    idx: 5
                 },
                 check_back: {
                     title: '票據辨識',
@@ -106,11 +127,13 @@ export default {
                     apiUrl: '/ocr/check_back',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/check_back.jpg',
+                    defaultImgURL: check_back,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: '帳號 (account)',
+                    idx: 6
                 },
                 id: {
                     title: '人證辨識',
@@ -120,11 +143,13 @@ export default {
                     imageClass: 'ID',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/id.jpg',
+                    defaultImgURL: id,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: "1.姓名 (name)<br/>2.出生年月日 (date_of_birth)<br/>3.發證日期 (date_of_issue)<br/>4.發證地點 (place_of_issue)<br/>5.發證類別 (type_of_issue)<br/>6.性別 (sex)<br/>7.統一編號 (id_no)",
+                    idx: 0
                 },
                 driver_license: {
                     title: '人證辨識',
@@ -134,11 +159,13 @@ export default {
                     imageClass: 'DRIVER_LICENSE',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/driver_license.jpg',
+                    defaultImgURL: driver_license,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: "1.駕照號碼 (id_no)<br/>2.姓名 (name)<br/>3.出生日期 (date_of_birth)",
+                    idx: 1
                 },
                 health_insurance: {
                     title: '人證辨識',
@@ -148,11 +175,13 @@ export default {
                     imageClass: 'HEALTH_INSURANCE',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/health_insurance.jpg',
+                    defaultImgURL: health_insurance,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: "1.姓名 (name)<br/>2.身分證字號 (id_no)<br/>3.出生年月日 (date_of_birth)",
+                    idx: 2
                 },
                 withholding: {
                     title: '財證辨識',
@@ -162,11 +191,13 @@ export default {
                     imageClass: 'WITHHOLDING_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/ws.jpg',
+                    defaultImgURL: ws,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: '1.扣繳單位統一編號 (company)<br/>2.所得人統一編號 (id)<br/>3.所得所屬起始年月 (start_date)<br/>4.所得所屬結束年月 (end_date)<br/>5.所得給付年度 (year)<br/>6.給付總額 (income)',
+                    idx: 3
                 },
                 financial_statement: {
                     title: '財證辨識',
@@ -176,11 +207,13 @@ export default {
                     imageClass: 'NTB_FINANCIAL_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false,
-                    defaultImgURL: 'src/assets/img/example/fs.jpg',
+                    defaultImgURL: fs,
                     category: {
                         name: 'special',
                         limit: 1
-                    }
+                    },
+                    explanation: '1.財政年度 (year)<br/>2.清單種類 (title)<br/>3.顧客統一編號 (idValue)<br/>4.所得類別 (incomeType)<br/>5.公司統一編號 (company)<br/>6.所得額合計 (incomeValue)',
+                    idx: 4
                 }
                 // Add more OCR types here
             };
@@ -192,6 +225,6 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" :defaultImgURL="defaultImgURL" />
+        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" :defaultImgURL="defaultImgURL" :explanation="explanation" :idx="idx" />
     </div>
 </template>

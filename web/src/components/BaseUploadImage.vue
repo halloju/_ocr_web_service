@@ -28,7 +28,7 @@ export default {
             type: String
         },
         defaultImgURL: {
-            type: String
+            type: Object
         }
     },
     setup(props, { emit }) {
