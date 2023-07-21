@@ -68,7 +68,8 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
                 with tempfile.TemporaryDirectory() as path:
                     info = pdfinfo_from_path(temp_filename)
                     maxPages = info["Pages"]
-                    for page in range(1, maxPages + 1, 4):
+                    jump = 4
+                    for page in range(1, maxPages + 1, jump):
                         convert_from_path(
                             temp_filename,
                             output_folder=zip_dir,
@@ -77,7 +78,7 @@ async def gp_ocr(request: Request, files: List[UploadFile] = File(...), timeout:
                             fmt="jpg",
                             output_file=counter_generator(prefix=filename),
                             first_page=page,
-                            last_page=min(page + 10 - 1, maxPages)
+                            last_page=min(page + jump - 1, maxPages)
                         )
                     logger.info({'convert_from_bytes': {'filename': filename, 'pageNum': maxPages}})
             except Exception as e:
