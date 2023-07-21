@@ -11,6 +11,7 @@ from route_utils import call_mlaas_function, get_redis_filename, get_redis_taskn
 from app.constants import remittance_points
 from app.exceptions import MlaasRequestError, CustomException
 import mlaas_log_formatter
+from datetime import datetime
 
 # 設定 celery
 celery = Celery(__name__)
@@ -18,7 +19,7 @@ celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "amqp://rabbitmq")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
 
 # 設定 logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('worker')
 @after_setup_logger.connect
 def config_loggers(logger, *args, **kwags):
     config_logging()
@@ -44,6 +45,7 @@ class PredictTask(Task):
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
+
 
     def predict(self, image_id, action, input_params):
         try:
@@ -105,15 +107,18 @@ def get_predict_data(data_pred, action):
     return data_pred
 
 @celery.task(ignore_result=False, bind=True, base=PredictTask)
-def predict_image(self, image_id, action, input_params):
+def predict_image(self, image_id, action, input_params, start_time):
     # Get the file name from Redis using the image ID as the key
     file_name = celery.backend.get(get_redis_filename(image_id)).decode("utf-8")
+    start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
     try:
         response = self.predict(image_id, action=action, input_params=input_params)
         data_pred = get_predict_data(response, action)
+        logger.info({'predict_image': {'task_id': self.request.id, 'process_time': (datetime.now() - start_time).microseconds, 'action': action, 'status': 'SUCCESS', 'status_msg': ''}})
         return {'status': 'SUCCESS', 'status_msg': '', 'result': data_pred, 'file_name': file_name}
     except MlaasRequestError as e:
+        logger.info({'predict_image': {'task_id': self.request.id, 'process_time': (datetime.now() - start_time).microseconds, 'action': action, 'status': 'FAIL', 'status_msg': e.mlaas_code}})
         return {'status': 'FAIL', 'status_msg': e.mlaas_code, 'file_name': file_name}
     except Exception as e:
-        logger.error({'predict_image': {'error_msg': str(e), 'image_id': image_id, 'action': action}})
+        logger.error({'predict_image': {'task_id': self.request.id, 'process_time': (datetime.now() - start_time).microseconds, 'action': action, 'status': 'FAIL', 'status_msg': '5001', 'error_msg': str(e)}})
         return {'status': 'FAIL', 'status_msg': '5001', 'file_name': file_name}
