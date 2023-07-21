@@ -8,6 +8,7 @@ import uuid
 
 from route_utils import async_call_mlaas_function, get_redis_filename, get_redis_taskname
 from app.exceptions import MlaasRequestError
+from datetime import datetime
 
 class AsyncPredictTask(object):
     def __init__(self, redis_pool, request):
@@ -22,6 +23,17 @@ class AsyncPredictTask(object):
         }
         self.logger = request.state.logger
         self.rid = request.state.request_id
+
+    def _get_task_info(self, status, predict_class, file_name, image_cv_id, status_msg='', err_msg=''):
+        return {
+            'status': status,
+            'status_msg': status_msg,
+            'predict_class': predict_class,
+            'file_name': file_name,
+            'image_cv_id': image_cv_id,
+            'start_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'err_msg': err_msg
+        }
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
@@ -68,12 +80,12 @@ class AsyncPredictTask(object):
             predict_class = data_pred['predict_class']
             self.logger.debug({'predict': {'image_id': image_id, 'response_index ': list(data_pred.keys())}})
             # Return the prediction result
-            return {'status': 'PROCESSING', 'status_msg': '', 'predict_class': predict_class, 'file_name': file_name, 'image_cv_id': data_pred['image_cv_id'], 'status_msg': ''}
+            return self._get_task_info('PROCESSING', predict_class, file_name, data_pred['image_cv_id'])
         except MlaasRequestError as e:
-            return {'status': 'FAIL', 'status_msg': e.mlaas_code, 'err_msg': e.message, 'image_cv_id': e.image_cv_id, 'file_name': file_name, 'status_msg': ''}
+            return self._get_task_info('FAIL', predict_class, file_name, data_pred['image_cv_id'], e.mlaas_code,  e.message)
         except Exception as e:
             self.logger.error({'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
-            return {'status': 'FAIL', 'status_msg': '5001', 'err_msg': 'unknown', 'image_cv_id': '', 'file_name': file_name}
+            return self._get_task_info('FAIL', '', file_name, '', '5001', 'unknown error')
 
     async def process_image(self, file, action: str, input_params: dict):
         image_id = str(uuid.uuid4())
@@ -88,6 +100,8 @@ class AsyncPredictTask(object):
         # start task prediction
         upload_result = await self.predict(image_id, action=action, input_params=input_params)
         task_id = str(upload_result["image_cv_id"]).replace('/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
-        self.logger.info({'task_id': task_id, 'status': upload_result["status"], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'file_name': upload_result["file_name"]})
-        await self.conn.set(get_redis_taskname(task_id), json.dumps({'task_id': task_id, 'status': upload_result["status"], 'status_msg': upload_result["status_msg"],  'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'result': '', 'file_name': upload_result["file_name"]}))
-        return {'task_id': task_id, 'status': upload_result["status"], 'status_msg': upload_result['status_msg'], 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'file_name': upload_result["file_name"]}
+        task_info = {**upload_result, 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id}
+        self.logger.info(task_info)
+
+        await self.conn.set(get_redis_taskname(task_id), json.dumps(task_info))
+        return task_info
