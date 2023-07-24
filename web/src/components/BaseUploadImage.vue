@@ -1,6 +1,6 @@
 <script>
 import { ref, computed, watch, onMounted } from 'vue';
-import { initializeClient } from '@/service/auth.js';
+import { apiClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
 import { useStore } from 'vuex';
@@ -33,7 +33,6 @@ export default {
     },
     setup(props, { emit }) {
         const store = useStore();
-        const apiClient = ref(null);
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
             { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
@@ -83,7 +82,7 @@ export default {
             });
             // predict_images
             try {
-                const response = await apiClient.value.post(props.apiUrl, formData, {
+                const response = await apiClient.post(props.apiUrl, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -224,10 +223,6 @@ export default {
             }
         });
 
-        // on mounted create apiClient with access token
-        onMounted(async () => {
-            apiClient.value = await initializeClient();
-        });
 
         return {
             breadcrumbItems,

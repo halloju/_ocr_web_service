@@ -7,7 +7,7 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
 import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
-import { initializeClient } from '@/service/auth.js';
+import { apiClient } from '@/service/auth.js';
 
 export default {
     components: {
@@ -17,7 +17,6 @@ export default {
     setup(props, { emit }) {
         const { parseOcrDetail } = useAnnotator();
         const store = useStore();
-        const apiClient = ref(null);
 
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
@@ -71,7 +70,7 @@ export default {
         }
 
         async function getOcrStatus(item) {
-            apiClient.value
+            apiClient
                 .get(`/task/status/${general_upload_res.value[item].task_id}`)
                 .then(async (res) => {
                     if (res.data.status === 'SUCCESS') {
@@ -90,7 +89,7 @@ export default {
         }
 
         async function getOcrResults(item) {
-            apiClient.value
+            apiClient
                 .get(`/task/result/${general_upload_res.value[item].task_id}`)
                 .then((res) => {
                     if (res.data.status === 'SUCCESS') {
@@ -135,7 +134,7 @@ export default {
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
-            apiClient.value
+            apiClient
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
                     if (res !== null) {
@@ -194,7 +193,6 @@ export default {
 
         // Start to pull the status
         onMounted(async () => {
-            apiClient.value = await initializeClient();
             waitUntilOcrComplete();
             const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
             width.value = col12Width - parseInt('4rem');

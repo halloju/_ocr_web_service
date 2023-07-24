@@ -7,7 +7,7 @@ import PhotoService from '@/service/PhotoService';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import { initializeClient } from '@/service/auth.js';
+import { apiClient } from '@/service/auth.js';
 
 const item = {
     name: '',
@@ -40,10 +40,8 @@ export default {
         const tableData = ref([]);
         const dialogVisible = ref(false);
         const dialogWidth = ref('');
-        const apiClient = ref(null);
 
         onMounted(async () => {
-            apiClient.value = await initializeClient();
             images.value = await galleriaService.getImages();
             tableData.value = await getAvailableTemplate();
         });
@@ -106,7 +104,7 @@ export default {
         async function getAvailableTemplate() {
             let tableData = [];
             try {
-                const response = await apiClient.value.get('/template_crud/get_available_templates');
+                const response = await apiClient.get('/template_crud/get_available_templates');
                 tableData = response['data']['template_infos'];
                 return tableData;
             } catch (error) {
@@ -140,7 +138,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await apiClient.value.delete('/template_crud/delete_template/' + template_id);
+                const response = await apiClient.delete('/template_crud/delete_template/' + template_id);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',
@@ -196,9 +194,9 @@ export default {
             router.push({ name: 'SelfDefine' });
         }
 
-        function getTemplateDetail(template_id) {
+        async function getTemplateDetail(template_id) {
             try {
-                const response = apiClient.value.get('/template_crud/get_template_detail/' + template_id);
+                const response = await apiClient.get('/template_crud/get_template_detail/' + template_id);
                 return response;
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
@@ -213,7 +211,7 @@ export default {
             // clear local storage
             sessionStorage.clear();
             // get template detail
-            const response = await apiClient.value.get('/template_crud/get_template_detail/' + template_id);
+            const response = await apiClient.get('/template_crud/get_template_detail/' + template_id);
             //template.value = response['data'];
 
             // set local storage
@@ -252,7 +250,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await apiClient.value.delete('/template_crud/delete_template/' + template_id.value);
+                const response = await apiClient.delete('/template_crud/delete_template/' + template_id.value);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',

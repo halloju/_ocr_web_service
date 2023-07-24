@@ -1,5 +1,5 @@
 <script>
-import { initializeClient } from '@/service/auth.js';
+import { apiClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { API_TIMEOUT } from '@/constants.js';
 
@@ -13,7 +13,6 @@ export default {
             dialogFileUrl: '',
             embedWidth: '100%',
             embedHeight: '600px',
-            apiClient: null
         };
     },
     mounted() {
@@ -29,9 +28,6 @@ export default {
         }
     },
     methods: {
-        async initializeClient() {
-            this.apiClient = await initializeClient();
-        },
         fileChange(file) {
             const isLt5M = file.size / 1024 / 1024 < 5;
             if (isLt5M) {
@@ -61,7 +57,7 @@ export default {
                 text: 'Loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            await this.apiClient
+            await apiClient
                 .post('/image_tools/pdf_transform', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
