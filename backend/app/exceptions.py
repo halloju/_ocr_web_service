@@ -14,10 +14,11 @@ class ImageTypeError(Exception):
 
 class MlaasRequestError(HTTPException):
     """mlaas request error """
-    def __init__(self, status_code: str = '0001', status_msg: str = "") -> None:
-        super().__init__(status_code=500)
+    def __init__(self, status_code: str = '0001', status_msg: str = "", image_cv_id: str = "") -> None:
+        super().__init__(status_code=500)  # internal error
         self.message = status_msg
         self.mlaas_code = status_code
+        self.image_cv_id = image_cv_id
 
 
 def exception_handler(request: Request, exc: HTTPException):
@@ -27,5 +28,5 @@ def exception_handler(request: Request, exc: HTTPException):
 
 def mlaas_request_handler(request: Request, exc: HTTPException):
     return JSONResponse(
-        status_code=exc.status_code, content={"mlaas_code": exc.mlaas_code, "msg": exc.message}
+        status_code=exc.status_code, content={"mlaas_code": exc.mlaas_code, "msg": exc.message, "image_cv_id": exc.image_cv_id}
     )

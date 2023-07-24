@@ -9,6 +9,7 @@ import { apiClient } from '@/service/auth.js';
 import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
+import { error_table, default_error_msg } from '@/constants.js';
 
 export default {
     components: {
@@ -207,7 +208,6 @@ export default {
                         this.clearState();
                         this.$router.push({ path: '/features/general/model-list' });
                     } else {
-                        console.log(res);
                         ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
@@ -220,8 +220,12 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
-                    ElMessageBox.confirm(err, '失敗', {
+                    let error_msg = default_error_msg;
+                    if (typeof(err.response.data)==='object' && 'mlaas_code' in err.response.data) {
+                        console.log(err.response.data.mlaas_code);
+                        if (err.response.data.mlaas_code in error_table) error_msg = error_table[err.response.data.mlaas_code] + ' (' + err.response.data.mlaas_code + ')';
+                    }
+                    ElMessageBox.confirm(error_msg, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',
                         center: true,
@@ -303,7 +307,7 @@ export default {
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ name: 'ModelList' }">模板辨識</el-breadcrumb-item>
                     <el-breadcrumb-item>模板編輯</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />

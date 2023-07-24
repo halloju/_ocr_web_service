@@ -19,7 +19,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # List of paths that should bypass authentication
-        bypass_auth_paths = ["/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json", "/auth"]
+        bypass_auth_paths = ["/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json", "/auth", "/static"]
 
         # Check if the requested path starts with any of the paths in the bypass_auth_paths list
         if any(request.url.path.startswith(path) for path in bypass_auth_paths):

@@ -20,55 +20,9 @@ const store = new Vuex.Store({
         GENERAL_IMAGE_OCR_RESULTS_UPDATE(state, payload) {
             state.general_upload_res[payload.item].ocr_results[payload.index].text = payload.text;
           },
-        // recsUpdate: function (state, payload) {
-        //     state.selfDefinedRecs[payload.type].push(payload.data);
-        // },
-        // recsNameUpdate: function (state, payload) {
-        //     let index = state.selfDefinedRecs[payload.type].length - 1;
-        //     state.selfDefinedRecs[payload.type][index].name = payload.name;
-        //     state.selfDefinedRecs[payload.type][index].canDelete = payload.canDelete;
-        //     state.selfDefinedRecs[payload.type][index].canEdit = payload.canEdit;
-        // },
-        // recsSizeUpdate: function (state, payload) {
-        //     let index = payload.data.index ? payload.data.index : state.selfDefinedRecs[payload.type].length - 1;
-        //     state.selfDefinedRecs[payload.type][index].width = payload.data.width;
-        //     state.selfDefinedRecs[payload.type][index].height = payload.data.height;
-        //     state.selfDefinedRecs[payload.type][index].endPointX = payload.data.endPointX;
-        //     state.selfDefinedRecs[payload.type][index].endPointY = payload.data.endPointY;
-        // },
-        // recsScaleUpdate: function (state, payload) {
-        //     let index = payload.data.index ? payload.data.index : state.selfDefinedRecs[payload.type].length - 1;
-        //     state.selfDefinedRecs[payload.type][index].scaleX = payload.data.scaleX;
-        //     state.selfDefinedRecs[payload.type][index].scaleY = payload.data.scaleY;
-        //     state.selfDefinedRecs[payload.type][index].endPointX = payload.data.endPointX;
-        //     state.selfDefinedRecs[payload.type][index].endPointY = payload.data.endPointY;
-        //     state.selfDefinedRecs[payload.type][index].startPointX = payload.data.startPointX;
-        //     state.selfDefinedRecs[payload.type][index].startPointY = payload.data.startPointY;
-        // },
-        // recsDelete: function (state, payload) {
-        //     state.selfDefinedRecs[payload.type].splice(payload.index, 1);
-        // },
-        // recsNameEdit: function (state, payload) {
-        //     state.selfDefinedRecs[payload.type][payload.index].canSave = payload.canSave;
-        //     state.selfDefinedRecs[payload.type][payload.index].canEdit = payload.canEdit;
-        // },
-        // recsNameSave: function (state, payload) {
-        //     state.selfDefinedRecs[payload.type][payload.index].name = payload.name;
-        //     state.selfDefinedRecs[payload.type][payload.index].canSave = payload.canSave;
-        //     state.selfDefinedRecs[payload.type][payload.index].canEdit = payload.canEdit;
-        // },
-        // recsClear: function (state) {
-        //     Object.keys(state.selfDefinedRecs).forEach((key) => {
-        //         state.selfDefinedRecs[key] = [];
-        //     });
-        // },
         templateNameUpdate: function (state, payload) {
-            // state.selfDefinedRecs['name'] = payload;
             state.templateName = payload;
         },
-        // templateIdUpdate: function (state, payload) {
-        //     state.selfDefinedRecs['id'] = payload;
-        // },
         generalBoxesUpdate: function (state, payload) {
             state.general_boxes = payload;
         },
@@ -80,6 +34,8 @@ const store = new Vuex.Store({
         },
         generalImageOcrStatus: function (state, payload) {
             state.general_upload_res[payload.item].status = payload.status;
+            state.general_upload_res[payload.item].status_msg = payload.status_msg;
+            state.general_upload_res[payload.item].file_name = payload.file_name;
         },
         generalImageOcrResults: function (state, payload) {
             state.general_upload_res[payload.item].ocr_results = payload.ocr_results;

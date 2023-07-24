@@ -1,4 +1,4 @@
-from app import response_table
+
 from app.exceptions import CustomException, MlaasRequestError
 from app.forms.template_crud.create import CreateTemplateForm
 from app.schema.template_crud.create import (CreateTemplateRequest,
@@ -23,7 +23,6 @@ async def create_template(data: CreateTemplateRequest, request: Request):
     user_id = request.state.user_id
     rid = request.state.request_id
     logger = request.state.logger
-    
     await form.load_data()
     if await form.is_valid():
         inputs = {
@@ -37,23 +36,19 @@ async def create_template(data: CreateTemplateRequest, request: Request):
             "request_id": rid,
             "inputs": jsonable_encoder(inputs)
         }
-
-        outputs = await async_call_mlaas_function(input_data, 'template_crud/create_template', project='GP', logger=logger, timeout=60)
-        status_code = outputs['outputs']['status_code']
-        if status_code == '0000':
-            return CreateTemplateResponse(
-                template_id=outputs['outputs']['template_id'],
+        try:
+            outputs = await async_call_mlaas_function(input_data, 'template_crud/create_template', project='GP', logger=logger, timeout=60)
+        except MlaasRequestError as e:
+            logger.info({'error_msg': e.message})
+            raise e
+        except Exception as e:
+            logger.error({'error_msg': str(e)})
+            raise CustomException(status_code=500, message=str(e))
+        return CreateTemplateResponse(
+                template_id=outputs['template_id'],
                 status_code='0000',
                 status_msg='OK'
             )
-        elif status_code == '5401':
-            logger.error({'error_msg': response_table.status_uniqueviolation})
-            raise MlaasRequestError(**response_table.status_uniqueviolation)
-        elif status_code == '5402':
-            logger.error({'error_msg': response_table.status_image_type_error})
-            raise MlaasRequestError(**response_table.status_image_type_error)
-        else:
-            logger.error({'error_msg': outputs['outputs']})
-            raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
+
     logger.error({'error_msg': {'form is not valid': {'errors': form.errors}}})
     raise CustomException(status_code=400, message=form.errors)

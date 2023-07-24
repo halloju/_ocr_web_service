@@ -4,7 +4,7 @@ import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
+import { PULL_INTERVAL, MAX_RETRIES, error_table, default_error_msg } from '@/constants.js';
 import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
@@ -56,7 +56,13 @@ export default {
         function callback(data, image_cv_id) {
             store.dispatch('updateGeneralImageOcrResults', { data, image_cv_id });
         }
-        
+
+        // fail to fail msg
+        function getErrorMsg(row, tableData) {
+            let fileInfo = tableData.filter((item) => item.task_id === row.task_id);
+            if (fileInfo[0].status_msg in error_table) return error_table[fileInfo[0].status_msg]+ '('+fileInfo[0].status_msg+')';
+            else return default_error_msg + '('+fileInfo[0].status_msg+')';
+        }
 
         function getStatusColor(status) {
             switch (status) {
@@ -64,19 +70,25 @@ export default {
                     return 'success';
                 case 'PENDING':
                     return 'gray';
+                case 'PROCESSING':
+                    return 'gray';
                 default:
                     return '';
             }
         }
 
         async function getOcrStatus(item) {
+            let err_code = '';
             apiClient
                 .get(`/task/status/${general_upload_res.value[item].task_id}`)
                 .then(async (res) => {
                     if (res.data.status === 'SUCCESS') {
                         await getOcrResults(item);
+                    } else if (res.data.status === 'FAIL') {
+                        err_code = res.data.status_msg;
+                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
                     } else {
-                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
+                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name});
                     }
                 })
                 .catch((res) => {
@@ -89,6 +101,7 @@ export default {
         }
 
         async function getOcrResults(item) {
+            let err_code = '';
             apiClient
                 .get(`/task/result/${general_upload_res.value[item].task_id}`)
                 .then((res) => {
@@ -100,7 +113,8 @@ export default {
                             type: 'warning'
                         });
                     }
-                    store.commit('generalImageOcrStatus', { item: item, status: res.data.status });
+                    if (res.data.status === 'FAIL') err_code = res.data.status_msg;
+                    store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
                     reloadAnnotator.value = !reloadAnnotator.value;
                 })
                 .catch((res) => {
@@ -117,18 +131,25 @@ export default {
             let count = 0;
             while (isRunning) {
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-                for (let i = 0; i < unfinishedItems.length; i++) {
-                    const item = unfinishedItems[i];
-                    await getOcrStatus(general_upload_res.value.indexOf(item));
-                }
                 if (unfinishedItems.length === 0) {
                     isRunning.value = false;
                     break;
                 }
+                for (let i = 0; i < unfinishedItems.length; i++) {
+                    const item = unfinishedItems[i];
+                    await getOcrStatus(general_upload_res.value.indexOf(item));
+                }
                 await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
-                if (count === MAX_RETRIES) break;
+                if (count === MAX_RETRIES) {
+                    const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
+                    for (let i = 0; i < unfinishedItems.length; i++) {
+                        const item = unfinishedItems[i];
+                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name});
+                    }
+                    break;
+                }
             }
         }
 
@@ -224,6 +245,7 @@ export default {
             getOcrResults,
             waitUntilOcrComplete,
             handleButtonClick,
+            getErrorMsg,
             back,
             downloadFile,
             image_cv_id
@@ -239,7 +261,8 @@ export default {
                     status: item.status,
                     image_id: item.image_id,
                     file_name: item.file_name,
-                    isFinished: item.status === 'SUCCESS' ? true : false
+                    isFinished: item.status === 'SUCCESS' ? true : false,
+                    status_msg: item.status === 'FAIL' ? item.status_msg : ''
                 });
             });
             return tempTableData;
@@ -273,8 +296,16 @@ export default {
                                     <el-table-column prop="num" label="號碼" sortable width="100" />
                                     <el-table-column prop="file_name" label="檔名" sortable width="200" />
                                     <el-table-column prop="status" label="辨識狀態" width="180">
-                                        <template #default="{ row }">
-                                            <el-tag :type="getStatusColor(row.status)">{{ row.status }}</el-tag>
+                                        <template v-slot="scope">
+                                            <el-tooltip
+                                                :disabled="scope.row.status != 'FAIL'"
+                                                class="error-tip"
+                                                effect="dark"
+                                                :content="getErrorMsg(scope.row, this.tableData)"
+                                                placement="top"
+                                            >
+                                                <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
+                                            </el-tooltip>
                                         </template>
                                     </el-table-column>
                                     <el-table-column label="動作">

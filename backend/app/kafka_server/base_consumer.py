@@ -12,9 +12,9 @@ class BaseConsumer(object):
     Base Class of Consumer
     """
 
-    def __init__(self, kafka_configs: dict, topics: list):
+    def __init__(self, kafka_configs: dict, topics: list, kafka_name: str = 'consumer'):
         self.dequeue_status = True
-        self.logger_tool = Logger(__name__)
+        self.logger_tool = Logger(kafka_name)
 
         self.kafka_config = kafka_configs
         self.consumer = Consumer(self.kafka_config)
