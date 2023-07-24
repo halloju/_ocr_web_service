@@ -45,11 +45,11 @@ const router = createRouter({
                     name: 'empty',
                     component: () => import('@/views/pages/Empty.vue')
                 },
-                {
-                    path: '/pages/crud',
-                    name: 'crud',
-                    component: () => import('@/views/pages/features/template/Crud.vue')
-                }
+                // {
+                //     path: '/pages/crud',
+                //     name: 'crud',
+                //     component: () => import('@/views/pages/features/template/Crud.vue')
+                // }
             ],
             meta: { requiresAuth: true } // This route requires authentication
         },

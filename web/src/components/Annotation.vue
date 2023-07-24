@@ -3,6 +3,7 @@ import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';
 import SideBarEntry from '@/components/SideBarEntry.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
+import { MIN_PIXEL } from '@/constants.js';
 export default {
     components: {
         SideBarEntry,
@@ -29,11 +30,12 @@ export default {
     data() {
         return {
             image: null,
+            scale: 1, // current scale
             stageSize: {
                 width: null,
-                height: null
+                height: null,
+                draggable: true
             },
-            scale: 1, // current scale
             shapes: [], // shape container
             selectedShapeName: '', // currently selected shape
             currentHoverShape: '', // hovering over certain shape
@@ -50,7 +52,8 @@ export default {
                 link: ''
             },
             isShowText: this.setShowText,
-            isTitle: true
+            isTitle: true,
+            oldAttrs: null
         };
     },
     watch: {
@@ -68,6 +71,13 @@ export default {
                 ...this.getBaseShapeForPolygon(),
                 closed: true
             };
+        },
+        stageConfig() {
+            return {
+                ...this.stageSize,
+                scaleX: this.scale,
+                scaleY: this.scale
+            };
         }
     },
     // created live cycle hook
@@ -82,6 +92,8 @@ export default {
         }
         // load image
         this.loadImage();
+        window.addEventListener("resize", this.changeRect);
+        this.changeRect();
     },
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
@@ -106,6 +118,19 @@ export default {
         };
     },
     methods: {
+        changeRect: function() {
+            const container = this.$refs.main;
+
+            if (!container) {
+                return;
+            }
+
+            const height = container.offsetHeight;
+            const width = container.offsetWidth;
+
+            this.stageSize.width = width;
+            this.stageSize.height = height;
+        },
         getMiddlePosition() {
             const image = this.$refs.stage.getNode();
             const width = image.width();
@@ -201,12 +226,16 @@ export default {
         addRectangle(rectangleType) {
             if (this.isAddingPolygon) return;
             const pos = this.getMiddlePosition();
+            const new_x = Math.max(Math.min(pos.x, this.image.width - MIN_PIXEL), 0);
+            const new_y = Math.max(Math.min(pos.y, this.image.height - MIN_PIXEL), 0);
+            const new_width = Math.min(200 / this.scale, this.image.width - new_x);
+            const new_height = Math.min(200 / this.scale, this.image.height - new_y);
             this.shapes.push({
                 ...this.getBaseShape('rect', rectangleType),
-                x: pos.x,
-                y: pos.y,
-                width: 200 / this.scale,
-                height: 200 / this.scale
+                x: new_x,
+                y: new_y,
+                width: new_width,
+                height: new_height
             });
             // call update
             this.shapesUpdated();
@@ -283,11 +312,34 @@ export default {
             // call update
             this.shapesUpdated();
         },
-        handleTransform(event, shape) {
-            shape.scaleX = event.currentTarget.attrs.scaleX;
-            shape.scaleY = event.currentTarget.attrs.scaleY;
+        handleTransform(event) {
+            const KonvaShape = event.target;
+            const stage = this.$refs.background.getNode();
+            const box = KonvaShape.getClientRect();
+            const stagePos = stage.absolutePosition();
+            const isOut =
+                box.x < stagePos.x ||
+                box.y < stagePos.y ||
+                box.x + box.width> stagePos.x+this.image.width*this.scale ||
+                box.y + box.height> stagePos.y+this.image.height*this.scale;
+            if (isOut) {
+                KonvaShape.setAttrs(this.oldAttrs);
+            } else {
+                this.oldAttrs = { ...KonvaShape.getAttrs() };
+            }
+        },
+        handleTransformEnd(event, shape) {
+            const KonvaShape = event.target;
+            const box = KonvaShape.getClientRect();
             shape.x = event.currentTarget.attrs.x;
             shape.y = event.currentTarget.attrs.y;
+            if (box.width <= 1 || box.height <= 1) {
+                shape.x -= 2;
+                shape.y -= 2;
+            }
+            shape.scaleX = event.currentTarget.attrs.scaleX;
+            shape.scaleY = event.currentTarget.attrs.scaleY;
+
             // call update
             this.shapesUpdated();
         },
@@ -325,6 +377,29 @@ export default {
                     this.shapes[idx].fill = this.getFillColorByRectangleType(this.shapes[idx].rectangleType);
                 }
             }
+        },
+        handleDragMove(e) {
+            const shape = e.target;
+            const stage = this.$refs.background.getNode();
+            const stagePos = stage.absolutePosition();
+            const box = shape.getClientRect();
+            const absPos = shape.getAbsolutePosition();
+            const offsetX = box.x - absPos.x;
+            const offsetY = box.y - absPos.y;
+            const newAbsPos = { ...absPos };
+            if (box.x < stagePos.x) {
+                newAbsPos.x = stagePos.x-offsetX;
+            }
+            if (box.y < stagePos.y) {
+                newAbsPos.y = stagePos.y-offsetY;
+            }
+            if (box.x + box.width> stagePos.x+this.image.width*this.scale) {
+                newAbsPos.x = stagePos.x+this.scale*this.image.width- box.width - offsetX;
+            }
+            if (box.y + box.height> stagePos.y+this.scale*this.image.height ) {
+                newAbsPos.y = stagePos.y+this.scale*this.image.height  - box.height - offsetY;
+            }
+            shape.setAbsolutePosition(newAbsPos);
         },
         formSubmitted(name) {
             // save correct color
@@ -398,15 +473,8 @@ export default {
                 <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
             </div>
             <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-
             <v-stage
-                :config="{
-                    width: stageSize.width,
-                    height: stageSize.height,
-                    scaleX: scale,
-                    scaleY: scale,
-                    draggable: true
-                }"
+                :config="stageConfig"
                 @mousedown="handleStageMouseDown"
                 @contextmenu="cancelEvent"
                 @mouseenter="handleGlobalMouseEnter"
@@ -416,6 +484,7 @@ export default {
             >
                 <v-layer ref="background">
                     <v-image
+                        :ref="'image'"
                         :config="{
                             image: image,
                             stroke: 'black'
@@ -429,13 +498,15 @@ export default {
                             :config="shape"
                             :key="shape.name"
                             @dragend="handleDragEnd($event, shape)"
-                            @transformend="handleTransform($event, shape)"
+                            @transform="handleTransform"
+                            @transformend="handleTransformEnd($event, shape)"
                             @mouseenter="handleMouseEnter(shape.name)"
                             @mouseleave="handleMouseLeave"
+                            @dragmove="handleDragMove"
                         />
                         <v-text v-if="isShowText" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                     </template>
-                    <v-transformer ref="transformer" :rotateEnabled="false"  :keepRatio="false"  v-if="editMode" />
+                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
                 </v-layer>
             </v-stage>
 

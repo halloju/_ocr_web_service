@@ -6,6 +6,8 @@ import jwt
 from datetime import datetime, timedelta
 import os
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
+from onelogin.saml2.settings import OneLogin_Saml2_Settings
+from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
@@ -37,7 +39,18 @@ async def prepare_from_fastapi_request(request, debug=False):
 
 
 def init_saml_auth(req):
-    auth = OneLogin_Saml2_Auth(req, custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml'))  # saml
+    settings = OneLogin_Saml2_Settings(custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml'))  # saml
+    
+    settings_data = {}
+    settings_data['sp'] = settings._sp
+    settings_data['idp'] = settings._idp
+    settings_data['sp']['entityId'] = os.environ['SAML_SP_ENTITY_ID']
+    settings_data['sp']['assertionConsumerService']['url'] = os.environ['SAML_SP_ENTITY_ID'] + '/auth/acs'
+    settings_data['sp']['singleLogoutService']['url'] = os.environ['SAML_SP_ENTITY_ID'] + '/auth/sls'
+    
+    idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(os.environ['SAML_IDP_METADATA_URL'], validate_cert=False)
+    settings_update = OneLogin_Saml2_IdPMetadataParser.merge_settings(settings_data, idp_data['idp'])
+    auth = OneLogin_Saml2_Auth(req, settings_update)  # saml
     return auth
 
 

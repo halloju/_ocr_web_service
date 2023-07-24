@@ -6,6 +6,7 @@ import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { initializeClient } from '@/service/auth.js';
+import { error_table, default_error_msg } from '@/constants.js';
 
 export default {
     components: {
@@ -209,7 +210,6 @@ export default {
                         this.clearState();
                         this.$router.push({ path: '/features/general/model-list' });
                     } else {
-                        console.log(res);
                         ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
                             type: 'error',
@@ -222,8 +222,12 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
-                    ElMessageBox.confirm(err, '失敗', {
+                    let error_msg = default_error_msg;
+                    if (typeof(err.response.data)==='object' && 'mlaas_code' in err.response.data) {
+                        console.log(err.response.data.mlaas_code);
+                        if (err.response.data.mlaas_code in error_table) error_msg = error_table[err.response.data.mlaas_code] + ' (' + err.response.data.mlaas_code + ')';
+                    }
+                    ElMessageBox.confirm(error_msg, '失敗', {
                         confirmButtonText: '確定',
                         type: 'error',
                         center: true,
@@ -247,7 +251,7 @@ export default {
         clearState() {
             // remove all localStorage
             sessionStorage.clear();
-            this.$store.commit('setTemplateName', '');
+            this.$store.commit('templateNameUpdate', '');
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;
@@ -300,7 +304,7 @@ export default {
                 <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{ name: 'Model-List' }">模板辨識</el-breadcrumb-item>
+                    <el-breadcrumb-item :to="{ name: 'ModelList' }">模板辨識</el-breadcrumb-item>
                     <el-breadcrumb-item>模板編輯</el-breadcrumb-item>
                 </el-breadcrumb>
                 <br />

@@ -34,16 +34,13 @@ async def update_template(data: UpdateTemplateRequest, request: Request):
             "request_id": rid,
             "inputs": jsonable_encoder(inputs)
         }
-        outputs = await async_call_mlaas_function(input_data, 'template_crud/update_template', project='GP', logger=logger)
-        status_code = outputs['outputs']['status_code']
-        if status_code == '0000':
-            new_template_id = outputs['outputs']['template_id']
-            return UpdateTemplateResponse(template_id=new_template_id)
-        elif status_code == '5407':
-            logger.error({'error_msg': response_table.status_templateexisterror})
-            raise MlaasRequestError(**response_table.status_templateexisterror)
-        else:
-            logger.error({'error_msg': outputs['outputs']})
-            raise MlaasRequestError(status_code, outputs['outputs']['status_msg'])
+        try:
+            outputs = await async_call_mlaas_function(input_data, 'template_crud/update_template', project='GP', logger=logger)
+        except MlaasRequestError as e:
+            raise e
+        except Exception as e:
+            logger.error({'error_msg': str(e)})
+            raise CustomException(status_code=500, message=str(e))
+        return UpdateTemplateResponse(template_id=outputs['template_id'])
     logger.error({'error_msg': {'form is not valid': {'errors': form.errors}}})
     raise CustomException(status_code=400, message=form.errors)

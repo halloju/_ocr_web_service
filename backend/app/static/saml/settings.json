@@ -1,0 +1,22 @@
+{
+  "strict": false,
+  "debug": false,
+  "sp": {
+    "entityId": "https://localhost:8080/saml/metadata",
+    "assertionConsumerService": {
+      "url": "https://localhost:8080/saml/acs",
+      "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    },
+    "singleLogoutService": {
+      "url": "https://localhost:8080/saml/sls",
+      "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    },
+    "NameIDFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:undefined",
+    "x509cert": "",
+    "privateKey": ""
+  },
+
+  "idp": {
+
+  }
+}

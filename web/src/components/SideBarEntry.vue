@@ -69,8 +69,8 @@ export default {
     },
     watch: {
         selectedShapeName: function (newShape, oldShape) {
-            if (newShape === this.shape.name) {
-            }
+            // if (newShape === this.shape.name) {
+            // }
             if (!this.active && newShape === this.shape.name) {
                 this.toggleContent();
             } else if (this.active && newShape !== this.shape.name) {

@@ -1,17 +1,15 @@
 import base64
 import uuid
 
-from celery.result import AsyncResult
 from fastapi import APIRouter, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
-from logger import Logger
 from pydantic.typing import List
 from worker import predict_image
 from route_utils import get_redis_filename
+from datetime import datetime
 
 
 router = APIRouter()
-# logger = Logger(__name__)
 
 async def process_image(request: Request, file: UploadFile, action: str, input_params: dict):
     image_id = str(uuid.uuid4())
@@ -32,8 +30,15 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
     await request.app.state.redis.expire(get_redis_filename(image_id), 86400)
 
     # start task prediction
-    task_id = predict_image.delay(image_id, action=action, input_params=input_params)
-    return {'task_id': str(task_id), 'status': 'PROCESSING', 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id}
+    task_id = predict_image.delay(image_id, action=action, input_params=input_params, start_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    return {
+        'task_id': str(task_id),
+        'status': 'PROCESSING',
+        'file_name': file.filename,
+        'url_result': f'/ocr/result/{task_id}',
+        'image_id': image_id,
+        'status_msg': ''
+    }
 
 @router.post("/gp_ocr", summary="全文辨識")
 async def process(request: Request, image_complexity: str = Form(...), model_name: str = Form(...), files: List[UploadFile] = File(...)):
@@ -50,7 +55,7 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
                 task_id = task.get('task_id', '')
                 image_id = task.get('image_id', '')
                 logger.error({'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
-                tasks.append({'task_id': task_id, 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
+                tasks.append({'task_id': task_id, 'status': 'FAIL', 'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=202, content=tasks)
     except Exception as ex:
         logger.error({'error_msg': str(ex)})
