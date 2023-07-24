@@ -45,7 +45,7 @@ def init_saml_auth(req):
     json_data_file.close()
     
     idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(os.environ['SAML_IDP_METADATA_URL'], validate_cert=False)
-    settings_data['idp'] = idp_data['idp']
+    settings_data['idp']['x509cert'] = idp_data['idp']['x509certMulti']['signing'][0]
     auth = OneLogin_Saml2_Auth(req, settings_data)  # saml
     return auth
 

@@ -140,7 +140,6 @@ export default {
                 size: file.size,
                 type: file.type
             }
-            console.log(file)
 
             beforeUpload(fileDict)
         }
