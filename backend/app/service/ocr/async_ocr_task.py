@@ -100,7 +100,7 @@ class AsyncPredictTask(object):
         # start task prediction
         upload_result = await self.predict(image_id, action=action, input_params=input_params)
         task_id = str(upload_result["image_cv_id"]).replace('/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
-        task_info = {**upload_result, 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id}
+        task_info = {**upload_result, 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'task_id': task_id}
         self.logger.info(task_info)
 
         await self.conn.set(get_redis_taskname(task_id), json.dumps(task_info))
