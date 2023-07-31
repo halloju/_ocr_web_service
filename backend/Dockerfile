@@ -53,6 +53,10 @@ RUN pip install --upgrade pip && \
 # Copy the rest of the application code
 COPY . .
 
+# Copy saml2 settings
+COPY saml/prod/settings.json /code/app/static/saml/settings.json
+RUN rm -rf saml/
+
 # Use multi-stage build to reduce image size
 FROM base as final
 COPY --from=base /code /code
