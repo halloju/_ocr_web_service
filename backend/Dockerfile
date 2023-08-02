@@ -43,3 +43,6 @@ WORKDIR /code
 COPY --from=build /code /code
 COPY --from=build /usr/local /usr/local
 COPY --from=build /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+RUN apt-get purge -y --allow-remove-essential \
+    linux-libc-dev \
+    perl-base
