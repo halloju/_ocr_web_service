@@ -80,17 +80,6 @@ const model = ref([
                         to: '/features/ocr/withholding'
                     }
                 ]
-            },
-            {
-                label: '檔案轉換',
-                icon: 'pi pi-file',
-                items: [
-                    {
-                        label: 'PDF to Image',
-                        icon: 'pi pi-images',
-                        to: '/features/pdf2image'
-                    }
-                ]
             }
         ]
     }

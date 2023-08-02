@@ -4,7 +4,6 @@ from app.api_config import http_responses
 from app.exceptions import (CustomException, MlaasRequestError,
                             exception_handler, mlaas_request_handler)
 from app.routers import docs
-from app.routers.image_tools import pdf_transform
 from app.routers.ocr import ocr
 from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
@@ -116,12 +115,6 @@ def get_application():
         task.router,
         prefix="/task",
         tags=["task"],
-    )
-    app.include_router(
-        pdf_transform.router,
-        prefix="/image_tools",
-        tags=["image_tools"],
-        responses=http_responses
     )
     app.include_router(
         login.router,

@@ -31,11 +31,6 @@ const router = createRouter({
                     component: () => import('@/views/pages/features/template/step.vue')
                 },
                 {
-                    path: '/features/pdf2image',
-                    name: 'pdf2image',
-                    component: () => import('@/views/pages/features/pdf2image.vue')
-                }, 
-                {
                     path: '/utilities/icons',
                     name: 'icons',
                     component: () => import('@/views/utilities/Icons.vue')

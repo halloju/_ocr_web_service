@@ -1,13 +1,13 @@
 <script>
 import BaseOCR from '@/components/BaseOCR.vue';
-import remittance from '@/assets/img/example/remittance.png';
-import check_front from '@/assets/img/example/check_front.png';
-import check_back from '@/assets/img/example/check_back.png';
-import driver_license from '@/assets/img/example/driver_license.png';
-import health_insurance from '@/assets/img/example/health_insurance.png';
-import id from '@/assets/img/example/id.png';
-import fs from '@/assets/img/example/fs.png';
-import ws from '@/assets/img/example/ws.png';
+import remittance from '@/assets/img/example/remittance.jpg';
+import check_front from '@/assets/img/example/check_front.jpg';
+import check_back from '@/assets/img/example/check_back.jpg';
+import driver_license from '@/assets/img/example/driver_license.jpg';
+import health_insurance from '@/assets/img/example/health_insurance.jpg';
+import id from '@/assets/img/example/id.jpg';
+import fs from '@/assets/img/example/fs.jpg';
+import ws from '@/assets/img/example/ws.jpg';
 
 import id_example from '@/assets/img/ocr_example/id_example.png';
 import driver_example from '@/assets/img/ocr_example/driver_example.png';
