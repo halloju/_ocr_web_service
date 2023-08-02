@@ -9,14 +9,14 @@ import id from '@/assets/img/example/id.jpg';
 import fs from '@/assets/img/example/fs.jpg';
 import ws from '@/assets/img/example/ws.jpg';
 
-import id_example from '@/assets/img/ocr_example/id.png';
-import driver_example from '@/assets/img/ocr_example/driver.png';
-import health_example from '@/assets/img/ocr_example/health.png';
-import ws_example from '@/assets/img/ocr_example/ws.png';
-import fs_example from '@/assets/img/ocr_example/fs.png';
-import remittance_example from '@/assets/img/ocr_example/remittance.png';
-import check_front_example from '@/assets/img/ocr_example/check_front.png';
-import check_back_example from '@/assets/img/ocr_example/check_back.png';
+import id_example from '@/assets/img/ocr_example/id_example.png';
+import driver_example from '@/assets/img/ocr_example/driver_example.png';
+import health_example from '@/assets/img/ocr_example/health_example.png';
+import ws_example from '@/assets/img/ocr_example/ws_example.png';
+import fs_example from '@/assets/img/ocr_example/fs_example.png';
+import remittance_example from '@/assets/img/ocr_example/remittance_example.png';
+import check_front_example from '@/assets/img/ocr_example/check_front_example.png';
+import check_back_example from '@/assets/img/ocr_example/check_back_example.png';
 
 export default {
     components: {

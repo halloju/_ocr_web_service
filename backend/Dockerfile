@@ -1,24 +1,5 @@
-# # Use an alias for the base image
-# FROM python:3.9-slim
-
-# # Set the working directory
-# WORKDIR /code
-
-# # Install required packages and build dependencies
-# RUN apt-get update && apt-get -y install libpq-dev gcc libxml2-dev libxmlsec1-dev libxmlsec1-openssl && apt-get -y install vim && apt-get -y install poppler-utils && apt-get -y install poppler-data && apt-get -y install musl-dev
-
-# # Copy the requirements file
-# COPY ./requirements.txt .
-
-# # Upgrade pip and install the required packages from the requirements file
-# RUN pip install -U pip && \
-#     pip install --no-cache-dir --upgrade -r requirements.txt
-
-# # Copy the rest of the application code
-# COPY . .
-
 # Use an alias for the base image
-FROM python:3.9-slim as base
+FROM python:3.10.12-slim as build
 
 # Set the working directory
 WORKDIR /code
@@ -26,7 +7,6 @@ WORKDIR /code
 # Install required packages and build dependencies
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y \
-    libpq-dev \
     libxslt-dev \
     python3-dev \
     build-essential \
@@ -34,9 +14,6 @@ RUN apt-get install -y \
     libxml2-dev \
     libxmlsec1-dev \
     libxmlsec1-openssl \
-    vim \
-    poppler-utils \
-    poppler-data \
     musl-dev \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
@@ -54,9 +31,18 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Copy saml2 settings
-COPY saml/prod/settings.json /code/app/static/saml/settings.json
+COPY saml/uat/settings.json /code/app/static/saml/settings.json
 RUN rm -rf saml/
 
-# Use multi-stage build to reduce image size
-FROM base as final
-COPY --from=base /code /code
+# Start the runtime stage
+FROM python:3.10.12-slim as final
+
+WORKDIR /code
+
+# Copy the built application from the build stage
+COPY --from=build /code /code
+COPY --from=build /usr/local /usr/local
+COPY --from=build /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+RUN apt-get purge -y --allow-remove-essential \
+    linux-libc-dev \
+    perl-base
