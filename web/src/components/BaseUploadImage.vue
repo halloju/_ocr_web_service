@@ -4,6 +4,7 @@ import { apiClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
 import { useStore } from 'vuex';
+import { handleErrorMsg } from '@/mixins/useCommon.js';
 
 export default {
     name: 'BaseUploadImage',
@@ -96,6 +97,8 @@ export default {
                     msg = 'The files you tried to upload are too large. \n (total exceed 20 MB)';
                 } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
+                } else {
+                    msg= handleErrorMsg(error.response);
                 }
                 //error alert for the axios request
                 ElMessageBox.confirm(msg, '失敗', {

@@ -47,6 +47,16 @@ status_boxrerror = {
     'status_msg': 'widthheight error'
 }
 
+status_bad_quality = {
+    'status_code': '5429',
+    'status_msg': 'bad image quality error'
+}
+
+status_class_error = {
+    'status_code': '5429',
+    'status_msg': 'confirm image class check error'
+}
+
 response_table = {
     '0000': status_ok,
     '0001': status_codeerror,
@@ -57,4 +67,6 @@ response_table = {
     '5407': status_templateexisterror,
     '5415': status_parametererror,
     '5416': status_boxrerror,
+    '5420': status_bad_quality,
+    '5421': status_class_error
 }
