@@ -67,6 +67,8 @@ class AsyncPredictTask(object):
         }
 
     async def predict(self, image_id, action, input_params):
+        predict_class = ''
+        data_pred = {'image_cv_id': ''}
         try:
             file_name = await self.conn.get(get_redis_filename(image_id))
             encoded_data = await self.conn.get(image_id)
@@ -82,7 +84,7 @@ class AsyncPredictTask(object):
             # Return the prediction result
             return self._get_task_info('PROCESSING', predict_class, file_name, data_pred['image_cv_id'])
         except MlaasRequestError as e:
-            return self._get_task_info('FAIL', predict_class, file_name, data_pred['image_cv_id'], e.mlaas_code,  e.message)
+            return self._get_task_info('FAIL', predict_class, file_name, data_pred['image_cv_id'], e.mlaas_code, e.message)
         except Exception as e:
             self.logger.error({'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
             return self._get_task_info('FAIL', '', file_name, '', '5001', 'unknown error')

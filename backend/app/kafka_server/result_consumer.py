@@ -34,7 +34,7 @@ class ResultConsumer(BaseConsumer):
                 old_data['status'] = 'FAIL'
             else:
                 old_data = json.loads(old_data)
-                old_data['data_results'] = self.msg_func(msg['ocr_results'])
+                old_data['result'] = {'data_results': self.msg_func(msg['ocr_results'])}
                 old_data['status'] = 'SUCCESS'
                 start_time = datetime.strptime(old_data['start_time'], "%Y-%m-%d %H:%M:%S")
             self.redis_server.set(full_key, json.dumps(old_data))  # replace

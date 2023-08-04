@@ -48,12 +48,12 @@ status_boxrerror = {
 }
 
 status_bad_quality = {
-    'status_code': '5429',
+    'status_code': '5420',
     'status_msg': 'bad image quality error'
 }
 
 status_class_error = {
-    'status_code': '5429',
+    'status_code': '5421',
     'status_msg': 'confirm image class check error'
 }
 
