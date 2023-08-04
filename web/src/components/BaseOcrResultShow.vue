@@ -39,7 +39,7 @@ export default {
             let excelData = [];
             general_upload_res.value.forEach((item) => {
                 if (item.ocr_results) {
-                    item.ocr_results.forEach((result_dic) => {
+                    item.ocr_results.data_results.forEach((result_dic) => {
                         let cols = {
                             filename: item.file_name,
                             image_id: item.image_id
