@@ -61,7 +61,8 @@ const logout = () => {
     axios
         .get('/auth/slo')
         .then((res) => {
-            this.router.push('/');
+            const url = res.data
+            window.location.href = url
         })
         .catch((err) => {
             console.log(err);

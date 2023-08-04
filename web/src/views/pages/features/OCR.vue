@@ -4,7 +4,7 @@ import remittance from '@/assets/img/example/remittance.jpg';
 import check_front from '@/assets/img/example/check_front.jpg';
 import check_back from '@/assets/img/example/check_back.jpg';
 import driver_license from '@/assets/img/example/driver_license.jpg';
-import health_insurance from '@/assets/img/example/health_insurance.jpg';
+import health_insurance from '@/assets/img/example/health_insurance.png';
 import id from '@/assets/img/example/id.jpg';
 import fs from '@/assets/img/example/fs.jpg';
 import ws from '@/assets/img/example/ws.jpg';

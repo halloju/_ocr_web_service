@@ -107,8 +107,10 @@ async def acs(request: Request):
 async def slo(request: Request):
     req = await prepare_from_fastapi_request(request)
     saml_auth = init_saml_auth(req)
-    saml_auth.logout()
-    return Response(saml_auth.get_last_response_xml(), media_type="application/xml")
+    redirect_url = saml_auth.logout()
+    response = Response(headers={"Location": redirect_url}, status_code=303)
+    response.delete_cookie("refresh_token")
+    return response
 
 
 @router.post("/sls")
