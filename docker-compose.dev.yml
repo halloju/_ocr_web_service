@@ -42,7 +42,7 @@ services:
         ports:
           - '3000:3000'
         environment:
-          - VITE_APP_VERSION=v1.0.14
+          - VITE_APP_VERSION=v1.0.19
           - MODE=development
           - VITE_API_URL=http://localhost/backend
           - TZ=Asia/Taipei
@@ -85,7 +85,7 @@ services:
         image: nginx:1.15-alpine
         volumes:
           - "./nginx:/etc/nginx/conf.d"
-          - "/opt/letsencrypt/:/etc/nginx/ssl/"
+          # - "/opt/letsencrypt/:/etc/nginx/ssl/"
         ports:
           - 80:80
         depends_on:
@@ -119,7 +119,7 @@ services:
     worker:
       container_name: worker
       build: ./backend
-      command: celery worker --app=worker.celery --loglevel=INFO
+      command: celery worker --app=worker.celery --concurrency=8 -P gevent -l info
       volumes:
         - ./backend:/code
         - ./log:/code/app/logger

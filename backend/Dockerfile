@@ -31,7 +31,7 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Copy saml2 settings
-COPY saml/uat/settings.json /code/app/static/saml/settings.json
+COPY saml/prod/settings.json /code/app/static/saml/settings.json
 RUN rm -rf saml/
 
 # Start the runtime stage
