@@ -106,7 +106,7 @@ export default {
                 .get(`/task/result/${general_upload_res.value[item].task_id}`)
                 .then((res) => {
                     if (res.data.status === 'SUCCESS') {
-                        store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.data_results, file_name: res.data.file_name });
+                        store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
                     } else {
                         ElMessage({
                             message: '辨識失敗',
