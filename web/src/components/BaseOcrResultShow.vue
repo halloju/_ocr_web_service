@@ -130,8 +130,9 @@ export default {
             isRunning.value = true;
             let count = 0;
             while (isRunning) {
+                console.log(isRunning.value)
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-                if (unfinishedItems.length === 0) {
+                if (unfinishedItems.length === 0 || !isRunning.value) {
                     isRunning.value = false;
                     break;
                 }
@@ -139,7 +140,9 @@ export default {
                     const item = unfinishedItems[i];
                     await getOcrStatus(general_upload_res.value.indexOf(item));
                 }
+                if (!isRunning.value) break;  // Check before the timeout
                 await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
+                if (!isRunning.value) break;  // Check after the timeout
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
                 if (count === MAX_RETRIES) {
@@ -191,6 +194,7 @@ export default {
                         type: 'success',
                         message: '回到圖檔上傳'
                     });
+                    isRunning.value = false;
                     emit('nextStepEmit', 1);
                 })
                 .catch(() => {
