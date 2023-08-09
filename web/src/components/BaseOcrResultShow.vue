@@ -4,11 +4,10 @@ import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import { PULL_INTERVAL, MAX_RETRIES } from '@/constants.js';
+import { PULL_INTERVAL, MAX_RETRIES, error_table, default_error_msg } from '@/constants.js';
 import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
-import { initializeClient } from '@/service/auth.js';
-import { error_table, default_error_msg } from '../constants';
+import { apiClient } from '@/service/auth.js';
 
 export default {
     components: {
@@ -18,7 +17,6 @@ export default {
     setup(props, { emit }) {
         const { parseOcrDetail } = useAnnotator();
         const store = useStore();
-        const apiClient = ref(null);
 
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
@@ -41,7 +39,7 @@ export default {
             let excelData = [];
             general_upload_res.value.forEach((item) => {
                 if (item.ocr_results) {
-                    item.ocr_results.forEach((result_dic) => {
+                    item.ocr_results.data_results.forEach((result_dic) => {
                         let cols = {
                             filename: item.file_name,
                             image_id: item.image_id
@@ -81,7 +79,7 @@ export default {
 
         async function getOcrStatus(item) {
             let err_code = '';
-            apiClient.value
+            apiClient
                 .get(`/task/status/${general_upload_res.value[item].task_id}`)
                 .then(async (res) => {
                     if (res.data.status === 'SUCCESS') {
@@ -104,7 +102,7 @@ export default {
 
         async function getOcrResults(item) {
             let err_code = '';
-            apiClient.value
+            apiClient
                 .get(`/task/result/${general_upload_res.value[item].task_id}`)
                 .then((res) => {
                     if (res.data.status === 'SUCCESS') {
@@ -132,8 +130,9 @@ export default {
             isRunning.value = true;
             let count = 0;
             while (isRunning) {
+                console.log(isRunning.value)
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-                if (unfinishedItems.length === 0) {
+                if (unfinishedItems.length === 0 || !isRunning.value) {
                     isRunning.value = false;
                     break;
                 }
@@ -141,7 +140,9 @@ export default {
                     const item = unfinishedItems[i];
                     await getOcrStatus(general_upload_res.value.indexOf(item));
                 }
+                if (!isRunning.value) break;  // Check before the timeout
                 await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
+                if (!isRunning.value) break;  // Check after the timeout
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
                 if (count === MAX_RETRIES) {
@@ -157,7 +158,7 @@ export default {
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
-            apiClient.value
+            apiClient
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
                     if (res !== null) {
@@ -193,6 +194,7 @@ export default {
                         type: 'success',
                         message: '回到圖檔上傳'
                     });
+                    isRunning.value = false;
                     emit('nextStepEmit', 1);
                 })
                 .catch(() => {
@@ -216,7 +218,6 @@ export default {
 
         // Start to pull the status
         onMounted(async () => {
-            apiClient.value = await initializeClient();
             waitUntilOcrComplete();
             const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
             width.value = col12Width - parseInt('4rem');

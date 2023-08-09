@@ -1,9 +1,10 @@
 <script>
 import { ref, computed, watch, onMounted } from 'vue';
-import { initializeClient } from '@/service/auth.js';
+import { apiClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
 import { useStore } from 'vuex';
+import { handleErrorMsg } from '@/mixins/useCommon.js';
 
 export default {
     name: 'BaseUploadImage',
@@ -28,12 +29,11 @@ export default {
             type: String
         },
         defaultImgURL: {
-            type: String
+            type: Object
         }
     },
     setup(props, { emit }) {
         const store = useStore();
-        const apiClient = ref(null);
         const languages = [
             { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
             { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
@@ -83,7 +83,7 @@ export default {
             });
             // predict_images
             try {
-                const response = await apiClient.value.post(props.apiUrl, formData, {
+                const response = await apiClient.post(props.apiUrl, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -97,6 +97,8 @@ export default {
                     msg = 'The files you tried to upload are too large. \n (total exceed 20 MB)';
                 } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
+                } else {
+                    msg= handleErrorMsg(error.response);
                 }
                 //error alert for the axios request
                 ElMessageBox.confirm(msg, '失敗', {
@@ -141,7 +143,6 @@ export default {
                 size: file.size,
                 type: file.type
             }
-            console.log(file)
 
             beforeUpload(fileDict)
         }
@@ -224,10 +225,6 @@ export default {
             }
         });
 
-        // on mounted create apiClient with access token
-        onMounted(async () => {
-            apiClient.value = await initializeClient();
-        });
 
         return {
             breadcrumbItems,

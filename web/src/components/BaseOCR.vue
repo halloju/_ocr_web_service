@@ -17,7 +17,9 @@ export default {
         useModelComplexity: Boolean,
         useLanguage: Boolean,
         imageClass: String,
-        defaultImgURL: String
+        defaultImgURL: Object,
+        explanation: String,
+        file: Object
     },
     methods: {
         nextStep(step) {
@@ -37,7 +39,7 @@ export default {
             step: 1,
             image_complexity: '',
             selectedLang: '',
-            imageUploadKey: 0,
+            imageUploadKey: 0
         };
     },
     watch: {
@@ -45,7 +47,7 @@ export default {
             handler() {
                 this.reset();
             },
-            immediate: true
+            immediate: true,
         }
     }
 };
@@ -66,6 +68,8 @@ export default {
                     <el-step title="Step 1" description="圖檔上傳" />
                     <el-step title="Step 2" description="辨識結果" />
                 </el-steps>
+                <img :src="file" :style="{ width: '300px' }"/>
+                <p v-html="explanation"></p>
                 <h5>{{ subtitle }}</h5>
                 <p>{{ description }}</p>
             </div>

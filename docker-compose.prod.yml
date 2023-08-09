@@ -33,24 +33,25 @@ services:
         restart: always
     web:
         container_name: web
+        image: halloju/if_gp_ocr_system_web:v1.0.19-test
         # image: 70804/if_gp_ocr_system_web:v1.0.15-prod
-        # image: halloju/if_gp_ocr_system_web:v1.0.1
-        build:
-          context: ./web
-          dockerfile: Dockerfile.prod
-          args: 
-            - VITE_APP_VERSION=v1.0.14
+        # build:
+        #   context: ./web
+        #   dockerfile: Dockerfile.prod
+        #   args: 
+        #     - VITE_APP_VERSION=v1.0.14
         ports:
           - '80:80'
         environment:
           - MODE=development
-          - VITE_API_URL=http://localhost/backend/happy
+          - VITE_API_URL=http://localhost/backend/
+          - SERVER_NAME=localhost
         depends_on:
           - backend
     backend:
         container_name: backend
-        build: "backend/."
-        # image: 70804/if_gp_ocr_system_backend:v1.0.18
+        # build: "backend/."
+        image: halloju/if_gp_ocr_system_backend:v1.0.23-uat
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
@@ -60,6 +61,11 @@ services:
           - MODE=dev
           - CELERY_BROKER_URL=amqp://rabbitmq
           - CELERY_RESULT_BACKEND=redis://redis:6379/0
+          - SAML_SP_ENTITY_ID=http://localhost:5000/saml/metadata
+          - SAML_IDP_METADATA_URL=https://sso-test.iii.org.tw/idp/shibboleth
+          - LOCAL_REDIS_URL=redis://redis:6379/0
+        env_file:
+          - 'variable.env'
         depends_on:
           - db
           - redis
@@ -88,27 +94,77 @@ services:
           redis-server /usr/local/etc/redis/redis.conf
     rabbitmq:
       container_name: rabbitmq
-      image: rabbitmq:rabbitmq:3.9.11-alpine
+      image: rabbitmq:3.9.11-alpine
       ports:
         - 5672:5672
         - 15672:15672
     worker:
       container_name: worker
-      build: ./backend
-      command: celery worker --app=worker.celery
+      # build: ./backend
+      image: halloju/if_gp_ocr_system_backend:v1.0.23-uat
+      command: celery --app=worker.celery worker --concurrency=8 -P gevent -l info
       volumes:
         - ./log:/code/app/log
       environment:
         - CELERY_BROKER_URL=amqp://rabbitmq
         - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        - MODE=dev
+      env_file:
+        - 'variable.env'
       depends_on:
         - backend
         - redis
         - rabbitmq
     consumer:
       container_name: consumer
-      build: ./backend
+      # build: ./backend
+      image: halloju/if_gp_ocr_system_backend:v1.0.23-uat
       command: python project_consume.py cv_controller
       volumes:
         - ./backend:/code
         - ./log:/code/app/log
+      env_file:
+        - 'variable.env'
+      environment:
+        - MODE=dev
+    zookeeper:
+      image: confluentinc/cp-zookeeper:7.0.1
+      container_name: zookeeper
+      ports:
+          - "2181:2181"
+      environment:
+        ZOOKEEPER_CLIENT_PORT: 2181
+        ZOOKEEPER_TICK_TIME: 2000
+        ZOOKEEPER_AUTHPROVIDER.1: org.apache.zookeeper.server.auth.SASLAuthenticationProvider
+        ZOOKEEPER_REQUIRECLIENTAUTHSCHEME: sasl
+        KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+      volumes:
+        - ./kafka:/etc/kafka/secrets
+    broker:
+      image: confluentinc/cp-kafka:7.0.1
+      container_name: broker
+      depends_on:
+        - zookeeper
+      ports:
+        - "29092:29092"
+        - "9092:9092"
+        - "9101:9101"
+      volumes:
+        - ./kafka:/etc/kafka/secrets
+      environment:
+        KAFKA_BROKER_ID: 1
+        KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+        KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true" #设置为true，ACL机制为黑名单机制
+        KAFKA_JMX_PORT: 9101
+        KAFKA_JMX_HOSTNAME: localhost
+        KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+        KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+        KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+        KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka_server_jaas.conf
+        KAFKA_SUPER_USERS: User:admin

@@ -5,8 +5,8 @@ from typing import Optional
 import jwt
 from datetime import datetime, timedelta
 import os
+import json
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
-from onelogin.saml2.settings import OneLogin_Saml2_Settings
 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 
 
@@ -39,18 +39,14 @@ async def prepare_from_fastapi_request(request, debug=False):
 
 
 def init_saml_auth(req):
-    settings = OneLogin_Saml2_Settings(custom_base_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml'))  # saml
-    
-    settings_data = {}
-    settings_data['sp'] = settings._sp
-    settings_data['idp'] = settings._idp
-    settings_data['sp']['entityId'] = os.environ['SAML_SP_ENTITY_ID']
-    settings_data['sp']['assertionConsumerService']['url'] = os.environ['SAML_SP_ENTITY_ID'] + '/auth/acs'
-    settings_data['sp']['singleLogoutService']['url'] = os.environ['SAML_SP_ENTITY_ID'] + '/auth/sls'
+    filename = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'saml') + '/settings.json' # saml
+    json_data_file = open(filename, 'r')                      # settings_data dict.
+    settings_data = json.load(json_data_file)
+    json_data_file.close()
     
     idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(os.environ['SAML_IDP_METADATA_URL'], validate_cert=False)
-    settings_update = OneLogin_Saml2_IdPMetadataParser.merge_settings(settings_data, idp_data['idp'])
-    auth = OneLogin_Saml2_Auth(req, settings_update)  # saml
+    settings_data['idp']['x509cert'] = idp_data['idp']['x509certMulti']['signing'][0]
+    auth = OneLogin_Saml2_Auth(req, settings_data)  # saml
     return auth
 
 
@@ -95,11 +91,11 @@ async def acs(request: Request):
             "type": "refresh",  # Add a type to distinguish between access and refresh tokens
     }
     
-     # Generate the JWTs
+    # Generate the JWTs
     refresh_token = jwt.encode(refresh_token_payload, SECRET_KEY, algorithm=ALGORITHM)
 
     # Redirect the user back to the Vue application
-    response = Response(headers={"Location": f"/#/home"}, status_code=303)
+    response = Response(headers={"Location": f"/"}, status_code=303)
 
     # Set the tokens as secure, HttpOnly cookies in the response
     response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite="strict")
@@ -111,8 +107,10 @@ async def acs(request: Request):
 async def slo(request: Request):
     req = await prepare_from_fastapi_request(request)
     saml_auth = init_saml_auth(req)
-    saml_auth.logout()
-    return Response(saml_auth.get_last_response_xml(), media_type="application/xml")
+    redirect_url = saml_auth.logout()
+    response = Response(headers={"Location": redirect_url}, status_code=303)
+    response.delete_cookie("refresh_token")
+    return response
 
 
 @router.post("/sls")
@@ -139,7 +137,7 @@ async def refresh_token(refresh_token: Optional[str] = Cookie(None)):
 
         # Create a new access token
         access_token_payload = {
-            "exp": datetime.utcnow() + timedelta(minutes=15),  # Expires in 15 minutes
+            "exp": datetime.utcnow() + timedelta(hours=15),  # Expires in 15 hours
             "iat": datetime.utcnow(),
             "sub": user_id,
             "type": "access",

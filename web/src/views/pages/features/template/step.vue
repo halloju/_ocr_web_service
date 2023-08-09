@@ -5,7 +5,10 @@ import { mapState } from 'vuex';
 import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
-import { initializeClient } from '@/service/auth.js';
+import { apiClient } from '@/service/auth.js';
+import img2 from '@/assets/img/create_template_step2.jpg';
+import img3 from '@/assets/img/create_template_step3.jpg';
+import img4 from '@/assets/img/create_template_step4.jpg';
 import { error_table, default_error_msg } from '@/constants.js';
 
 export default {
@@ -42,11 +45,10 @@ export default {
             createNew: this.$store.state.createNew,
             currentStep: this.$store.state.createNew? 0: 1,
             template_id: sessionStorage.getItem('template_id') || '',
-            apiClient: null,
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
             pageDesc: ['框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
                 '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！', '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！'],
-            pageImg: ['src/assets/img/create_template_step2.jpg', 'src/assets/img/create_template_step3.jpg', 'src/assets/img/create_template_step4.jpg']
+            pageImg: [img2, img3, img4],
         };
     },
     created() {
@@ -55,7 +57,6 @@ export default {
     },
     mounted() {
         this.isFinalStep();
-        this.initializeClient();
     },
     setup() {
         onBeforeRouteLeave((to, from) => {
@@ -73,9 +74,6 @@ export default {
         };
     },
     methods: {
-        async initializeClient() {
-            this.apiClient = await initializeClient();
-        },
         next() {
             this.isEditing = false;
             var warning_message;
@@ -194,7 +192,7 @@ export default {
                 text: 'Loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
-            this.apiClient
+            apiClient
                 .post(`/template_crud/${action}`, body)
                 .then((res) => {
                     if (res.status === 200) {
@@ -251,7 +249,7 @@ export default {
         clearState() {
             // remove all localStorage
             sessionStorage.clear();
-            this.$store.commit('templateNameUpdate', '');
+            // this.$store.commit('setTemplateName', '');
         },
         onSwitchChange(name, value) {
             this.isShapesVisible[name] = value;
@@ -285,7 +283,7 @@ export default {
         tooltip_text() {
             if (this.currentStep == 0) return '請上傳圖片後點我';
             else return '請框好位置後點我';
-        }
+        },
     },
     watch: {
         currentStep() {
