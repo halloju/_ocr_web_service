@@ -284,11 +284,6 @@ export default {
             if (this.currentStep == 0) return '請上傳圖片後點我';
             else return '請框好位置後點我';
         },
-        // computed: {
-        //     imgSrc() {
-        //     return require(`@/assets/img/ocr_example/${this.file}`);
-        //     }
-        // }
     },
     watch: {
         currentStep() {
