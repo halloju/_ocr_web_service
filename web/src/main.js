@@ -8,6 +8,10 @@ import store from './store';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 
+import jQuery from 'jquery';
+window.jQuery = jQuery;
+window.$ = jQuery;
+
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
@@ -106,12 +110,17 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import VirtualScroller from 'primevue/virtualscroller';
 import VueKonva from 'vue-konva'; // canvas
-
 import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
 
 import '@/assets/styles.scss';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
+import "@esb-common/ui/css/esb-ui.css";
+
+const EsbUiModule = await import("@esb-common/ui"); // import jquery before esb-ui
+const EsbUi = EsbUiModule.default;
+
+ 
 
 axios.defaults.withCredentials = true; //允许跨域携带cookie信息
 const { promiseBaseUrl } = document.querySelector('html').dataset;
@@ -135,6 +144,7 @@ app.use(DialogService);
 app.use(ConfirmationService);
 app.use(store);
 app.use(VueKonva);
+app.use(EsbUi);
 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);

@@ -90,16 +90,20 @@ const logout = () => {
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
             <Button label="Logout" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="logout"></Button>
-            <!-- <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-user"></i>
-                <span>Profile</span>
-            </button>
-            <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </button> -->
         </div>
     </div>
+    
+    <!-- <div id="pageWarpper">
+        <div id="contentWarpper">
+            <nav>標頭</nav>
+            <div id="notifyMessageContainer">通知訊息</div>
+            <div id="myFavoriteContainer">我的最愛</div>
+            <div id="pageContentWarpper">
+            <div id="mainDashboardContainer">個人導航板</div>
+            <div id="systemContainer">系統連結地圖</div>
+            </div>
+        </div>
+    </div> -->
 </template>
 
 <style lang="scss" scoped></style>
