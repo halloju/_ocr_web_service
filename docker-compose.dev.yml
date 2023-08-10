@@ -37,7 +37,7 @@ services:
           context: ./web
           dockerfile: Dockerfile.dev
         volumes:
-          - './web:/app'
+          - './web/src:/app/src'
           - '/app/node_modules'
         ports:
           - '3000:3000'

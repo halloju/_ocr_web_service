@@ -71,39 +71,29 @@ const logout = () => {
 </script>
 
 <template>
-    <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo">
-            <img src="@/assets/img/esun-ocr-logo.svg" alt="logo" />
-            <div style="width: 400px; margin-left: 10px">
-                <span style="width: 380px; color: #09747a">智能OCR服務</span>
-                <h6  style="margin: 0;"> {{version}} </h6> 
-            </div>
-        </router-link>
-
-        <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
+    <nav>
+        <!-- <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
             <i class="pi pi-bars"></i>
-        </button>
+    </button> -->
 
-        <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
-            <i class="pi pi-ellipsis-v"></i>
-        </button>
-
-        <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <Button label="Logout" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="logout"></Button>
+    <div id="navPageLogo">
+        <a href="/"><img src="images/logo_white_esun.svg" title="玉山銀行E.SUN Bank"></a>
+    </div>
+    <div id="navPageTitle">｜智能OCR服務</div>
+    <!-- <h6  style="margin: 0;"> {{version}} </h6>  -->
+ 
+    <div id="navFunctionContainer">
+        <div class="navFunction" id="navUserContainer">李宜璟 18636</div>
+        <div class="navFunction iconBtn" id="navNotifyContainer">
+            <a href="#">
+            <button class="uiStyle sizeS alert" id="btnNavNotify"></button>
+            </a>
+        </div>
+        <div class="navFunction iconBtn" id="navLogoutContainer">
+            <button class="uiStyle sizeS" id="btnNavLogout" @click="logout"></button>
         </div>
     </div>
-    
-    <!-- <div id="pageWarpper">
-        <div id="contentWarpper">
-            <nav>標頭</nav>
-            <div id="notifyMessageContainer">通知訊息</div>
-            <div id="myFavoriteContainer">我的最愛</div>
-            <div id="pageContentWarpper">
-            <div id="mainDashboardContainer">個人導航板</div>
-            <div id="systemContainer">系統連結地圖</div>
-            </div>
-        </div>
-    </div> -->
+    </nav>
 </template>
 
 <style lang="scss" scoped></style>
