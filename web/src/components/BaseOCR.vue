@@ -25,10 +25,10 @@ export default {
         nextStep(step) {
             this.step = step;
         },
-        updateUploadConfig({ image_complexity, selectedLang }) {
-            this.image_complexity = image_complexity;
-            this.selectedLang = selectedLang;
-        },
+        // updateUploadConfig({ image_complexity, selectedLang }) {
+        //     this.image_complexity = image_complexity;
+        //     this.selectedLang = selectedLang;
+        // },
         reset() {
             this.imageUploadKey += 1;
             this.step = 1;
@@ -37,9 +37,25 @@ export default {
     data() {
         return {
             step: 1,
-            image_complexity: '',
-            selectedLang: '',
-            imageUploadKey: 0
+            imageComplexity: 'medium',
+            selectedModel: '',
+            imageUploadKey: 0,
+            languages: [
+                { value: 'dbnet_v0+cht_ppocr_v1', text: '繁體中文 + 英數字' },
+                { value: 'dbnet_v0+en_ppocr_v0', text: '英數字' }
+            ],
+            selectType: 'basic',
+            placeholder: '請選擇',
+            type: 'switch',
+            highPrecision: [
+                {
+                    value: 'high', text: '是'
+                },
+                {
+                    value: 'medium', text: '否'
+                }
+            ],
+            switchValue: false
         };
     },
     watch: {
@@ -48,33 +64,42 @@ export default {
                 this.reset();
             },
             immediate: true,
+        },
+        switchValue(newVal) {
+            console.log(newVal);
+            if (newVal==='true') {
+                this.imageComplexity = 'high';
+            } else {
+                
+                this.imageComplexity = 'medium';
+            }
         }
     }
 };
 </script>
 
 <template>
-    <div class="grid p-fluid">
-        <div class="col-12">
-            <div class="card card-w-title">
-                <!-- Breadcrumb -->
-                <el-breadcrumb>
-                    <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item>{{ title }}</el-breadcrumb-item>
-                </el-breadcrumb>
-                <br />
-                <!-- Step -->
-                <el-steps :active="step" align-center>
-                    <el-step title="Step 1" description="圖檔上傳" />
-                    <el-step title="Step 2" description="辨識結果" />
-                </el-steps>
-                <img :src="file" :style="{ width: '300px' }"/>
-                <p v-html="explanation"></p>
-                <h5>{{ subtitle }}</h5>
-                <p>{{ description }}</p>
+    <div class="layoutZoneContainer">
+        <div class="breadcrumbContainer">
+            <ul><li :to="{ path: '/' }">首頁</li>
+                <li>{{ title }}</li>
+                <li class="now" >{{ title }}</li>
+            </ul>    
+        </div>
+                <!-- Title -->
+        <h1>{{ title }}</h1>
+        <div style="display: flex; align-items: center;" v-if="step == 1">
+            <div style="display: flex; align-items: center; margin-right: 20px;" >
+                <h4 style="margin-right: 10px;">選擇語言：</h4>
+                <esb-select :selectType="selectType" :options="languages" :placeholder="placeholder" v-model="selectedModel" />
+            </div>
+            <div style="display: flex; align-items: center;">
+                <h4 style="margin-right: 10px;">使用高精準度模型：</h4>
+                <esb-radio :type="type" :options="highPrecision" v-model="switchValue"/>
             </div>
         </div>
+        
     </div>
-    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :key="imageUploadKey" :imageClass="imageClass" :defaultImgURL="defaultImgURL"/>
+    <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :selectedModel="selectedModel" :imageComplexity="imageComplexity" :useLanguage="useLanguage" :key="imageUploadKey" :imageClass="imageClass" :defaultImgURL="defaultImgURL"/>
     <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" />
 </template>

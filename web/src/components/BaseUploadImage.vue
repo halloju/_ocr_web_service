@@ -13,13 +13,15 @@ export default {
             type: String,
             required: true
         },
-        useModelComplexity: {
-            type: Boolean,
-            default: false
+        selectedModel: {
+            type: String
         },
         useLanguage: {
             type: Boolean,
             default: false
+        },
+        imageComplexity: {
+            type: String
         },
         // The default category is 'general' with limited file number to be 20
         category: {
@@ -34,19 +36,15 @@ export default {
     },
     setup(props, { emit }) {
         const store = useStore();
-        const languages = [
-            { name: '繁體中文 + 英數字', code: 'dbnet_v0+cht_ppocr_v1' },
-            { name: '英數字', code: 'dbnet_v0+en_ppocr_v0' }
-        ];
-        const selectedLang = ref(languages[0]);
         const breadcrumbItems = [
             { label: '主要功能', to: '#' },
             { label: '通用文件辨識', to: '#' },
             { label: '通用辨識', to: '#' },
             { label: '圖檔上傳', to: '#' }
         ];
-        const imageComplexity = ref('medium');
-        const switchValue = ref(false);
+        const buttonText = ref('開始辨識');
+        const buttonType = ref('btnDarkBlue');
+        const uploadButtonText = ref('帶入範例圖片');
         // upload 參數
         const fileList = ref([]);
         const dialogVisible = ref(false);
@@ -54,6 +52,7 @@ export default {
         const dialogWidth = ref('');
         const dialogImageUrl = ref('');
         const imageSource = ref('');
+
 
         const isUploadDisabled = computed(() => {
             if (fileList.value.length === 0) {
@@ -71,8 +70,8 @@ export default {
             // 打 API
             const formData = new FormData();
             if(props.useLanguage) {
-                formData.append('image_complexity', imageComplexity.value);
-                formData.append('model_name', selectedLang.value.code);
+                formData.append('image_complexity', props.imageComplexity);
+                formData.append('model_name', props.selectedModel);
                 formData.append('template_id', store.state.template_id);
             }
             if (props.imageClass) {
@@ -122,7 +121,7 @@ export default {
             // 顯示結果
             setTimeout(() => {
                 store.commit('generalImageResponse', generalImageResponseList);
-                emit('uploadConfig', imageComplexity, selectedLang.value.code);
+                // emit('uploadConfig', imageComplexity, selectedLang.value.code);
                 loading.close();
                 emit('nextStepEmit', 2);
             }, 1000);
@@ -216,21 +215,13 @@ export default {
             imgWidth.value = width;
             dialogWidth.value = width + 40;
         }
-        // watch
-        watch(switchValue, (newVal) => {
-            if (newVal) {
-                imageComplexity.value = 'high';
-            } else {
-                imageComplexity.value = 'medium';
-            }
-        });
 
 
         return {
             breadcrumbItems,
-            imageComplexity,
-            selectedLang,
-            languages,
+            buttonText,
+            buttonType,
+            uploadButtonText,
             fileList,
             dialogVisible,
             imgWidth,
@@ -241,7 +232,6 @@ export default {
             category: props.category,
             useModelComplexity: props.useModelComplexity,
             useLanguage: props.useLanguage,
-            switchValue,
             takeDefault,
             submit,
             beforeUpload,
@@ -255,52 +245,33 @@ export default {
 </script>
 
 <template>
-    <div class="grid p-fluid">
-        <div class="col-12 md:col-9">
-            <div class="card">
-                <el-button type="plain" class="mr-2 mb-2" style="width: 20%" @click="takeDefault" v-if="(fileList.length == 0) & (defaultImgURL != '')"> 帶入範例圖片 </el-button>
-                <el-upload
-                    :file-list="fileList"
-                    list-type="picture-card"
-                    :on-change="beforeUpload"
-                    :on-remove="handleRemove"
-                    multiple
-                    :limit="category.limit"
-                    :on-exceed="handleExceed"
-                    :auto-upload="false"
-                    :on-preview="handlePictureCardPreview"
-                    accept="image/*"
-                >
-                    <el-icon><Plus /></el-icon>
-                </el-upload>
-                <el-dialog v-model="dialogVisible" :width="dialogWidth">
-                    <img :src="dialogImageUrl" alt="Uploaded Image Preview" @load="onLoadImg" :width="imgWidth" />
-                </el-dialog>
+    <div>
+        <div class="card" style="background-color: white;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <h5>請上傳一張或多張圖片，圖片選擇完成後請點選開始進行辨識。</h5>
+                <esb-button @click="takeDefault" :button-type="buttonType" :text="uploadButtonText" v-if="(fileList.length == 0) & (defaultImgURL != '')"  />
             </div>
+            <el-upload
+                :file-list="fileList"
+                list-type="picture-card"
+                :on-change="beforeUpload"
+                :on-remove="handleRemove"
+                multiple
+                :limit="category.limit"
+                :on-exceed="handleExceed"
+                :auto-upload="false"
+                :on-preview="handlePictureCardPreview"
+                accept="image/*"
+            >
+                <el-icon><Plus /></el-icon>
+            </el-upload>
+            <el-dialog v-model="dialogVisible" :width="dialogWidth">
+                <img :src="dialogImageUrl" alt="Uploaded Image Preview" @load="onLoadImg" :width="imgWidth" />
+            </el-dialog>
         </div>
-        <div class="col-12 md:col-3">
-            <div class="card">
-                <div class="flex flex-column flex-wrap">
-                    <div class="flex justify-content-start mb-1" v-if="useLanguage">
-                        <h5>選擇語言</h5>
-                    </div>
-                    <div class="flex justify-content-start mb-5" v-if="useLanguage">
-                        <Dropdown v-model="selectedLang" style="width: 100%" :options="languages" optionLabel="name" placeholder="請選擇" />
-                    </div>
-                    <div v-if="useModelComplexity" class="flex justify-content-start mb-1">
-                        <h5>使用高精準度模型</h5>
-                    </div>
-                    <div v-if="useModelComplexity" class="flex justify-content-start mb-1">
-                        <p>注意：當您使用高精準模型時耗時會較久</p>
-                    </div>
-                    <div v-if="useModelComplexity" class="flex justify-content-start mb-5">
-                        <el-switch v-model="switchValue" inline-prompt active-text="是" inactive-text="否" />
-                    </div>
-                    <div class="flex justify-content-start mb-1">
-                        <el-button type="primary" class="mr-2 mb-2" style="width: 100%" @click="submit" :disabled="isUploadDisabled"> 圖檔提交 </el-button>
-                    </div>
-                </div>
-            </div>
+
+        <div style="text-align: center;">
+            <esb-button @click="submit" :path="path" :text="buttonText" :disable="isUploadDisabled" />
         </div>
     </div>
 </template>
