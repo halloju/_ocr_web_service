@@ -462,82 +462,88 @@ export default {
 };
 </script>
 <template>
-    <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
-        <div class="pa-canvas" :ref="'main'">
-            <div class="pa-controls">
-                <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
-                <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
-                <hr />
-                <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-                <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-                <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
-            </div>
-            <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-            <v-stage
-                :config="stageConfig"
-                @mousedown="handleStageMouseDown"
-                @contextmenu="cancelEvent"
-                @mouseenter="handleGlobalMouseEnter"
-                @mouseleave="handleGlobalMouseLeave"
-                @wheel="handleScroll"
-                :ref="'stage'"
-            >
-                <v-layer ref="background">
-                    <v-image
-                        :ref="'image'"
-                        :config="{
-                            image: image,
-                            stroke: 'black'
-                        }"
-                    />
-                </v-layer>
-                <v-layer ref="items">
-                    <template v-for="shape in shapes">
-                        <v-rect
-                            v-if="shape.type === 'rect'"
-                            :config="shape"
-                            :key="shape.name"
-                            @dragend="handleDragEnd($event, shape)"
-                            @transform="handleTransform"
-                            @transformend="handleTransformEnd($event, shape)"
-                            @mouseenter="handleMouseEnter(shape.name)"
-                            @mouseleave="handleMouseLeave"
-                            @dragmove="handleDragMove"
+    <div class="outer-box">
+        <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
+            <div class="pa-canvas" :ref="'main'">
+                <div class="pa-controls">
+                    <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
+                    <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
+                    <hr />
+                    <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
+                    <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
+                </div>
+                <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
+                <v-stage
+                    :config="stageConfig"
+                    @mousedown="handleStageMouseDown"
+                    @contextmenu="cancelEvent"
+                    @mouseenter="handleGlobalMouseEnter"
+                    @mouseleave="handleGlobalMouseLeave"
+                    @wheel="handleScroll"
+                    :ref="'stage'"
+                >
+                    <v-layer ref="background">
+                        <v-image
+                            :ref="'image'"
+                            :config="{
+                                image: image,
+                                stroke: 'black'
+                            }"
                         />
-                        <v-text v-if="isShowText" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
-                    </template>
-                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
-                </v-layer>
-            </v-stage>
+                    </v-layer>
+                    <v-layer ref="items">
+                        <template v-for="shape in shapes">
+                            <v-rect
+                                v-if="shape.type === 'rect'"
+                                :config="shape"
+                                :key="shape.name"
+                                @dragend="handleDragEnd($event, shape)"
+                                @transform="handleTransform"
+                                @transformend="handleTransformEnd($event, shape)"
+                                @mouseenter="handleMouseEnter(shape.name)"
+                                @mouseleave="handleMouseLeave"
+                                @dragmove="handleDragMove"
+                            />
+                            <v-text v-if="isShowText" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                        </template>
+                        <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
+                    </v-layer>
+                </v-stage>
 
-            <loader v-if="isLoading" />
+                <loader v-if="isLoading" />
 
-            <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
-        </div>
-        <div :class="infoBarClass">
-            <side-bar-entry
-                v-for="shape in shapes"
-                :key="shape.name"
-                :shape="shape"
-                :edit-mode="editMode"
-                :justShow="justShow"
-                :selected-shape-name="selectedShapeName"
-                :current-hover-shape="currentHoverShape"
-                :rectangleType="rectangleType"
-                v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
-                v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
-                v-on:sidebar-entry-delete="deleteShape($event)"
-                v-on:sidebar-entry-save="formSubmitted($event)"
-            />
+                <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
+            </div>
+            <div :class="infoBarClass">
+                <side-bar-entry
+                    v-for="shape in shapes"
+                    :key="shape.name"
+                    :shape="shape"
+                    :edit-mode="editMode"
+                    :justShow="justShow"
+                    :selected-shape-name="selectedShapeName"
+                    :current-hover-shape="currentHoverShape"
+                    :rectangleType="rectangleType"
+                    v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
+                    v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
+                    v-on:sidebar-entry-delete="deleteShape($event)"
+                    v-on:sidebar-entry-save="formSubmitted($event)"
+                />
+            </div>
         </div>
     </div>
 </template>
 <style lang="sass">
+.outer-box
+  padding: 20px
+  background-color: #fff
 .pa-container
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
-  grid-template-columns: 2fr 1fr
+  grid-template-columns: 3fr 1fr
   overflow: hidden
+  width: 1200px
 .pa-containerVert	
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif	
   display: grid	
@@ -545,7 +551,7 @@ export default {
   overflow: hidden
 
 .pa-canvas
-  border: 1px solid #ccc
+  border: 1px solid #000
   position: relative
   overflow: hidden
 .pa-controls
@@ -577,6 +583,7 @@ export default {
 .pa-infobar
   margin-left: 5px
   overflow-y: scroll
+  width: 500px
 .pa-infobarVert
   margin-top: 10px	
   overflow-y: scroll
@@ -671,6 +678,7 @@ export default {
   display: grid
   grid-template-columns: auto 1fr
   grid-gap: 1em
+  border: 1px solid #ccc
   padding: 10px 0
   label
     grid-column: 1 / 2

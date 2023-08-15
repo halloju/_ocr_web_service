@@ -18,8 +18,6 @@ const store = new Vuex.Store({
 
     mutations: {
         GENERAL_IMAGE_OCR_RESULTS_UPDATE(state, payload) {
-            console.log('GENERAL_IMAGE_OCR_RESULTS_UPDATE');
-            console.log(payload);
             state.general_upload_res[payload.item].ocr_results.data_results[payload.index].text = payload.text;
           },
         templateNameUpdate: function (state, payload) {

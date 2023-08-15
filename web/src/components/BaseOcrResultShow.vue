@@ -20,8 +20,6 @@ export default {
 
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
-        const imageResult = ref('');
-        const localStorageKey = ref('storage');
         const width = ref('1200');
         const height = ref(600);
         const dataCallback = ref('');
@@ -29,16 +27,24 @@ export default {
         const initialDataId = ref(null);
         const file_name = ref('');
         const num = ref('');
-        const isDownload = ref(false);
         const reloadAnnotator = ref(false);
         const isRunning = ref(false);
         const finishedStatus = ref(['SUCCESS', 'FAIL']);
         const general_upload_res = computed(() => store.state.general_upload_res);
         const image_cv_id = ref('');
-        const getExcelData = () => {
+
+        const buttonText = ref('返回辨識')
+        const buttonType = ref('btnDarkBlue');
+        const downloadButtonText = ref('下載 Excel');
+        const selectedRows = ref([]);
+
+        const getExcelData = (selectedItems) => {
             let excelData = [];
+            let selectedTaskIds = selectedItems.map(item => item.task_id); // Extract task_ids from selected items
+
             general_upload_res.value.forEach((item) => {
-                if (item.ocr_results) {
+                // Check if the item's task_id exists in selectedTaskIds
+                if (selectedTaskIds.includes(item.task_id) && item.ocr_results) {
                     item.ocr_results.data_results.forEach((result_dic) => {
                         let cols = {
                             filename: item.file_name,
@@ -53,6 +59,9 @@ export default {
             });
             return excelData;
         };
+
+
+
         function callback(data, image_cv_id) {
             store.dispatch('updateGeneralImageOcrResults', { data, image_cv_id });
         }
@@ -130,7 +139,6 @@ export default {
             isRunning.value = true;
             let count = 0;
             while (isRunning) {
-                console.log(isRunning.value)
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
                 if (unfinishedItems.length === 0 || !isRunning.value) {
                     isRunning.value = false;
@@ -205,8 +213,14 @@ export default {
                 });
         }
 
+        function selectionChange(selected) {
+            console.log(selected);
+            selectedRows.value = selected;
+        }
+
         function downloadFile() {
-            const jsonWorkSheet = XLSX.utils.json_to_sheet(getExcelData());
+            const excelData = getExcelData(selectedRows.value);
+            const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {
                 SheetNames: ['jsonWorkSheet'],
                 Sheets: {
@@ -219,15 +233,13 @@ export default {
         // Start to pull the status
         onMounted(async () => {
             waitUntilOcrComplete();
-            const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
-            width.value = col12Width - parseInt('4rem');
+            // const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
+            // width.value = col12Width - parseInt('4rem');
         });
 
         return {
             containerId,
             imageSrc,
-            imageResult,
-            localStorageKey,
             width,
             height,
             dataCallback,
@@ -235,12 +247,14 @@ export default {
             initialDataId,
             file_name,
             num,
-            isDownload,
             Download,
             Back,
             reloadAnnotator,
             isRunning,
             finishedStatus,
+            buttonText,
+            buttonType,
+            downloadButtonText,
             getExcelData,
             general_upload_res,
             callback,
@@ -252,7 +266,8 @@ export default {
             getErrorMsg,
             back,
             downloadFile,
-            image_cv_id
+            image_cv_id,
+            selectionChange
         };
     },
     computed: {
@@ -276,58 +291,43 @@ export default {
 </script>
 
 <template>
-    <div class="grid p-fluid">
-        <div class="col-12">
-            <div class="card" style="overflow-x: scroll; overflow-y: scroll; height: 860px">
-                <div class="flex flex-column card-container">
-                    <div class="flex align-items-center justify-content-start font-bold m-2 mb-3">
-                        <div class="flex">
-                            <div class="flex-grow-1 flex align-items-center justify-content-center font-bold p-4 m-3">
-                                <el-tooltip content="回到圖檔上傳">
-                                    <el-button class="my-button" type="success" :icon="Back" circle @click="back"></el-button>
-                                </el-tooltip>
-                                <el-tooltip content="下載 excel">
-                                    <el-button class="my-button" type="primary" :icon="Download" circle @click="downloadFile"></el-button>
-                                </el-tooltip>
-                            </div>
-                            <div class="flex-shrink-1 md:flex-shrink-0 flex align-items-center justify-content-center font-bold p-4 m-3">成功上傳：{{ general_upload_res.length }} 張</div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-                                <el-table :data="tableData" style="width: 100%" :key="isRunning">
-                                    <el-table-column prop="num" label="號碼" sortable width="100" />
-                                    <el-table-column prop="file_name" label="檔名" sortable width="200" />
-                                    <el-table-column prop="status" label="辨識狀態" width="180">
-                                        <template v-slot="scope">
-                                            <el-tooltip
-                                                :disabled="scope.row.status != 'FAIL'"
-                                                class="error-tip"
-                                                effect="dark"
-                                                :content="getErrorMsg(scope.row, this.tableData)"
-                                                placement="top"
-                                            >
-                                                <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
-                                            </el-tooltip>
-                                        </template>
-                                    </el-table-column>
-                                    <el-table-column label="動作">
-                                        <template v-slot="scope">
-                                            <el-button type="primary" v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" round>檢視</el-button>
-                                        </template>
-                                    </el-table-column>
-                                </el-table>
-                            </div>
-                        </div>
-                        <div v-if="imageSrc !== null">
-                            <p>號碼：{{ num }}</p>
-                            <p>檔名：{{ file_name }}</p>
-                            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" :dataCallback="callback" :initialData="initialData" initialDataId="" :image_cv_id="image_cv_id"></Annotation>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div style="margin-top: 20px;">
+        <esb-button @click="back" :text="buttonText" :button-type="buttonType" />
+    </div>
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; ">
+            <h6 style="margin: 0; flex: 1;">辨識結果</h6>
+            <esb-button @click="downloadFile" :text="downloadButtonText" />
+        </div>
+        <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" border >
+                <el-table-column type="selection" width="55" />
+                <el-table-column prop="num" label="號碼" sortable :min-width="10" />
+                <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
+                <el-table-column prop="status" label="辨識狀態" :min-width="20">
+                    <template v-slot="scope">
+                        <el-tooltip
+                            :disabled="scope.row.status != 'FAIL'"
+                            class="error-tip"
+                            effect="dark"
+                            :content="getErrorMsg(scope.row, this.tableData)"
+                            placement="top"
+                        >
+                            <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column label="檢視" :min-width="30">
+                    <template v-slot="scope">
+                        <el-button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" type="primary" round>V</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div v-if="imageSrc !== null">
+            <p>號碼：{{ num }}</p>
+            <p>檔名：{{ file_name }}</p>
+            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" :dataCallback="callback" :initialData="initialData" initialDataId="" :image_cv_id="image_cv_id"></Annotation>
         </div>
     </div>
 </template>

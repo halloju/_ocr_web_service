@@ -66,7 +66,6 @@ export default {
             immediate: true,
         },
         switchValue(newVal) {
-            console.log(newVal);
             if (newVal==='true') {
                 this.imageComplexity = 'high';
             } else {
@@ -87,19 +86,24 @@ export default {
             </ul>    
         </div>
                 <!-- Title -->
-        <h1>{{ title }}</h1>
-        <div style="display: flex; align-items: center;" v-if="step == 1">
-            <div style="display: flex; align-items: center; margin-right: 20px;" >
-                <h4 style="margin-right: 10px;">選擇語言：</h4>
-                <esb-select :selectType="selectType" :options="languages" :placeholder="placeholder" v-model="selectedModel" />
+        <div v-if="step == 1" style="margin-bottom: 20px; margin-top: 20px;">
+            <h1>{{ title }}</h1>
+            <div style="display: flex; align-items: center;" >
+                <p style="margin-right: 2px; color: red;">*</p>
+                <div style="display: flex; align-items: center; margin-right: 20px;" >
+                    <h4 style="margin-right: 10px;">選擇語言：</h4>
+                    <esb-select :selectType="selectType" :options="languages" :placeholder="placeholder" v-model="selectedModel" />
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <h4 style="margin-right: 10px;">使用高精準度模型：</h4>
+                    <esb-radio :type="type" :options="highPrecision" v-model="switchValue"/>
+                </div>
+                <p style="margin-left: 10px; color: red;">*注意，當您使用高精準度模型時會耗時較久</p>
             </div>
-            <div style="display: flex; align-items: center;">
-                <h4 style="margin-right: 10px;">使用高精準度模型：</h4>
-                <esb-radio :type="type" :options="highPrecision" v-model="switchValue"/>
-            </div>
-        </div>
         
-    </div>
+        </div>
+    
     <BaseUploadImage v-if="step == 1" @nextStepEmit="nextStep" @uploadConfig="$emit('update-upload-config', $event)" :apiUrl="apiUrl" :category="category" :selectedModel="selectedModel" :imageComplexity="imageComplexity" :useLanguage="useLanguage" :key="imageUploadKey" :imageClass="imageClass" :defaultImgURL="defaultImgURL"/>
     <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" />
+</div>
 </template>
