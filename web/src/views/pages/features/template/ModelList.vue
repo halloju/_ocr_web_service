@@ -9,6 +9,13 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { apiClient } from '@/service/auth.js';
 import { handleErrorMsg } from '@/mixins/useCommon.js';
+import {
+  Delete,
+  Edit,
+  Download,
+  Pointer,
+  View
+} from '@element-plus/icons-vue'
 
 const item = {
     name: '',
@@ -51,8 +58,9 @@ export default {
             if (tableData.value.length === 0) {
                 return [];
             }
-            return tableData.value.map((row) => {
+            return tableData.value.map((row, idx) => {
                 return {
+                    idx: idx + 1,
                     ...row,
                     created_at: formatDate(row.creation_time),
                     expired_at: formatDate(row.expiration_time)
@@ -70,25 +78,25 @@ export default {
 
         const tableHeader = ref([
             {
-                prop: 'template_id',
-                label: '編號',
+                prop: 'idx',
+                label: 'NO',
                 editable: false,
                 type: 'number',
-                width: '200px'
+                width: "5"
             },
             {
                 prop: 'template_name',
-                label: '名稱',
+                label: '模板名稱',
                 editable: false,
                 type: 'input',
-                width: '150px'
+                width: "20"
             },
             {
-                prop: 'expiration_time',
-                label: '到期日期',
+                prop: 'template_id',
+                label: '模板編號',
                 editable: false,
-                type: 'date',
-                width: '200px'
+                type: 'number',
+                width: "25"
             }
         ]);
 
@@ -96,6 +104,7 @@ export default {
         const template = ref('');
         const initialData = ref('');
         const creation_time = ref('');
+        const buttonText = ref('新增模板')
 
         // Methods
         function formatDate(date) {
@@ -315,6 +324,7 @@ export default {
             formattedTableData,
             dialogWidth,
             dialogVisible,
+            buttonText,
             formatDate,
             getAvailableTemplate,
             handleConfirm,
@@ -332,17 +342,111 @@ export default {
             template_id,
             initialData,
             creation_time,
-            templateOCR
+            templateOCR,
+            Delete,
+            Edit,
+            Download,
+            View,
+            Pointer
         };
     }
 };
 </script>
 
 <template>
-    <div class="grid">
+    <div class="layoutZoneContainer">
+        <div class="breadcrumbContainer">
+            <ul><li :to="{ path: '/' }">首頁</li>
+                <li>通用辨識</li>
+                <li class="now" >模板辨識</li>
+            </ul>    
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 20px;">
+            <h5>模板列表</h5>
+            <esb-button @click="createTemplate" :text="buttonText" />
+        </div>
+
+        <el-table :data="formattedTableData" style="width: 100%" border>
+                    <el-table-column :prop="item.prop" :label="item.label" v-for="item in tableHeader" :key="item.prop" :min-width="item.width">
+                        <template #default="scope">
+                            <div v-show="item.editable || scope.row.editable" class="editable-row">
+                                <template v-if="item.type === 'input'">
+                                    <el-input size="small" v-model="scope.row[item.prop]" :placeholder="`請輸入 ${item.label}`" @change="handleEdit(scope.$index, scope.row)" />
+                                </template>
+                            </div>
+                            <div v-show="!item.editable && !scope.row.editable" class="editable-row">
+                                <span class="editable-row-span">{{ scope.row[item.prop] }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <!-- Column 1 -->
+                    <el-table-column label="辨識" :min-width="10">
+                        <template #default="scope">
+                            <el-button class="mr-1" plain size="" type="primary" @click="templateOCR(scope.row.template_id)" :icon="Pointer" circle />
+                        </template>
+                    </el-table-column>
+
+                    <!-- Column 2 -->
+                    <el-table-column label="檢視" :min-width="10">
+                        <template #default="scope">
+                            <!-- <el-button class="mr-1" size="" type="primary" @click="templateOCR(scope.row.template_id)">辨識</el-button> -->
+                            <el-button size="" type="info" plain @click="handleLook(scope.row.template_id, rectangleTypes[0].code)" :icon="View" circle />
+                        </template>
+                    </el-table-column>
+
+                    <!-- Column 3 -->
+                    <el-table-column label="編輯" :min-width="10">
+                        <template #default="scope">
+                            <el-button size="" type="info" plain @click="editTemplate(scope.row.template_id)" :icon="Edit" circle />
+                        </template>
+                    </el-table-column>
+
+                    <!-- Column 4 -->
+                    <el-table-column label="刪除" :min-width="10">
+                        <template #default="scope">
+                            <el-button size="" type="danger" plain @click="handleDelete(scope.row.template_id)" :icon="Delete" circle />
+                        </template>
+                    </el-table-column>
+
+                    <!-- Column 5 -->
+                    <el-table-column label="下載" :min-width="10">
+                        <template #default="scope">
+                            <el-button size="" type="info" plain @click="downloadTemplate(scope.row.template_id)" :icon="Download" circle />
+                        </template>
+                    </el-table-column>
+
+                </el-table>
+                <el-dialog v-model="dialogVisible" :width="dialogWidth">
+                    <div class="card" style="height: 850px; overflow-y: scroll">
+                        <h4>template id: {{ template_id }}</h4>
+                        <h5>創建日期: {{ creation_time }}</h5>
+                        <div class="flex flex-column card-container">
+                            <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
+                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(this.template_id, selectedRectangleType.code)" />
+                            </div>
+                            <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                                <Annotation
+                                    ref="child"
+                                    containerId="my-pic-annotation-output"
+                                    :editMode="false"
+                                    :imageSrc="imageSrc"
+                                    :width="dialogWidth"
+                                    :height="height"
+                                    dataCallback=""
+                                    :initialData="initialData"
+                                    :justShow="true"
+                                    :isVertical="true"
+                                ></Annotation>
+                            </div>
+                            <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                            </div>
+                        </div>
+                    </div>
+                </el-dialog>
+    </div>
+    <!-- <div class="grid">
         <div class="col-12">
             <div class="card" style="height: 850px; overflow-y: scroll">
-                <!-- Breadcrumb -->
                 <el-breadcrumb>
                     <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
                     <el-breadcrumb-item>模板辨識</el-breadcrumb-item>
@@ -403,12 +507,11 @@ export default {
                                 ></Annotation>
                             </div>
                             <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                                <!-- <BoxCard boxName="text" :boxTitle="myModel.name" /> -->
                             </div>
                         </div>
                     </div>
                 </el-dialog>
             </div>
         </div>
-    </div>
+    </div> -->
 </template>
