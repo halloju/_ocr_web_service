@@ -470,7 +470,7 @@ export default {
                     <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
                     <hr />
                     <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-                    <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+                    <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
                     <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
                 </div>
                 <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->

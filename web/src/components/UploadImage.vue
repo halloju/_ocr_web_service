@@ -19,7 +19,9 @@ export default {
             filename: '',
             filesize: 0,
             isOK: false,
-            isFileUploaded: false
+            isFileUploaded: false,
+            showUpload: true,
+            fileList: []
         };
     },
     computed: {
@@ -195,6 +197,12 @@ export default {
                                     sessionStorage.setItem(types[i], JSON.stringify(myShapes));
                                 }
                             }
+
+                            // Convert base64 to file and add to fileList
+                            const base64Data = `data:image/jpeg;base64,${data.image}`;
+                            const blob = this.dataURItoBlob(base64Data);
+                            const file = new File([blob], data.template_name, { type: 'image/jpeg' });
+                            this.fileList.push({ name: data.template_name, url: base64Data, raw: file });
                         }
                         this.$store.commit('templateNameUpdate', data.template_name);
                         this.filename = data.template_name;
@@ -214,6 +222,50 @@ export default {
                 });
             }
             this.$refs.fileInput.value = '';
+        },
+        toggleUpload() {
+            console.log('toggleUpload');
+            this.showUpload = !this.showUpload
+        },
+        beforeUpload(file) {
+            // Check file size && file type
+            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
+            if (!isIMAGE) {
+                ElMessageBox.alert('圖片只能是 JPG/PNG 格式!', '錯誤', {
+                    confirmButtonText: '確定',
+                    type: 'error'
+                });
+            }
+            // Push file to fileList
+            if (isIMAGE) {
+                sessionStorage.clear();
+                var reader = new FileReader();
+                reader.onload = (f) => {
+                    this.imageSource = f.target.result;
+                    sessionStorage.setItem('imageSource', f.target.result);
+                    console.log(sessionStorage.getItem('imageSource'))
+                    file.reader = f.target.result;
+                };
+                reader.readAsDataURL(file.raw);
+            }
+
+            this.showUpload = !this.showUpload
+        },
+
+        handleRemove() {
+            this.showUpload = !this.showUpload
+            sessionStorage.clear();
+        },
+
+        dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
         }
     },
     props: {
@@ -229,7 +281,50 @@ export default {
 };
 </script>
 <template>
-    <div class="container col-12" :class="getClasses" @dragover.prevent="dragOver" @dragleave.prevent="dragLeave" @drop.prevent="drop($event)">
+    <div class="card" style="background-color: white;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <h5>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</h5>
+            <button class="uiStyle sizeM btnGreen minLength" style="margin-right: 20px;"> 
+                選擇設定檔
+                <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
+            </button>
+        </div>
+        <el-upload
+            :file-list="fileList"
+            list-type="picture-card"
+            :on-change="beforeUpload"
+            :on-remove="handleRemove"
+            :auto-upload="false"
+            :limit="1"
+            accept="image/*"
+            :class="{ hideUpload: !showUpload }"
+        >
+            <el-icon ><Plus /></el-icon>
+        </el-upload>
+    </div>
+    <!-- <div class="card" style="background-color: white;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <h5>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</h5>
+            <esb-button />
+        </div>
+        <el-upload
+            :file-list="fileList"
+            list-type="picture-card"
+            :on-change="beforeUpload"
+            :on-remove="handleRemove"
+            :on-exceed="handleExceed"
+            :auto-upload="false"
+            :on-preview="handlePictureCardPreview"
+            accept="image/*"
+        >
+            <el-icon ><Plus /></el-icon>
+        </el-upload>
+        <el-dialog v-model="dialogVisible" :width="dialogWidth">
+            <img :src="dialogImageUrl" alt="Uploaded Image Preview" @load="onLoadImg" :width="imgWidth" />
+        </el-dialog>
+    </div> -->
+
+    <!-- <div class="container col-12" :class="getClasses" @dragover.prevent="dragOver" @dragleave.prevent="dragLeave" @drop.prevent="drop($event)">
         <div class="col-12 text-center">
             <h1 class="mb-3">上傳圖檔</h1>
         </div>
@@ -251,7 +346,7 @@ export default {
     </div>
     <div class="col-12 mt-3 text-center">
         <el-button type="danger" @click="reset">清除圖檔</el-button>
-    </div>
+    </div> -->
 </template>
 <style scoped>
 .file-input-container {
@@ -297,5 +392,9 @@ input[type='file'] {
     height: 100%;
     opacity: 0;
     cursor: pointer;
+}
+
+[class="hideUpload"] div {
+  display: none !important;
 }
 </style>
