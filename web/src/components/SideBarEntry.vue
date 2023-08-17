@@ -7,7 +7,7 @@ export default {
         Icon,
         Nl2br
     },
-    props: ['shape', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow', 'rectangleType', 'delete_shape'],
+    props: ['shapes', 'editMode', 'selectedShapeName', 'currentHoverShape', 'justShow', 'rectangleType', 'delete_shape'],
     data() {
         return {
             annotation_title: '要項名稱：',
@@ -15,29 +15,26 @@ export default {
             submit: '確認',
             active: false,
             // form data as copy
-            formData: {
-                title: '',
-                text: '',
-                linkTitle: '',
-                link: ''
-            },
+            formData: [],
             // shouldBeDisabled: false
         };
     },
     created() {
-        if (this.shape) {
-            this.formData.title = this.shape.annotation.title;
-            this.formData.text = this.shape.annotation.text;
-            this.formData.linkTitle = this.shape.annotation.linkTitle;
-            this.formData.link = this.shape.annotation.link;
+        if (this.shapes) {
+            this.formData = this.shapes
+            
+            // this.formData.title = this.shape.annotation.title;
+            // this.formData.text = this.shape.annotation.text;
+            // this.formData.linkTitle = this.shape.annotation.linkTitle;
+            // this.formData.link = this.shape.annotation.link;
         }
     },
     methods: {
-        handleMouseEnter() {
-            this.$emit('sidebar-entry-enter', this.shape.name);
+        handleMouseEnter(shape) {
+            this.$emit('sidebar-entry-enter', shape.name);
         },
-        handleMouseLeave() {
-            this.$emit('sidebar-entry-leave', this.shape.name);
+        handleMouseLeave(shape) {
+            this.$emit('sidebar-entry-leave', shape.name);
         },
         toggleContent() {
             // slide up/down
@@ -45,8 +42,8 @@ export default {
             // activation
             this.active = !this.active;
         },
-        deleteShape() {
-            this.$emit('sidebar-entry-delete', this.shape.name);
+        deleteShape(shape) {
+            this.$emit('sidebar-entry-delete', shape.name);
         },
         submitted() {
             // copy back data
@@ -57,7 +54,6 @@ export default {
 
             // close entry
             this.toggleContent();
-
             this.$emit('sidebar-entry-save', this.shape.name);
         },
         truncateText(text, maxLength) {
@@ -65,32 +61,75 @@ export default {
                 return text.substring(0, maxLength) + '...';
             }
             return text;
+        },
+        selectRow(row) {
+            this.$refs.myTable.setCurrentRow(row);
         }
     },
     watch: {
         selectedShapeName: function (newShape, oldShape) {
-            // if (newShape === this.shape.name) {
-            // }
-            if (!this.active && newShape === this.shape.name) {
-                this.toggleContent();
-            } else if (this.active && newShape !== this.shape.name) {
-                this.toggleContent();
-            }
+            // find index of new shape
+            const idx = this.shapes.map((shape, index) => {
+                if (shape.name === newShape) {
+                    return index;
+                }
+            }).filter(item => item !== undefined);
+            this.selectRow(this.formData[idx])
         },
-        shape() {
-            this.formData.title = this.shape.annotation.title;
-            this.formData.text = this.shape.annotation.text;
-            this.formData.linkTitle = this.shape.annotation.linkTitle;
-            this.formData.link = this.shape.annotation.link;
+        shapes() {
+            this.formData = this.shapes
+            // this.formData.title = this.shape.annotation.title;
+            // this.formData.text = this.shape.annotation.text;
+            // this.formData.linkTitle = this.shape.annotation.linkTitle;
+            // this.formData.link = this.shape.annotation.link;
         }
     }
 };
 </script>
 
 <template>
-    <div class="pa-side-bar-entry" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :class="{ 'is-selected-target': selectedShapeName === shape.name, 'is-hover-target': currentHoverShape === shape.name }">
+    <div>
+        <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
+            <el-table ref='myTable' :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row>
+                
+                <!-- Annotation Title Column -->
+                <el-table-column prop="annotation.title" label="區塊" sortable :min-width="30">
+                    <template v-slot="scope">
+                        <span v-if="scope.row.annotation.title" class="font-bold">{{ scope.row.annotation.title }}.</span>
+                    </template>
+                </el-table-column>
+                
+                <!-- Form Column -->
+                <el-table-column label="欄位" :min-width="50">
+                    <template v-slot="scope">
+                        <form v-if="editMode && rectangleType != 'mask'" @submit.prevent.stop="formSubmitted(scope.row)">
+                            <input type="text" name="title" :id="scope.row.name + '-title'" required v-model="scope.row.annotation.title" />
+                        </form>
+                        <form v-else-if="scope.row.annotation.text != undefined" @submit.prevent.stop="formSubmitted(scope.row)">
+                            <textarea name="text" :id="scope.row.name + '-text'" v-model="scope.row.annotation.text"></textarea>
+                        </form>
+                    </template>
+                </el-table-column>
+                
+
+                <el-table-column label="Actions" :min-width="20">
+                    <template v-slot="scope">
+                        <span v-if="editMode">
+                            <a href="#" 
+                            @click.prevent="deleteShape(scope.row)" 
+                            title="Delete">
+                                <icon type="delete-shape" fill="red" />
+                            </a>
+                        </span>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+
+
+    <!-- <div class="pa-side-bar-entry" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave" :class="{ 'is-selected-target': selectedShapeName === shape.name, 'is-hover-target': currentHoverShape === shape.name }">
         <button type="button" @click.prevent.stop="toggleContent" class="pa-accordion" :class="{ 'is-active': active }">
-            <!-- <icon :type="shape.type" /> -->
             <span v-if="shape.annotation.title" class="pa-side-bar-title" style="font-weight:bold;">{{ shape.annotation.title }}.</span>
             <span v-if="editMode && (active || selectedShapeName === shape.name)" class="pa-side-bar-icons">
                 <a href="#" @click.prevent="deleteShape" :title="delete_shape"><icon type="delete-shape" fill="red" /></a>
@@ -106,14 +145,12 @@ export default {
                 </form>
             </template>
             <template v-else>
-                <!-- v-if="formData.text != undefined && formData.text != ''" -->
                 <form  v-if="formData.text != undefined" class="pa-annotation-form" @submit.prevent.stop="submitted">
                     <label v-if="!justShow" :for="shape.name + '-text'">{{ annotation_text }}</label>
                     <textarea v-if="!justShow" name="text" :id="shape.name + '-text'" v-model="formData.text" />
                     <button v-if="!justShow" type="submit">{{ submit }}</button>
-                    <!-- <textarea  name="text" :id="shape.name + '-text'" v-model="formData.text" :disabled="justShow" readonly /> -->
                 </form>
             </template>
         </div>
-    </div>
+    </div> -->
 </template>

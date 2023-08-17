@@ -263,6 +263,7 @@ export default {
         },
         // delete shape
         deleteShape(name) {
+            console.log('delete shape', name);
             const idx = this.shapes.findIndex((r) => r.name === name);
             if (idx >= 0) {
                 if (name === this.selectedShapeName) {
@@ -273,6 +274,7 @@ export default {
                 // call update
                 this.shapesUpdated();
             }
+            console.log('shapes', this.shapes);
         },
         // handle key events
         handleKeyEvent(event) {
@@ -517,9 +519,8 @@ export default {
             </div>
             <div :class="infoBarClass">
                 <side-bar-entry
-                    v-for="shape in shapes"
-                    :key="shape.name"
-                    :shape="shape"
+                    :key="ee"
+                    :shapes="shapes"
                     :edit-mode="editMode"
                     :justShow="justShow"
                     :selected-shape-name="selectedShapeName"

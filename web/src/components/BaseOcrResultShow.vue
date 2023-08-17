@@ -166,6 +166,7 @@ export default {
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
+            console.log('aaa')
             apiClient
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
