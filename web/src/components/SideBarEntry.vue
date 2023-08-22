@@ -16,6 +16,7 @@ export default {
             active: false,
             // form data as copy
             formData: [],
+            buttonText: this.editMode ? '欄位命名' : '欄位',
             // shouldBeDisabled: false
         };
     },
@@ -82,6 +83,7 @@ export default {
             console.log(this.formData[index].edited);
         },
         handleClick(index) {
+            console.log(index);
             this.formData[index].edited = true;
             console.log(this.formData[index].edited);
         },
@@ -120,10 +122,10 @@ export default {
                 </el-table-column>
                 
                 <!-- Form Column -->
-                <el-table-column label="欄位" :min-width="50">
+                <el-table-column :label="buttonText" :min-width="50">
                     <template v-slot="scope">
-                        <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" :disabled="!scope.row.edited" @@click.native="handleClick(scope.$index)" >{{ scope.row.annotation.title }}</el-input>
-                        <el-input v-else-if="scope.row.annotation.text != undefined" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.text" :disabled="!scope.row.edited" @@click.native="handleClick(scope.$index)" >{{ scope.row.annotation.text }}</el-input>
+                        <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)" >{{ scope.row.annotation.title }}</el-input>
+                        <el-input v-else-if="scope.row.annotation.text != undefined" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.text" @click="handleClick(scope.$index)" >{{ scope.row.annotation.text }}</el-input>
                     </template>
                 </el-table-column>
 
@@ -193,8 +195,6 @@ export default {
 </template>
 <style scoped>
 .disabled-input {
-    pointer-events: none; /* Prevents user interactions */
-    background-color: #f5f5f5; /* Gray background to look disabled */
-    color: #a9a9a9; /* Gray text to look disabled */
+    opacity: 0.5;
 }
 </style>
