@@ -36,25 +36,32 @@ export default {
         handleMouseLeave(shape) {
             this.$emit('sidebar-entry-leave', shape.name);
         },
-        toggleContent() {
-            // slide up/down
-            this.$refs.panel.style.maxHeight = this.active ? null : this.$refs.panel.scrollHeight + 'px';
-            // activation
-            this.active = !this.active;
-        },
+        // toggleContent() {
+        //     // slide up/down
+        //     this.$refs.panel.style.maxHeight = this.active ? null : this.$refs.panel.scrollHeight + 'px';
+        //     // activation
+        //     this.active = !this.active;
+        // },
         deleteShape(shape) {
             this.$emit('sidebar-entry-delete', shape.name);
         },
-        submitted() {
+        submitted(shape) {
             // copy back data
-            this.shape.annotation.title = this.formData.title;
-            this.shape.annotation.text = this.formData.text;
-            this.shape.annotation.linkTitle = this.formData.linkTitle;
-            this.shape.annotation.link = this.formData.link;
+            // find the shape index
+            const idx = this.shapes.map((shape, index) => {
+                if (shape.name === shape.name) {
+                    return index;
+                }
+            }).filter(item => item !== undefined);
+            this.shapes[idx] = shape;
+            // this.shape.annotation.title = this.formData.title;
+            // this.shape.annotation.text = this.formData.text;
+            // this.shape.annotation.linkTitle = this.formData.linkTitle;
+            // this.shape.annotation.link = this.formData.link;
 
             // close entry
-            this.toggleContent();
-            this.$emit('sidebar-entry-save', this.shape.name);
+            // this.toggleContent();
+            this.$emit('sidebar-entry-save', shape.name);
         },
         truncateText(text, maxLength) {
             if (text.length > maxLength) {
@@ -64,7 +71,20 @@ export default {
         },
         selectRow(row) {
             this.$refs.myTable.setCurrentRow(row);
-        }
+        },
+        toggleEditSave(index) {
+            this.formData[index].edited = !this.formData[index].edited;
+            this.buttonText[index] = this.formData[index].edited ? 'Save' : 'Edit';
+        },
+        handleSaveRow(index) {
+            this.submitted(this.formData[index]);
+            this.formData[index].edited = false;
+            console.log(this.formData[index].edited);
+        },
+        handleClick(index) {
+            this.formData[index].edited = true;
+            console.log(this.formData[index].edited);
+        },
     },
     watch: {
         selectedShapeName: function (newShape, oldShape) {
@@ -102,16 +122,30 @@ export default {
                 <!-- Form Column -->
                 <el-table-column label="欄位" :min-width="50">
                     <template v-slot="scope">
-                        <form v-if="editMode && rectangleType != 'mask'" @submit.prevent.stop="formSubmitted(scope.row)">
-                            <input type="text" name="title" :id="scope.row.name + '-title'" required v-model="scope.row.annotation.title" />
-                        </form>
-                        <form v-else-if="scope.row.annotation.text != undefined" @submit.prevent.stop="formSubmitted(scope.row)">
-                            <textarea name="text" :id="scope.row.name + '-text'" v-model="scope.row.annotation.text"></textarea>
-                        </form>
+                        <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" :disabled="!scope.row.edited" @@click.native="handleClick(scope.$index)" >{{ scope.row.annotation.title }}</el-input>
+                        <el-input v-else-if="scope.row.annotation.text != undefined" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.text" :disabled="!scope.row.edited" @@click.native="handleClick(scope.$index)" >{{ scope.row.annotation.text }}</el-input>
                     </template>
                 </el-table-column>
-                
 
+                <!-- <el-table-column>
+                    <template v-slot="scope">
+                        <el-button type="default" @click="handleSaveRow(scope.$index)">Save</el-button>
+                        <el-button type="primary" @click="handleEditRow(scope.$index)">Edit</el-button>
+                    </template>
+                </el-table-column> -->
+                <!-- <el-table-column label="欄位" :min-width="50">
+                    <template v-slot="scope">
+                        <form v-if="editMode && rectangleType != 'mask'" @submit.prevent.stop="submitted(scope.row)">
+                            <input type="text" name="title" :id="scope.row.name + '-title'" required v-model="scope.row.annotation.title" />
+                            <button v-if="!justShow" type="submit">{{ submit }}</button>
+                        </form>
+                        <form v-else-if="scope.row.annotation.text != undefined" @submit.prevent.stop="submitted(scope.row)">
+                            <textarea name="text" :id="scope.row.name + '-text'" v-model="scope.row.annotation.text"></textarea>
+                            <button v-if="!justShow" type="submit">{{ submit }}</button>
+                        </form>
+                    </template>
+                </el-table-column> -->
+                
                 <el-table-column label="Actions" :min-width="20">
                     <template v-slot="scope">
                         <span v-if="editMode">
@@ -120,6 +154,9 @@ export default {
                             title="Delete">
                                 <icon type="delete-shape" fill="red" />
                             </a>
+                        </span>
+                        <span v-else>
+                            <el-button type="default" @click="handleSaveRow(scope.$index)">確認</el-button>
                         </span>
                     </template>
                 </el-table-column>
@@ -154,3 +191,10 @@ export default {
         </div>
     </div> -->
 </template>
+<style scoped>
+.disabled-input {
+    pointer-events: none; /* Prevents user interactions */
+    background-color: #f5f5f5; /* Gray background to look disabled */
+    color: #a9a9a9; /* Gray text to look disabled */
+}
+</style>

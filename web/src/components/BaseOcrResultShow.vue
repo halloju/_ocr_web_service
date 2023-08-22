@@ -127,7 +127,6 @@ export default {
                     reloadAnnotator.value = !reloadAnnotator.value;
                 })
                 .catch((res) => {
-                    console.log('getOcrResults', res);
                     ElMessage({
                         message: '辨識失敗',
                         type: 'warning'
@@ -215,7 +214,6 @@ export default {
         }
 
         function selectionChange(selected) {
-            console.log(selected);
             selectedRows.value = selected;
         }
 
