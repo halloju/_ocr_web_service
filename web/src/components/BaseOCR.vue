@@ -34,14 +34,14 @@ export default {
         return {
             step: 1,
             imageComplexity: 'medium',
-            selectedModel: '',
+            selectedModel: 'dbnet_v0+cht_ppocr_v1',
             imageUploadKey: 0,
             languages: [
                 { value: 'dbnet_v0+cht_ppocr_v1', text: '繁體中文 + 英數字' },
                 { value: 'dbnet_v0+en_ppocr_v0', text: '英數字' }
             ],
             selectType: 'basic',
-            placeholder: '請選擇',
+            placeholder: '繁體中文 + 英數字',
             type: 'switch',
             highPrecision: [
                 {
