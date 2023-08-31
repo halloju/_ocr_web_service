@@ -32,7 +32,8 @@
         "vue3-nl2br": "^0.1.5",
         "vuex": "^4.1.0",
         "vuex-persistedstate": "^4.1.0",
-        "xlsx": "^0.18.5"
+        "xlsx": "^0.18.5",
+        "vue-gtag": "^2.0.1"
     },
     "devDependencies": {
         "@rushstack/eslint-patch": "^1.1.4",
