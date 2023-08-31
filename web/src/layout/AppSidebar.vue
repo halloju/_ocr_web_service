@@ -74,6 +74,18 @@ const model = ref([
                         to: '/features/ocr/withholding'
                     }
                 ]
+            },
+            {
+                label: '工具下載',
+                icon: 'pi pi-cloud-download',
+                items: [
+                    {
+                        label: 'pdf轉圖片小工具',
+                        icon: 'pi pi-file-o',
+                        to: '',
+                        external: 'https://esgarden.esunbank.com.tw/personal/esb22095/Documents/%E3%80%90%E6%99%BA%E8%83%BDOCR%E3%80%91%E6%99%BA%E9%87%91%E8%99%95%E5%85%A7%E9%83%A8%E6%B8%AC%E8%A9%A6/pdf2jpg.exe'
+                    }
+                ]
             }
 ]);
 
@@ -111,7 +123,8 @@ function toggleSubSelect(label){
             :key="subItem.label" 
             :class="{ 'select': selectedSubItem === subItem.label }" 
             @click.stop="toggleSubSelect(subItem.label)">
-            <router-link :to="subItem.to">{{ subItem.label }}</router-link>
+            <router-link v-if="!subItem.external" :to="subItem.to">{{ subItem.label }}</router-link>
+            <a v-else :href="subItem.external" target="_blank" rel="noopener noreferrer">{{ subItem.label }}</a>
         </li>
         </ul>
     </li>
