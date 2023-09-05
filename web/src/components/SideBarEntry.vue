@@ -33,10 +33,7 @@ export default {
     },
     data() {
         return {
-            annotation_title: '要項名稱：',
-            annotation_text: '要項內容：',
             submit: '確認',
-            active: false,
             // form data as copy
             formData: [],
             buttonText: this.editMode ? '欄位命名' : '欄位',
@@ -45,7 +42,6 @@ export default {
         };
     },
     created() {
-        console.log(this.shapes);
         if (this.shapes) {
             this.formData = this.shapes;
         }
@@ -80,46 +76,15 @@ export default {
                 .filter((item) => item !== undefined);
             this.$emit('sidebar-entry-save', shape.name);
         },
-        truncateText(text, maxLength) {
-            if (text.length > maxLength) {
-                return text.substring(0, maxLength) + '...';
-            }
-            return text;
-        },
         selectRow(row) {
             this.$refs.myTable.setCurrentRow(row);
-        },
-        toggleEditSave(index) {
-            this.formData[index].edited = !this.formData[index].edited;
-            this.buttonText[index] = this.formData[index].edited ? 'Save' : 'Edit';
         },
         handleSaveRow(index) {
             this.submitted(this.formData[index]);
             this.formData[index].edited = false;
         },
         handleClick(index) {
-            console.log(index);
             this.formData[index].edited = true;
-        },
-        inputClass(row) {
-            return {
-                'disabled-input': !row.edited
-            };
-        },
-        inputValue(row) {
-            if (this.editMode || this.justShow) {
-                return row.annotation.title;
-            } else if (row.annotation.text !== undefined) {
-                return row.annotation.text;
-            }
-            return '';
-        },
-        handleInput(event, row) {
-            if (this.editMode || this.justShow) {
-                row.annotation.title = event.target.value;
-            } else if (row.annotation.text !== undefined) {
-                row.annotation.text = event.target.value;
-            }
         }
     },
     watch: {
@@ -153,11 +118,14 @@ export default {
             </el-table-column>
 
             <!-- Form Column -->
-            <el-table-column v-if="showFormColumn" :label="buttonText" :min-width="50">
+            <el-table-column :label="buttonText" :min-width="50">
                 <template v-slot="scope">
-                    <el-input :class="inputClass(scope.row)" :value="inputValue(scope.row)" @input="handleInput($event, scope.row)" @click="handleClick(scope.$index)">
-                        {{ inputValue(scope.row) }}
-                    </el-input>
+                    <!--  模板編輯 -->
+                    <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)">{{ scope.row.annotation.title }}</el-input>
+                    <!--  模板編輯確認 -->
+                    <el-input v-else-if="!editMode && justShow" v-model="scope.row.annotation.title" disabled>{{ scope.row.annotation.title }}</el-input>
+                    <!--  辨認結果 -->
+                    <el-input v-else-if="scope.row.annotation.text != undefined" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.text" @click="handleClick(scope.$index)">{{ scope.row.annotation.text }}</el-input>
                 </template>
             </el-table-column>
 

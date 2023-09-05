@@ -26,7 +26,8 @@ export default {
         setShowText: {
             type: Boolean,
             default: false
-        }},
+        }
+    },
     data() {
         return {
             image: null,
@@ -84,22 +85,22 @@ export default {
     created() {
         // set defaults
         if (this.isVertical) {
-            this.containerClass = 'pa-containerVert'
-            this.infoBarClass = 'pa-infobarVert'
-        } else{
-            this.containerClass = 'pa-container'
-            this.infoBarClass = 'pa-infobar'
+            this.containerClass = 'pa-containerVert';
+            this.infoBarClass = 'pa-infobarVert';
+        } else {
+            this.containerClass = 'pa-container';
+            this.infoBarClass = 'pa-infobar';
         }
         // load image
         this.loadImage();
-        window.addEventListener("resize", this.changeRect);
+        window.addEventListener('resize', this.changeRect);
         this.changeRect();
     },
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
         this.stageSize.height = this.$refs.main.clientHeight;
-        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width)-parseInt("4rem");
-        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height)*0.6;
+        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width) - parseInt('4rem');
+        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height) * 0.6;
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
@@ -118,7 +119,7 @@ export default {
         };
     },
     methods: {
-        changeRect: function() {
+        changeRect: function () {
             const container = this.$refs.main;
 
             if (!container) {
@@ -137,7 +138,7 @@ export default {
             const height = image.height();
             const scaleX = image.scaleX();
             const scaleY = image.scaleY();
-            const position = {x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y()};
+            const position = { x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y() };
             return position;
         },
         loadImage() {
@@ -319,11 +320,7 @@ export default {
             const stage = this.$refs.background.getNode();
             const box = KonvaShape.getClientRect();
             const stagePos = stage.absolutePosition();
-            const isOut =
-                box.x < stagePos.x ||
-                box.y < stagePos.y ||
-                box.x + box.width> stagePos.x+this.image.width*this.scale ||
-                box.y + box.height> stagePos.y+this.image.height*this.scale;
+            const isOut = box.x < stagePos.x || box.y < stagePos.y || box.x + box.width > stagePos.x + this.image.width * this.scale || box.y + box.height > stagePos.y + this.image.height * this.scale;
             if (isOut) {
                 KonvaShape.setAttrs(this.oldAttrs);
             } else {
@@ -390,16 +387,16 @@ export default {
             const offsetY = box.y - absPos.y;
             const newAbsPos = { ...absPos };
             if (box.x < stagePos.x) {
-                newAbsPos.x = stagePos.x-offsetX;
+                newAbsPos.x = stagePos.x - offsetX;
             }
             if (box.y < stagePos.y) {
-                newAbsPos.y = stagePos.y-offsetY;
+                newAbsPos.y = stagePos.y - offsetY;
             }
-            if (box.x + box.width> stagePos.x+this.image.width*this.scale) {
-                newAbsPos.x = stagePos.x+this.scale*this.image.width- box.width - offsetX;
+            if (box.x + box.width > stagePos.x + this.image.width * this.scale) {
+                newAbsPos.x = stagePos.x + this.scale * this.image.width - box.width - offsetX;
             }
-            if (box.y + box.height> stagePos.y+this.scale*this.image.height ) {
-                newAbsPos.y = stagePos.y+this.scale*this.image.height  - box.height - offsetY;
+            if (box.y + box.height > stagePos.y + this.scale * this.image.height) {
+                newAbsPos.y = stagePos.y + this.scale * this.image.height - box.height - offsetY;
             }
             shape.setAbsolutePosition(newAbsPos);
         },
@@ -476,15 +473,7 @@ export default {
                     <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
                 </div>
                 <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-                <v-stage
-                    :config="stageConfig"
-                    @mousedown="handleStageMouseDown"
-                    @contextmenu="cancelEvent"
-                    @mouseenter="handleGlobalMouseEnter"
-                    @mouseleave="handleGlobalMouseLeave"
-                    @wheel="handleScroll"
-                    :ref="'stage'"
-                >
+                <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent" @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
                     <v-layer ref="background">
                         <v-image
                             :ref="'image'"
@@ -536,6 +525,7 @@ export default {
     </div>
 </template>
 <style lang="sass">
+
 .outer-box
   padding: 20px
   background-color: #fff
@@ -545,10 +535,10 @@ export default {
   grid-template-columns: 3fr 1fr
   overflow: hidden
   width: 1200px
-.pa-containerVert	
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif	
-  display: grid	
-  grid-template-rows: 6fr 4fr	
+.pa-containerVert
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
+  display: grid
+  grid-template-rows: 3fr 2fr
   overflow: hidden
 
 .pa-canvas
@@ -586,7 +576,7 @@ export default {
   overflow-y: scroll
   width: 500px
 .pa-infobarVert
-  margin-top: 10px	
+  margin-top: 10px
   overflow-y: scroll
 // Loader component
 .pa-loader

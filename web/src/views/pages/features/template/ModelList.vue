@@ -9,13 +9,11 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { apiClient } from '@/service/auth.js';
 import { handleErrorMsg } from '@/mixins/useCommon.js';
-import {
-  Delete,
-  Edit,
-  Download,
-  Pointer,
-  View
-} from '@element-plus/icons-vue'
+import { Delete, Edit, Download, Pointer, View } from '@element-plus/icons-vue';
+import EditableRow from '@/components/EditableRow.vue';
+import ActionColumn from '@/components/ActionColumn.vue';
+import BreadCrumb from '@/components/BreadCrumb.vue';
+import SelectButton from 'primevue/selectbutton';
 
 const item = {
     name: '',
@@ -36,7 +34,11 @@ const header = {
 export default {
     name: 'ModelList',
     components: {
-        Annotation
+        Annotation,
+        EditableRow,
+        ActionColumn,
+        BreadCrumb,
+        SelectButton
     },
     setup() {
         const store = useStore();
@@ -48,6 +50,15 @@ export default {
         const tableData = ref([]);
         const dialogVisible = ref(false);
         const dialogWidth = ref('');
+
+        const breadcrumbItems = ref([{ path: '/', label: '首頁' }, { label: '通用辨識' }, { label: '模板辨識', isCurrent: true }]);
+        const actions = ref([
+            { label: '辨識', icon: 'Pointer', type: 'primary', handler: 'templateOCR' },
+            { label: '檢視', icon: 'View', type: 'info', handler: 'handleLook' },
+            { label: '編輯', icon: 'Edit', type: 'info', handler: 'editTemplate' },
+            { label: '刪除', icon: 'Delete', type: 'danger', handler: 'handleDelete' },
+            { label: '下載', icon: 'Download', type: 'info', handler: 'downloadTemplate' }
+        ]);
 
         onMounted(async () => {
             images.value = await galleriaService.getImages();
@@ -73,7 +84,7 @@ export default {
             code: 'text'
         });
         const width = ref(1000);
-        const height = ref("600");
+        const height = ref('600');
         const imageSrc = ref('');
 
         const tableHeader = ref([
@@ -82,21 +93,21 @@ export default {
                 label: 'NO',
                 editable: false,
                 type: 'number',
-                width: "5"
+                width: '5'
             },
             {
                 prop: 'template_name',
                 label: '模板名稱',
                 editable: false,
                 type: 'input',
-                width: "20"
+                width: '20'
             },
             {
                 prop: 'template_id',
                 label: '模板編號',
                 editable: false,
                 type: 'number',
-                width: "25"
+                width: '25'
             }
         ]);
 
@@ -104,7 +115,7 @@ export default {
         const template = ref('');
         const initialData = ref('');
         const creation_time = ref('');
-        const buttonText = ref('新增模板')
+        const buttonText = ref('新增模板');
 
         // Methods
         function formatDate(date) {
@@ -135,16 +146,16 @@ export default {
             row.editable = false;
         }
 
-        async function handleLook(template_id, userType) {
-            this.template_id = template_id;
-            const response = await getTemplateDetail(template_id);
+        async function handleLook(id, userType = 'text') {
+            template_id.value = id;
+            const response = await getTemplateDetail(template_id.value);
             if (response) {
                 template.value = response['data'];
                 initialData.value = parseTemplateDetail(response['data'], userType);
                 creation_time.value = template.value.creation_time;
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
                 dialogVisible.value = true;
-                dialogWidth.value = '850';
+                dialogWidth.value = '950px';
             }
         }
 
@@ -182,7 +193,7 @@ export default {
                     // console.log(error_msg);
                     ElMessage({
                         type: 'error',
-                        message: '刪除失敗! '+ error_msg
+                        message: '刪除失敗! ' + error_msg
                     });
                     return error;
                 }
@@ -240,7 +251,7 @@ export default {
             //template.value = response['data'];
 
             // set local storage
-            sessionStorage.imageSource = 'data:image/png;base64,' + response['data'].image
+            sessionStorage.imageSource = 'data:image/png;base64,' + response['data'].image;
             for (let i = 0; i < rectangleTypes.value.length; i++) {
                 let data = parseTemplateDetail(response['data'], rectangleTypes.value[i].code);
                 sessionStorage.setItem(rectangleTypes.value[i].code, JSON.stringify(data));
@@ -325,10 +336,15 @@ export default {
             dialogWidth,
             dialogVisible,
             buttonText,
+            breadcrumbItems,
+            actions,
+            template,
+            template_id,
+            initialData,
+            creation_time,
             formatDate,
             getAvailableTemplate,
             handleConfirm,
-            handleLook,
             handleDelete,
             prepend,
             append,
@@ -338,11 +354,8 @@ export default {
             editTemplate,
             downloadTemplate,
             deleteTemplate,
-            template,
-            template_id,
-            initialData,
-            creation_time,
             templateOCR,
+            handleLook,
             Delete,
             Edit,
             Download,
@@ -352,96 +365,93 @@ export default {
     }
 };
 </script>
-
 <template>
     <div class="layoutZoneContainer">
-        <div class="breadcrumbContainer">
-            <ul><li :to="{ path: '/' }">首頁</li>
-                <li>通用辨識</li>
-                <li class="now" >模板辨識</li>
-            </ul>    
-        </div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 20px;">
+        <BreadCrumb :items="breadcrumbItems" />
+
+        <div class="action-header">
             <h5>模板列表</h5>
             <esb-button @click="createTemplate" :text="buttonText" />
         </div>
 
         <el-table :data="formattedTableData" style="width: 100%" border>
-                    <el-table-column :prop="item.prop" :label="item.label" v-for="item in tableHeader" :key="item.prop" :min-width="item.width">
-                        <template #default="scope">
-                            <div v-show="item.editable || scope.row.editable" class="editable-row">
-                                <template v-if="item.type === 'input'">
-                                    <el-input size="small" v-model="scope.row[item.prop]" :placeholder="`請輸入 ${item.label}`" @change="handleEdit(scope.$index, scope.row)" />
-                                </template>
-                            </div>
-                            <div v-show="!item.editable && !scope.row.editable" class="editable-row">
-                                <span class="editable-row-span">{{ scope.row[item.prop] }}</span>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <!-- Column 1 -->
-                    <el-table-column label="辨識" :min-width="10">
-                        <template #default="scope">
-                            <el-button class="mr-1" plain size="" type="primary" @click="templateOCR(scope.row.template_id)" :icon="Pointer" circle />
-                        </template>
-                    </el-table-column>
+            <el-table-column v-for="item in tableHeader" :key="item.prop" :prop="item.prop" :label="item.label" :min-width="item.width">
+                <template #default="scope">
+                    <EditableRow :item="item" :row="scope.row" @edit="handleEdit(scope.$index, scope.row)" />
+                </template>
+            </el-table-column>
 
-                    <!-- Column 2 -->
-                    <el-table-column label="檢視" :min-width="10">
-                        <template #default="scope">
-                            <!-- <el-button class="mr-1" size="" type="primary" @click="templateOCR(scope.row.template_id)">辨識</el-button> -->
-                            <el-button size="" type="info" plain @click="handleLook(scope.row.template_id, rectangleTypes[0].code)" :icon="View" circle />
-                        </template>
-                    </el-table-column>
+            <ActionColumn
+                v-for="action in actions"
+                :key="action.label"
+                :label="action.label"
+                :icon="action.icon"
+                :type="action.type"
+                :handler="action.handler"
+                @templateOCR="templateOCR"
+                @handleLook="handleLook"
+                @editTemplate="editTemplate"
+                @handleDelete="handleDelete"
+                @downloadTemplate="downloadTemplate"
+            />
+        </el-table>
 
-                    <!-- Column 3 -->
-                    <el-table-column label="編輯" :min-width="10">
-                        <template #default="scope">
-                            <el-button size="" type="info" plain @click="editTemplate(scope.row.template_id)" :icon="Edit" circle />
-                        </template>
-                    </el-table-column>
-
-                    <!-- Column 4 -->
-                    <el-table-column label="刪除" :min-width="10">
-                        <template #default="scope">
-                            <el-button size="" type="danger" plain @click="handleDelete(scope.row.template_id)" :icon="Delete" circle />
-                        </template>
-                    </el-table-column>
-
-                    <!-- Column 5 -->
-                    <el-table-column label="下載" :min-width="10">
-                        <template #default="scope">
-                            <el-button size="" type="info" plain @click="downloadTemplate(scope.row.template_id)" :icon="Download" circle />
-                        </template>
-                    </el-table-column>
-
-                </el-table>
-                <el-dialog v-model="dialogVisible" :width="dialogWidth">
-                    <div class="card" style="height: 850px; overflow-y: scroll">
-                        <h4>template id: {{ template_id }}</h4>
-                        <h5>創建日期: {{ creation_time }}</h5>
-                        <div class="flex flex-column card-container">
-                            <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
-                                <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(this.template_id, selectedRectangleType.code)" />
-                            </div>
-                            <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                                <Annotation
-                                    ref="child"
-                                    containerId="my-pic-annotation-output"
-                                    :editMode="false"
-                                    :imageSrc="imageSrc"
-                                    :width="dialogWidth"
-                                    :height="height"
-                                    dataCallback=""
-                                    :initialData="initialData"
-                                    :justShow="true"
-                                    :isVertical="true"
-                                ></Annotation>
-                            </div>
-                            <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
-                            </div>
-                        </div>
+        <el-dialog v-model="dialogVisible" :width="dialogWidth">
+            <div class="card" style="height: 80vh; overflow-y: scroll">
+                <h4>template id: {{ template_id }}</h4>
+                <h5>創建日期: {{ creation_time }}</h5>
+                <div class="flex flex-column card-container">
+                    <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
+                        <!-- Wrap the SelectButton in a container -->
+                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" />
                     </div>
-                </el-dialog>
+                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                        <Annotation
+                            ref="child"
+                            containerId="my-pic-annotation-output"
+                            :editMode="false"
+                            :imageSrc="imageSrc"
+                            :width="dialogWidth"
+                            :height="height"
+                            dataCallback=""
+                            :initialData="initialData"
+                            :justShow="true"
+                            :isVertical="true"
+                        ></Annotation>
+                    </div>
+                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2"></div>
+                </div>
+            </div>
+        </el-dialog>
     </div>
 </template>
+
+<style scoped>
+.select-button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center; /* This will center-align the buttons horizontally */
+    height: 100%; /* Adjust this if you want a specific height */
+}
+.action-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.p-buttonset {
+    display: flex;
+    justify-content: space-between;
+    width: 60%; /* adjust this if needed */
+    margin: 0 auto; /* makes the button group center-aligned */
+}
+
+.p-highlight {
+    background-color: rgb(13, 13, 202);
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+</style>
