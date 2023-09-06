@@ -6,7 +6,7 @@ import yaml
 
 
 def config_logging(filename='log_config.yml'):
-    log_filename = f"./app/logger/{datetime.now().strftime('%Y-%m-%d')}.log"  # log
+    log_filename = f"./app/log/{datetime.now().strftime('%Y-%m-%d')}.log"  # log
     with open(filename) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
         # print(config)
