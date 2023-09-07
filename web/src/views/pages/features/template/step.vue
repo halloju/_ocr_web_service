@@ -45,20 +45,23 @@ export default {
                 mask: []
             },
             createNew: this.$store.state.createNew,
-            currentStep: this.$store.state.createNew? 0: 1,
+            currentStep: this.$store.state.createNew ? 0 : 1,
             template_id: sessionStorage.getItem('template_id') || '',
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
-            pageDesc: ['框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
-                '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！', '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！'],
+            pageDesc: [
+                '框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
+                '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！',
+                '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！'
+            ],
             pageImg: [img2, img3, img4],
             progressSteps: [
                 {
                     title: '圖檔上傳',
-                    status: this.$store.state.createNew? 'now':'done'
+                    status: this.$store.state.createNew ? 'now' : 'done'
                 },
                 {
                     title: '文字標註',
-                    status: this.$store.state.createNew? 'next':'now'
+                    status: this.$store.state.createNew ? 'next' : 'now'
                 },
                 {
                     title: '方塊標註',
@@ -155,7 +158,7 @@ export default {
                 const answer = window.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?');
                 if (answer) {
                     sessionStorage.clear();
-                    
+
                     // Set the status of the current step to 'next'
                     if (this.currentStep < this.progressSteps.length) {
                         this.progressSteps[this.currentStep].status = 'next';
@@ -167,7 +170,6 @@ export default {
                     if (this.currentStep >= 0 && this.currentStep < this.progressSteps.length) {
                         this.progressSteps[this.currentStep].status = 'now';
                     }
-
                 } else {
                     ElMessage.info('已取消');
                     return;
@@ -283,7 +285,7 @@ export default {
                 })
                 .catch((err) => {
                     let error_msg = default_error_msg;
-                    if (typeof(err.response.data)==='object' && 'mlaas_code' in err.response.data) {
+                    if (typeof err.response.data === 'object' && 'mlaas_code' in err.response.data) {
                         console.log(err.response.data.mlaas_code);
                         if (err.response.data.mlaas_code in error_table) error_msg = error_table[err.response.data.mlaas_code] + ' (' + err.response.data.mlaas_code + ')';
                     }
@@ -344,20 +346,20 @@ export default {
                     explanation: '',
                     file: null
                 }
-            }
+            };
             return ocrTypes['general'];
         },
-        async cancel(){
+        async cancel() {
             await ElMessageBox.confirm('是否確定取消新增', '提示', {
-                        confirmButtonText: '確定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-            })
+                confirmButtonText: '確定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            });
             this.clearState();
             this.$router.push({ name: 'ModelList' });
-            }
+        }
     },
-    
+
     computed: {
         ...mapState(['templateName']),
         buttonText() {
@@ -375,7 +377,7 @@ export default {
         tooltip_text() {
             if (this.currentStep == 0) return '請上傳圖片後點我';
             else return '請框好位置後點我';
-        },
+        }
     },
     watch: {
         currentStep() {
@@ -390,42 +392,67 @@ export default {
 <template>
     <div class="layoutZoneContainer">
         <div class="breadcrumbContainer">
-            <ul><li :to="{ path: '/' }">首頁</li>
+            <ul>
+                <li :to="{ path: '/' }">首頁</li>
                 <li>通用辨識</li>
                 <li :to="{ name: 'ModelList' }">模板辨識</li>
-                <li class="now" >新增模板</li>
-            </ul>    
+                <li class="now">新增模板</li>
+            </ul>
         </div>
-        <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px;">
-            <h5>新增辨識模板</h5> 
-            <div style="flex: 1; text-align: center;">
-                <esb-progress-bar :progress="progressSteps" :type="processType"/>
+        <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
+            <h5>新增辨識模板</h5>
+            <div style="flex: 1; text-align: center">
+                <div class="progressbarContainer">
+                    <ul>
+                        <li v-for="(step, index) in progressSteps" :key="index" :class="step.status">
+                            <div class="progressTitle">{{ step.title }}</div>
+                            <div class="progressDot"></div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div style="margin-bottom: 20px; margin-top: 20px;">
-            <div style="display: flex; align-items: center;" >
-                <div style="display: flex; align-items: center; margin-right: 20px;" >
-                    <h4 style="margin-right: 10px; margin-bottom: 0px;">模板名稱：</h4>
-                    <esb-input :disabled="disableInput" v-model="this.input"/>
-                    <div class="bx-btn-set" style="margin-left: 20px;">
-                        <button class="uiStyle sizeS btnGreen" @click="toggleEditSave"> 
+        <div style="margin-bottom: 20px; margin-top: 20px">
+            <div style="display: flex; align-items: center">
+                <div style="display: flex; align-items: center; margin-right: 20px">
+                    <h4 style="margin-right: 10px; margin-bottom: 0px">模板名稱：</h4>
+                    <input class="uiStyle" type="text" :disabled="disableInput" v-model="this.input" />
+                    <div class="bx-btn-set" style="margin-left: 20px">
+                        <button class="uiStyle sizeS btnGreen" @click="toggleEditSave">
                             {{ buttonText }}
                         </button>
-                    </div> 
+                    </div>
                 </div>
-                <div v-if="useModelComplexity" style="display: flex; align-items: center;">
-                    <h4 style="margin-right: 10px;">使用高精準度模型：</h4>
-                    <esb-radio :type="type" :options="highPrecision" v-model="switchValue"/>
+                <div v-if="useModelComplexity" style="display: flex; align-items: center">
+                    <h4 style="margin-right: 10px">使用高精準度模型：</h4>
+                    <div class="switchField">
+                        <label class="switch">
+                            <input type="checkbox" id="switch" v-model="switchValue" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
-                <p v-if="useModelComplexity" style="margin-left: 10px; color: red;">*注意，當您使用高精準度模型時會耗時較久</p>
+                <p v-if="useModelComplexity" style="margin-left: 10px; color: red">*注意，當您使用高精準度模型時會耗時較久</p>
             </div>
-        
         </div>
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
                 <div class="card">
-                    <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="editMode" dataCallback="" initialDataId="" image_cv_id="" :rectangleType="rectangleType" :localStorageKey="localStorageKey" :setShowText="true" height="600" :justShow="true" />
+                    <Annotation
+                        :key="currentStep"
+                        containerId="my-pic-annotation-output"
+                        :imageSrc="imageSrc"
+                        :editMode="editMode"
+                        dataCallback=""
+                        initialDataId=""
+                        image_cv_id=""
+                        :rectangleType="rectangleType"
+                        :localStorageKey="localStorageKey"
+                        :setShowText="true"
+                        height="600"
+                        :justShow="true"
+                    />
                 </div>
             </div>
         </div>
@@ -436,16 +463,10 @@ export default {
                 </div>
             </div>
         </div>
-        <div style="display: flex; justify-content: center; align-items: space-between; margin-bottom: 20px; margin-top: 20px;">
-            <button v-if="currentStep !== 0" class="uiStyle sizeM btnGreen minLength" @click="previous" style="margin-right: 20px;"> 
-                上一步
-            </button>
-            <button v-if="currentStep !== 0" class="uiStyle sizeM btnDarkBlue minLength" @click="cancel" style="margin-right: 20px;"> 
-                取消新增
-            </button>
-            <button v-if="!this.isFinal" class="uiStyle sizeM btnGreen minLength" @click="next" style="margin-right: 20px;"> 
-                下一步
-            </button>
+        <div style="display: flex; justify-content: center; align-items: space-between; margin-bottom: 20px; margin-top: 20px">
+            <button v-if="currentStep !== 0" class="uiStyle sizeM btnGreen minLength" @click="previous" style="margin-right: 20px">上一步</button>
+            <button v-if="currentStep !== 0" class="uiStyle sizeM btnDarkBlue minLength" @click="cancel" style="margin-right: 20px">取消新增</button>
+            <button v-if="!this.isFinal" class="uiStyle sizeM btnGreen minLength" @click="next" style="margin-right: 20px">下一步</button>
             <button v-else class="uiStyle sizeM btnGreen minLength" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
                 提交
             </button>
@@ -453,7 +474,6 @@ export default {
 
         <!-- <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="this.tooltip_text" type="success">下一步</el-button> -->
     </div>
-
 
     <!-- <div class="grid p-fluid">
         <div class="col-12">

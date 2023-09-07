@@ -28,7 +28,7 @@ export default {
             subtitle: '',
             description: '',
             apiUrl: '',
-            template_id: this.$store.state.template_id,
+            template_id: this.$store.state.template_id
         };
     },
     created() {
@@ -46,7 +46,6 @@ export default {
         this.category = ocrConfig.category;
         this.explanation = ocrConfig.explanation;
         this.file = ocrConfig.file;
-
     },
     watch: {
         $route(to, from) {
@@ -157,7 +156,7 @@ export default {
                         name: 'special',
                         limit: 1
                     },
-                    explanation: "1.姓名 (name)<br/>2.出生年月日 (date_of_birth)<br/>3.發證日期 (date_of_issue)<br/>4.發證地點 (place_of_issue)<br/>5.發證類別 (type_of_issue)<br/>6.性別 (sex)<br/>7.統一編號 (id_no)",
+                    explanation: '1.姓名 (name)<br/>2.出生年月日 (date_of_birth)<br/>3.發證日期 (date_of_issue)<br/>4.發證地點 (place_of_issue)<br/>5.發證類別 (type_of_issue)<br/>6.性別 (sex)<br/>7.統一編號 (id_no)',
                     file: id_example
                 },
                 driver_license: {
@@ -173,7 +172,7 @@ export default {
                         name: 'special',
                         limit: 1
                     },
-                    explanation: "1.駕照號碼 (id_no)<br/>2.姓名 (name)<br/>3.出生日期 (date_of_birth)",
+                    explanation: '1.駕照號碼 (id_no)<br/>2.姓名 (name)<br/>3.出生日期 (date_of_birth)',
                     file: driver_example
                 },
                 health_insurance: {
@@ -189,7 +188,7 @@ export default {
                         name: 'special',
                         limit: 1
                     },
-                    explanation: "1.姓名 (name)<br/>2.身分證字號 (id_no)<br/>3.出生年月日 (date_of_birth)",
+                    explanation: '1.姓名 (name)<br/>2.身分證字號 (id_no)<br/>3.出生年月日 (date_of_birth)',
                     file: health_example
                 },
                 withholding: {
@@ -234,6 +233,18 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" :defaultImgURL="defaultImgURL" :explanation="explanation" :file="file" />
+        <BaseOCR
+            :apiUrl="apiUrl"
+            :category="category"
+            :title="title"
+            :subtitle="subtitle"
+            :description="description"
+            :useModelComplexity="useModelComplexity"
+            :useLanguage="useLanguage"
+            :imageClass="imageClass"
+            :defaultImgURL="defaultImgURL"
+            :explanation="explanation"
+            :file="file"
+        />
     </div>
 </template>

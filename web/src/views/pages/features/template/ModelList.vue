@@ -370,8 +370,10 @@ export default {
         <BreadCrumb :items="breadcrumbItems" />
 
         <div class="action-header">
-            <h5>模板列表</h5>
-            <esb-button @click="createTemplate" :text="buttonText" />
+            <h4 style="margin-bottom: 0px">模板列表</h4>
+            <button class="uiStyle sizeS subLength btnGreen" @click="createTemplate">
+                {{ buttonText }}
+            </button>
         </div>
 
         <el-table :data="formattedTableData" style="width: 100%" border>

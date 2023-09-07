@@ -15,8 +15,8 @@ export default {
         axios
             .get('/auth/sso')
             .then((res) => {
-                const url = res.data
-                window.location.href = url
+                const url = res.data;
+                window.location.href = url;
             })
             .catch((err) => {
                 console.log(err);
