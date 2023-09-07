@@ -20,7 +20,8 @@ Input, Output = mlaas_item_generator('CALLBACK', CALLBACKInput, CALLBACKOutput)
 router = APIRouter()
 
 
-@router.post("/callback", response_model=Output, responses=http_responses)  # responses={},
+# responses={},
+@router.post("/callback", response_model=Output, responses=http_responses)
 async def callback(request: Input):
     '''
     check back mlaas api
@@ -47,9 +48,10 @@ async def callback(request: Input):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
-    
+
     # data = Back_PredictInput(**req_data['inputs'])
 
     end_time = time.time()
@@ -59,5 +61,6 @@ async def callback(request: Input):
         'status_code': '0000',
         'status_msg': 'OK'
     }
-    output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+    output.update(response_time=end_time,
+                  duration_time=duration_time, outputs=result)
     return Output(**output)

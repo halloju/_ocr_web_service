@@ -4,6 +4,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
+
 class User(Base):
     __tablename__ = "user"
     __table_args__ = {"schema": schema_name, "extend_existing": True}

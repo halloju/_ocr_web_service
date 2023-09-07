@@ -25,7 +25,8 @@ def delete_template(template, db: Session):
         )
 
         # Step 2. 將 DB 中的 template 資訊刪除
-        db.query(TemplateInfo).filter(TemplateInfo.template_id==template_id).delete()
+        db.query(TemplateInfo).filter(
+            TemplateInfo.template_id == template_id).delete()
         db.commit()
     except OperationalError as e:
         logger.error("delete template db error:{}".format(e))

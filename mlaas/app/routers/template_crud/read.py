@@ -19,9 +19,11 @@ import time
 
 router = APIRouter()
 
-available_Input, available_Output = mlaas_item_generator('GetAvailableTemplates', GetAvailableTemplatesRequest, GetAvailableTemplatesResponse)
+available_Input, available_Output = mlaas_item_generator(
+    'GetAvailableTemplates', GetAvailableTemplatesRequest, GetAvailableTemplatesResponse)
 
-detail_Input, detail_Output = mlaas_item_generator('GetTemplateDetail', GetTemplateDetailRequest, GetTemplateDetailResponse)
+detail_Input, detail_Output = mlaas_item_generator(
+    'GetTemplateDetail', GetTemplateDetailRequest, GetTemplateDetailResponse)
 
 
 @router.post("/get_available_templates", response_model=available_Output, responses=http_responses)
@@ -51,18 +53,20 @@ async def get_available_templates(request: available_Input, db: Session = Depend
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return available_Output(**output)
 
     data = GetAvailableTemplatesRequest(**req_data['inputs'])
     form = GetAvailableTemplatesForm(data)
-    
+
     await form.load_data()
     if await form.is_valid():
         template = GetAvailableTemplatesRequest(
             user_id=form.user_id
-            )
-        available_templates = service_read.get_available_templates(template, db)
+        )
+        available_templates = service_read.get_available_templates(
+            template, db)
         end_time = time.time()
         duration_time = round((end_time - start_time), 4)
         result = {
@@ -70,7 +74,8 @@ async def get_available_templates(request: available_Input, db: Session = Depend
             'status_msg': 'OK',
             'template_infos': available_templates
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return available_Output(**output)
     raise CustomException(status_code=401, message=form.errors)
 
@@ -91,7 +96,7 @@ async def get_template_detail(request: detail_Input, db: Session = Depends(get_d
         trace_id=trace_id,
         request_time=start_time
     )
-    
+
     status_dict = {
         '0001': 'code error',
         '5407': 'template_id not exist'
@@ -103,16 +108,17 @@ async def get_template_detail(request: detail_Input, db: Session = Depends(get_d
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return detail_Output(**output)
-    
+
     data = GetTemplateDetailRequest(**req_data['inputs'])
     form = GetTemplateDetailForm(data)
     await form.load_data()
     if await form.is_valid():
         template = GetTemplateDetailRequest(
             template_id=form.template_id
-            )
+        )
         template_detail = service_read.get_template_detail(template, db)
         end_time = time.time()
         duration_time = round((end_time - start_time), 4)
@@ -121,6 +127,7 @@ async def get_template_detail(request: detail_Input, db: Session = Depends(get_d
             'status_msg': 'OK',
             'template_detail': template_detail
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return detail_Output(**output)
     raise CustomException(status_code=401, message=form.errors)

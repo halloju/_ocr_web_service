@@ -21,7 +21,8 @@ import time
 router = APIRouter()
 
 
-Input, Output = mlaas_item_generator('DeleteTemplate', DeleteTemplateRequest, DeleteTemplateResponse)
+Input, Output = mlaas_item_generator(
+    'DeleteTemplate', DeleteTemplateRequest, DeleteTemplateResponse)
 
 
 @router.post("/delete_template", response_model=Output, responses=http_responses)
@@ -29,7 +30,7 @@ async def delete_template(request: Input, db: Session = Depends(get_db)):
     '''
     將 Feature DB 中的 template 資訊刪除
     '''
-    
+
     start_time = time.time()
     req_data = jsonable_encoder(request)
     trace_id = str(uuid.uuid4())
@@ -53,16 +54,17 @@ async def delete_template(request: Input, db: Session = Depends(get_db)):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
-    
+
     data = DeleteTemplateRequest(**req_data['inputs'])
     form = DeleteTemplateForm(data)
     await form.load_data()
     if await form.is_valid():
         template = DeleteTemplateRequest(
             template_id=form.template_id
-            )
+        )
         service_delete.delete_template(template=template, db=db)
         end_time = time.time()
         duration_time = round((end_time - start_time), 4)
@@ -70,6 +72,7 @@ async def delete_template(request: Input, db: Session = Depends(get_db)):
             'status_code': '0000',
             'status_msg': 'OK'
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
     raise CustomException(status_code=401, message=form.errors)

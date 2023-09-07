@@ -20,7 +20,8 @@ import time
 router = APIRouter()
 
 
-Input, Output = mlaas_item_generator('UpdateTemplate', UpdateTemplateRequest, UpdateTemplateResponse)
+Input, Output = mlaas_item_generator(
+    'UpdateTemplate', UpdateTemplateRequest, UpdateTemplateResponse)
 
 
 @router.post("/update_template", response_model=Output, responses=http_responses)
@@ -51,9 +52,10 @@ async def update_template(request: Input, db: Session = Depends(get_db)):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
-    
+
     data = UpdateTemplateRequest(**req_data['inputs'])
     form = UpdateTemplateForm(data)
     await form.load_data()
@@ -63,8 +65,9 @@ async def update_template(request: Input, db: Session = Depends(get_db)):
             template_id=form.template_id,
             points_list=form.points_list,
             template_name=form.template_name
-            )
-        new_template_id = service_update.update_template(template=template, db=db)
+        )
+        new_template_id = service_update.update_template(
+            template=template, db=db)
         end_time = time.time()
         duration_time = round((end_time - start_time), 4)
         result = {
@@ -72,6 +75,7 @@ async def update_template(request: Input, db: Session = Depends(get_db)):
             'status_msg': 'OK',
             'template_id': new_template_id
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
     raise CustomException(status_code=401, message=form.errors)

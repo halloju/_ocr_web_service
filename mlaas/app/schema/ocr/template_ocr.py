@@ -50,7 +50,7 @@ class TemplateocrRequest(BaseModel):
 
 
 class OcrPredict(BaseModel, extra=Extra.forbid):
-    
+
     points: List = Field(
         title='文字區域的點位',
         example=[[1, 2], [1, 3], [1, 5], [1, 8]]

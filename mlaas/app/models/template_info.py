@@ -2,6 +2,7 @@ from app.database import Base, schema_name
 from sqlalchemy import Column, DateTime, String, ARRAY, JSON, Boolean
 from sqlalchemy.sql import func
 
+
 class TemplateInfo(Base):
     __tablename__ = "template_info"
     __table_args__ = {"schema": schema_name, "extend_existing": True}

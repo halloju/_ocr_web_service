@@ -27,13 +27,13 @@ class PointDict(BaseModel, extra=Extra.forbid):
     )
 
 
-
-
 class CreateTemplateRequest(BaseModel):
     user_id: str = Field(..., title="員編", example="13520")
     image: str = Field(..., title='範本影像', example=img_base64_string)
-    points_list: conlist(PointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]]}, {'type': 'box', 'tag': '是否為範本', 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}, {'type': 'mask', 'tag': None, 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}])
+    points_list: conlist(PointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]]}, {
+        'type': 'box', 'tag': '是否為範本', 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}, {'type': 'mask', 'tag': None, 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}])
     template_name: str = Field(..., title='範本名稱', example='身分證')
+
 
 class CreateTemplateResponse(BaseModel):
     status_code: StrictStr = Field(
@@ -61,5 +61,5 @@ class CreateTemplateResponse(BaseModel):
         description='''
         '''
     )
-    template_id: Optional[str] = Field(title="範本影像編號", example="1352020220930134411")
-
+    template_id: Optional[str] = Field(
+        title="範本影像編號", example="1352020220930134411")

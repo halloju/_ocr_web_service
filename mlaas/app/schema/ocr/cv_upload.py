@@ -290,4 +290,3 @@ class CVOutputs(BaseModel, extra=Extra.forbid):
         ''',
         example=8.0
     )
-

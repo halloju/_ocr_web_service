@@ -19,6 +19,7 @@ class GetAvailableTemplatesForm:
             return True
         return False
 
+
 class GetTemplateDetailForm:
     def __init__(self, request: GetTemplateDetailRequest):
         self.request: GetTemplateDetailRequest = request

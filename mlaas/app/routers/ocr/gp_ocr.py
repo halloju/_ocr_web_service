@@ -27,7 +27,8 @@ Input, Output = mlaas_item_generator('Gpocr', GpocrRequest, GpocrResponse)
 router = APIRouter()
 
 
-@router.post("/gp_ocr", response_model=Output, responses=http_responses)  # responses={},
+# responses={},
+@router.post("/gp_ocr", response_model=Output, responses=http_responses)
 async def gp_ocr(request: Input, db: Session = Depends(get_db)):
     '''
     將 image 影像上傳至 MinIO, 並進行全文辨識，將辨識結果存入 db
@@ -55,16 +56,18 @@ async def gp_ocr(request: Input, db: Session = Depends(get_db)):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
-    
+
     data = GpocrRequest(**req_data['inputs'])
     form = GpocrForm(data)
     await form.load_data()
     if await form.is_valid():
         ocr_image_info = GpocrRequest(
             image=form.image)
-        image_cv_id, ocr_results = service_gp_ocr(ocr_image_info=ocr_image_info, db=db)
+        image_cv_id, ocr_results = service_gp_ocr(
+            ocr_image_info=ocr_image_info, db=db)
 
         end_time = time.time()
         duration_time = round((end_time - start_time), 4)
@@ -74,6 +77,7 @@ async def gp_ocr(request: Input, db: Session = Depends(get_db)):
             'status_code': '0000',
             'status_msg': 'OK'
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
     raise CustomException(status_code=401, message=form.errors)

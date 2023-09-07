@@ -8,4 +8,4 @@ def get_output_template():
         'trace_id': '',
         'request_time': '',
         'duration_time': ''
-}
+    }
