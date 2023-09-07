@@ -53,7 +53,6 @@ export default {
         const dialogImageUrl = ref('');
         const imageSource = ref('');
 
-
         const isUploadDisabled = computed(() => {
             if (fileList.value.length === 0) {
                 return true;
@@ -69,7 +68,7 @@ export default {
             responseData['fileName'] = fileList.value[0].name;
             // 打 API
             const formData = new FormData();
-            if(props.useLanguage) {
+            if (props.useLanguage) {
                 formData.append('image_complexity', props.imageComplexity);
                 formData.append('model_name', props.selectedModel);
                 formData.append('template_id', store.state.template_id);
@@ -97,7 +96,7 @@ export default {
                 } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
                 } else {
-                    msg= handleErrorMsg(error.response);
+                    msg = handleErrorMsg(error.response);
                 }
                 //error alert for the axios request
                 ElMessageBox.confirm(msg, '失敗', {
@@ -134,16 +133,16 @@ export default {
             const blob = await response.blob();
 
             // Create a File object from Blob
-            const file = new File([blob], 'default.jpg', {type: 'image/jpeg'});
+            const file = new File([blob], 'default.jpg', { type: 'image/jpeg' });
             const fileDict = {
                 name: 'default.jpeg',
                 url: imageUrl,
                 raw: file,
                 size: file.size,
                 type: file.type
-            }
+            };
 
-            beforeUpload(fileDict)
+            beforeUpload(fileDict);
         }
         function beforeUpload(file) {
             // Check file size && file type
@@ -216,7 +215,6 @@ export default {
             dialogWidth.value = width + 40;
         }
 
-
         return {
             breadcrumbItems,
             buttonText,
@@ -246,10 +244,16 @@ export default {
 
 <template>
     <div>
-        <div class="card" style="background-color: white;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div class="card" style="background-color: white">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px">
                 <h5>請上傳一張或多張圖片，圖片選擇完成後請點選開始進行辨識。</h5>
-                <esb-button @click="takeDefault" :button-type="buttonType" :text="uploadButtonText" v-if="(fileList.length == 0) & (defaultImgURL != '')"  />
+                <div v-if="(fileList.length == 0) & (defaultImgURL != '')" style="display: grid; place-items: center">
+                    <div class="formBtnContainer">
+                        <button class="uiStyle sizeS subLength btnGreen" @click="takeDefault">
+                            {{ uploadButtonText }}
+                        </button>
+                    </div>
+                </div>
             </div>
             <el-upload
                 :file-list="fileList"
@@ -270,8 +274,12 @@ export default {
             </el-dialog>
         </div>
 
-        <div style="text-align: center;">
-            <esb-button @click="submit" :path="path" :text="buttonText" :disable="isUploadDisabled" />
+        <div style="display: grid; place-items: center">
+            <div class="formBtnContainer">
+                <button class="uiStyle sizeL subLength btnGreen" @click="submit" :disabled="isUploadDisabled">
+                    {{ buttonText }}
+                </button>
+            </div>
         </div>
     </div>
 </template>

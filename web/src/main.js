@@ -8,10 +8,6 @@ import store from './store';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 
-import jQuery from 'jquery';
-window.jQuery = jQuery;
-window.$ = jQuery;
-
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
@@ -115,17 +111,14 @@ import BlockViewer from '@/components/BlockViewer.vue';
 
 import '@/assets/styles.scss';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
-import "@esb-common/ui/css/esb-ui.css";
-import VueGtag from "vue-gtag";
-
-const EsbUiModule = await import("@esb-common/ui"); // import jquery before esb-ui
-const EsbUi = EsbUiModule.default;
+import '@esb-common/ui/css/esb-ui.css';
+import VueGtag from 'vue-gtag';
 
 const vueGTagSettings = {
     config: { id: `G-VY50231JM4` }
-}
+};
 
-axios.defaults.withCredentials = true; //允许跨域携带cookie信息
+axios.defaults.withCredentials = true;
 const { promiseBaseUrl } = document.querySelector('html').dataset;
 if (promiseBaseUrl) {
     axios.defaults.baseURL = `${promiseBaseUrl}`;
@@ -147,9 +140,7 @@ app.use(DialogService);
 app.use(ConfirmationService);
 app.use(store);
 app.use(VueKonva);
-app.use(EsbUi);
 app.use(VueGtag, vueGTagSettings, router);
-
 
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
