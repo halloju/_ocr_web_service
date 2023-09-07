@@ -46,7 +46,7 @@ class DefaultColorFormatter(logging.Formatter):
           - level_no: int
 
         """
-        default = lambda level_name: str(level_name)  # noqa
+        def default(level_name): return str(level_name)  # noqa
         func = self.level_name_colors.get(level_no, default)
         return func(level_name)
 
@@ -61,6 +61,7 @@ class AicloudFormatter(DefaultColorFormatter):
       - use_colors: change log object color
 
     """
+
     def __init__(self, fmt=None, datefmt=None, style="%", use_colors=None):
         if use_colors in (True, False):
             self.use_colors = use_colors
@@ -110,7 +111,8 @@ class CustomAccessFormator(AccessFormatter):
             http_version,
             status_code,
         ) = recordcopy.args  # type: ignore[misc]
-        status_code = self.get_status_code(int(status_code))  # type: ignore[arg-type]
+        status_code = self.get_status_code(
+            int(status_code))  # type: ignore[arg-type]
         request_line = "%s %s HTTP/%s" % (method, full_path, http_version)
         if self.use_colors:
             request_line = click.style(request_line, bold=True)
