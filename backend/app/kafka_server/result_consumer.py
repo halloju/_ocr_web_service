@@ -7,6 +7,7 @@ from route_utils import get_redis_taskname
 
 from datetime import datetime
 
+
 class ResultConsumer(BaseConsumer):
     """
     Base Class of Consumer
@@ -21,14 +22,16 @@ class ResultConsumer(BaseConsumer):
     def consumer_process(self, msg):
         # check id exist
         if ('ocr_results' not in msg):
-            self.logger_tool.warning({'error_msg': 'ocr_results not exist in msg'})
+            self.logger_tool.warning(
+                {'error_msg': 'ocr_results not exist in msg'})
             return False
         try:
             task_id = msg['image_cv_id'].replace('/', '-')
             full_key = get_redis_taskname(task_id)
             old_data = self.redis_server.get(full_key)
             if (not old_data):
-                self.logger_tool.error({'predict_image': {'task_id': task_id, 'process_time': '', 'action': '', 'status': 'FAIL', 'status_msg': '5002', 'error_msg': 'not exist in redis'}})
+                self.logger_tool.error({'predict_image': {'task_id': task_id, 'process_time': '', 'action': '',
+                                       'status': 'FAIL', 'status_msg': '5002', 'error_msg': 'not exist in redis'}})
                 return False
             if msg['recognition_status'] == 'FAIL':
                 old_data['status'] = 'FAIL'
@@ -37,10 +40,13 @@ class ResultConsumer(BaseConsumer):
                 old_data['result'] = {'data_results': self.msg_func(msg['ocr_results']),
                                       'image_id': msg['image_cv_id']}
                 old_data['status'] = 'SUCCESS'
-                start_time = datetime.strptime(old_data['start_time'], "%Y-%m-%d %H:%M:%S")
+                start_time = datetime.strptime(
+                    old_data['start_time'], "%Y-%m-%d %H:%M:%S")
             self.redis_server.set(full_key, json.dumps(old_data))  # replace
             # self.logger_tool.info({'request_id': full_key, 'msg': 'upload to redis'})
-            self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now() - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
+            self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
+            ) - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
             return True
         except Exception as e:
-            self.logger_tool.error({'request_id': msg['request_id'], 'error_msg': str(e)})
+            self.logger_tool.error(
+                {'request_id': msg['request_id'], 'error_msg': str(e)})

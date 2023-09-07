@@ -1,6 +1,4 @@
 from typing import List
-from typing import Optional
-from urllib import request
 from app.schema.template_crud.update import UpdateTemplateRequest
 
 
@@ -16,7 +14,8 @@ class UpdateTemplateForm:
 
     async def is_valid(self):
         if not self.template_id or not len(self.template_id) == 19:
-            self.errors.append(f"template_id [{self.template_id}] should be 19 chars")
+            self.errors.append(
+                f"template_id [{self.template_id}] should be 19 chars")
         if not self.errors:
             return True
         return False

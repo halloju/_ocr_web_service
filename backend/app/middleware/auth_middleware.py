@@ -1,5 +1,4 @@
 # auth_middleware.py
-import fnmatch
 import os
 
 import jwt
@@ -19,7 +18,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # List of paths that should bypass authentication
-        bypass_auth_paths = ["/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json", "/auth", "/static"]
+        bypass_auth_paths = ["/docs", "/docs/oauth2-redirect",
+                             "/redoc", "/openapi.json", "/auth", "/static"]
 
         # Check if the requested path starts with any of the paths in the bypass_auth_paths list
         if any(request.url.path.startswith(path) for path in bypass_auth_paths):
@@ -39,7 +39,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": "Could not validate credentials"})
         except Exception as e:
             print('AuthMiddleware error', e)
-            raise HTTPException(status_code=500, detail="Internal server error")
+            raise HTTPException(
+                status_code=500, detail="Internal server error")
 
         # Continue processing
         response = await call_next(request)

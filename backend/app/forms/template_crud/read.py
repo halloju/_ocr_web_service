@@ -1,6 +1,4 @@
 from typing import List
-from typing import Optional
-from urllib import request
 from app.schema.template_crud.read import GetAvailableTemplatesRequest, GetTemplateDetailRequest
 
 
@@ -18,6 +16,7 @@ class GetAvailableTemplatesForm:
         if not self.errors:
             return True
         return False
+
 
 class GetTemplateDetailForm:
     def __init__(self, request: GetTemplateDetailRequest):

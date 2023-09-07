@@ -4,7 +4,6 @@ import pytest
 from app.database import Base
 from app.database import get_db
 from app.main import get_application
-from app.models import approval, campaign, lead, lead_tags, list, metrics, tag, manager, cust_list, cust_list_detail, cust_list_intent, cust_list_detail_log
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -18,6 +17,7 @@ SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/erik"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 @pytest.fixture(autouse=True)
 def app() -> Generator[FastAPI, Any, None]:

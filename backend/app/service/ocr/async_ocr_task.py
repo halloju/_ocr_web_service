@@ -10,6 +10,7 @@ from route_utils import async_call_mlaas_function, get_redis_filename, get_redis
 from app.exceptions import MlaasRequestError
 from datetime import datetime
 
+
 class AsyncPredictTask(object):
     def __init__(self, redis_pool, request):
         super().__init__()
@@ -80,13 +81,15 @@ class AsyncPredictTask(object):
                 logger=self.logger
             )
             predict_class = data_pred['predict_class']
-            self.logger.debug({'predict': {'image_id': image_id, 'response_index ': list(data_pred.keys())}})
+            self.logger.debug(
+                {'predict': {'image_id': image_id, 'response_index ': list(data_pred.keys())}})
             # Return the prediction result
             return self._get_task_info('PROCESSING', predict_class, file_name, data_pred['image_cv_id'])
         except MlaasRequestError as e:
             return self._get_task_info('FAIL', predict_class, file_name, data_pred['image_cv_id'], e.mlaas_code, e.message)
         except Exception as e:
-            self.logger.error({'predict': {'error_msg': str(e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
+            self.logger.error({'predict': {'error_msg': str(
+                e), 'image_id': image_id, 'action': action, 'input_params': input_params}})
             return self._get_task_info('FAIL', '', file_name, '', '5001', 'unknown error')
 
     async def process_image(self, file, action: str, input_params: dict):
@@ -101,8 +104,10 @@ class AsyncPredictTask(object):
         await self.conn.set(get_redis_filename(image_id), file.filename)
         # start task prediction
         upload_result = await self.predict(image_id, action=action, input_params=input_params)
-        task_id = str(upload_result["image_cv_id"]).replace('/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
-        task_info = {**upload_result, 'url_result': f'/ocr/result/{task_id}', 'image_id': image_id, 'task_id': task_id}
+        task_id = str(upload_result["image_cv_id"]).replace(
+            '/', '-')  # 2022/10/11.../uuid  -< 2022-10-11...-uuid
+        task_info = {**upload_result, 'url_result': f'/ocr/result/{task_id}',
+                     'image_id': image_id, 'task_id': task_id}
         self.logger.info(task_info)
 
         await self.conn.set(get_redis_taskname(task_id), json.dumps(task_info))

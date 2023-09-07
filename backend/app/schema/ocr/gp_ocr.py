@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List, Dict
+from typing import List, Optional
 from pydantic import BaseModel, Field, StrictStr, validator, Extra
 
 
@@ -27,6 +27,7 @@ class GpocrUpload(BaseModel):
         if v == '':
             raise ValueError("影像不得為空字串")
         return v
+
 
 class GpocrPredict(BaseModel):
     imageList: List[str] = Field(
@@ -78,6 +79,7 @@ class GpocrPredict(BaseModel):
         if len(v.split("+")) != 2:
             raise ValueError("model_name 格式為: det_model+rec_model")
         return v
+
 
 class OcrPredict(BaseModel, extra=Extra.forbid):
     points: List = Field(

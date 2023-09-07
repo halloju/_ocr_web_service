@@ -10,10 +10,11 @@ class CustomException(HTTPException):
 
 class ImageTypeError(Exception):
     """Image type validate error """
-    pass
+
 
 class MlaasRequestError(HTTPException):
     """mlaas request error """
+
     def __init__(self, status_code: str = '0001', status_msg: str = "", image_cv_id: str = "") -> None:
         super().__init__(status_code=500)  # internal error
         self.message = status_msg
@@ -23,10 +24,13 @@ class MlaasRequestError(HTTPException):
 
 def exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
-        status_code=exc.status_code, content={"error": True, "msg": exc.message}
+        status_code=exc.status_code, content={
+            "error": True, "msg": exc.message}
     )
+
 
 def mlaas_request_handler(request: Request, exc: HTTPException):
     return JSONResponse(
-        status_code=exc.status_code, content={"mlaas_code": exc.mlaas_code, "msg": exc.message, "image_cv_id": exc.image_cv_id}
+        status_code=exc.status_code, content={
+            "mlaas_code": exc.mlaas_code, "msg": exc.message, "image_cv_id": exc.image_cv_id}
     )

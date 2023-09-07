@@ -1,4 +1,3 @@
-from app import response_table
 from app.exceptions import MlaasRequestError, CustomException
 from app.schema.template_crud.read import (GetAvailableTemplatesResponse,
                                            GetTemplateDetailResponse)

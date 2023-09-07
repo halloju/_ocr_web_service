@@ -9,16 +9,17 @@ from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from app.routers import login
 from app.routers.ocr import async_ocr
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from logger import Logger
+from utils.logger import Logger
 from app.middleware.auth_middleware import AuthMiddleware
 from app.middleware.log_middleware import LogMiddleware
 
 
 # 設定 logger
-logger = Logger('main')
+logger = Logger('main', uid='main', rid='main')
+
 
 def register_redis(app: FastAPI) -> None:
     """
@@ -50,8 +51,9 @@ def register_redis(app: FastAPI) -> None:
             await app.state.redis.wait_closed()
             logger.info({'register_redis': 'shutdown'})
         except Exception as e:
-            logger.error({'register_redis': 'shutdown failed', 'error': str(e)})
-     
+            logger.error(
+                {'register_redis': 'shutdown failed', 'error': str(e)})
+
 
 def get_application():
     app = FastAPI(docs_url=None,

@@ -60,7 +60,7 @@ status_class_error = {
 response_table = {
     '0000': status_ok,
     '0001': status_codeerror,
-    '0002': status_unexpected, 
+    '0002': status_unexpected,
     '5401': status_uniqueviolation,
     '5402': status_image_type_error,
     '5404': status_templateerror,

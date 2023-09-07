@@ -8,8 +8,8 @@ http_responses = {
         "content": {
             "application/json": {
                 "example": {
-                        "mlaas_code": "0001",
-                        "msg": "API run failed"
+                    "mlaas_code": "0001",
+                    "msg": "API run failed"
                 }
             }
         }
