@@ -118,7 +118,7 @@ export default {
             </el-table-column>
 
             <!-- Form Column -->
-            <el-table-column :label="buttonText" :min-width="50">
+            <el-table-column :label="buttonText" :min-width="50" v-if="rectangleType != 'mask'">
                 <template v-slot="scope">
                     <!--  模板編輯 -->
                     <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)">{{ scope.row.annotation.title }}</el-input>

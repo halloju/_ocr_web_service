@@ -484,7 +484,7 @@ export default {
                         />
                     </v-layer>
                     <v-layer ref="items">
-                        <template v-for="shape in shapes">
+                        <template v-for="(shape, index) in shapes">
                             <v-rect
                                 v-if="shape.type === 'rect'"
                                 :config="shape"
@@ -496,7 +496,7 @@ export default {
                                 @mouseleave="handleMouseLeave"
                                 @dragmove="handleDragMove"
                             />
-                            <v-text v-if="isShowText" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                            <v-text v-if="isShowText" :config="{ text: index, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                         </template>
                         <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
                     </v-layer>
