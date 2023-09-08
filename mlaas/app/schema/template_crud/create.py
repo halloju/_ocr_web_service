@@ -27,7 +27,7 @@ class PointDict(BaseModel, extra=Extra.forbid):
     )
     filters: conlist(StrictStr, min_items=1) = Field(
         title='框的過濾器',
-        example=['tchinese', 'english', 'number', 'symnbol']
+        example=['tchinese', 'english', 'number', 'symbol']
     )
         
 
