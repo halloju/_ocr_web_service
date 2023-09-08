@@ -21,9 +21,12 @@ import uuid
 router = APIRouter()
 
 
-Input, Output = mlaas_item_generator('CreateTemplate', CreateTemplateRequest, CreateTemplateResponse)
+Input, Output = mlaas_item_generator(
+    'CreateTemplate', CreateTemplateRequest, CreateTemplateResponse)
 
-@router.post("/create_template", response_model=Output, responses=http_responses)  # responses={},
+
+# responses={},
+@router.post("/create_template", response_model=Output, responses=http_responses)
 async def create_template(request: Input, db: Session = Depends(get_db)):
     '''
     將 template 影像上傳至 MinIO, 並將其餘資訊存入 Feature DB
@@ -52,9 +55,10 @@ async def create_template(request: Input, db: Session = Depends(get_db)):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
-    
+
     data = CreateTemplateRequest(**req_data['inputs'])
     form = CreateTemplateForm(data)
     await form.load_data()
@@ -73,6 +77,7 @@ async def create_template(request: Input, db: Session = Depends(get_db)):
             'status_code': '0000',
             'status_msg': 'OK'
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
     raise CustomException(status_code=401, message=form.errors)

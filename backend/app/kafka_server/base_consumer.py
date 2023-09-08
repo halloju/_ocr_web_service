@@ -4,7 +4,7 @@ Consumer Class
 import json
 
 from confluent_kafka import Consumer
-from logger import Logger
+from utils.logger import Logger
 
 
 class BaseConsumer(object):

@@ -1,5 +1,4 @@
 from typing import List
-from urllib import request
 from app.schema.ocr.template_ocr import TemplateocrRequest
 
 

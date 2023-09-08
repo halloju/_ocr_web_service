@@ -22,10 +22,12 @@ def create_template(template, db: Session):
     try:
         today = datetime.now(pytz.timezone("Asia/Taipei"))
         print(f'datetime.now(): {datetime.now()}')
-        print(f'datetime.now(pytz.timezone("Europe/London")): {datetime.now(pytz.timezone("Europe/London"))}')
-        print(f'datetime.now(pytz.timezone("Asia/Taipei")): {datetime.now(pytz.timezone("Asia/Taipei"))}')
+        print(
+            f'datetime.now(pytz.timezone("Europe/London")): {datetime.now(pytz.timezone("Europe/London"))}')
+        print(
+            f'datetime.now(pytz.timezone("Asia/Taipei")): {datetime.now(pytz.timezone("Asia/Taipei"))}')
         print(f'today: {today}')
-        template_id=template.user_id+today.strftime('%Y%m%d%H%M%S')
+        template_id = template.user_id+today.strftime('%Y%m%d%H%M%S')
 
         image_base64_binary = template.image.encode('utf-8')
         image_binary = base64.b64decode(image_base64_binary)
@@ -41,7 +43,8 @@ def create_template(template, db: Session):
         )
         print(f"service template create <template>: {template}")
         # Step 2. 將 template 其餘資訊寫入 DB
-        expiration_time = (today + timedelta(days=90)).strftime("%Y-%m-%d %H:%M:%S")
+        expiration_time = (today + timedelta(days=90)
+                           ).strftime("%Y-%m-%d %H:%M:%S")
         template_info = TemplateInfo(
             template_id=template_id,
             user_id=template.user_id,

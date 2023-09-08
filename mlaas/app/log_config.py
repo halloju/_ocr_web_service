@@ -1,4 +1,4 @@
-import logging.config 
+import logging.config
 import logging
 from datetime import datetime
 from gunicorn import glogging
@@ -77,11 +77,12 @@ logging_cfg = {
     }
 }
 
+
 def configure_logging():
     logging.config.dictConfig(logging_cfg)
+
 
 class UniformLogger(glogging.Logger):
 
     def setup(self, cfg):
         configure_logging()
-        

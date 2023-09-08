@@ -26,7 +26,8 @@ export default {
         setShowText: {
             type: Boolean,
             default: false
-        }},
+        }
+    },
     data() {
         return {
             image: null,
@@ -84,22 +85,22 @@ export default {
     created() {
         // set defaults
         if (this.isVertical) {
-            this.containerClass = 'pa-containerVert'
-            this.infoBarClass = 'pa-infobarVert'
-        } else{
-            this.containerClass = 'pa-container'
-            this.infoBarClass = 'pa-infobar'
+            this.containerClass = 'pa-containerVert';
+            this.infoBarClass = 'pa-infobarVert';
+        } else {
+            this.containerClass = 'pa-container';
+            this.infoBarClass = 'pa-infobar';
         }
         // load image
         this.loadImage();
-        window.addEventListener("resize", this.changeRect);
+        window.addEventListener('resize', this.changeRect);
         this.changeRect();
     },
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
         this.stageSize.height = this.$refs.main.clientHeight;
-        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width)-parseInt("4rem");
-        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height)*0.6;
+        if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width) - parseInt('4rem');
+        if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height) * 0.6;
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
@@ -118,7 +119,7 @@ export default {
         };
     },
     methods: {
-        changeRect: function() {
+        changeRect: function () {
             const container = this.$refs.main;
 
             if (!container) {
@@ -137,7 +138,7 @@ export default {
             const height = image.height();
             const scaleX = image.scaleX();
             const scaleY = image.scaleY();
-            const position = {x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y()};
+            const position = { x: width / (4 * scaleX) - image.x(), y: height / (2 * scaleY) - image.y() };
             return position;
         },
         loadImage() {
@@ -263,6 +264,7 @@ export default {
         },
         // delete shape
         deleteShape(name) {
+            console.log('delete shape', name);
             const idx = this.shapes.findIndex((r) => r.name === name);
             if (idx >= 0) {
                 if (name === this.selectedShapeName) {
@@ -273,6 +275,7 @@ export default {
                 // call update
                 this.shapesUpdated();
             }
+            console.log('shapes', this.shapes);
         },
         // handle key events
         handleKeyEvent(event) {
@@ -317,11 +320,7 @@ export default {
             const stage = this.$refs.background.getNode();
             const box = KonvaShape.getClientRect();
             const stagePos = stage.absolutePosition();
-            const isOut =
-                box.x < stagePos.x ||
-                box.y < stagePos.y ||
-                box.x + box.width> stagePos.x+this.image.width*this.scale ||
-                box.y + box.height> stagePos.y+this.image.height*this.scale;
+            const isOut = box.x < stagePos.x || box.y < stagePos.y || box.x + box.width > stagePos.x + this.image.width * this.scale || box.y + box.height > stagePos.y + this.image.height * this.scale;
             if (isOut) {
                 KonvaShape.setAttrs(this.oldAttrs);
             } else {
@@ -388,16 +387,16 @@ export default {
             const offsetY = box.y - absPos.y;
             const newAbsPos = { ...absPos };
             if (box.x < stagePos.x) {
-                newAbsPos.x = stagePos.x-offsetX;
+                newAbsPos.x = stagePos.x - offsetX;
             }
             if (box.y < stagePos.y) {
-                newAbsPos.y = stagePos.y-offsetY;
+                newAbsPos.y = stagePos.y - offsetY;
             }
-            if (box.x + box.width> stagePos.x+this.image.width*this.scale) {
-                newAbsPos.x = stagePos.x+this.scale*this.image.width- box.width - offsetX;
+            if (box.x + box.width > stagePos.x + this.image.width * this.scale) {
+                newAbsPos.x = stagePos.x + this.scale * this.image.width - box.width - offsetX;
             }
-            if (box.y + box.height> stagePos.y+this.scale*this.image.height ) {
-                newAbsPos.y = stagePos.y+this.scale*this.image.height  - box.height - offsetY;
+            if (box.y + box.height > stagePos.y + this.scale * this.image.height) {
+                newAbsPos.y = stagePos.y + this.scale * this.image.height - box.height - offsetY;
             }
             shape.setAbsolutePosition(newAbsPos);
         },
@@ -462,90 +461,88 @@ export default {
 };
 </script>
 <template>
-    <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
-        <div class="pa-canvas" :ref="'main'">
-            <div class="pa-controls">
-                <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
-                <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
-                <hr />
-                <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-                <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle'" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-                <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
-            </div>
-            <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-            <v-stage
-                :config="stageConfig"
-                @mousedown="handleStageMouseDown"
-                @contextmenu="cancelEvent"
-                @mouseenter="handleGlobalMouseEnter"
-                @mouseleave="handleGlobalMouseLeave"
-                @wheel="handleScroll"
-                :ref="'stage'"
-            >
-                <v-layer ref="background">
-                    <v-image
-                        :ref="'image'"
-                        :config="{
-                            image: image,
-                            stroke: 'black'
-                        }"
-                    />
-                </v-layer>
-                <v-layer ref="items">
-                    <template v-for="shape in shapes">
-                        <v-rect
-                            v-if="shape.type === 'rect'"
-                            :config="shape"
-                            :key="shape.name"
-                            @dragend="handleDragEnd($event, shape)"
-                            @transform="handleTransform"
-                            @transformend="handleTransformEnd($event, shape)"
-                            @mouseenter="handleMouseEnter(shape.name)"
-                            @mouseleave="handleMouseLeave"
-                            @dragmove="handleDragMove"
+    <div class="outer-box">
+        <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
+            <div class="pa-canvas" :ref="'main'">
+                <div class="pa-controls">
+                    <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
+                    <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
+                    <hr />
+                    <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
+                    <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
+                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
+                </div>
+                <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
+                <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent" @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
+                    <v-layer ref="background">
+                        <v-image
+                            :ref="'image'"
+                            :config="{
+                                image: image,
+                                stroke: 'black'
+                            }"
                         />
-                        <v-text v-if="isShowText" :config="{ text: shape.annotation.title, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
-                    </template>
-                    <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
-                </v-layer>
-            </v-stage>
+                    </v-layer>
+                    <v-layer ref="items">
+                        <template v-for="(shape, index) in shapes">
+                            <v-rect
+                                v-if="shape.type === 'rect'"
+                                :config="shape"
+                                :key="shape.name"
+                                @dragend="handleDragEnd($event, shape)"
+                                @transform="handleTransform"
+                                @transformend="handleTransformEnd($event, shape)"
+                                @mouseenter="handleMouseEnter(shape.name)"
+                                @mouseleave="handleMouseLeave"
+                                @dragmove="handleDragMove"
+                            />
+                            <v-text v-if="isShowText" :config="{ text: index, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                        </template>
+                        <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
+                    </v-layer>
+                </v-stage>
 
-            <loader v-if="isLoading" />
+                <loader v-if="isLoading" />
 
-            <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
-        </div>
-        <div :class="infoBarClass">
-            <side-bar-entry
-                v-for="shape in shapes"
-                :key="shape.name"
-                :shape="shape"
-                :edit-mode="editMode"
-                :justShow="justShow"
-                :selected-shape-name="selectedShapeName"
-                :current-hover-shape="currentHoverShape"
-                :rectangleType="rectangleType"
-                v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
-                v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
-                v-on:sidebar-entry-delete="deleteShape($event)"
-                v-on:sidebar-entry-save="formSubmitted($event)"
-            />
+                <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
+            </div>
+            <div :class="infoBarClass">
+                <side-bar-entry
+                    :key="ee"
+                    :shapes="shapes"
+                    :edit-mode="editMode"
+                    :justShow="justShow"
+                    :selected-shape-name="selectedShapeName"
+                    :current-hover-shape="currentHoverShape"
+                    :rectangleType="rectangleType"
+                    v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
+                    v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
+                    v-on:sidebar-entry-delete="deleteShape($event)"
+                    v-on:sidebar-entry-save="formSubmitted($event)"
+                />
+            </div>
         </div>
     </div>
 </template>
 <style lang="sass">
+
+.outer-box
+  padding: 20px
+  background-color: #fff
 .pa-container
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
-  grid-template-columns: 2fr 1fr
+  grid-template-columns: 3fr 1fr
   overflow: hidden
-.pa-containerVert	
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif	
-  display: grid	
-  grid-template-rows: 6fr 4fr	
+  width: 1200px
+.pa-containerVert
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
+  display: grid
+  grid-template-rows: 3fr 2fr
   overflow: hidden
 
 .pa-canvas
-  border: 1px solid #ccc
+  border: 1px solid #000
   position: relative
   overflow: hidden
 .pa-controls
@@ -577,8 +574,9 @@ export default {
 .pa-infobar
   margin-left: 5px
   overflow-y: scroll
+  width: 500px
 .pa-infobarVert
-  margin-top: 10px	
+  margin-top: 10px
   overflow-y: scroll
 // Loader component
 .pa-loader
@@ -671,6 +669,7 @@ export default {
   display: grid
   grid-template-columns: auto 1fr
   grid-gap: 1em
+  border: 1px solid #ccc
   padding: 10px 0
   label
     grid-column: 1 / 2

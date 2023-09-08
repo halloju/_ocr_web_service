@@ -1,3 +1,5 @@
+from app.database import Base
+from dotenv import load_dotenv
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -11,7 +13,6 @@ import os
 # access to the values within the .ini file in use.
 config = context.config
 
-from dotenv import load_dotenv
 load_dotenv(".env.dev")
 print(os.getenv("DATABASE_URL"))
 config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
@@ -25,7 +26,6 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from app.database import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

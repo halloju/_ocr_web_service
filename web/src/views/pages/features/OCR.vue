@@ -90,7 +90,7 @@ export default {
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/template_ocr',
                     useModelComplexity: false,
-                    useLanguage: true,
+                    useLanguage: false,
                     defaultImgURL: '',
                     category: {
                         name: 'general',

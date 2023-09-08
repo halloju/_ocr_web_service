@@ -17,14 +17,14 @@ def update_template(template, db: Session):
     try:
         today = datetime.now(pytz.timezone("Asia/Taipei"))
         template_id = template.template_id
-        new_template_id=template.user_id+today.strftime('%Y%m%d%H%M%S')
-        
+        new_template_id = template.user_id+today.strftime('%Y%m%d%H%M%S')
+
         expiration_time = today.strftime("%Y-%m-%d %H:%M:%S")
-       
-         # Step 1. 將 template 影像寫入 db
+
+        # Step 1. 將 template 影像寫入 db
         record = db.query(TemplateInfo).\
             filter(TemplateInfo.template_id == template.template_id).one()
-        if(record.is_no_ttl):
+        if (record.is_no_ttl):
             expiration_time = None
         template_info = TemplateInfo(
             template_id=new_template_id,
@@ -61,4 +61,5 @@ def update_template(template, db: Session):
         raise CustomException(status_code=424, message="[DB Error] 請聯絡管理者")
     except Exception as e:
         logger.error("error: {}".format(e))
-        raise CustomException(status_code=424, message=f"查無此 template_id: {template_id}")
+        raise CustomException(
+            status_code=424, message=f"查無此 template_id: {template_id}")

@@ -14,13 +14,15 @@ import time
 from app.api_config import http_responses
 
 
-Input, Output = mlaas_item_generator('CHECK_FRONT', Front_Out_PredictInput, Front_Out_PredictOutput)
+Input, Output = mlaas_item_generator(
+    'CHECK_FRONT', Front_Out_PredictInput, Front_Out_PredictOutput)
 
 
 router = APIRouter()
 
 
-@router.post("/front_out_predict", response_model=Output, responses=http_responses)  # responses={},
+# responses={},
+@router.post("/front_out_predict", response_model=Output, responses=http_responses)
 async def front_out_predict(request: Input):
     '''
     check front mlaas api
@@ -47,9 +49,10 @@ async def front_out_predict(request: Input):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
-    
+
     data = Front_Out_PredictInput(**req_data['inputs'])
 
     end_time = time.time()
@@ -60,5 +63,6 @@ async def front_out_predict(request: Input):
         'status_code': '0000',
         'status_msg': 'OK'
     }
-    output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+    output.update(response_time=end_time,
+                  duration_time=duration_time, outputs=result)
     return Output(**output)

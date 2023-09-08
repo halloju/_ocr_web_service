@@ -1,12 +1,12 @@
-from app import response_table
 from app.exceptions import MlaasRequestError, CustomException
 from app.schema.common import Response
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from starlette.requests import Request
 from route_utils import async_call_mlaas_function
 
 router = APIRouter()
 # logger = Logger(__name__)
+
 
 @router.delete("/delete_template/{template_id}")
 async def delete_template(template_id: str, request: Request):

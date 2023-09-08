@@ -86,4 +86,5 @@ def get_application():
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     return app
 
+
 app = get_application()

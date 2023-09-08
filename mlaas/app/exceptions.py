@@ -15,5 +15,6 @@ class ImageTypeError(Exception):
 
 def exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
-        status_code=exc.status_code, content={"error": True, "msg": exc.message}
+        status_code=exc.status_code, content={
+            "error": True, "msg": exc.message}
     )

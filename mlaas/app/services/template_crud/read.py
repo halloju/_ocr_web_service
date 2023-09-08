@@ -58,7 +58,8 @@ def get_template_detail(template, db: Session):
             TemplateInfo.creation_time,
             TemplateInfo.expiration_time).filter(TemplateInfo.template_id == template_id)
         if not template_detail.first():
-            raise CustomException(status_code=400, message="template_detail is not found")
+            raise CustomException(
+                status_code=400, message="template_detail is not found")
         detail_dict = jsonable_encoder(template_detail.first())
         template_detail = {
             "image": image_base64,
@@ -71,5 +72,5 @@ def get_template_detail(template, db: Session):
         return template_detail
     except Exception as e:
         logger.error("error: {}".format(e))
-        raise CustomException(status_code=424, message=f"查無此 template_id: {template_id}")
-
+        raise CustomException(
+            status_code=424, message=f"查無此 template_id: {template_id}")

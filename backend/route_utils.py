@@ -39,11 +39,14 @@ def get_mode_conn_info(project, mode, action):
         }
     return action, connection_url, headers
 
+
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
     log_act = 'call_mlaas_function'
-    logger.info({log_act: {'action': action, 'request_id': request['request_id']}})
+    logger.info(
+        {log_act: {'action': action, 'request_id': request['request_id']}})
     with httpx.Client(verify=False) as client:
-        action, connection_url, headers = get_mode_conn_info(project, os.environ.get('MODE'), action)
+        action, connection_url, headers = get_mode_conn_info(
+            project, os.environ.get('MODE'), action)
 
         try:
             inp_post_response = client.post(
@@ -76,9 +79,11 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
 
 async def async_call_mlaas_function(request, action: str, project, logger, timeout=5):
     log_act = 'async_call_mlaas_function'
-    logger.info({log_act: {'action': action, 'request_id': request['request_id']}})
+    logger.info(
+        {log_act: {'action': action, 'request_id': request['request_id']}})
     async with httpx.AsyncClient(verify=False) as client:
-        action, connection_url, headers = get_mode_conn_info(project, os.environ.get('MODE'), action)
+        action, connection_url, headers = get_mode_conn_info(
+            project, os.environ.get('MODE'), action)
 
         try:
             inp_post_response = await client.post(
@@ -111,6 +116,7 @@ async def async_call_mlaas_function(request, action: str, project, logger, timeo
 
 def get_redis_filename(image_id: str) -> str:
     return f'celery-upload-img-meta-{image_id}'
+
 
 def get_redis_taskname(task_id: str) -> str:
     return f'celery-task-meta-{task_id}'

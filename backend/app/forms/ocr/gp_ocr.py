@@ -1,5 +1,4 @@
 from typing import List
-from urllib import request
 from app.schema.ocr.gp_ocr import GpocrUpload, GpocrPredict
 
 
@@ -19,6 +18,7 @@ class GpocrUploadForm:
         if not self.errors:
             return True
         return False
+
 
 class GpocrPredictForm:
     def __init__(self, request: GpocrPredict):

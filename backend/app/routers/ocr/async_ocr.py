@@ -1,6 +1,5 @@
 from fastapi import APIRouter, File, Form, Request, UploadFile, Depends
 from pydantic.typing import List
-from logger import Logger
 from app.service.ocr.async_ocr_task import AsyncPredictTask
 from fastapi.responses import JSONResponse
 from route_utils import get_redis
@@ -18,7 +17,8 @@ async def cv_upload(request: Request, image_class: str = Form(...), files: List[
     tasks = []
     action = 'cv-ocr'
     logger = request.state.logger
-    logger.info({action: {'upload_file_num': len(files), 'image_class': image_class}})
+    logger.info(
+        {action: {'upload_file_num': len(files), 'image_class': image_class}})
     try:
         for file in files:
             try:
@@ -28,8 +28,10 @@ async def cv_upload(request: Request, image_class: str = Form(...), files: List[
                 logger.error({'error_msg': str(ex)})
                 task_id = task.get('task_id', '')
                 image_id = task.get('image_id', '')
-                logger.error({'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
-                tasks.append({'task_id': task_id, 'status': 'ERROR', 'url_result': f'/ocr/result/{task_id}'})
+                logger.error(
+                    {'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
+                tasks.append({'task_id': task_id, 'status': 'ERROR',
+                             'url_result': f'/ocr/result/{task_id}'})
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
         logger.error({'error_msg': str(ex)})

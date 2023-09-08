@@ -6,10 +6,10 @@ from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplat
 from app.forms.template_crud.update import UpdateTemplateForm
 from route_utils import async_call_mlaas_function
 from app.exceptions import MlaasRequestError
-from app import response_table
 from starlette.requests import Request
 
 router = APIRouter()
+
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)
 async def update_template(data: UpdateTemplateRequest, request: Request):
@@ -22,7 +22,7 @@ async def update_template(data: UpdateTemplateRequest, request: Request):
     form = UpdateTemplateForm(data)
     await form.load_data()
     if await form.is_valid():
-        
+
         inputs = {
             'user_id': user_id,
             'template_id': form.template_id,

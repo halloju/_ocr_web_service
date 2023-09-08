@@ -20,7 +20,8 @@ Input, Output = mlaas_item_generator('CV', CVInputs, CVOutputs)
 router = APIRouter()
 
 
-@router.post("/upload", response_model=Output, responses=http_responses)  # responses={},
+# responses={},
+@router.post("/upload", response_model=Output, responses=http_responses)
 async def callback(request: Input):
     '''
     cv mlaas api
@@ -48,7 +49,8 @@ async def callback(request: Input):
             'status_code': req_data['request_id'],
             'status_msg': status_dict[req_data['request_id']]
         }
-        output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+        output.update(response_time=end_time,
+                      duration_time=duration_time, outputs=result)
         return Output(**output)
 
     end_time = time.time()
@@ -59,6 +61,6 @@ async def callback(request: Input):
         'status_msg': 'OK',
         'predict_class': 'ID_BACK'
     }
-    output.update(response_time=end_time, duration_time=duration_time, outputs=result)
+    output.update(response_time=end_time,
+                  duration_time=duration_time, outputs=result)
     return Output(**output)
-

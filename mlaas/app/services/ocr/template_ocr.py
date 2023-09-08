@@ -41,9 +41,12 @@ def template_ocr(template_ocr_info, db: Session):
             raise ImageTypeError(type(img_pil).__name__)
         img_arr = np.array(img_pil.convert('RGB'))
         img_width, img_height = img_arr.shape[:2]
-        random_points = [(random.randint(0, img_width), random.randint(0, img_height)) for times in range(3)]
-        max_random_points = [(random.randint(point_width, img_width), random.randint(point_height, img_height)) for point_width, point_height in random_points]
-        text_list = ['2023.01.16', template_ocr_info.model_name, template_ocr_info.template_id]
+        random_points = [(random.randint(0, img_width), random.randint(
+            0, img_height)) for times in range(3)]
+        max_random_points = [(random.randint(point_width, img_width), random.randint(
+            point_height, img_height)) for point_width, point_height in random_points]
+        text_list = ['2023.01.16', template_ocr_info.model_name,
+                     template_ocr_info.template_id]
         fake_ocr_results = []
         for i in range(3):
             fake_ocr_results.append({
@@ -85,4 +88,5 @@ def template_ocr(template_ocr_info, db: Session):
         raise CustomException(status_code=424, message="[DB Error] 請聯絡管理者")
     except ImageTypeError as e:
         logger.error("image type error:{}".format(e))
-        raise ImageTypeError(status_code=5402, message="上傳圖片格式錯誤，請確認上傳檔案格式是否為 .jpg, .png")
+        raise ImageTypeError(
+            status_code=5402, message="上傳圖片格式錯誤，請確認上傳檔案格式是否為 .jpg, .png")
