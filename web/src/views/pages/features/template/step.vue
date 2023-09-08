@@ -218,7 +218,8 @@ export default {
                         [box.x + box.width * box.scaleX, box.y],
                         [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
                         [box.x, box.y + box.height * box.scaleY]
-                    ]
+                    ],
+                    filters: ['tchinese', 'english', 'number', 'symbol']
                 });
             });
 
