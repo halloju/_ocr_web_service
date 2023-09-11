@@ -27,6 +27,10 @@ class PointDict(BaseModel, extra=Extra.forbid):
         title='框的點位',
         example=[[0, 0], [100, 0], [100, 100], [0, 100]]
     )
+    filters: List = Field(
+        title="框種累",
+        example=['tchinese']
+    )
 
 
 class AvailableTemplates(BaseModel):
