@@ -1,7 +1,6 @@
 import logging
 import logging.config as log_config
 from datetime import datetime
-import sys
 import yaml
 import os
 

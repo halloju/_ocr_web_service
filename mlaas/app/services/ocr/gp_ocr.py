@@ -46,7 +46,7 @@ def gp_ocr(ocr_image_info, db: Session):
             0, img_height)) for times in range(3)]
         max_random_points = [(random.randint(point_width, img_width), random.randint(
             point_height, img_height)) for point_width, point_height in random_points]
-        text_list = ['2023.01.16', ocr_image_info.model_name,
+        text_list = ['2023.01.16', 'fake_model_name',
                      ocr_image_info.image_complexity]
         fake_ocr_results = []
         for i in range(3):

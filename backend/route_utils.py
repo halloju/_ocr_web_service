@@ -43,7 +43,8 @@ def get_mode_conn_info(project, mode, action):
 def call_mlaas_function(request, action: str, project, logger, timeout=5):
     log_act = 'call_mlaas_function'
     logger.info(
-        {log_act: {'action': action, 'request_id': request['request_id']}})
+        {log_act: {'action': action, 'request_id': request['request_id'], 'request_input_keys': list(request['inputs'].keys())}})
+
     with httpx.Client(verify=False) as client:
         action, connection_url, headers = get_mode_conn_info(
             project, os.environ.get('MODE'), action)
@@ -68,11 +69,11 @@ def call_mlaas_function(request, action: str, project, logger, timeout=5):
             }})
             raise CustomException(None, str(exc)) from exc
 
-        # logger.info({log_act: {
-        #     'status_code': inp_post_response.status_code,
-        #     'connection_url': connection_url,
-        #     'request_input_keys': list(request['inputs'].keys())
-        # }})
+        logger.info({log_act: {
+            'status_code': inp_post_response.status_code,
+            'connection_url': connection_url,
+            'request_input_keys': list(request['inputs'].keys())
+        }})
 
         return get_mlaas_result(logger, inp_post_response.json())
 

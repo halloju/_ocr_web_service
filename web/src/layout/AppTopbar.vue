@@ -73,15 +73,10 @@ const logout = () => {
 
 <template>
     <nav style="width: calc(100% + 10px)">
-        <!-- <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
-    </button> -->
-
         <div id="navPageLogo">
-            <a href="/"><img src="images/logo_white_esun.svg" title="玉山銀行E.SUN Bank" /></a>
+            <a href="/"><img src="/esun_images/logo_white_esun.svg" title="玉山銀行E.SUN Bank" /></a>
         </div>
         <div id="navPageTitle">｜智能OCR服務</div>
-        <!-- <h6  style="margin: 0;"> {{version}} </h6>  -->
 
         <div id="navFunctionContainer">
             <div class="navFunction iconBtn" id="navLogoutContainer">

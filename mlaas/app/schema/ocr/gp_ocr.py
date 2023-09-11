@@ -1,6 +1,6 @@
 import os
 from typing import Optional, List
-from pydantic import BaseModel, Field, StrictStr, validator, Extra
+from pydantic import BaseModel, Field, StrictStr, validator, Extra, conlist
 from app.schema.common import img_base64_string
 
 
@@ -20,23 +20,12 @@ class GpocrRequest(BaseModel):
         ''',
         example='medium'
     )
-    model_name: Optional[StrictStr] = Field(
-        default='dbnet_v0+cht_ppocr_v1',
-        title='文字辨識模型名稱',
-        description='''
-        格式為: det_model+rec_model
-        e.g., dbnet_v0+cht_ppocr_v1
-
-        目前可使用的detection模型:
-        dbnet_v0(中文＋英文模型)
-
-        目前可使用的recognition模型:
-        cht_ppocr_v1(繁體中文模型)
-        en_ppocr_v0(英文模型)
-        ''',
-        example='dbnet_v0+cht_ppocr_v1'
+    filters: conlist(StrictStr, min_items=1) = Field(
+        title='框的過濾器',
+        example=['tchinese', 'english', 'number', 'symbol'],
+        default=['tchinese', 'english', 'number', 'symbol']
     )
-
+    
     @validator("image", allow_reuse=True)
     def image_check(cls, v):
         if v == '':
@@ -47,12 +36,6 @@ class GpocrRequest(BaseModel):
     def image_complexity_check(cls, v):
         if v not in ['medium', 'high']:
             raise ValueError("影像複雜度僅可為 medium 或 high")
-        return v
-
-    @validator("model_name", allow_reuse=True)
-    def model_name_check(cls, v):
-        if len(v.split("+")) != 2:
-            raise ValueError("model_name 格式為: det_model+rec_model")
         return v
 
 

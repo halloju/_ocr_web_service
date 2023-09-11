@@ -14,7 +14,7 @@ export default {
             required: true
         },
         selectedModel: {
-            type: String
+            type: Object
         },
         useLanguage: {
             type: Boolean,
@@ -70,7 +70,11 @@ export default {
             const formData = new FormData();
             if (props.useLanguage) {
                 formData.append('image_complexity', props.imageComplexity);
-                formData.append('model_name', props.selectedModel);
+                // formData.append('filters', props.selectedModel);
+                // Split the string by commas and append each item separately
+                props.selectedModel.forEach((filter) => {
+                    formData.append('filters', filter);
+                });
                 formData.append('template_id', store.state.template_id);
             }
             if (props.imageClass) {
