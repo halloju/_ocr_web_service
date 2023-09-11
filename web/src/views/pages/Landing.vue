@@ -88,7 +88,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 750px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2));
@@ -112,7 +112,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 750px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
@@ -145,7 +145,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 500px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(145, 210, 204, 0.2));
@@ -169,7 +169,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 500px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
@@ -193,7 +193,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 500px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
@@ -226,7 +226,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 750px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(145, 210, 204, 0.2));
@@ -250,7 +250,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 750px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
@@ -283,7 +283,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 500px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(145, 210, 204, 0.2));
@@ -307,7 +307,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 500px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
@@ -331,7 +331,7 @@ export default {
                         <div
                             style="
                                 height: 160px;
-                                width: 500px;
+                                width: 100%;
                                 padding: 2px;
                                 border-radius: 10px;
                                 background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
