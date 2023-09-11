@@ -119,7 +119,7 @@ services:
     worker:
       container_name: worker
       build: ./backend
-      command: celery worker --app=worker.celery --concurrency=8 -P gevent -l info
+      command: celery --app=worker.celery worker --concurrency=8 -P gevent -l info
       volumes:
         - ./backend:/code
         - ./log:/code/app/logger
