@@ -87,13 +87,20 @@ export default {
         this.isFinalStep();
     },
     setup() {
-        onBeforeRouteLeave((to, from) => {
+        onBeforeRouteLeave((to, from, next) => {
             if (to.path != '/features/general/model-list') {
-                const answer = window.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?');
-                if (!answer) {
+                ElMessageBox.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?', '警告', {
+                    confirmButtonText: '確定',
+                    cancelButtonText: 'Cancel',
+                    type: 'error',
+                    center: true
+                }).then(() => {
                     sessionStorage.clear();
-                    return false;
-                }
+                    next();
+                }).catch(()=>{
+                    next(false);
+                })
+
             }
         });
         const { rectangleTypes } = useAnnotator();
