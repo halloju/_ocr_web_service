@@ -69,7 +69,7 @@ async def process(request: Request, image_complexity: str = Form(...), filters: 
 
 
 @router.post("/template_ocr", summary="模板辨識")
-async def process(request: Request, model_name: str = Form(...), template_id: str = Form(...), files: List[UploadFile] = File(...)):
+async def process(request: Request, template_id: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'template_ocr'
     logger = request.state.logger

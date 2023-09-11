@@ -70,12 +70,9 @@ export default {
             const formData = new FormData();
             if (props.useLanguage) {
                 formData.append('image_complexity', props.imageComplexity);
-                // formData.append('filters', props.selectedModel);
-                // Split the string by commas and append each item separately
                 props.selectedModel.forEach((filter) => {
                     formData.append('filters', filter);
                 });
-                formData.append('template_id', store.state.template_id);
             }
             if (props.imageClass) {
                 formData.append('image_class', props.imageClass);
@@ -83,6 +80,7 @@ export default {
             fileList.value.forEach((file) => {
                 formData.append('files', file.raw);
             });
+            formData.append('template_id', store.state.template_id);
             // predict_images
             try {
                 const response = await apiClient.post(props.apiUrl, formData, {
