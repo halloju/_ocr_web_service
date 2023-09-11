@@ -405,7 +405,7 @@ export default {
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->
-                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" />
+                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" class="selectButton"/>
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                         <Annotation
@@ -442,6 +442,10 @@ export default {
     justify-content: space-between;
     margin-bottom: 20px;
     margin-top: 20px;
+}
+.selectButton ::v-deep .p-button {
+    background-color: #c5e0e0 !important;
+    padding:  5px;
 }
 
 .p-buttonset {
