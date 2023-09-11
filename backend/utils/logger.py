@@ -37,14 +37,17 @@ def config_logging(filename='utils/log_config.yml'):
 
 
 class Logger(object):
-    def __init__(self, section_name, uid, rid, project_name='gp_web') -> None:
+    def __init__(self, section_name, uid=None, rid=None, project_name='gp_web') -> None:
         config_logging()
         logging.setLoggerClass(CustomLogger)
         self.logger = logging.getLogger(project_name)
         self.section_name = section_name
-        self.uid = uid
-        self.rid = rid
-        self.log_dict = dict()
+        self.manual_log = {}
+        if uid:
+            self.manual_log['uid'] = uid
+        if rid:
+            self.manual_log['rid'] = rid
+
 
     def check_msg(self, log_msg):
         if isinstance(log_msg, dict):
@@ -58,8 +61,7 @@ class Logger(object):
             "file": caller_info[0],
             "line": caller_info[1],
             "function": caller_info[2],
-            "uid": self.uid,
-            "rid": self.rid,
+            **self.manual_log,
             self.section_name: self.check_msg(log_msg)
         }
         getattr(self.logger, level)(log_entry)
