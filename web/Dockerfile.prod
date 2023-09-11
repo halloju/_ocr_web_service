@@ -1,14 +1,17 @@
-# Stage 1: Build the web application
-FROM node:14-alpine AS builder
+FROM 70804/if_web_nodejs:16.17.0 as builder
+
 WORKDIR /app
 
-COPY package*.json /app/
-RUN npm config set unsafe-perm true
-RUN npm install --force
+COPY additional_package*.json /app/
 
-# Set up environment variables
-ARG VITE_APP_VERSION
-ENV VITE_APP_VERSION=$VITE_APP_VERSION
+# RUN npm config set unsafe-perm true
+RUN cat additional_package.json | jq -r '.dependencies | keys | .[]' | xargs npm install --save
+
+# RUN npm install --force
+
+# Set environment variables using the ARG values
+ENV VITE_API_URL=http://localhost/backend/
+ENV TITLE='智能OCR服務'
 
 # Copy the rest of the application
 COPY . /app
