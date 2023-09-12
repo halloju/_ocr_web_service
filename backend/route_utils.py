@@ -27,11 +27,14 @@ def get_mlaas_result(logger, res: dict) -> Optional[dict]:
 def get_mode_conn_info(project, mode, action):
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
     headers = {}
+    version = 'v1'
+    if project == 'GP':
+        version = 'v2'
     if mode == 'dev':
         connection_url = f'{mlaas_url}/{action}'
     else:
         action = action.split('/')[1]
-        connection_url = f'{mlaas_url}/{action}/v1'
+        connection_url = f'{mlaas_url}/{action}/{version}'
         headers = {
             'X-Client-Id': os.environ.get('MLAAS_XClient'),
             'Authorization': os.environ.get('MLAAS_JWT'),
