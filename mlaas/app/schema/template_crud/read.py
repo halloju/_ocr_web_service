@@ -29,7 +29,7 @@ class PointDict(BaseModel, extra=Extra.forbid):
         example=[[0, 0], [100, 0], [100, 100], [0, 100]]
     )
     filters: List = Field(
-        title="框種累",
+        title="框的過濾器",
         example=['tchinese']
     )
 
