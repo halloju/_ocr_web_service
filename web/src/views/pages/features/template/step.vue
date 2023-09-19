@@ -94,13 +94,16 @@ export default {
                     cancelButtonText: 'Cancel',
                     type: 'error',
                     center: true
-                }).then(() => {
-                    sessionStorage.clear();
-                    next();
-                }).catch(()=>{
-                    next(false);
                 })
-
+                    .then(() => {
+                        sessionStorage.clear();
+                        next();
+                    })
+                    .catch(() => {
+                        next(false);
+                    });
+            } else {
+                next();
             }
         });
         const { rectangleTypes } = useAnnotator();
@@ -278,7 +281,12 @@ export default {
                             roundButton: true
                         });
                         this.clearState();
-                        this.$router.push({ path: '/features/general/model-list' });
+                        console.log(res.data);
+                        this.$router.push({ name: 'ModelList' }).catch((err) => {
+                            console.log(err);
+                        });
+
+                        console.log('success');
                     } else {
                         ElMessageBox.confirm('', '失敗', {
                             confirmButtonText: '確定',
@@ -430,7 +438,9 @@ export default {
                         <button class="uiStyle sizeS btnGreen" @click="toggleEditSave">
                             {{ buttonText }}
                         </button>
+                        <div class="p-fluid" v-if="this.isFinal"></div>
                     </div>
+                    <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
                     <h4 style="margin-right: 10px">使用高精準度模型：</h4>
@@ -479,68 +489,7 @@ export default {
                 提交
             </button>
         </div>
-
-        <!-- <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="this.tooltip_text" type="success">下一步</el-button> -->
     </div>
-
-    <!-- <div class="grid p-fluid">
-        <div class="col-12">
-            <div class="card card-w-title">
-                <el-breadcrumb>
-                    <el-breadcrumb-item :to="{ path: '/' }">首頁</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{ name: 'ModelList' }">模板辨識</el-breadcrumb-item>
-                    <el-breadcrumb-item>模板編輯</el-breadcrumb-item>
-                </el-breadcrumb>
-                <br />
-                <el-steps :active="currentStep" align-center>
-                    <el-step title="模板圖檔上傳" />
-                    <el-step title="文字位置標註" />
-                    <el-step title="方塊位置標註" />
-                    <el-step title="遮罩位置標註" />
-                    <el-step title="確認" />
-                </el-steps>
-                <br />
-                <div class="grid">
-                    <div class="col-12">
-                        <h5>{{ this.pageTitle[this.currentStep - 1]  }}</h5>
-                        <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
-                        <img :src="this.pageImg[this.currentStep - 1]" height="200"/>
-                        <img v-if="this.currentStep == 0" :src="this.imageSource" class="img-fluid" />
-                    </div>
-                    <div class="col-6">
-                        <el-button v-if="currentStep != 0" class="pi p-button-warning" @click="previous" v-tooltip="'返回上一步'" type="warning">上一步</el-button>
-                        <el-button v-if="!this.isFinal" :class="{ 'pi p-button-success': !isEditing, 'pi p-button-fail': isEditing }" @click="next" v-tooltip="this.tooltip_text" type="success">下一步</el-button>
-                        <el-button v-else class="pi p-button-success" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
-                            提交
-                        </el-button>
-                    </div>
-                    <div class="col-6">
-                        <div class="input-wrapper">
-                            <span class="w-50">模板名稱：</span>
-                            <el-input v-model="this.input" placeholder="模板名稱" :disabled="disableInput" />
-                            <el-button type="primary" @click="toggleEditSave">{{ buttonText }}</el-button>
-                        </div>
-                    </div>
-                    <div class="p-fluid" v-if="this.isFinal"></div>
-                </div>
-                <router-view />
-            </div>
-        </div>
-    </div>
-    <div v-if="currentStep > 0" class="grid p-fluid">
-        <div class="col-12">
-            <div class="card">
-                <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="editMode" dataCallback="" initialDataId="" image_cv_id="" :rectangleType="rectangleType" :localStorageKey="localStorageKey" :setShowText="true" height="600" :justShow="true" />
-            </div>
-        </div>
-    </div>
-    <div v-else class="grid p-fluid">
-        <div class="col-12">
-            <div class="card">
-                <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
-            </div>
-        </div>
-    </div> -->
 </template>
 
 <style scoped>
