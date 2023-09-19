@@ -235,10 +235,24 @@ export default {
 
             if (this.boxes.length === 0) {
                 this.$message({
-                    message: '請至少標註一個方塊',
+                    message: '請至少標註一個方塊/文字',
                     type: 'warning'
                 });
                 return;
+            } else {
+                var num = 0;
+                for ( var box of this.boxes) {
+                    if (box['type'] === 'mask') {
+                        num++;
+                    }
+                }
+                if (num == this.boxes.length) {
+                    this.$message({
+                        message: '請至少標註一個方塊/文字',
+                        type: 'warning'
+                    });
+                    return;
+                }
             }
 
             let body;
@@ -281,7 +295,6 @@ export default {
                             roundButton: true
                         });
                         this.clearState();
-                        console.log(res.data);
                         this.$router.push({ name: 'ModelList' }).catch((err) => {
                             console.log(err);
                         });
