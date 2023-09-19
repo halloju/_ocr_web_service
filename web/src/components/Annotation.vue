@@ -462,7 +462,7 @@ export default {
 </script>
 <template>
     <div class="outer-box">
-        <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
+        <div :id="containerId" :class="containerClass" :style="{ width: width, height: height }">
             <div class="pa-canvas" :ref="'main'">
                 <div class="pa-controls">
                     <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
@@ -534,7 +534,6 @@ export default {
   display: grid
   grid-template-columns: 3fr 1fr
   overflow: hidden
-  width: 1200px
 .pa-containerVert
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid

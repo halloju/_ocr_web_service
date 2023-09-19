@@ -481,7 +481,7 @@ export default {
                         :rectangleType="rectangleType"
                         :localStorageKey="localStorageKey"
                         :setShowText="true"
-                        height="600"
+                        height="40vh"
                         :justShow="true"
                     />
                 </div>
@@ -494,7 +494,7 @@ export default {
                 </div>
             </div>
         </div>
-        <div style="display: flex; justify-content: center; align-items: space-between; margin-bottom: 20px; margin-top: 20px">
+        <div style="display: flex; justify-content: center; align-items: space-between; margin-bottom: 20px; margin-top: 0rem">
             <button v-if="currentStep !== 0" class="uiStyle sizeM btnGreen minLength" @click="previous" style="margin-right: 20px">上一步</button>
             <button v-if="currentStep !== 0" class="uiStyle sizeM btnDarkBlue minLength" @click="cancel" style="margin-right: 20px">取消新增</button>
             <button v-if="!this.isFinal" class="uiStyle sizeM btnGreen minLength" @click="next" style="margin-right: 20px">下一步</button>
