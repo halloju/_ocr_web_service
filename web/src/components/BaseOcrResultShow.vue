@@ -235,6 +235,7 @@ export default {
         });
 
         return {
+            selectedRows,
             containerId,
             imageSrc,
             width,
@@ -302,9 +303,10 @@ export default {
             <h6 style="margin: 0; flex: 1">辨識結果</h6>
             <div style="display: grid; place-items: center">
                 <div class="formBtnContainer">
-                    <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="isUploadDisabled">
+                    <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="selectedRows.length <= 0">
                         {{ downloadButtonText }}
                     </button>
+                    
                 </div>
             </div>
         </div>
