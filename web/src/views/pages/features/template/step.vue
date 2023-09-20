@@ -4,7 +4,6 @@ import { onBeforeRouteLeave } from 'vue-router';
 import { mapState } from 'vuex';
 import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
-import BaseUploadImage from '@/components/BaseUploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 import img2 from '@/assets/img/create_template_step2.jpg';
@@ -15,8 +14,7 @@ import { error_table, default_error_msg } from '@/constants.js';
 export default {
     components: {
         Annotation,
-        UploadImage,
-        BaseUploadImage
+        UploadImage
     },
     name: 'SelfDefine',
     props: {
@@ -420,14 +418,6 @@ export default {
 </script>
 <template>
     <div class="layoutZoneContainer">
-        <div class="breadcrumbContainer">
-            <ul>
-                <li :to="{ path: '/' }">首頁</li>
-                <li>通用辨識</li>
-                <li :to="{ name: 'ModelList' }">模板辨識</li>
-                <li class="now">新增模板</li>
-            </ul>
-        </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
             <h5>新增辨識模板</h5>
             <div style="flex: 1; text-align: center">

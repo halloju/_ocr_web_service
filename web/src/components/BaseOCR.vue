@@ -1,13 +1,11 @@
 <script>
 import BaseUploadImage from '@/components/BaseUploadImage.vue';
 import BaseOcrResultShow from '@/components/BaseOcrResultShow.vue';
-import BreadCrumb from '@/components/BreadCrumb.vue';
 
 export default {
     components: {
         BaseUploadImage,
-        BaseOcrResultShow,
-        BreadCrumb
+        BaseOcrResultShow
     },
     name: 'BaseOCR',
     props: {
@@ -79,7 +77,6 @@ export default {
 
 <template>
     <div class="layoutZoneContainer">
-        <BreadCrumb :items="breadcrumbItems" />
 
         <!-- Title -->
         <div v-if="step == 1" style="margin-bottom: 20px; margin-top: 20px">

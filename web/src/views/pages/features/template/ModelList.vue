@@ -12,7 +12,6 @@ import { handleErrorMsg } from '@/mixins/useCommon.js';
 import { Delete, Edit, Download, Pointer, View } from '@element-plus/icons-vue';
 import EditableRow from '@/components/EditableRow.vue';
 import ActionColumn from '@/components/ActionColumn.vue';
-import BreadCrumb from '@/components/BreadCrumb.vue';
 import SelectButton from 'primevue/selectbutton';
 
 const item = {
@@ -37,7 +36,6 @@ export default {
         Annotation,
         EditableRow,
         ActionColumn,
-        BreadCrumb,
         SelectButton
     },
     setup() {
@@ -367,7 +365,6 @@ export default {
 </script>
 <template>
     <div class="layoutZoneContainer">
-        <BreadCrumb :items="breadcrumbItems" />
 
         <div class="action-header">
             <h4 style="margin-bottom: 0px">模板列表</h4>

@@ -66,13 +66,6 @@ export default {
         }
     },
     computed: {
-        polygonPointsConfig() {
-            return {
-                points: this.polygonPoints,
-                ...this.getBaseShapeForPolygon(),
-                closed: true
-            };
-        },
         stageConfig() {
             return {
                 ...this.stageSize,

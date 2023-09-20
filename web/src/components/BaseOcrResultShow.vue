@@ -163,7 +163,6 @@ export default {
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
-            console.log('aaa');
             apiClient
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
@@ -306,7 +305,6 @@ export default {
                     <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="selectedRows.length <= 0">
                         {{ downloadButtonText }}
                     </button>
-                    
                 </div>
             </div>
         </div>
