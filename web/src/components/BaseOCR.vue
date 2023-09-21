@@ -19,7 +19,8 @@ export default {
         imageClass: String,
         defaultImgURL: Object,
         explanation: String,
-        file: Object
+        file: Object,
+        hasTitle: Boolean
     },
     methods: {
         nextStep(step) {
@@ -117,6 +118,6 @@ export default {
             :imageClass="imageClass"
             :defaultImgURL="defaultImgURL"
         />
-        <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" />
+        <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" :hasTitle="hasTitle" />
     </div>
 </template>

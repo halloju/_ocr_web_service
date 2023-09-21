@@ -26,7 +26,8 @@ export default {
         setShowText: {
             type: Boolean,
             default: false
-        }
+        },
+        hasTitle: Boolean
     },
     data() {
         return {
@@ -463,7 +464,7 @@ export default {
                     <hr />
                     <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
                     <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
+                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-on' : 'texts-off'" /></a>
                 </div>
                 <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
                 <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent" @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
@@ -505,6 +506,7 @@ export default {
                     :shapes="shapes"
                     :edit-mode="editMode"
                     :justShow="justShow"
+                    :hasTitle="hasTitle"
                     :selected-shape-name="selectedShapeName"
                     :current-hover-shape="currentHoverShape"
                     :rectangleType="rectangleType"

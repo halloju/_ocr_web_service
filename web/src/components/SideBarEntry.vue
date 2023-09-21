@@ -29,6 +29,9 @@ export default {
         },
         delete_shape: {
             type: Boolean
+        },
+        hasTitle: {
+            type: Boolean
         }
     },
     data() {
@@ -37,7 +40,8 @@ export default {
             // form data as copy
             formData: [],
             buttonText: this.editMode ? '欄位命名' : '欄位',
-            buttonTitle: this.justShow ? '區塊類型' : 'index'
+            buttonTitle: this.justShow ? '區塊類型' : 'index',
+            titleColumnName: '欄位名稱'
             // shouldBeDisabled: false
         };
     },
@@ -109,17 +113,23 @@ export default {
 <template>
     <div class="table-container">
         <el-table ref="myTable" :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row>
-            <!-- Annotation Title Column -->
+            <!-- Index Column -->
             <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
                 <template v-slot="scope">
-                    <span v-if="scope.row.annotation.title != '' && !justShow">{{ scope.row.annotation.title }}</span>
-                    <span v-else-if="!justShow" class="font-bold">{{ scope.$index }}.</span>
+                    <span v-if="!justShow" class="font-bold">{{ scope.$index }}.</span>
                     <span v-else>{{ scope.row.rectangleType }}.{{ scope.$index }}</span>
                 </template>
             </el-table-column>
 
+            <!-- Annotation Title Column -->
+            <el-table-column v-if="hasTitle" prop="annotation.title" :label="titleColumnName" :min-width="20">
+                <template v-slot="scope">
+                    <span>{{ scope.row.annotation.title }}</span>
+                </template>
+            </el-table-column>
+
             <!-- Form Column -->
-            <el-table-column :label="buttonText" :min-width="50" v-if="rectangleType != 'mask'">
+            <el-table-column :label="buttonText" :min-width="45" v-if="rectangleType != 'mask'">
                 <template v-slot="scope">
                     <!--  模板編輯 -->
                     <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)">{{ scope.row.annotation.title }}</el-input>

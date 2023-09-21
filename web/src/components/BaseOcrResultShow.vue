@@ -10,11 +10,15 @@ import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 
 export default {
+    props: {
+        hasTitle: Boolean
+    },
     components: {
         Annotation
     },
     name: 'BaseOcrResultShow',
     setup(props, { emit }) {
+        const hasTitle = ref(props.hasTitle);
         const { parseOcrDetail } = useAnnotator();
         const store = useStore();
 
@@ -264,7 +268,8 @@ export default {
             back,
             downloadFile,
             image_cv_id,
-            selectionChange
+            selectionChange,
+            hasTitle
         };
     },
     computed: {
@@ -330,7 +335,18 @@ export default {
         <div v-if="imageSrc !== null">
             <p>號碼：{{ num }}</p>
             <p>檔名：{{ file_name }}</p>
-            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" :dataCallback="callback" :initialData="initialData" initialDataId="" :image_cv_id="image_cv_id"></Annotation>
+            <Annotation
+                containerId="my-pic-annotation-output"
+                :imageSrc="imageSrc"
+                :editMode="false"
+                :width="width"
+                :height="height"
+                :dataCallback="callback"
+                :initialData="initialData"
+                initialDataId=""
+                :image_cv_id="image_cv_id"
+                :hasTitle="hasTitle"
+            ></Annotation>
         </div>
     </div>
 </template>

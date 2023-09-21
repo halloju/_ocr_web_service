@@ -473,6 +473,7 @@ export default {
                         :setShowText="true"
                         height="40vh"
                         :justShow="true"
+                        :hasTitle="false"
                     />
                 </div>
             </div>
