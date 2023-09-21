@@ -116,8 +116,8 @@ export default {
             <!-- Index Column -->
             <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
                 <template v-slot="scope">
-                    <span v-if="!justShow" class="font-bold">{{ scope.$index }}.</span>
-                    <span v-else>{{ scope.row.rectangleType }}.{{ scope.$index }}</span>
+                    <span v-if="!justShow" class="font-bold">{{ scope.$index + 1 }}</span>
+                    <span v-else>{{ scope.row.rectangleType }}.{{ scope.$index + 1 }}</span>
                 </template>
             </el-table-column>
 

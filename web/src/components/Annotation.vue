@@ -490,7 +490,7 @@ export default {
                                 @mouseleave="handleMouseLeave"
                                 @dragmove="handleDragMove"
                             />
-                            <v-text v-if="isShowText" :config="{ text: index, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                            <v-text v-if="isShowText" :config="{ text: index + 1, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                         </template>
                         <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
                     </v-layer>
