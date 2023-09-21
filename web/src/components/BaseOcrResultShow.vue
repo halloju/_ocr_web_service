@@ -21,7 +21,7 @@ export default {
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
         const width = ref('1200');
-        const height = ref(600);
+        const height = ref('600px');
         const dataCallback = ref('');
         const initialData = ref('');
         const initialDataId = ref(null);
