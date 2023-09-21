@@ -44,16 +44,16 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
 
 
 @router.post("/gp_ocr", summary="全文辨識")
-async def process(request: Request, image_complexity: str = Form(...), model_name: str = Form(...), files: List[UploadFile] = File(...)):
+async def process(request: Request, image_complexity: str = Form(...), filters: List[str] = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'gp_ocr'
     logger = request.state.logger
     logger.info({action: {'upload_file_num': len(
-        files), 'image_complexity': image_complexity, 'model_name': model_name}})
+        files), 'image_complexity': image_complexity, 'filters': filters}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action=action, input_params={'image_complexity': image_complexity, 'model_name': model_name})
+                task = await process_image(request, file, action=action, input_params={'image_complexity': image_complexity, 'filters': filters})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')
@@ -69,16 +69,16 @@ async def process(request: Request, image_complexity: str = Form(...), model_nam
 
 
 @router.post("/template_ocr", summary="模板辨識")
-async def process(request: Request, model_name: str = Form(...), template_id: str = Form(...), files: List[UploadFile] = File(...)):
+async def process(request: Request, template_id: str = Form(...), files: List[UploadFile] = File(...)):
     tasks = []
     action = 'template_ocr'
     logger = request.state.logger
     logger.info({action: {'upload_file_num': len(files),
-                'template_id': template_id, 'model_name': model_name}})
+                'template_id': template_id}})
     try:
         for file in files:
             try:
-                task = await process_image(request, file, action=action, input_params={'model_name': model_name, 'template_id': template_id})
+                task = await process_image(request, file, action=action, input_params={'template_id': template_id})
                 tasks.append(task)
             except Exception as ex:
                 task_id = task.get('task_id', '')

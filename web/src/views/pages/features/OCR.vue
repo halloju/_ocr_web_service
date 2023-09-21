@@ -28,7 +28,7 @@ export default {
             subtitle: '',
             description: '',
             apiUrl: '',
-            template_id: this.$store.state.template_id,
+            template_id: this.$store.state.template_id
         };
     },
     created() {
@@ -46,7 +46,7 @@ export default {
         this.category = ocrConfig.category;
         this.explanation = ocrConfig.explanation;
         this.file = ocrConfig.file;
-
+        this.hasTitle = ocrConfig.hasTitle;
     },
     watch: {
         $route(to, from) {
@@ -64,6 +64,7 @@ export default {
             this.category = ocrConfig.category;
             this.explanation = ocrConfig.explanation;
             this.file = ocrConfig.file;
+            this.hasTitle = ocrConfig.hasTitle;
         }
     },
     methods: {
@@ -82,7 +83,8 @@ export default {
                         limit: 20
                     },
                     explanation: '',
-                    file: null
+                    file: null,
+                    hasTitle: false
                 },
                 template: {
                     title: '模板辨識',
@@ -97,7 +99,8 @@ export default {
                         limit: 20
                     },
                     explanation: '',
-                    file: null
+                    file: null,
+                    hasTitle: true
                 },
                 remittance: {
                     title: '票據辨識',
@@ -112,7 +115,8 @@ export default {
                         limit: 1
                     },
                     explanation: '1.匯款序號 (remitno)<br/>2.匯款金額 (amount)<br/>3.收款帳號 (receiveacc)<br/>4.收款行帳號 (receivebank)<br/>5.匯款人 ID (remitterid)<br/>6.是否有附言 (remark)<br/>7.代理人 ID (agentid)',
-                    file: remittance_example
+                    file: remittance_example,
+                    hasTitle: true
                 },
                 check_front: {
                     title: '票據辨識',
@@ -127,7 +131,8 @@ export default {
                         limit: 1
                     },
                     explanation: '1.支票金額 (amount)<br/>2.支票到期日 (due_date)',
-                    file: check_front_example
+                    file: check_front_example,
+                    hasTitle: true
                 },
                 check_back: {
                     title: '票據辨識',
@@ -142,7 +147,8 @@ export default {
                         limit: 1
                     },
                     explanation: '帳號 (account)',
-                    file: check_back_example
+                    file: check_back_example,
+                    hasTitle: true
                 },
                 id: {
                     title: '人證辨識',
@@ -157,8 +163,9 @@ export default {
                         name: 'special',
                         limit: 1
                     },
-                    explanation: "1.姓名 (name)<br/>2.出生年月日 (date_of_birth)<br/>3.發證日期 (date_of_issue)<br/>4.發證地點 (place_of_issue)<br/>5.發證類別 (type_of_issue)<br/>6.性別 (sex)<br/>7.統一編號 (id_no)",
-                    file: id_example
+                    explanation: '1.姓名 (name)<br/>2.出生年月日 (date_of_birth)<br/>3.發證日期 (date_of_issue)<br/>4.發證地點 (place_of_issue)<br/>5.發證類別 (type_of_issue)<br/>6.性別 (sex)<br/>7.統一編號 (id_no)',
+                    file: id_example,
+                    hasTitle: true
                 },
                 driver_license: {
                     title: '人證辨識',
@@ -173,8 +180,9 @@ export default {
                         name: 'special',
                         limit: 1
                     },
-                    explanation: "1.駕照號碼 (id_no)<br/>2.姓名 (name)<br/>3.出生日期 (date_of_birth)",
-                    file: driver_example
+                    explanation: '1.駕照號碼 (id_no)<br/>2.姓名 (name)<br/>3.出生日期 (date_of_birth)',
+                    file: driver_example,
+                    hasTitle: true
                 },
                 health_insurance: {
                     title: '人證辨識',
@@ -189,8 +197,9 @@ export default {
                         name: 'special',
                         limit: 1
                     },
-                    explanation: "1.姓名 (name)<br/>2.身分證字號 (id_no)<br/>3.出生年月日 (date_of_birth)",
-                    file: health_example
+                    explanation: '1.姓名 (name)<br/>2.身分證字號 (id_no)<br/>3.出生年月日 (date_of_birth)',
+                    file: health_example,
+                    hasTitle: true
                 },
                 withholding: {
                     title: '財證辨識',
@@ -206,7 +215,8 @@ export default {
                         limit: 1
                     },
                     explanation: '1.扣繳單位統一編號 (company)<br/>2.所得人統一編號 (id)<br/>3.所得所屬起始年月 (start_date)<br/>4.所得所屬結束年月 (end_date)<br/>5.所得給付年度 (year)<br/>6.給付總額 (income)',
-                    file: ws_example
+                    file: ws_example,
+                    hasTitle: true
                 },
                 financial_statement: {
                     title: '財證辨識',
@@ -222,7 +232,8 @@ export default {
                         limit: 1
                     },
                     explanation: '1.財政年度 (year)<br/>2.清單種類 (title)<br/>3.顧客統一編號 (idValue)<br/>4.所得類別 (incomeType)<br/>5.公司統一編號 (company)<br/>6.所得額合計 (incomeValue)',
-                    file: fs_example
+                    file: fs_example,
+                    hasTitle: true
                 }
                 // Add more OCR types here
             };
@@ -234,6 +245,19 @@ export default {
 
 <template>
     <div>
-        <BaseOCR :apiUrl="apiUrl" :category="category" :title="title" :subtitle="subtitle" :description="description" :useModelComplexity="useModelComplexity" :useLanguage="useLanguage" :imageClass="imageClass" :defaultImgURL="defaultImgURL" :explanation="explanation" :file="file" />
+        <BaseOCR
+            :apiUrl="apiUrl"
+            :category="category"
+            :title="title"
+            :subtitle="subtitle"
+            :description="description"
+            :useModelComplexity="useModelComplexity"
+            :useLanguage="useLanguage"
+            :imageClass="imageClass"
+            :defaultImgURL="defaultImgURL"
+            :explanation="explanation"
+            :file="file"
+            :hasTitle="hasTitle"
+        />
     </div>
 </template>

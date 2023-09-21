@@ -12,7 +12,6 @@ import { handleErrorMsg } from '@/mixins/useCommon.js';
 import { Delete, Edit, Download, Pointer, View } from '@element-plus/icons-vue';
 import EditableRow from '@/components/EditableRow.vue';
 import ActionColumn from '@/components/ActionColumn.vue';
-import BreadCrumb from '@/components/BreadCrumb.vue';
 import SelectButton from 'primevue/selectbutton';
 
 const item = {
@@ -37,7 +36,6 @@ export default {
         Annotation,
         EditableRow,
         ActionColumn,
-        BreadCrumb,
         SelectButton
     },
     setup() {
@@ -367,11 +365,12 @@ export default {
 </script>
 <template>
     <div class="layoutZoneContainer">
-        <BreadCrumb :items="breadcrumbItems" />
 
         <div class="action-header">
-            <h5>模板列表</h5>
-            <esb-button @click="createTemplate" :text="buttonText" />
+            <h4 style="margin-bottom: 0px">模板列表</h4>
+            <button class="uiStyle sizeS subLength btnGreen" @click="createTemplate">
+                {{ buttonText }}
+            </button>
         </div>
 
         <el-table :data="formattedTableData" style="width: 100%" border>
@@ -403,7 +402,7 @@ export default {
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->
-                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" />
+                        <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" class="selectButton"/>
                     </div>
                     <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
                         <Annotation
@@ -440,6 +439,10 @@ export default {
     justify-content: space-between;
     margin-bottom: 20px;
     margin-top: 20px;
+}
+.selectButton ::v-deep .p-button {
+    background-color: #c5e0e0 !important;
+    padding:  5px;
 }
 
 .p-buttonset {

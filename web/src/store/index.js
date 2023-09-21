@@ -19,7 +19,7 @@ const store = new Vuex.Store({
     mutations: {
         GENERAL_IMAGE_OCR_RESULTS_UPDATE(state, payload) {
             state.general_upload_res[payload.item].ocr_results.data_results[payload.index].text = payload.text;
-          },
+        },
         templateNameUpdate: function (state, payload) {
             state.templateName = payload;
         },
@@ -50,19 +50,19 @@ const store = new Vuex.Store({
     },
     actions: {
         updateGeneralImageOcrResults({ commit, state }, { data, image_cv_id }) {
-          for (let i = 0; i < state.general_upload_res.length; i++) {
-            if (image_cv_id === state.general_upload_res[i].image_id) {
-              for (let j = 0; j < state.general_upload_res[i].ocr_results.data_results.length; j++) {
-                commit('GENERAL_IMAGE_OCR_RESULTS_UPDATE', {
-                  item: i,
-                  index: j,
-                  text: data[j].annotation.text
-                });
-              }
-              break;
+            for (let i = 0; i < state.general_upload_res.length; i++) {
+                if (image_cv_id === state.general_upload_res[i].image_id) {
+                    for (let j = 0; j < state.general_upload_res[i].ocr_results.data_results.length; j++) {
+                        commit('GENERAL_IMAGE_OCR_RESULTS_UPDATE', {
+                            item: i,
+                            index: j,
+                            text: data[j].annotation.text
+                        });
+                    }
+                    break;
+                }
             }
-          }
-        },
-      },
+        }
+    }
 });
 export default store;

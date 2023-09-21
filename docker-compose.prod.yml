@@ -31,27 +31,39 @@ services:
           MINIO_SECRET_KEY: admin123
         command: server --console-address ':9001' /data
         restart: always
+    nginx:
+        container_name: nginx
+        image: nginx:1.15-alpine
+        volumes:
+          - "./nginx:/etc/nginx/conf.d"
+          # - "/opt/letsencrypt/:/etc/nginx/ssl/"
+        ports:
+          - 80:80
+        depends_on:
+          - backend
+          - web
     web:
         container_name: web
-        image: halloju/if_gp_ocr_system_web:v1.0.19-test
-        # image: 70804/if_gp_ocr_system_web:v1.0.15-prod
-        # build:
-        #   context: ./web
-        #   dockerfile: Dockerfile.prod
-        #   args: 
-        #     - VITE_APP_VERSION=v1.0.14
+        # image: halloju/if_gp_ocr_system_web:v1.0.21-test
+        build: 
+          context: ./web
+          dockerfile: Dockerfile.dev
+        volumes:
+          - './web:/app'
+          - '/app/node_modules'
         ports:
-          - '80:80'
+          - '3000:3000'
         environment:
           - MODE=development
           - VITE_API_URL=http://localhost/backend/
           - SERVER_NAME=localhost
+        # volumes:
+        #   - ./web/imgs:/usr/share/nginx/html/assets/images
         depends_on:
           - backend
     backend:
         container_name: backend
-        # build: "backend/."
-        image: halloju/if_gp_ocr_system_backend:v1.0.23-uat
+        image: halloju/if_gp_ocr_system_backend:v1.0.23-test
         ports:
           - "5000:5000"
         command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
@@ -59,11 +71,7 @@ services:
           - ./log:/code/app/log
         environment:
           - MODE=dev
-          - CELERY_BROKER_URL=amqp://rabbitmq
-          - CELERY_RESULT_BACKEND=redis://redis:6379/0
-          - SAML_SP_ENTITY_ID=http://localhost:5000/saml/metadata
           - SAML_IDP_METADATA_URL=https://sso-test.iii.org.tw/idp/shibboleth
-          - LOCAL_REDIS_URL=redis://redis:6379/0
         env_file:
           - 'variable.env'
         depends_on:
@@ -100,14 +108,11 @@ services:
         - 15672:15672
     worker:
       container_name: worker
-      # build: ./backend
-      image: halloju/if_gp_ocr_system_backend:v1.0.23-uat
+      image: halloju/if_gp_ocr_system_backend:v1.0.23-test
       command: celery --app=worker.celery worker --concurrency=8 -P gevent -l info
       volumes:
         - ./log:/code/app/log
       environment:
-        - CELERY_BROKER_URL=amqp://rabbitmq
-        - CELERY_RESULT_BACKEND=redis://redis:6379/0
         - MODE=dev
       env_file:
         - 'variable.env'
@@ -117,8 +122,8 @@ services:
         - rabbitmq
     consumer:
       container_name: consumer
-      # build: ./backend
-      image: halloju/if_gp_ocr_system_backend:v1.0.23-uat
+      # image: halloju/if_gp_ocr_system_backend:v1.0.23-test
+      build: ./backend
       command: python project_consume.py cv_controller
       volumes:
         - ./backend:/code

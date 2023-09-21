@@ -225,7 +225,7 @@ export default {
         },
         toggleUpload() {
             console.log('toggleUpload');
-            this.showUpload = !this.showUpload
+            this.showUpload = !this.showUpload;
         },
         beforeUpload(file) {
             // Check file size && file type
@@ -243,17 +243,17 @@ export default {
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
                     sessionStorage.setItem('imageSource', f.target.result);
-                    console.log(sessionStorage.getItem('imageSource'))
+                    console.log(sessionStorage.getItem('imageSource'));
                     file.reader = f.target.result;
                 };
                 reader.readAsDataURL(file.raw);
             }
 
-            this.showUpload = !this.showUpload
+            this.showUpload = !this.showUpload;
         },
 
         handleRemove() {
-            this.showUpload = !this.showUpload
+            this.showUpload = !this.showUpload;
             sessionStorage.clear();
         },
 
@@ -281,72 +281,18 @@ export default {
 };
 </script>
 <template>
-    <div class="card" style="background-color: white;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+    <div class="card" style="background-color: white">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px">
             <h5>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</h5>
-            <button class="uiStyle sizeM btnGreen minLength" style="margin-right: 20px;"> 
+            <button class="uiStyle sizeM btnGreen minLength" style="margin-right: 20px">
                 選擇設定檔
                 <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
             </button>
         </div>
-        <el-upload
-            :file-list="fileList"
-            list-type="picture-card"
-            :on-change="beforeUpload"
-            :on-remove="handleRemove"
-            :auto-upload="false"
-            :limit="1"
-            accept="image/*"
-            :class="{ hideUpload: !showUpload }"
-        >
-            <el-icon ><Plus /></el-icon>
+        <el-upload :file-list="fileList" list-type="picture-card" :on-change="beforeUpload" :on-remove="handleRemove" :auto-upload="false" :limit="1" accept="image/*" :class="{ hideUpload: !showUpload }">
+            <el-icon><Plus /></el-icon>
         </el-upload>
     </div>
-    <!-- <div class="card" style="background-color: white;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <h5>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</h5>
-            <esb-button />
-        </div>
-        <el-upload
-            :file-list="fileList"
-            list-type="picture-card"
-            :on-change="beforeUpload"
-            :on-remove="handleRemove"
-            :on-exceed="handleExceed"
-            :auto-upload="false"
-            :on-preview="handlePictureCardPreview"
-            accept="image/*"
-        >
-            <el-icon ><Plus /></el-icon>
-        </el-upload>
-        <el-dialog v-model="dialogVisible" :width="dialogWidth">
-            <img :src="dialogImageUrl" alt="Uploaded Image Preview" @load="onLoadImg" :width="imgWidth" />
-        </el-dialog>
-    </div> -->
-
-    <!-- <div class="container col-12" :class="getClasses" @dragover.prevent="dragOver" @dragleave.prevent="dragLeave" @drop.prevent="drop($event)">
-        <div class="col-12 text-center">
-            <h1 class="mb-3">上傳圖檔</h1>
-        </div>
-        <div class="file-input-container">
-            <el-button>
-                選擇設定檔
-                <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
-            </el-button>
-        </div>
-        <el-button type="primary" @click="openfolder" class="pi p-button-outlined"> 選擇圖檔 </el-button>
-        <input type="file" accept="image/*" @change="selectImg" class="form-control-file" id="my-file" ref="inputFile" style="display: none" />
-        <div class="col-12 text-center" v-if="isOK && !wrongFile" :key="this.isFileUploaded">
-            <Image v-if="this.imageSource" :src="this.imageSource" alt="Image" width="500" preview />
-            <p class="mb-0 text-left">檔案名稱： {{ this.filename }}</p>
-            <p class="mb-0 text-left">檔案大小： {{ this.showFileSize }} KB</p>
-        </div>
-        <div class="my-content flex justify-content-center align-items-center" v-if="wrongFile" style="color: black; height: 500px; font-size: 25px">請上傳正確檔案格式</div>
-        <div class="my-content flex justify-content-center align-items-center" v-if="!isOK && !wrongFile" style="color: black; height: 500px; font-size: 25px">請拖曳圖片</div>
-    </div>
-    <div class="col-12 mt-3 text-center">
-        <el-button type="danger" @click="reset">清除圖檔</el-button>
-    </div> -->
 </template>
 <style scoped>
 .file-input-container {
@@ -394,7 +340,7 @@ input[type='file'] {
     cursor: pointer;
 }
 
-[class="hideUpload"] div {
-  display: none !important;
+[class='hideUpload'] div {
+    display: none !important;
 }
 </style>

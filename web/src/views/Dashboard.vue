@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 // import ProductService from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
 
@@ -115,6 +115,5 @@ watch(
 </script>
 
 <template>
-    <div class="grid">
-    </div>
+    <div class="grid"></div>
 </template>

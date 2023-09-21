@@ -61,9 +61,9 @@ const logout = () => {
     axios
         .get('/auth/slo')
         .then((res) => {
-            const url = res.data
-            window.location.href = url
-            this.$router.push('/')
+            const url = res.data;
+            window.location.href = url;
+            this.$router.push('/');
         })
         .catch((err) => {
             console.log(err);
@@ -72,22 +72,17 @@ const logout = () => {
 </script>
 
 <template>
-    <nav style="width: calc(100% + 10px);">
-        <!-- <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
-    </button> -->
-
-    <div id="navPageLogo">
-        <a href="/"><img src="images/logo_white_esun.svg" title="玉山銀行E.SUN Bank"></a>
-    </div>
-    <div id="navPageTitle">｜智能OCR服務</div>
-    <!-- <h6  style="margin: 0;"> {{version}} </h6>  -->
- 
-    <div id="navFunctionContainer">
-        <div class="navFunction iconBtn" id="navLogoutContainer">
-            <button class="uiStyle sizeS" id="btnNavLogout" @click="logout"></button>
+    <nav style="width: calc(100% + 10px)">
+        <div id="navPageLogo">
+            <a href="/"><img src="/esun_images/logo_white_esun.svg" title="玉山銀行E.SUN Bank" /></a>
         </div>
-    </div>
+        <div id="navPageTitle">｜智能OCR服務</div>
+
+        <div id="navFunctionContainer">
+            <div class="navFunction iconBtn" id="navLogoutContainer">
+                <button class="uiStyle sizeS" id="btnNavLogout" @click="logout"></button>
+            </div>
+        </div>
     </nav>
 </template>
 

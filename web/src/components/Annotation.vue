@@ -26,7 +26,8 @@ export default {
         setShowText: {
             type: Boolean,
             default: false
-        }
+        },
+        hasTitle: Boolean
     },
     data() {
         return {
@@ -66,13 +67,6 @@ export default {
         }
     },
     computed: {
-        polygonPointsConfig() {
-            return {
-                points: this.polygonPoints,
-                ...this.getBaseShapeForPolygon(),
-                closed: true
-            };
-        },
         stageConfig() {
             return {
                 ...this.stageSize,
@@ -462,7 +456,7 @@ export default {
 </script>
 <template>
     <div class="outer-box">
-        <div :id="containerId" :class="containerClass" :style="{ width: width + 'px', height: height + 'px' }">
+        <div :id="containerId" :class="containerClass" :style="{ width: width, height: height }">
             <div class="pa-canvas" :ref="'main'">
                 <div class="pa-controls">
                     <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
@@ -470,7 +464,7 @@ export default {
                     <hr />
                     <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
                     <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-off' : 'texts-on'" /></a>
+                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-on' : 'texts-off'" /></a>
                 </div>
                 <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
                 <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent" @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
@@ -496,7 +490,7 @@ export default {
                                 @mouseleave="handleMouseLeave"
                                 @dragmove="handleDragMove"
                             />
-                            <v-text v-if="isShowText" :config="{ text: index, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                            <v-text v-if="isShowText" :config="{ text: index + 1, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                         </template>
                         <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
                     </v-layer>
@@ -512,6 +506,7 @@ export default {
                     :shapes="shapes"
                     :edit-mode="editMode"
                     :justShow="justShow"
+                    :hasTitle="hasTitle"
                     :selected-shape-name="selectedShapeName"
                     :current-hover-shape="currentHoverShape"
                     :rectangleType="rectangleType"
@@ -534,7 +529,6 @@ export default {
   display: grid
   grid-template-columns: 3fr 1fr
   overflow: hidden
-  width: 1200px
 .pa-containerVert
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid

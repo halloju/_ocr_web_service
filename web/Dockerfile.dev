@@ -1,11 +1,10 @@
-FROM 70804/webbase:16.17.0
+FROM 70804/if_web_nodejs:16.17.0
 
 WORKDIR /app
 
 COPY additional_package*.json /app/
 
 # RUN npm config set unsafe-perm true
-RUN npm install vue@^3.2.45
 RUN cat additional_package.json | jq -r '.dependencies | keys | .[]' | xargs npm install --save
 
 # RUN npm install --force

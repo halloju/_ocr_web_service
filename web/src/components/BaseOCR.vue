@@ -1,13 +1,11 @@
 <script>
 import BaseUploadImage from '@/components/BaseUploadImage.vue';
 import BaseOcrResultShow from '@/components/BaseOcrResultShow.vue';
-import BreadCrumb from '@/components/BreadCrumb.vue';
 
 export default {
     components: {
         BaseUploadImage,
-        BaseOcrResultShow,
-        BreadCrumb
+        BaseOcrResultShow
     },
     name: 'BaseOCR',
     props: {
@@ -21,7 +19,8 @@ export default {
         imageClass: String,
         defaultImgURL: Object,
         explanation: String,
-        file: Object
+        file: Object,
+        hasTitle: Boolean
     },
     methods: {
         nextStep(step) {
@@ -30,18 +29,18 @@ export default {
         reset() {
             this.imageUploadKey += 1;
             this.step = 1;
+        },
+        toggleSwitch() {
+            this.switchValue = !this.switchValue;
         }
     },
     data() {
         return {
             step: 1,
             imageComplexity: 'medium',
-            selectedModel: 'dbnet_v0+cht_ppocr_v1',
+            selectedModel: ['tchinese', 'english', 'number', 'symbol'],
             imageUploadKey: 0,
-            languages: [
-                { value: 'dbnet_v0+cht_ppocr_v1', text: '繁體中文 + 英數字' },
-                { value: 'dbnet_v0+en_ppocr_v0', text: '英數字' }
-            ],
+            languages: [{ value: ['tchinese', 'english', 'number', 'symbol'], text: '繁體中文 + 英數字' }],
             selectType: 'basic',
             placeholder: '繁體中文 + 英數字',
             type: 'switch',
@@ -67,7 +66,7 @@ export default {
             immediate: true
         },
         switchValue(newVal) {
-            if (newVal === 'true') {
+            if (newVal) {
                 this.imageComplexity = 'high';
             } else {
                 this.imageComplexity = 'medium';
@@ -79,7 +78,6 @@ export default {
 
 <template>
     <div class="layoutZoneContainer">
-        <BreadCrumb :items="breadcrumbItems" />
 
         <!-- Title -->
         <div v-if="step == 1" style="margin-bottom: 20px; margin-top: 20px">
@@ -87,12 +85,21 @@ export default {
             <div style="display: flex; align-items: center">
                 <p v-if="useLanguage" style="margin-right: 2px; color: red">*</p>
                 <div v-if="useLanguage" style="display: flex; align-items: center; margin-right: 20px">
-                    <h4 style="margin-right: 10px">選擇語言：</h4>
-                    <esb-select :selectType="selectType" :options="languages" :placeholder="placeholder" v-model="selectedModel" />
+                    <h4 style="margin-right: 10px; margin-bottom: 0px">選擇語言：</h4>
+                    <div>
+                        <select class="selectField dropdownBtn" v-model="selectedModel">
+                            <option v-for="option in languages" :value="option.value">&nbsp;&nbsp;{{ option.text }}</option>
+                        </select>
+                    </div>
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <h4 style="margin-right: 10px">使用高精準度模型：</h4>
-                    <esb-radio :type="type" :options="highPrecision" v-model="switchValue" />
+                    <h4 style="margin-right: 10px; margin-bottom: 0px">使用高精準度模型：</h4>
+                    <div class="switchField">
+                        <label class="switch">
+                            <input type="checkbox" id="switch" v-model="switchValue" />
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
                 <p v-if="useModelComplexity" style="margin-left: 10px; color: red">*注意，當您使用高精準度模型時會耗時較久</p>
             </div>
@@ -111,6 +118,6 @@ export default {
             :imageClass="imageClass"
             :defaultImgURL="defaultImgURL"
         />
-        <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" />
+        <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" :hasTitle="hasTitle" />
     </div>
 </template>

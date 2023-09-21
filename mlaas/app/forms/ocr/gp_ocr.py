@@ -11,7 +11,7 @@ class GpocrForm:
     async def load_data(self):
         self.image = self.request.image
         self.image_complexity = self.request.image_complexity
-        self.model_name = self.request.model_name
+        self.filters = self.request.filters
 
     async def is_valid(self):
         if not self.image_complexity:

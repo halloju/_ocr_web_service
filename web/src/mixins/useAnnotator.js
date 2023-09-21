@@ -15,7 +15,7 @@ export default function useAnnotator() {
                 label_y: 0,
                 label_width: 0,
                 label_height: 0
-            }
+            };
         }
         // find the min and max x and y
         let minX = Math.min(...points.map((point) => point[0]));

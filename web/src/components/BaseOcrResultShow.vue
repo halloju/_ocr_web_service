@@ -10,18 +10,22 @@ import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 
 export default {
+    props: {
+        hasTitle: Boolean
+    },
     components: {
         Annotation
     },
     name: 'BaseOcrResultShow',
     setup(props, { emit }) {
+        const hasTitle = ref(props.hasTitle);
         const { parseOcrDetail } = useAnnotator();
         const store = useStore();
 
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
         const width = ref('1200');
-        const height = ref(600);
+        const height = ref('600px');
         const dataCallback = ref('');
         const initialData = ref('');
         const initialDataId = ref(null);
@@ -33,14 +37,14 @@ export default {
         const general_upload_res = computed(() => store.state.general_upload_res);
         const image_cv_id = ref('');
 
-        const buttonText = ref('返回辨識')
+        const buttonText = ref('返回辨識');
         const buttonType = ref('btnDarkBlue');
         const downloadButtonText = ref('下載 Excel');
         const selectedRows = ref([]);
 
         const getExcelData = (selectedItems) => {
             let excelData = [];
-            let selectedTaskIds = selectedItems.map(item => item.task_id); // Extract task_ids from selected items
+            let selectedTaskIds = selectedItems.map((item) => item.task_id); // Extract task_ids from selected items
 
             general_upload_res.value.forEach((item) => {
                 // Check if the item's task_id exists in selectedTaskIds
@@ -60,8 +64,6 @@ export default {
             return excelData;
         };
 
-
-
         function callback(data, image_cv_id) {
             store.dispatch('updateGeneralImageOcrResults', { data, image_cv_id });
         }
@@ -69,8 +71,8 @@ export default {
         // fail to fail msg
         function getErrorMsg(row, tableData) {
             let fileInfo = tableData.filter((item) => item.task_id === row.task_id);
-            if (fileInfo[0].status_msg in error_table) return error_table[fileInfo[0].status_msg]+ '('+fileInfo[0].status_msg+')';
-            else return default_error_msg + '('+fileInfo[0].status_msg+')';
+            if (fileInfo[0].status_msg in error_table) return error_table[fileInfo[0].status_msg] + '(' + fileInfo[0].status_msg + ')';
+            else return default_error_msg + '(' + fileInfo[0].status_msg + ')';
         }
 
         function getStatusColor(status) {
@@ -97,7 +99,7 @@ export default {
                         err_code = res.data.status_msg;
                         store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
                     } else {
-                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name});
+                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
                     }
                 })
                 .catch((res) => {
@@ -147,16 +149,16 @@ export default {
                     const item = unfinishedItems[i];
                     await getOcrStatus(general_upload_res.value.indexOf(item));
                 }
-                if (!isRunning.value) break;  // Check before the timeout
+                if (!isRunning.value) break; // Check before the timeout
                 await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
-                if (!isRunning.value) break;  // Check after the timeout
+                if (!isRunning.value) break; // Check after the timeout
                 count++;
                 // 這個數字太小可能也跑不完？感覺要衡量一下
                 if (count === MAX_RETRIES) {
                     const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
                     for (let i = 0; i < unfinishedItems.length; i++) {
                         const item = unfinishedItems[i];
-                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name});
+                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name });
                     }
                     break;
                 }
@@ -165,7 +167,6 @@ export default {
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
-            console.log('aaa')
             apiClient
                 .get(`/task/get_image/${row.image_id}`)
                 .then((res) => {
@@ -237,6 +238,7 @@ export default {
         });
 
         return {
+            selectedRows,
             containerId,
             imageSrc,
             width,
@@ -266,7 +268,8 @@ export default {
             back,
             downloadFile,
             image_cv_id,
-            selectionChange
+            selectionChange,
+            hasTitle
         };
     },
     computed: {
@@ -290,28 +293,34 @@ export default {
 </script>
 
 <template>
-    <div style="margin-top: 20px;">
-        <esb-button @click="back" :text="buttonText" :button-type="buttonType" />
+    <div style="margin-top: 20px">
+        <div>
+            <div class="formBtnContainer">
+                <button class="uiStyle sizeS subLength btnDarkBlue" @click="back" :disabled="isUploadDisabled">
+                    {{ buttonText }}
+                </button>
+            </div>
+        </div>
     </div>
     <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between; ">
-            <h6 style="margin: 0; flex: 1;">辨識結果</h6>
-            <esb-button @click="downloadFile" :text="downloadButtonText" />
+        <div style="display: flex; align-items: center; justify-content: space-between">
+            <h6 style="margin: 0; flex: 1">辨識結果</h6>
+            <div style="display: grid; place-items: center">
+                <div class="formBtnContainer">
+                    <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="selectedRows.length <= 0">
+                        {{ downloadButtonText }}
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" border >
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" border>
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
                     <template v-slot="scope">
-                        <el-tooltip
-                            :disabled="scope.row.status != 'FAIL'"
-                            class="error-tip"
-                            effect="dark"
-                            :content="getErrorMsg(scope.row, this.tableData)"
-                            placement="top"
-                        >
+                        <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark" :content="getErrorMsg(scope.row, this.tableData)" placement="top">
                             <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
                         </el-tooltip>
                     </template>
@@ -326,7 +335,18 @@ export default {
         <div v-if="imageSrc !== null">
             <p>號碼：{{ num }}</p>
             <p>檔名：{{ file_name }}</p>
-            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width" :height="height" :dataCallback="callback" :initialData="initialData" initialDataId="" :image_cv_id="image_cv_id"></Annotation>
+            <Annotation
+                containerId="my-pic-annotation-output"
+                :imageSrc="imageSrc"
+                :editMode="false"
+                :width="width"
+                :height="height"
+                :dataCallback="callback"
+                :initialData="initialData"
+                initialDataId=""
+                :image_cv_id="image_cv_id"
+                :hasTitle="hasTitle"
+            ></Annotation>
         </div>
     </div>
 </template>
