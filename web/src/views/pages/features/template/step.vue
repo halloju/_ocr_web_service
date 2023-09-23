@@ -227,7 +227,7 @@ export default {
                         [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
                         [box.x, box.y + box.height * box.scaleY]
                     ],
-                    filters: box.rectangleType === 'text' ? ['tchinese', 'english', 'number', 'symbol'] : []
+                    filters: box.rectangleType === 'text' ? ['tchinese', 'english', 'number', 'symbol'] : ( box.rectangleType === 'box' ? ['checkbox'] : null )
                 });
             });
 
