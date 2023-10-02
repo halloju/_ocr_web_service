@@ -360,7 +360,7 @@ export default {
             const ocrTypes = {
                 general: {
                     title: '全文辨識',
-                    subtitle: '通用辨識',
+                    subtitle: '全文辨識',
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/gp_ocr',
                     useModelComplexity: true,
