@@ -16,8 +16,9 @@ const { layoutConfig, contextPath } = useLayout();
     position: fixed;
     width: 100%;
     padding: 0;
+    height: 20px;
     font-size: 12px;
-    background-color: rgb(0, 0, 0, 0.1);
+    background-color: rgb(234, 234, 234);
     bottom: 0;
 }
 </style>
