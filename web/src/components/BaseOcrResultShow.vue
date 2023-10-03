@@ -27,7 +27,7 @@ export default {
         const containerId = ref('my-pic-annotation');
         const imageSrc = ref(null);
         const width = ref('1200');
-        const height = ref('600px');
+        const height = ref('400px');
         const dataCallback = ref('');
         const initialData = ref('');
         const initialDataId = ref(null);
@@ -295,28 +295,20 @@ export default {
 </script>
 
 <template>
-    <div style="margin-top: 20px">
-        <div>
-            <div class="formBtnContainer">
-                <button class="uiStyle sizeS subLength btnDarkBlue" @click="back" :disabled="isUploadDisabled">
-                    {{ buttonText }}
+    <button class="uiStyle sizeS subLength btnDarkBlue" @click="back" :disabled="isUploadDisabled">
+        {{ buttonText }}
+    </button>
+    <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+            <p style="margin: 0; flex: 1;" class="subtitle">辨識結果</p>
+            <div style="display: grid; place-items: center">
+                <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="selectedRows.length <= 0">
+                    {{ downloadButtonText }}
                 </button>
             </div>
         </div>
-    </div>
-    <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between">
-            <h6 style="margin: 0; flex: 1">辨識結果</h6>
-            <div style="display: grid; place-items: center">
-                <div class="formBtnContainer">
-                    <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="selectedRows.length <= 0">
-                        {{ downloadButtonText }}
-                    </button>
-                </div>
-            </div>
-        </div>
         <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" border>
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" height="250" border>
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
@@ -335,8 +327,8 @@ export default {
             </el-table>
         </div>
         <div v-if="imageSrc !== null">
-            <p>號碼：{{ num }}</p>
-            <p>檔名：{{ file_name }}</p>
+            <p class="subtitle">號碼：{{ num }}</p>
+            <p>{{ file_name }}</p>
             <Annotation
                 containerId="my-pic-annotation-output"
                 :imageSrc="imageSrc"

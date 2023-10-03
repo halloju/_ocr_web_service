@@ -419,7 +419,7 @@ export default {
 <template>
     <div class="layoutZoneContainer">
         <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
-            <h5>新增辨識模板</h5>
+            <p>新增辨識模板</p>
             <div style="flex: 1; text-align: center">
                 <div class="progressbarContainer">
                     <ul>
@@ -435,7 +435,7 @@ export default {
         <div style="margin-bottom: 20px; margin-top: 20px">
             <div style="display: flex; align-items: center">
                 <div style="display: flex; align-items: center; margin-right: 20px">
-                    <h4 style="margin-right: 10px; margin-bottom: 0px">模板名稱：</h4>
+                    <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
                     <input class="uiStyle" type="text" :disabled="disableInput" v-model="this.input" />
                     <div class="bx-btn-set" style="margin-left: 20px">
                         <button class="uiStyle sizeS btnGreen" @click="toggleEditSave">
@@ -446,7 +446,7 @@ export default {
                     <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <h4 style="margin-right: 10px">使用高精準度模型：</h4>
+                    <p style="margin-right: 10px">使用高精準度模型：</p>
                     <div class="switchField">
                         <label class="switch">
                             <input type="checkbox" id="switch" v-model="switchValue" />

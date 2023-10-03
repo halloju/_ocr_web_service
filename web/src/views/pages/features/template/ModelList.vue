@@ -367,7 +367,7 @@ export default {
     <div class="layoutZoneContainer">
 
         <div class="action-header">
-            <h4 style="margin-bottom: 0px">模板列表</h4>
+            <p class="title" style="margin-bottom: 0px">模板列表</p>
             <button class="uiStyle sizeS subLength btnGreen" @click="createTemplate">
                 {{ buttonText }}
             </button>
@@ -397,8 +397,8 @@ export default {
 
         <el-dialog v-model="dialogVisible" :width="dialogWidth">
             <div class="card" style="height: 80vh; overflow-y: scroll">
-                <h4>template id: {{ template_id }}</h4>
-                <h5>創建日期: {{ creation_time }}</h5>
+                <p>template id: {{ template_id }}</p>
+                <p>創建日期: {{ creation_time }}</p>
                 <div class="flex flex-column card-container">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->
@@ -438,7 +438,6 @@ export default {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    margin-top: 20px;
 }
 .selectButton ::v-deep .p-button {
     background-color: #c5e0e0 !important;

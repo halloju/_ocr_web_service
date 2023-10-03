@@ -248,7 +248,7 @@ export default {
     <div>
         <div class="card" style="background-color: white">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px">
-                <h5>請上傳一張或多張圖片，圖片選擇完成後請點選開始進行辨識。</h5>
+                <p>請上傳一張或多張圖片，圖片選擇完成後請點選開始進行辨識。</p>
                 <div v-if="(fileList.length == 0) & (defaultImgURL != '')" style="display: grid; place-items: center">
                     <div class="formBtnContainer">
                         <button class="uiStyle sizeS subLength btnGreen" @click="takeDefault">

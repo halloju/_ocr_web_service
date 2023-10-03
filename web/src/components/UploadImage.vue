@@ -283,7 +283,7 @@ export default {
 <template>
     <div class="card" style="background-color: white">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px">
-            <h5>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</h5>
+            <p>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</p>
             <button class="uiStyle sizeM btnGreen minLength" style="margin-right: 20px">
                 選擇設定檔
                 <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
