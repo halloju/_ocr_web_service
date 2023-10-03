@@ -141,14 +141,14 @@ export default {
             </el-table-column>
 
             <!-- Save Button Column -->
-            <el-table-column v-if="showSaveButton" label="" :min-width="20">
+            <el-table-column v-if="showSaveButton" label="確認" :min-width="20">
                 <template v-slot="scope">
                     <el-button type="default" @click="handleSaveRow(scope.$index)">確認</el-button>
                 </template>
             </el-table-column>
 
             <!-- Delete Shape Column -->
-            <el-table-column v-if="editMode" label="" :min-width="20">
+            <el-table-column v-if="editMode" label="刪除" :min-width="20">
                 <template v-slot="scope">
                     <a href="#" @click.prevent="deleteShape(scope.row)" title="Delete">
                         <icon type="delete-shape" fill="red" />
