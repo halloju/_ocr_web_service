@@ -8,13 +8,15 @@ import { PULL_INTERVAL, MAX_RETRIES, error_table, default_error_msg } from '@/co
 import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
+import Icon from '@/components/Icon.vue';
 
 export default {
     props: {
         hasTitle: Boolean
     },
     components: {
-        Annotation
+        Annotation,
+        Icon
     },
     name: 'BaseOcrResultShow',
     setup(props, { emit }) {
@@ -327,7 +329,7 @@ export default {
                 </el-table-column>
                 <el-table-column label="檢視" :min-width="30">
                     <template v-slot="scope">
-                        <el-button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" type="primary" round>V</el-button>
+                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" class="preview"><Icon type="eye" /></button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -353,5 +355,11 @@ export default {
 <style scoped>
 .my-button {
     margin: 10px;
+}
+
+.preview {
+    padding: 0px 0px 0px 2px;
+    border: 0px;
+    background: none;
 }
 </style>
