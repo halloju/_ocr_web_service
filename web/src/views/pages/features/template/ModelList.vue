@@ -399,12 +399,12 @@ export default {
             <div class="card" style="height: 80vh; overflow-y: scroll">
                 <p>template id: {{ template_id }}</p>
                 <p>創建日期: {{ creation_time }}</p>
-                <div class="flex flex-column card-container">
+                <div class="flex flex-column">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->
                         <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" class="selectButton"/>
                     </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                    <div class="flex align-items-center justify-content-center font-bold border-round m-2">
                         <Annotation
                             ref="child"
                             containerId="my-pic-annotation-output"
@@ -418,7 +418,7 @@ export default {
                             :isVertical="true"
                         ></Annotation>
                     </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2"></div>
+                    <div class="flex align-items-center justify-content-center font-bold border-round m-2"></div>
                 </div>
             </div>
         </el-dialog>

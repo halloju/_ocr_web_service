@@ -473,7 +473,7 @@ export default {
                         :rectangleType="rectangleType"
                         :localStorageKey="localStorageKey"
                         :setShowText="true"
-                        height="40vh"
+                        height="45vh"
                         :justShow="true"
                         :hasTitle="false"
                     />

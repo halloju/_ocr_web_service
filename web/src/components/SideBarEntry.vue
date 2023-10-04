@@ -34,6 +34,10 @@ export default {
         },
         hasTitle: {
             type: Boolean
+        },
+        tableHeight: {
+            type: String,
+            default: '375'
         }
     },
     data() {
@@ -125,7 +129,7 @@ export default {
         handleMouseLeave(shape) {
             this.$emit('sidebar-entry-leave', shape.name);
         },
-        deleteShape(shape) {
+        handleDeleteShape(shape) {
             this.$emit('sidebar-entry-delete', shape.name);
         },
         submitted(shape) {
@@ -170,7 +174,7 @@ export default {
 
 <template>
     <div class="table-container">
-        <el-table ref="myTable" :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row>
+        <el-table ref="myTable" :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row :max-height="tableHeight">
             <!-- Index Column -->
             <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
                 <template v-slot="scope">
@@ -208,6 +212,14 @@ export default {
                 :checkColumnName="checkColumnName"
                 :deleteColumnName="deleteColumnName"
                 :option="BoxOptions"
+            >
+            </edit-mode-column>
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'mask'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                :deleteColumnName="deleteColumnName"
             >
             </edit-mode-column>
             <!-- View Edit Result Components -->
