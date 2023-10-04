@@ -153,7 +153,7 @@ export default {
                 creation_time.value = template.value.creation_time;
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
                 dialogVisible.value = true;
-                dialogWidth.value = '950px';
+                dialogWidth.value = '1200px';
             }
         }
 
@@ -410,7 +410,7 @@ export default {
                             containerId="my-pic-annotation-output"
                             :editMode="false"
                             :imageSrc="imageSrc"
-                            :width="dialogWidth"
+                            width="1000px"
                             :height="height"
                             dataCallback=""
                             :initialData="initialData"
@@ -442,11 +442,12 @@ export default {
 .selectButton ::v-deep .p-button {
     background-color: #c5e0e0 !important;
     padding:  5px;
+    margin: 1px;
 }
 
 .p-buttonset {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     width: 60%; /* adjust this if needed */
     margin: 0 auto; /* makes the button group center-aligned */
 }

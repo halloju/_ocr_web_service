@@ -43,10 +43,66 @@ export default {
             formData: [],
             buttonText: this.editMode ? '欄位命名' : '欄位',
             buttonTitle: this.justShow ? '區塊類型' : 'index',
+            filterButtonText: '選項',
             titleColumnName: '欄位名稱',
             checkColumnName: '確認',
-            deleteColumnName: '刪除'
-            // shouldBeDisabled: false
+            deleteColumnName: '刪除',
+            TextOptions: [
+                {
+                    value: 'tchinese',
+                    label: '繁體中文'
+                },
+                {
+                    value: 'english',
+                    label: '英文'
+                },
+                {
+                    value: 'number',
+                    label: '數字'
+                },
+                {
+                    value: 'symbol',
+                    label: '符號'
+                },
+                {
+                    value: 'space',
+                    label: '空白'
+                },
+                {
+                    value: 'taiwan_id',
+                    label: '台灣身份證字號'
+                },
+                {
+                    value: 'currency_code',
+                    label: '幣別代碼'
+                },
+                {
+                    value: 'date',
+                    label: '日期'
+                }
+            ],
+            BoxOptions: [
+                {
+                    value: 'sealbox',
+                    label: '原留印鑑框'
+                },
+                {
+                    value: 'checkbox',
+                    label: '勾選框'
+                }
+            ],
+            NameDict: {
+                tchinese: '繁體中文',
+                english: '英文',
+                number: '數字',
+                symbol: '符號',
+                space: '空白',
+                taiwan_id: '台灣身份證字號',
+                currency_code: '幣別代碼',
+                date: '日期',
+                sealbox: '原留印鑑框',
+                checkbox: '勾選框'
+            }
         };
     },
     created() {
@@ -73,8 +129,6 @@ export default {
             this.$emit('sidebar-entry-delete', shape.name);
         },
         submitted(shape) {
-            // copy back data
-            // find the shape index
             const idx = this.shapes
                 .map((shape, index) => {
                     if (shape.name === shape.name) {
@@ -132,9 +186,32 @@ export default {
                 </template>
             </el-table-column>
             <!-- Edit Mode Components -->
-            <edit-mode-column v-if="editMode" @save="handleSaveRow" @delete="handleDeleteShape" @click="handleClick" :buttonText="titleColumnName" :checkColumnName="checkColumnName" :deleteColumnName="deleteColumnName"> </edit-mode-column>
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'text'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                :buttonText="titleColumnName"
+                :filterButtonText="filterButtonText"
+                :checkColumnName="checkColumnName"
+                :deleteColumnName="deleteColumnName"
+                :option="TextOptions"
+            >
+            </edit-mode-column>
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'box'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                :buttonText="titleColumnName"
+                :filterButtonText="filterButtonText"
+                :checkColumnName="checkColumnName"
+                :deleteColumnName="deleteColumnName"
+                :option="BoxOptions"
+            >
+            </edit-mode-column>
             <!-- View Edit Result Components -->
-            <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName"> </view-edit-result-column>
+            <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
             <!-- View Recognition Result Components -->
             <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="titleColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
         </el-table>

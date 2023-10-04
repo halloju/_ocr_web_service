@@ -181,9 +181,7 @@ export default {
                                             strokeScaleEnabled: false,
                                             annotation: {
                                                 title: myContent,
-                                                text: '',
-                                                linkTitle: '',
-                                                link: ''
+                                                filters: []
                                             },
                                             x: label_x,
                                             y: label_y,
@@ -243,7 +241,7 @@ export default {
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
                     sessionStorage.setItem('imageSource', f.target.result);
-                    console.log(sessionStorage.getItem('imageSource'));
+                    // console.log(sessionStorage.getItem('imageSource'));
                     file.reader = f.target.result;
                 };
                 reader.readAsDataURL(file.raw);

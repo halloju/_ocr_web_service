@@ -117,7 +117,7 @@ export default {
                 if (this.rectangleType != 'mask' && this.rectangleType != undefined) {
                     this.getRecsFromLocalStorage().every((box) => {
                         if (box.rectangleType != 'mask') {
-                            if (box.annotation.title == undefined || box.annotation.title == '') {
+                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters.length == 0) {
                                 this.isEditing = true;
                                 return false;
                             }
@@ -227,7 +227,8 @@ export default {
                         [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
                         [box.x, box.y + box.height * box.scaleY]
                     ],
-                    filters: box.rectangleType === 'text' ? ['tchinese', 'english', 'number', 'symbol'] : ( box.rectangleType === 'box' ? ['checkbox'] : null )
+                    filters: box.annotation.filters
+                    // box.rectangleType === 'text' ? ['tchinese', 'english', 'number', 'symbol'] : ( box.rectangleType === 'box' ? ['checkbox'] : null )
                 });
             });
 
@@ -239,7 +240,7 @@ export default {
                 return;
             } else {
                 var num = 0;
-                for ( var box of this.boxes) {
+                for (var box of this.boxes) {
                     if (box['type'] === 'mask') {
                         num++;
                     }
@@ -255,6 +256,7 @@ export default {
 
             let body;
             let action;
+            console.log(this.boxes)
             if (!this.template_id) {
                 const image = new window.Image();
                 image.src = sessionStorage.imageSource;

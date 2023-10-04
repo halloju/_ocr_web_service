@@ -13,7 +13,7 @@ export default {
     props: {
         containerId: String,
         imageSrc: String,
-        dataCallback: Function,
+        dataCallback: String,
         localStorageKey: String,
         width: String,
         height: String,
@@ -47,12 +47,6 @@ export default {
             polygonPoints: [],
             polygonAddShapes: [],
             callback: undefined, // actual callback function
-            formData: {
-                title: '',
-                text: '',
-                linkTitle: '',
-                link: ''
-            },
             isShowText: this.setShowText,
             isTitle: true,
             oldAttrs: null
@@ -249,9 +243,7 @@ export default {
                 scaleY: 1,
                 annotation: {
                     title: null,
-                    text: '',
-                    linkTitle: '',
-                    link: ''
+                    filters: []
                 },
                 rectangleType: rectangleType
             };
@@ -568,7 +560,7 @@ export default {
 .pa-infobar
   margin-left: 5px
   overflow-y: scroll
-  width: 500px
+  width: 600px
 .pa-infobarVert
   margin-top: 10px
   overflow-y: scroll
