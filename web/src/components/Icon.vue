@@ -14,7 +14,8 @@ import {
     mdiAccountOutline,
     mdiClipboardTextOffOutline,
     mdiClipboardTextOutline,
-    mdiEye
+    mdiEye,
+    mdiInformationOutline
 } from '@mdi/js';
 
 /**
@@ -90,6 +91,8 @@ export default {
                     return mdiAccountOutline;
                 case 'eye':
                     return mdiEye;
+                case 'info':
+                    return mdiInformationOutline;
                 default:
                     return 'NOT FOUND';
             }

@@ -10,11 +10,13 @@ import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
 import { error_table, default_error_msg } from '@/constants.js';
+import Icon from '@/components/Icon.vue';
 
 export default {
     components: {
         Annotation,
-        UploadImage
+        UploadImage,
+        Icon
     },
     name: 'SelfDefine',
     props: {
@@ -256,7 +258,6 @@ export default {
 
             let body;
             let action;
-            console.log(this.boxes)
             if (!this.template_id) {
                 const image = new window.Image();
                 image.src = sessionStorage.imageSource;
@@ -445,6 +446,23 @@ export default {
                         </button>
                         <div class="p-fluid" v-if="this.isFinal"></div>
                     </div>
+                    <el-popover
+                    placement="top"
+                    :width="1000"
+                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
+                    >
+                        <template #reference>
+                            <div class="m-2">
+                                <icon type="info" fill="#3c4c5e" /> 
+                            </div>
+                        </template>
+
+                        <template #default>
+                            <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
+                            <img :src="this.pageImg[this.currentStep - 1]" height="200"/>
+                            <img v-if="this.currentStep == 0" :src="this.imageSource" class="img-fluid" />
+                        </template>
+                    </el-popover>
                     <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
