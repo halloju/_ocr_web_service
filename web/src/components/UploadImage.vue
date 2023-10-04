@@ -21,7 +21,9 @@ export default {
             isOK: false,
             isFileUploaded: false,
             showUpload: true,
-            fileList: []
+            fileList: [],
+            dialogImageUrl: '',
+            dialogVisible: false
         };
     },
     computed: {
@@ -117,6 +119,10 @@ export default {
                     this.isDragging = false;
                 }
             }
+        },
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
         },
         reset() {
             this.filename = null;
@@ -287,10 +293,13 @@ export default {
                 <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
             </button>
         </div>
-        <el-upload :file-list="fileList" list-type="picture-card" :on-change="beforeUpload" :on-remove="handleRemove" :auto-upload="false" :limit="1" accept="image/*" :class="{ hideUpload: !showUpload }">
+        <el-upload :file-list="fileList" list-type="picture-card" :on-change="beforeUpload" :on-remove="handleRemove" :auto-upload="false" :limit="1" accept="image/*" :class="{ hideUpload: !showUpload }" :on-preview="handlePictureCardPreview">
             <el-icon><Plus /></el-icon>
         </el-upload>
     </div>
+    <el-dialog v-model="dialogVisible">
+        <img :src="dialogImageUrl" alt="Preview Image" />
+    </el-dialog>
 </template>
 <style scoped>
 .file-input-container {
