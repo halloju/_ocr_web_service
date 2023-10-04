@@ -41,7 +41,9 @@ export default {
             formData: [],
             buttonText: this.editMode ? '欄位命名' : '欄位',
             buttonTitle: this.justShow ? '區塊類型' : 'index',
-            titleColumnName: '欄位名稱'
+            titleColumnName: '欄位名稱',
+            checkColumnName: '確認',
+            deleteColumnName: '刪除'
             // shouldBeDisabled: false
         };
     },
@@ -141,14 +143,14 @@ export default {
             </el-table-column>
 
             <!-- Save Button Column -->
-            <el-table-column v-if="showSaveButton" label="確認" :min-width="20">
+            <el-table-column v-if="showSaveButton" :label="checkColumnName" :min-width="20">
                 <template v-slot="scope">
                     <el-button type="default" @click="handleSaveRow(scope.$index)">確認</el-button>
                 </template>
             </el-table-column>
 
             <!-- Delete Shape Column -->
-            <el-table-column v-if="editMode" label="刪除" :min-width="20">
+            <el-table-column v-if="editMode" :label="deleteColumnName" :min-width="20">
                 <template v-slot="scope">
                     <a href="#" @click.prevent="deleteShape(scope.row)" title="Delete">
                         <icon type="delete-shape" fill="red" />
