@@ -295,7 +295,7 @@ export default {
 </script>
 
 <template>
-    <button class="uiStyle sizeS subLength btnDarkBlue" @click="back" :disabled="isUploadDisabled">
+    <button class="uiStyle sizeS minLength btnDarkBlue" @click="back" :disabled="isUploadDisabled">
         {{ buttonText }}
     </button>
     <div class="card">
