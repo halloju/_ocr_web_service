@@ -1,11 +1,13 @@
 <script>
-import Nl2br from 'vue3-nl2br';
-import Icon from '@/components/Icon.vue';
+import ViewEditResultColumn from '@/components/ViewEditResultColumn.vue';
+import EditModeColumn from '@/components/EditModeColumn.vue';
+import ViewRecognitionResultColumn from '@/components/ViewRecognitionResultColumn.vue';
 
 export default {
     components: {
-        Icon,
-        Nl2br
+        ViewEditResultColumn,
+        ViewRecognitionResultColumn,
+        EditModeColumn
     },
     props: {
         shapes: {
@@ -129,34 +131,12 @@ export default {
                     <span>{{ scope.row.annotation.title }}</span>
                 </template>
             </el-table-column>
-
-            <!-- Form Column -->
-            <el-table-column :label="buttonText" :min-width="45" v-if="rectangleType != 'mask'">
-                <template v-slot="scope">
-                    <!--  模板編輯 -->
-                    <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)">{{ scope.row.annotation.title }}</el-input>
-                    <!--  模板編輯確認 -->
-                    <el-input v-else-if="!editMode && justShow" v-model="scope.row.annotation.title" disabled>{{ scope.row.annotation.title }}</el-input>
-                    <!--  辨認結果 -->
-                    <el-input v-else-if="scope.row.annotation.text != undefined" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.text" @click="handleClick(scope.$index)">{{ scope.row.annotation.text }}</el-input>
-                </template>
-            </el-table-column>
-
-            <!-- Save Button Column -->
-            <el-table-column v-if="showSaveButton" :label="checkColumnName" :min-width="20">
-                <template v-slot="scope">
-                    <el-button type="default" @click="handleSaveRow(scope.$index)">確認</el-button>
-                </template>
-            </el-table-column>
-
-            <!-- Delete Shape Column -->
-            <el-table-column v-if="editMode" :label="deleteColumnName" :min-width="20">
-                <template v-slot="scope">
-                    <a href="#" @click.prevent="deleteShape(scope.row)" title="Delete">
-                        <icon type="delete-shape" fill="red" />
-                    </a>
-                </template>
-            </el-table-column>
+            <!-- Edit Mode Components -->
+            <edit-mode-column v-if="editMode" @save="handleSaveRow" @delete="handleDeleteShape" @click="handleClick" :buttonText="titleColumnName" :checkColumnName="checkColumnName" :deleteColumnName="deleteColumnName"> </edit-mode-column>
+            <!-- View Edit Result Components -->
+            <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName"> </view-edit-result-column>
+            <!-- View Recognition Result Components -->
+            <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="titleColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
         </el-table>
     </div>
 </template>
