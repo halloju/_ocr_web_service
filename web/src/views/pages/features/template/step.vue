@@ -119,7 +119,7 @@ export default {
                 if (this.rectangleType != 'mask' && this.rectangleType != undefined) {
                     this.getRecsFromLocalStorage().every((box) => {
                         if (box.rectangleType != 'mask') {
-                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters.length == 0) {
+                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters == null || box.annotation.filters.length == 0) {
                                 this.isEditing = true;
                                 return false;
                             }
@@ -258,6 +258,7 @@ export default {
 
             let body;
             let action;
+            console.log(this.boxes)
             if (!this.template_id) {
                 const image = new window.Image();
                 image.src = sessionStorage.imageSource;

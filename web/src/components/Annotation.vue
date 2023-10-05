@@ -247,7 +247,7 @@ export default {
                 scaleY: 1,
                 annotation: {
                     title: null,
-                    filters: []
+                    filters: null
                 },
                 rectangleType: rectangleType
             };

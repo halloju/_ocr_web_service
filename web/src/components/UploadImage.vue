@@ -187,7 +187,7 @@ export default {
                                             strokeScaleEnabled: false,
                                             annotation: {
                                                 title: myContent,
-                                                filters: []
+                                                filters: null
                                             },
                                             x: label_x,
                                             y: label_y,
