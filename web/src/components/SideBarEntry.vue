@@ -49,6 +49,7 @@ export default {
             buttonTitle: this.justShow ? '區塊類型' : 'index',
             filterButtonText: '選項',
             titleColumnName: '欄位名稱',
+            resultColumnName: '辨識結果',
             checkColumnName: '確認',
             deleteColumnName: '刪除',
             TextOptions: [
@@ -225,7 +226,7 @@ export default {
             <!-- View Edit Result Components -->
             <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
             <!-- View Recognition Result Components -->
-            <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="titleColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
+            <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="resultColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
         </el-table>
     </div>
 </template>
