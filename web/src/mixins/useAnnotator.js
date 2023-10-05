@@ -46,7 +46,7 @@ export default function useAnnotator() {
 
     const createShape = (fill, element, index) => {
         const myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
-        const mySelect = element.hasOwnProperty('filters') ? element['filters'] : [];
+        const mySelect = element.hasOwnProperty('filters') ? element['filters'] : null;
         const { label_x, label_y, label_width, label_height } = generatePointsList(element.points);
 
         return {
@@ -113,7 +113,7 @@ export default function useAnnotator() {
                 annotation: {
                     title: title,
                     text: element.text,
-                    filters: []
+                    filters: null
                 },
                 x: label_x,
                 y: label_y,

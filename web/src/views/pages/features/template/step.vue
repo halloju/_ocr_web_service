@@ -258,7 +258,6 @@ export default {
 
             let body;
             let action;
-            console.log(this.boxes)
             if (!this.template_id) {
                 const image = new window.Image();
                 image.src = sessionStorage.imageSource;
@@ -423,7 +422,7 @@ export default {
 <template>
     <div class="layoutZoneContainer">
         <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
-            <p>新增辨識模板</p>
+            <p class="title">新增辨識模板</p>
             <div style="flex: 1; text-align: center">
                 <div class="progressbarContainer">
                     <ul>
@@ -447,21 +446,16 @@ export default {
                         </button>
                         <div class="p-fluid" v-if="this.isFinal"></div>
                     </div>
-                    <el-popover
-                    placement="top"
-                    :width="1000"
-                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
-                    >
+                    <el-popover v-if="this.currentStep > 0 && this.currentStep < 4" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
                             <div class="m-2">
-                                <icon type="info" fill="#3c4c5e" /> 
+                                <icon type="info" fill="#3c4c5e" />
                             </div>
                         </template>
 
                         <template #default>
                             <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
-                            <img :src="this.pageImg[this.currentStep - 1]" height="200"/>
-                            <img v-if="this.currentStep == 0" :src="this.imageSource" class="img-fluid" />
+                            <img :src="this.pageImg[this.currentStep - 1]" height="200" />
                         </template>
                     </el-popover>
                     <router-view />

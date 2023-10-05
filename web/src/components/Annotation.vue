@@ -567,7 +567,6 @@ export default {
   width: 600px
 .pa-infobarVert
   margin-top: 10px
-  overflow-y: scroll
 // Loader component
 .pa-loader
   position: absolute
