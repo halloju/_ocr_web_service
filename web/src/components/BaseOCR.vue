@@ -40,7 +40,28 @@ export default {
             imageComplexity: 'medium',
             selectedModel: ['tchinese', 'english', 'number', 'symbol'],
             imageUploadKey: 0,
-            languages: [{ value: ['tchinese', 'english', 'number', 'symbol'], text: '繁體中文 + 英數字' }],
+            languages: [
+                {
+                    value: 'tchinese',
+                    label: '繁體中文'
+                },
+                {
+                    value: 'english',
+                    label: '英文'
+                },
+                {
+                    value: 'number',
+                    label: '數字'
+                },
+                {
+                    value: 'symbol',
+                    label: '符號'
+                },
+                {
+                    value: 'space',
+                    label: '空白'
+                }
+            ],
             selectType: 'basic',
             placeholder: '繁體中文 + 英數字',
             type: 'switch',
@@ -80,20 +101,20 @@ export default {
     <div class="layoutZoneContainer">
 
         <!-- Title -->
-        <div v-if="step == 1" style="margin-bottom: 20px; margin-top: 20px">
-            <h1>{{ subtitle }}</h1>
+        <div v-if="step == 1" style="margin-bottom: 20px;">
+            <p class="title">{{ subtitle }}</p>
             <div style="display: flex; align-items: center">
                 <p v-if="useLanguage" style="margin-right: 2px; color: red">*</p>
                 <div v-if="useLanguage" style="display: flex; align-items: center; margin-right: 20px">
-                    <h4 style="margin-right: 10px; margin-bottom: 0px">選擇語言：</h4>
+                    <p style="margin-right: 10px; margin-bottom: 0px">選擇語言：</p>
                     <div>
-                        <select class="selectField dropdownBtn" v-model="selectedModel">
-                            <option v-for="option in languages" :value="option.value">&nbsp;&nbsp;{{ option.text }}</option>
-                        </select>
+                        <el-select multiple v-model="selectedModel" collapse-tags collapse-tags-tooltip>
+                            <el-option v-for="item in languages" :key="item.value" :label="item.label" :value="item.value" style="font-size: 16px;"></el-option>
+                        </el-select>
                     </div>
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <h4 style="margin-right: 10px; margin-bottom: 0px">使用高精準度模型：</h4>
+                    <p style="margin-right: 10px; margin-bottom: 0px">使用高精準度模型：</p>
                     <div class="switchField">
                         <label class="switch">
                             <input type="checkbox" id="switch" v-model="switchValue" />

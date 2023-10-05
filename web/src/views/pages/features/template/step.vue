@@ -10,11 +10,13 @@ import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
 import { error_table, default_error_msg } from '@/constants.js';
+import Icon from '@/components/Icon.vue';
 
 export default {
     components: {
         Annotation,
-        UploadImage
+        UploadImage,
+        Icon
     },
     name: 'SelfDefine',
     props: {
@@ -117,7 +119,7 @@ export default {
                 if (this.rectangleType != 'mask' && this.rectangleType != undefined) {
                     this.getRecsFromLocalStorage().every((box) => {
                         if (box.rectangleType != 'mask') {
-                            if (box.annotation.title == undefined || box.annotation.title == '') {
+                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters == null || box.annotation.filters.length == 0) {
                                 this.isEditing = true;
                                 return false;
                             }
@@ -227,7 +229,8 @@ export default {
                         [box.x + box.width * box.scaleX, box.y + box.height * box.scaleY],
                         [box.x, box.y + box.height * box.scaleY]
                     ],
-                    filters: box.rectangleType === 'text' ? ['tchinese', 'english', 'number', 'symbol'] : []
+                    filters: box.annotation.filters
+                    // box.rectangleType === 'text' ? ['tchinese', 'english', 'number', 'symbol'] : ( box.rectangleType === 'box' ? ['checkbox'] : null )
                 });
             });
 
@@ -239,7 +242,7 @@ export default {
                 return;
             } else {
                 var num = 0;
-                for ( var box of this.boxes) {
+                for (var box of this.boxes) {
                     if (box['type'] === 'mask') {
                         num++;
                     }
@@ -360,7 +363,7 @@ export default {
             const ocrTypes = {
                 general: {
                     title: '全文辨識',
-                    subtitle: '通用辨識',
+                    subtitle: '全文辨識',
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/gp_ocr',
                     useModelComplexity: true,
@@ -419,7 +422,7 @@ export default {
 <template>
     <div class="layoutZoneContainer">
         <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
-            <h5>新增辨識模板</h5>
+            <p class="title">新增辨識模板</p>
             <div style="flex: 1; text-align: center">
                 <div class="progressbarContainer">
                     <ul>
@@ -435,7 +438,7 @@ export default {
         <div style="margin-bottom: 20px; margin-top: 20px">
             <div style="display: flex; align-items: center">
                 <div style="display: flex; align-items: center; margin-right: 20px">
-                    <h4 style="margin-right: 10px; margin-bottom: 0px">模板名稱：</h4>
+                    <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
                     <input class="uiStyle" type="text" :disabled="disableInput" v-model="this.input" />
                     <div class="bx-btn-set" style="margin-left: 20px">
                         <button class="uiStyle sizeS btnGreen" @click="toggleEditSave">
@@ -443,10 +446,22 @@ export default {
                         </button>
                         <div class="p-fluid" v-if="this.isFinal"></div>
                     </div>
+                    <el-popover v-if="this.currentStep > 0 && this.currentStep < 4" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                        <template #reference>
+                            <div class="m-2">
+                                <icon type="info" fill="#3c4c5e" />
+                            </div>
+                        </template>
+
+                        <template #default>
+                            <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
+                            <img :src="this.pageImg[this.currentStep - 1]" height="200" />
+                        </template>
+                    </el-popover>
                     <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <h4 style="margin-right: 10px">使用高精準度模型：</h4>
+                    <p style="margin-right: 10px">使用高精準度模型：</p>
                     <div class="switchField">
                         <label class="switch">
                             <input type="checkbox" id="switch" v-model="switchValue" />
@@ -471,7 +486,7 @@ export default {
                         :rectangleType="rectangleType"
                         :localStorageKey="localStorageKey"
                         :setShowText="true"
-                        height="40vh"
+                        height="45vh"
                         :justShow="true"
                         :hasTitle="false"
                     />

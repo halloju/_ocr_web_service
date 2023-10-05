@@ -21,7 +21,7 @@ class PointDict(BaseModel, extra=Extra.forbid):
         title='框的點位',
         example=[[0, 0], [100, 0], [100, 100], [0, 100]]
     )
-    filters: conlist(StrictStr, min_items=1) = Field(
+    filters: Optional[List[StrictStr]] = Field(
         title='框的過濾器',
         example=['tchinese', 'english', 'number', 'symbol']
     )

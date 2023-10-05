@@ -1,11 +1,13 @@
 <script>
-import Nl2br from 'vue3-nl2br';
-import Icon from '@/components/Icon.vue';
+import ViewEditResultColumn from '@/components/ViewEditResultColumn.vue';
+import EditModeColumn from '@/components/EditModeColumn.vue';
+import ViewRecognitionResultColumn from '@/components/ViewRecognitionResultColumn.vue';
 
 export default {
     components: {
-        Icon,
-        Nl2br
+        ViewEditResultColumn,
+        ViewRecognitionResultColumn,
+        EditModeColumn
     },
     props: {
         shapes: {
@@ -32,6 +34,10 @@ export default {
         },
         hasTitle: {
             type: Boolean
+        },
+        tableHeight: {
+            type: String,
+            default: '375'
         }
     },
     data() {
@@ -41,8 +47,67 @@ export default {
             formData: [],
             buttonText: this.editMode ? '欄位命名' : '欄位',
             buttonTitle: this.justShow ? '區塊類型' : 'index',
-            titleColumnName: '欄位名稱'
-            // shouldBeDisabled: false
+            filterButtonText: '選項',
+            titleColumnName: '欄位名稱',
+            resultColumnName: '辨識結果',
+            checkColumnName: '確認',
+            deleteColumnName: '刪除',
+            TextOptions: [
+                {
+                    value: 'tchinese',
+                    label: '繁體中文'
+                },
+                {
+                    value: 'english',
+                    label: '英文'
+                },
+                {
+                    value: 'number',
+                    label: '數字'
+                },
+                {
+                    value: 'symbol',
+                    label: '符號'
+                },
+                {
+                    value: 'space',
+                    label: '空白'
+                },
+                {
+                    value: 'taiwan_id',
+                    label: '台灣身份證字號'
+                },
+                {
+                    value: 'currency_code',
+                    label: '幣別代碼'
+                },
+                {
+                    value: 'date',
+                    label: '日期'
+                }
+            ],
+            BoxOptions: [
+                {
+                    value: 'sealbox',
+                    label: '原留印鑑框'
+                },
+                {
+                    value: 'checkbox',
+                    label: '勾選框'
+                }
+            ],
+            NameDict: {
+                tchinese: '繁體中文',
+                english: '英文',
+                number: '數字',
+                symbol: '符號',
+                space: '空白',
+                taiwan_id: '台灣身份證字號',
+                currency_code: '幣別代碼',
+                date: '日期',
+                sealbox: '原留印鑑框',
+                checkbox: '勾選框'
+            }
         };
     },
     created() {
@@ -65,12 +130,10 @@ export default {
         handleMouseLeave(shape) {
             this.$emit('sidebar-entry-leave', shape.name);
         },
-        deleteShape(shape) {
+        handleDeleteShape(shape) {
             this.$emit('sidebar-entry-delete', shape.name);
         },
         submitted(shape) {
-            // copy back data
-            // find the shape index
             const idx = this.shapes
                 .map((shape, index) => {
                     if (shape.name === shape.name) {
@@ -112,7 +175,7 @@ export default {
 
 <template>
     <div class="table-container">
-        <el-table ref="myTable" :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row>
+        <el-table ref="myTable" :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row :max-height="tableHeight">
             <!-- Index Column -->
             <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
                 <template v-slot="scope">
@@ -127,34 +190,43 @@ export default {
                     <span>{{ scope.row.annotation.title }}</span>
                 </template>
             </el-table-column>
-
-            <!-- Form Column -->
-            <el-table-column :label="buttonText" :min-width="45" v-if="rectangleType != 'mask'">
-                <template v-slot="scope">
-                    <!--  模板編輯 -->
-                    <el-input v-if="editMode && rectangleType != 'mask'" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)">{{ scope.row.annotation.title }}</el-input>
-                    <!--  模板編輯確認 -->
-                    <el-input v-else-if="!editMode && justShow" v-model="scope.row.annotation.title" disabled>{{ scope.row.annotation.title }}</el-input>
-                    <!--  辨認結果 -->
-                    <el-input v-else-if="scope.row.annotation.text != undefined" :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.text" @click="handleClick(scope.$index)">{{ scope.row.annotation.text }}</el-input>
-                </template>
-            </el-table-column>
-
-            <!-- Save Button Column -->
-            <el-table-column v-if="showSaveButton" label="" :min-width="20">
-                <template v-slot="scope">
-                    <el-button type="default" @click="handleSaveRow(scope.$index)">確認</el-button>
-                </template>
-            </el-table-column>
-
-            <!-- Delete Shape Column -->
-            <el-table-column v-if="editMode" label="" :min-width="20">
-                <template v-slot="scope">
-                    <a href="#" @click.prevent="deleteShape(scope.row)" title="Delete">
-                        <icon type="delete-shape" fill="red" />
-                    </a>
-                </template>
-            </el-table-column>
+            <!-- Edit Mode Components -->
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'text'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                :buttonText="titleColumnName"
+                :filterButtonText="filterButtonText"
+                :checkColumnName="checkColumnName"
+                :deleteColumnName="deleteColumnName"
+                :option="TextOptions"
+            >
+            </edit-mode-column>
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'box'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                :buttonText="titleColumnName"
+                :filterButtonText="filterButtonText"
+                :checkColumnName="checkColumnName"
+                :deleteColumnName="deleteColumnName"
+                :option="BoxOptions"
+            >
+            </edit-mode-column>
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'mask'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                :deleteColumnName="deleteColumnName"
+            >
+            </edit-mode-column>
+            <!-- View Edit Result Components -->
+            <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
+            <!-- View Recognition Result Components -->
+            <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="resultColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
         </el-table>
     </div>
 </template>

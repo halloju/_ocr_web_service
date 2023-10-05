@@ -111,7 +111,7 @@ function toggleSubSelect(label) {
 </script>
 
 <template>
-    <div id="sideMenuContainer">
+    <div id="sideMenuContainer" style="height: calc(100% - 20px)">
         <ul class="sideMainMenu">
             <li v-for="mainItem in model" :key="mainItem.label" :class="{ withSubMenu: true, select: selectedMainItem === mainItem.label }" @click="toggleMainSelect(mainItem.label)">
                 {{ mainItem.label }}

@@ -153,7 +153,7 @@ export default {
                 creation_time.value = template.value.creation_time;
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
                 dialogVisible.value = true;
-                dialogWidth.value = '950px';
+                dialogWidth.value = '1200px';
             }
         }
 
@@ -367,7 +367,7 @@ export default {
     <div class="layoutZoneContainer">
 
         <div class="action-header">
-            <h4 style="margin-bottom: 0px">模板列表</h4>
+            <p class="title" style="margin-bottom: 0px">模板列表</p>
             <button class="uiStyle sizeS subLength btnGreen" @click="createTemplate">
                 {{ buttonText }}
             </button>
@@ -397,20 +397,20 @@ export default {
 
         <el-dialog v-model="dialogVisible" :width="dialogWidth">
             <div class="card" style="height: 80vh; overflow-y: scroll">
-                <h4>template id: {{ template_id }}</h4>
-                <h5>創建日期: {{ creation_time }}</h5>
-                <div class="flex flex-column card-container">
+                <p>template id: {{ template_id }}</p>
+                <p>創建日期: {{ creation_time }}</p>
+                <div class="flex flex-column">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->
                         <SelectButton v-model="selectedRectangleType" :options="rectangleTypes" optionLabel="name" @change="handleLook(template_id, selectedRectangleType?.code)" class="selectButton"/>
                     </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2">
+                    <div class="flex align-items-center justify-content-center font-bold border-round m-2">
                         <Annotation
                             ref="child"
                             containerId="my-pic-annotation-output"
                             :editMode="false"
                             :imageSrc="imageSrc"
-                            :width="dialogWidth"
+                            width="1000px"
                             :height="height"
                             dataCallback=""
                             :initialData="initialData"
@@ -418,7 +418,7 @@ export default {
                             :isVertical="true"
                         ></Annotation>
                     </div>
-                    <div class="flex align-items-center justify-content-center h-100rem font-bold border-round m-2"></div>
+                    <div class="flex align-items-center justify-content-center font-bold border-round m-2"></div>
                 </div>
             </div>
         </el-dialog>
@@ -438,16 +438,16 @@ export default {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    margin-top: 20px;
 }
 .selectButton ::v-deep .p-button {
     background-color: #c5e0e0 !important;
     padding:  5px;
+    margin: 1px;
 }
 
 .p-buttonset {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     width: 60%; /* adjust this if needed */
     margin: 0 auto; /* makes the button group center-aligned */
 }

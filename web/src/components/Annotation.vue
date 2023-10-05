@@ -13,7 +13,7 @@ export default {
     props: {
         containerId: String,
         imageSrc: String,
-        dataCallback: Function,
+        dataCallback: String,
         localStorageKey: String,
         width: String,
         height: String,
@@ -47,15 +47,10 @@ export default {
             polygonPoints: [],
             polygonAddShapes: [],
             callback: undefined, // actual callback function
-            formData: {
-                title: '',
-                text: '',
-                linkTitle: '',
-                link: ''
-            },
             isShowText: this.setShowText,
             isTitle: true,
-            oldAttrs: null
+            oldAttrs: null,
+            tableHeight: '375'
         };
     },
     watch: {
@@ -81,6 +76,7 @@ export default {
         if (this.isVertical) {
             this.containerClass = 'pa-containerVert';
             this.infoBarClass = 'pa-infobarVert';
+            this.tableHeight = '200';
         } else {
             this.containerClass = 'pa-container';
             this.infoBarClass = 'pa-infobar';
@@ -93,11 +89,13 @@ export default {
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
         this.stageSize.height = this.$refs.main.clientHeight;
+        console.log(this.$refs.main.clientHeight)
         if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width) - parseInt('4rem');
         if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height) * 0.6;
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
+        console.log(this.$refs.main.clientHeight)
     },
     beforeUnmount() {
         document.removeEventListener('keydown', this.handleKeyEvent);
@@ -249,9 +247,7 @@ export default {
                 scaleY: 1,
                 annotation: {
                     title: null,
-                    text: '',
-                    linkTitle: '',
-                    link: ''
+                    filters: null
                 },
                 rectangleType: rectangleType
             };
@@ -500,7 +496,8 @@ export default {
 
                 <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
             </div>
-            <div :class="infoBarClass">
+            <div :class="infoBarClass" style="overflow-y: none">
+                <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)" v-if="editMode"> 新增標註</button>
                 <side-bar-entry
                     :key="ee"
                     :shapes="shapes"
@@ -514,6 +511,7 @@ export default {
                     v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
                     v-on:sidebar-entry-delete="deleteShape($event)"
                     v-on:sidebar-entry-save="formSubmitted($event)"
+                    :tableHeight="tableHeight"
                 />
             </div>
         </div>
@@ -532,7 +530,6 @@ export default {
 .pa-containerVert
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif
   display: grid
-  grid-template-rows: 3fr 2fr
   overflow: hidden
 
 .pa-canvas
@@ -567,11 +564,9 @@ export default {
   font-size: 90%
 .pa-infobar
   margin-left: 5px
-  overflow-y: scroll
-  width: 500px
+  width: 600px
 .pa-infobarVert
   margin-top: 10px
-  overflow-y: scroll
 // Loader component
 .pa-loader
   position: absolute

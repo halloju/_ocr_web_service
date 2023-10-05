@@ -21,7 +21,9 @@ export default {
             isOK: false,
             isFileUploaded: false,
             showUpload: true,
-            fileList: []
+            fileList: [],
+            dialogImageUrl: '',
+            dialogVisible: false
         };
     },
     computed: {
@@ -118,6 +120,10 @@ export default {
                 }
             }
         },
+        handlePictureCardPreview(file) {
+            this.dialogImageUrl = file.url;
+            this.dialogVisible = true;
+        },
         reset() {
             this.filename = null;
             this.filesize = 0;
@@ -181,9 +187,7 @@ export default {
                                             strokeScaleEnabled: false,
                                             annotation: {
                                                 title: myContent,
-                                                text: '',
-                                                linkTitle: '',
-                                                link: ''
+                                                filters: null
                                             },
                                             x: label_x,
                                             y: label_y,
@@ -243,7 +247,7 @@ export default {
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
                     sessionStorage.setItem('imageSource', f.target.result);
-                    console.log(sessionStorage.getItem('imageSource'));
+                    // console.log(sessionStorage.getItem('imageSource'));
                     file.reader = f.target.result;
                 };
                 reader.readAsDataURL(file.raw);
@@ -283,16 +287,19 @@ export default {
 <template>
     <div class="card" style="background-color: white">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px">
-            <h5>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</h5>
+            <p>請選擇模板圖片，圖片選擇完成後請點選開始進行標註。</p>
             <button class="uiStyle sizeM btnGreen minLength" style="margin-right: 20px">
                 選擇設定檔
                 <input type="file" ref="fileInput" accept=".json" @change="handleFileInputChange" />
             </button>
         </div>
-        <el-upload :file-list="fileList" list-type="picture-card" :on-change="beforeUpload" :on-remove="handleRemove" :auto-upload="false" :limit="1" accept="image/*" :class="{ hideUpload: !showUpload }">
+        <el-upload :file-list="fileList" list-type="picture-card" :on-change="beforeUpload" :on-remove="handleRemove" :auto-upload="false" :limit="1" accept="image/*" :class="{ hideUpload: !showUpload }" :on-preview="handlePictureCardPreview">
             <el-icon><Plus /></el-icon>
         </el-upload>
     </div>
+    <el-dialog v-model="dialogVisible">
+        <img :src="dialogImageUrl" alt="Preview Image" />
+    </el-dialog>
 </template>
 <style scoped>
 .file-input-container {

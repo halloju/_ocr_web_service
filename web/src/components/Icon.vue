@@ -13,7 +13,9 @@ import {
     mdiSquareOutline,
     mdiAccountOutline,
     mdiClipboardTextOffOutline,
-    mdiClipboardTextOutline
+    mdiClipboardTextOutline,
+    mdiEye,
+    mdiInformationOutline
 } from '@mdi/js';
 
 /**
@@ -87,6 +89,10 @@ export default {
                     return 'M15.96 2.4l5.64 4.44v9.96l-10.8 4.8-8.4-8.4L7.2 2.4m1.56 2.4l-3.48 7.92 6 6 7.92-3.48V8.4l-4.8-3.6z';
                 case 'path':
                     return mdiAccountOutline;
+                case 'eye':
+                    return mdiEye;
+                case 'info':
+                    return mdiInformationOutline;
                 default:
                     return 'NOT FOUND';
             }
