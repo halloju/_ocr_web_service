@@ -229,7 +229,7 @@ export default {
             this.$refs.fileInput.value = '';
         },
         toggleUpload() {
-            console.log('toggleUpload');
+            // console.log('toggleUpload');
             this.showUpload = !this.showUpload;
         },
         beforeUpload(file) {
