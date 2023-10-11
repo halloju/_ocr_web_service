@@ -13,7 +13,8 @@ const store = new Vuex.Store({
         // 模板辨識
         template_id: '',
         createNew: false,
-        templateName: ''
+        templateName: '',
+        clickedRows: {}
     },
 
     mutations: {
@@ -46,6 +47,12 @@ const store = new Vuex.Store({
         },
         createNewUpdate: function (state, payload) {
             state.createNew = payload;
+        },
+        setClickedRow(state, { index, value }) {
+            state.clickedRows[index] = value;
+        },
+        clearClickedRows(state) {
+            state.clickedRows = {};
         }
     },
     actions: {

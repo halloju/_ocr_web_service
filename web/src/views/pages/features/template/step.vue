@@ -1,7 +1,7 @@
 <script>
 import Annotation from '@/components/Annotation.vue';
 import { onBeforeRouteLeave } from 'vue-router';
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
@@ -82,6 +82,7 @@ export default {
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
+        this.clearClickedRows();
     },
     mounted() {
         this.isFinalStep();
@@ -112,6 +113,7 @@ export default {
         };
     },
     methods: {
+        ...mapMutations(['clearClickedRows']),
         next() {
             this.isEditing = false;
             var warning_message;
@@ -119,11 +121,12 @@ export default {
                 if (this.rectangleType != 'mask' && this.rectangleType != undefined) {
                     this.getRecsFromLocalStorage().every((box) => {
                         if (box.rectangleType != 'mask') {
-                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters == null || box.annotation.filters.length == 0) {
+                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters == null || box.annotation.filters.length == 0 || !this.allClickedRowsTrue) {
                                 this.isEditing = true;
                                 return false;
                             }
                         }
+                        this.clearClickedRows();
                         return true;
                     });
                 }
@@ -189,7 +192,7 @@ export default {
                 if (this.currentStep < this.progressSteps.length) {
                     this.progressSteps[this.currentStep].status = 'next';
                 }
-
+                this.clearClickedRows();
                 this.currentStep--;
 
                 // Set the status of the new current step to 'now'
@@ -392,6 +395,7 @@ export default {
 
     computed: {
         ...mapState(['templateName']),
+        ...mapState(['clickedRows']),
         buttonText() {
             return this.templateNameEdit ? '編輯' : '確認';
         },
@@ -407,6 +411,9 @@ export default {
         tooltip_text() {
             if (this.currentStep == 0) return '請上傳圖片後點我';
             else return '請框好位置後點我';
+        },
+        allClickedRowsTrue() {
+            return Object.values(this.clickedRows).every(value => value === true);
         }
     },
     watch: {

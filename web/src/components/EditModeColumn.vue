@@ -1,6 +1,7 @@
 <script>
 import { defineComponent } from 'vue';
 import Icon from '@/components/Icon.vue';
+import { mapState, mapMutations } from 'vuex';
 
 export default defineComponent({
     components: {
@@ -29,24 +30,24 @@ export default defineComponent({
             default: []
         }
     },
-    data() {
-        return {
-            clickedRows: []
-        }
-    },
     emits: ['save', 'delete', 'click'],
+    computed: {
+        ...mapState(['clickedRows'])
+    },
     methods: {
+        ...mapMutations(['setClickedRow']),
         handleSave(index) {
             this.$emit('save', index);
-            if (!this.clickedRows.includes(index)) {
-                this.clickedRows.push(index);
-            }
+            this.clickedRows[index] = true;
         },
         handleDelete(row) {
             this.$emit('delete', row);
         },
         handleClick(index) {
             this.$emit('click', index);
+        },
+        handleChange(index) {
+            this.setClickedRow({ index, value: false });
         }
     }
 });
@@ -55,21 +56,21 @@ export default defineComponent({
 <template>
     <el-table-column v-if="buttonText" :label="buttonText" :min-width="40">
         <template v-slot="scope">
-            <el-input :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)">
+            <el-input :class="{ 'disabled-input': !scope.row.edited }" v-model="scope.row.annotation.title" @click="handleClick(scope.$index)" @change="handleChange(scope.$index)">
                 {{ scope.row.annotation.title }}
             </el-input>
         </template>
     </el-table-column>
     <el-table-column v-if="filterButtonText" :label="filterButtonText" :min-width="40">
         <template v-slot="scope">
-            <el-select v-model="scope.row.annotation.filters" multiple placeholder="請選擇">
+            <el-select v-model="scope.row.annotation.filters" multiple @change="handleChange(scope.$index)" placeholder="請選擇">
                 <el-option v-for="item in option" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
         </template>
     </el-table-column>
     <el-table-column v-if="checkColumnName" :label="checkColumnName" :min-width="15">
         <template v-slot="scope">
-            <el-button type="default" @click="handleSave(scope.$index)" :class="{ 'clicked-color': clickedRows.includes(scope.$index)}"> V </el-button>
+            <el-button type="default" @click="handleSave(scope.$index)" :class="{ 'clicked-color': clickedRows.hasOwnProperty(scope.$index) && clickedRows[scope.$index]}"> V </el-button>
         </template>
     </el-table-column>
     <el-table-column v-if="deleteColumnName" :label="deleteColumnName" :min-width="15">
