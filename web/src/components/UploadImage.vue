@@ -171,6 +171,7 @@ export default {
                                 if (bbox.length > 0) {
                                     bbox.forEach(function (element, index) {
                                         var myContent = element.hasOwnProperty('tag') ? element['tag'] : '';
+                                        const mySelect = element.hasOwnProperty('filters') ? element['filters'] : null;
                                         var label_x = element['points'][0][0];
                                         var label_y = element['points'][0][1];
                                         var label_width = element['points'][1][0] - element['points'][0][0];
@@ -187,7 +188,7 @@ export default {
                                             strokeScaleEnabled: false,
                                             annotation: {
                                                 title: myContent,
-                                                filters: null
+                                                filters: mySelect
                                             },
                                             x: label_x,
                                             y: label_y,
@@ -228,7 +229,7 @@ export default {
             this.$refs.fileInput.value = '';
         },
         toggleUpload() {
-            console.log('toggleUpload');
+            // console.log('toggleUpload');
             this.showUpload = !this.showUpload;
         },
         beforeUpload(file) {

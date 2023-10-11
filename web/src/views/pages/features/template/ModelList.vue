@@ -373,7 +373,7 @@ export default {
             </button>
         </div>
 
-        <el-table :data="formattedTableData" style="width: 100%" border>
+        <el-table :data="formattedTableData" style="width: 100%" border :default-sort = "{prop: 'template_id', order: 'descending'}">
             <el-table-column v-for="item in tableHeader" :key="item.prop" :prop="item.prop" :label="item.label" :min-width="item.width">
                 <template #default="scope">
                     <EditableRow :item="item" :row="scope.row" @edit="handleEdit(scope.$index, scope.row)" />

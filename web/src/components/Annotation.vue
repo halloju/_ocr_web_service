@@ -89,13 +89,11 @@ export default {
     mounted() {
         this.stageSize.width = this.$refs.main.clientWidth; // - 2 for border
         this.stageSize.height = this.$refs.main.clientHeight;
-        console.log(this.$refs.main.clientHeight)
         if (!this.stageSize.width || isNaN(this.stageSize.width)) this.stageSize.width = parseInt(this.width) - parseInt('4rem');
         if (!this.stageSize.height || isNaN(this.stageSize.height)) this.stageSize.height = parseInt(this.height) * 0.6;
         document.addEventListener('keydown', this.handleKeyEvent);
         // try to load from local storage or local data
         this.load();
-        console.log(this.$refs.main.clientHeight)
     },
     beforeUnmount() {
         document.removeEventListener('keydown', this.handleKeyEvent);
@@ -254,7 +252,7 @@ export default {
         },
         // delete shape
         deleteShape(name) {
-            console.log('delete shape', name);
+            // console.log('delete shape', name);
             const idx = this.shapes.findIndex((r) => r.name === name);
             if (idx >= 0) {
                 if (name === this.selectedShapeName) {
@@ -265,7 +263,7 @@ export default {
                 // call update
                 this.shapesUpdated();
             }
-            console.log('shapes', this.shapes);
+            // console.log('shapes', this.shapes);
         },
         // handle key events
         handleKeyEvent(event) {
