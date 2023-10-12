@@ -494,7 +494,7 @@ export default {
 
                 <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
             </div>
-            <div :class="infoBarClass" style="overflow-y: none">
+            <div :class="infoBarClass" style="overflow-y: auto">
                 <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)" v-if="editMode"> 新增標註</button>
                 <side-bar-entry
                     :key="ee"

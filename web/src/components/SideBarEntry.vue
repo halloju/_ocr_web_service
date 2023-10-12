@@ -73,18 +73,18 @@ export default {
                     value: 'space',
                     label: '空白'
                 },
-                {
-                    value: 'taiwan_id',
-                    label: '台灣身份證字號'
-                },
-                {
-                    value: 'currency_code',
-                    label: '幣別代碼'
-                },
-                {
-                    value: 'date',
-                    label: '日期'
-                }
+                // {
+                //     value: 'taiwan_id',
+                //     label: '台灣身份證字號'
+                // },
+                // {
+                //     value: 'currency_code',
+                //     label: '幣別代碼'
+                // },
+                // {
+                //     value: 'date',
+                //     label: '日期'
+                // }
             ],
             BoxOptions: [
                 {
