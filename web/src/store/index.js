@@ -53,6 +53,9 @@ const store = new Vuex.Store({
         },
         clearClickedRows(state) {
             state.clickedRows = {};
+        },
+        deleteClickedRow(state, index) {
+            delete state.clickedRows[index];
         }
     },
     actions: {

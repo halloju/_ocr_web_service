@@ -36,12 +36,14 @@ export default defineComponent({
     },
     methods: {
         ...mapMutations(['setClickedRow']),
+        ...mapMutations(['deleteClickedRow']),
         handleSave(index) {
             this.$emit('save', index);
             this.clickedRows[index] = true;
         },
-        handleDelete(row) {
-            this.$emit('delete', row);
+        handleDelete(scope) {
+            this.$emit('delete', scope.row);
+            this.deleteClickedRow(scope.$index);
         },
         handleClick(index) {
             this.$emit('click', index);
@@ -75,7 +77,7 @@ export default defineComponent({
     </el-table-column>
     <el-table-column v-if="deleteColumnName" :label="deleteColumnName" :min-width="15">
         <template v-slot="scope">
-            <a href="#" @click.prevent="handleDelete(scope.row)" title="Delete">
+            <a href="#" @click.prevent="handleDelete(scope)" title="Delete">
                 <icon type="delete-shape" fill="red" />
             </a>
         </template>

@@ -106,7 +106,7 @@ export default {
             <div style="display: flex; align-items: center">
                 <p v-if="useLanguage" style="margin-right: 2px; color: red">*</p>
                 <div v-if="useLanguage" style="display: flex; align-items: center; margin-right: 20px">
-                    <p style="margin-right: 10px; margin-bottom: 0px">選擇語言：</p>
+                    <p style="margin-right: 10px; margin-bottom: 0px">選擇語言與類型：</p>
                     <div>
                         <el-select multiple v-model="selectedModel" collapse-tags collapse-tags-tooltip>
                             <el-option v-for="item in languages" :key="item.value" :label="item.label" :value="item.value" style="font-size: 16px;"></el-option>
