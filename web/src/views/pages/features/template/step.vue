@@ -10,13 +10,11 @@ import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
 import { error_table, default_error_msg } from '@/constants.js';
-import Icon from '@/components/Icon.vue';
 
 export default {
     components: {
         Annotation,
         UploadImage,
-        Icon
     },
     name: 'SelfDefine',
     props: {
@@ -48,12 +46,20 @@ export default {
             currentStep: this.$store.state.createNew ? 0 : 1,
             template_id: sessionStorage.getItem('template_id') || '',
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
-            pageDesc: [
-                '框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
-                '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！',
-                '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！'
-            ],
-            pageImg: [img2, img3, img4],
+            pageInfo: {
+                text: {
+                    pageDesc: '框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
+                    image: img2
+                },
+                box: {
+                    pageDesc: '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！',
+                    image: img3
+                },
+                mask: {
+                    pageDesc: '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！',
+                    image: img4
+                }
+            },
             progressSteps: [
                 {
                     title: '圖檔上傳',
@@ -453,18 +459,6 @@ export default {
                         </button>
                         <div class="p-fluid" v-if="this.isFinal"></div>
                     </div>
-                    <el-popover v-if="this.currentStep > 0 && this.currentStep < 4" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                        <template #reference>
-                            <div class="m-2">
-                                <icon type="info" fill="#3c4c5e" />
-                            </div>
-                        </template>
-
-                        <template #default>
-                            <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
-                            <img :src="this.pageImg[this.currentStep - 1]" height="200" />
-                        </template>
-                    </el-popover>
                     <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
@@ -496,6 +490,7 @@ export default {
                         height="45vh"
                         :justShow="true"
                         :hasTitle="false"
+                        :pageInfo="pageInfo"
                     />
                 </div>
             </div>

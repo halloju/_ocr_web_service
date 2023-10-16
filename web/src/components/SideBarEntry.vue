@@ -68,11 +68,11 @@ export default {
                 {
                     value: 'symbol',
                     label: '符號'
-                },
-                {
-                    value: 'space',
-                    label: '空白'
-                },
+                }
+                // {
+                //     value: 'space',
+                //     label: '空白'
+                // },
                 // {
                 //     value: 'taiwan_id',
                 //     label: '台灣身份證字號'
