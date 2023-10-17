@@ -14,7 +14,7 @@ import { error_table, default_error_msg } from '@/constants.js';
 export default {
     components: {
         Annotation,
-        UploadImage,
+        UploadImage
     },
     name: 'SelfDefine',
     props: {
@@ -33,8 +33,6 @@ export default {
                 mask: true
             },
             isEditing: false,
-            disableInput: false,
-            templateNameEdit: false,
             input: this.$store.state.templateName || '',
             imageSrc: sessionStorage.getItem('imageSource') || '',
             initialData: {
@@ -360,9 +358,7 @@ export default {
         update(isEditing) {
             this.isEditing = isEditing;
         },
-        toggleEditSave() {
-            this.templateNameEdit = !this.templateNameEdit;
-            this.disableInput = !this.disableInput;
+        saveInput() {
             sessionStorage.setItem('templateName', this.input);
         },
         Upload(val) {
@@ -402,9 +398,6 @@ export default {
     computed: {
         ...mapState(['templateName']),
         ...mapState(['clickedRows']),
-        buttonText() {
-            return this.templateNameEdit ? '編輯' : '確認';
-        },
         rectangleType() {
             return this.boxNames[this.currentStep - 1];
         },
@@ -419,7 +412,7 @@ export default {
             else return '請框好位置後點我';
         },
         allClickedRowsTrue() {
-            return Object.values(this.clickedRows).every(value => value === true);
+            return Object.values(this.clickedRows).every((value) => value === true);
         }
     },
     watch: {
@@ -452,13 +445,8 @@ export default {
             <div style="display: flex; align-items: center">
                 <div style="display: flex; align-items: center; margin-right: 20px">
                     <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
-                    <input class="uiStyle" type="text" :disabled="disableInput" v-model="this.input" />
-                    <div class="bx-btn-set" style="margin-left: 20px">
-                        <button class="uiStyle sizeS btnGreen" @click="toggleEditSave">
-                            {{ buttonText }}
-                        </button>
-                        <div class="p-fluid" v-if="this.isFinal"></div>
-                    </div>
+                    <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
+                    <div class="p-fluid" v-if="this.isFinal"></div>
                     <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
@@ -506,9 +494,7 @@ export default {
             <button v-if="currentStep !== 0" class="uiStyle sizeM btnGreen minLength" @click="previous" style="margin-right: 20px">上一步</button>
             <button v-if="currentStep !== 0" class="uiStyle sizeM btnDarkBlue minLength" @click="cancel" style="margin-right: 20px">取消新增</button>
             <button v-if="!this.isFinal" class="uiStyle sizeM btnGreen minLength" @click="next" style="margin-right: 20px">下一步</button>
-            <button v-else class="uiStyle sizeM btnGreen minLength" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
-                提交
-            </button>
+            <button v-else class="uiStyle sizeM btnGreen minLength" @click="upload" type="success">提交</button>
         </div>
     </div>
 </template>
