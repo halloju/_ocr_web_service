@@ -465,36 +465,41 @@ export default {
                         <icon type="zoom-out" />
                     </a>
                     <hr />
-                    <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'"
-                        v-if="!editMode">
+                    <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode">
                         <icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" />
                     </a>
                     <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode">
                         <icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" />
                     </a>
-                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts"
-                        :title="isShowText ? 'show_texts' : 'hide_texts'">
+                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'">
                         <icon :type="isShowText ? 'texts-on' : 'texts-off'" />
                     </a>
                 </div>
                 <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
-                <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent"
-                    @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll"
-                    :ref="'stage'">
+                <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent" @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
                     <v-layer ref="background">
-                        <v-image :ref="'image'" :config="{
-                            image: image,
-                            stroke: 'black'
-                        }" />
+                        <v-image
+                            :ref="'image'"
+                            :config="{
+                                image: image,
+                                stroke: 'black'
+                            }"
+                        />
                     </v-layer>
                     <v-layer ref="items">
                         <template v-for="(shape, index) in shapes">
-                            <v-rect v-if="shape.type === 'rect'" :config="shape" :key="shape.name"
-                                @dragend="handleDragEnd($event, shape)" @transform="handleTransform"
-                                @transformend="handleTransformEnd($event, shape)" @mouseenter="handleMouseEnter(shape.name)"
-                                @mouseleave="handleMouseLeave" @dragmove="handleDragMove" />
-                            <v-text v-if="isShowText"
-                                :config="{ text: index + 1, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
+                            <v-rect
+                                v-if="shape.type === 'rect'"
+                                :config="shape"
+                                :key="shape.name"
+                                @dragend="handleDragEnd($event, shape)"
+                                @transform="handleTransform"
+                                @transformend="handleTransformEnd($event, shape)"
+                                @mouseenter="handleMouseEnter(shape.name)"
+                                @mouseleave="handleMouseLeave"
+                                @dragmove="handleDragMove"
+                            />
+                            <v-text v-if="isShowText" :config="{ text: index + 1, fontSize: 30, x: Math.min(shape.x, shape.x + shape.width), y: Math.min(shape.y, shape.y + shape.height) }" />
                         </template>
                         <v-transformer ref="transformer" :rotateEnabled="false" :keepRatio="false" v-if="editMode" />
                     </v-layer>
@@ -506,10 +511,8 @@ export default {
             </div>
             <div :class="infoBarClass" style="overflow-y: auto">
                 <div v-if="editMode" style="display: flex">
-                    <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)">
-                        新增標註</button>
-                    <el-popover v-if="TypeInfo" placement="top" :width="1000"
-                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                    <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)">新增標註</button>
+                    <el-popover v-if="TypeInfo" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
                             <div class="m-2">
                                 <icon type="info" fill="#3c4c5e" />
@@ -517,17 +520,26 @@ export default {
                         </template>
 
                         <template #default>
-                            <p>{{ TypeInfo[rectangleType].pageDesc }}</p>
+                            <p v-html="TypeInfo[rectangleType].pageDesc"></p>
                             <img :src="TypeInfo[rectangleType].image" height="200" />
                         </template>
                     </el-popover>
                 </div>
-                <side-bar-entry :key="ee" :shapes="shapes" :edit-mode="editMode" :justShow="justShow" :hasTitle="hasTitle"
-                    :selected-shape-name="selectedShapeName" :current-hover-shape="currentHoverShape"
-                    :rectangleType="rectangleType" v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
+                <side-bar-entry
+                    :key="ee"
+                    :shapes="shapes"
+                    :edit-mode="editMode"
+                    :justShow="justShow"
+                    :hasTitle="hasTitle"
+                    :selected-shape-name="selectedShapeName"
+                    :current-hover-shape="currentHoverShape"
+                    :rectangleType="rectangleType"
+                    v-on:sidebar-entry-enter="handleSideBarMouseEnter($event)"
                     v-on:sidebar-entry-leave="handleSideBarMouseLeave($event)"
-                    v-on:sidebar-entry-delete="deleteShape($event)" v-on:sidebar-entry-save="formSubmitted($event)"
-                    :tableHeight="tableHeight" />
+                    v-on:sidebar-entry-delete="deleteShape($event)"
+                    v-on:sidebar-entry-save="formSubmitted($event)"
+                    :tableHeight="tableHeight"
+                />
             </div>
         </div>
     </div>

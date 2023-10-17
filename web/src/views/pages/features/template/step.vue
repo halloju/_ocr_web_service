@@ -46,18 +46,35 @@ export default {
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
             pageInfo: {
                 text: {
-                    pageDesc: '框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
+                    pageDesc: '選項-請選擇填寫處包含的字符(可多選)，選項包含：</br> • 繁體中文 </br> • 英文 </br> • 數字 </br> • 符號',
                     image: img2
                 },
                 box: {
-                    pageDesc: '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！',
+                    pageDesc: '以「信用卡自動扣繳授權書」為例，若要確認使用者/顧客勾選的申請項目為何，需要將所有項目框選起來，包含「新申請」、「變更」、「取消」',
                     image: img3
                 },
                 mask: {
-                    pageDesc: '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！',
+                    pageDesc:
+                        '▪ 以玉山名片為例：</br>• 遮罩標註位置為部處、職稱、姓名等資訊，由於個人資訊可能因為同仁而有所不同，不希望作為模板比對的依據。 </br>• 僅留下名片上半部，由於玉山名片的上半部不會因為同仁資訊不同而有所差別，適合用來進行模版的比對。',
                     image: img4
                 }
             },
+            stepsInfo: [
+                {
+                    first: '◦ 框選要辨識要項的填寫處，不含欄位名稱。',
+                    second: '◦ 勾選框、印鑑(簽名)留存則在下一步驟的方塊標註進行標註。'
+                },
+                {
+                    first: '◦ 框選勾選框、印鑑(簽名)留存等位置。',
+                    second: '◦ 只框選方塊框，不含標題與選項文字內容。',
+                    details: ['• 勾選框：辨識勾選、塗黑等方塊', '• 原留印鑑框：辨識顧客是否有簽名或留存印鑑']
+                },
+                {
+                    first: '◦ 若文件為非空白的表單，透過遮罩標註功能將會變動的要項內容遮住，避免影響辨識。',
+                    second: '◦ 框選會變動的要項內容區域。'
+                }
+                // ... add the other 3 info pairs here
+            ],
             progressSteps: [
                 {
                     title: '圖檔上傳',
@@ -413,6 +430,21 @@ export default {
         },
         allClickedRowsTrue() {
             return Object.values(this.clickedRows).every((value) => value === true);
+        },
+        pageHeadInfo() {
+            if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
+                const info = this.stepsInfo[this.currentStep - 1];
+                let result = '';
+                if (info.details) {
+                    result = `${info.first}`;
+                    result += '<br>&nbsp&nbsp&nbsp&nbsp' + info.details.join('<br>&nbsp&nbsp&nbsp&nbsp');
+                    result += '<br>' + `${info.second}`;
+                } else {
+                    result = `${info.first}<br>${info.second}`;
+                }
+                return result;
+            }
+            return ''; // default value
         }
     },
     watch: {
@@ -463,6 +495,9 @@ export default {
         </div>
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
+                <div>
+                    <p v-html="pageHeadInfo"></p>
+                </div>
                 <div class="card">
                     <Annotation
                         :key="currentStep"
