@@ -24,6 +24,8 @@ class PointDict(BaseModel, extra=Extra.forbid):
         title='框的過濾器',
         example=['tchinese', 'english', 'number', 'symbol']
     )
+
+
 class UpdateTemplateRequest(BaseModel):
     template_id: str = Field(..., title="範本影像編號",
                              example="1352020220930134411")

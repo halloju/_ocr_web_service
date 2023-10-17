@@ -48,7 +48,6 @@ class Logger(object):
         if rid:
             self.manual_log['rid'] = rid
 
-
     def check_msg(self, log_msg):
         if isinstance(log_msg, dict):
             return log_msg

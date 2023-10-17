@@ -6,6 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 import uuid
 
+
 def get_request_id() -> str:  # celery with task_id
     return str(uuid.uuid4())
     # return datetime.now().strftime("%Y/%m/%d/%H/%M/%S/") + 'gpocr_web'

@@ -25,7 +25,7 @@ class GpocrRequest(BaseModel):
         example=['tchinese', 'english', 'number', 'symbol'],
         default=['tchinese', 'english', 'number', 'symbol']
     )
-    
+
     @validator("image", allow_reuse=True)
     def image_check(cls, v):
         if v == '':

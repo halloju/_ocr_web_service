@@ -29,7 +29,6 @@ class PointDict(BaseModel, extra=Extra.forbid):
         title='框的過濾器',
         example=['tchinese', 'english', 'number', 'symbol']
     )
-        
 
 
 class CreateTemplateRequest(BaseModel):
