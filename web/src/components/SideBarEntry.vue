@@ -47,7 +47,7 @@ export default {
             formData: [],
             buttonText: this.editMode ? '欄位命名' : '欄位',
             buttonTitle: this.justShow ? '區塊類型' : 'index',
-            filterButtonText: '選項',
+            filterButtonText: '區塊包含的字符',
             titleColumnName: '欄位名稱',
             resultColumnName: '辨識結果',
             checkColumnName: '確認',
@@ -68,11 +68,11 @@ export default {
                 {
                     value: 'symbol',
                     label: '符號'
-                },
-                {
-                    value: 'space',
-                    label: '空白'
-                },
+                }
+                // {
+                //     value: 'space',
+                //     label: '空白'
+                // },
                 // {
                 //     value: 'taiwan_id',
                 //     label: '台灣身份證字號'
@@ -215,14 +215,7 @@ export default {
                 :option="BoxOptions"
             >
             </edit-mode-column>
-            <edit-mode-column
-                v-if="editMode && rectangleType === 'mask'"
-                @save="handleSaveRow"
-                @delete="handleDeleteShape"
-                @click="handleClick"
-                :deleteColumnName="deleteColumnName"
-            >
-            </edit-mode-column>
+            <edit-mode-column v-if="editMode && rectangleType === 'mask'" @save="handleSaveRow" @delete="handleDeleteShape" @click="handleClick" :deleteColumnName="deleteColumnName"> </edit-mode-column>
             <!-- View Edit Result Components -->
             <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
             <!-- View Recognition Result Components -->

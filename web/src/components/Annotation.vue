@@ -27,9 +27,13 @@ export default {
             type: Boolean,
             default: false
         },
-        hasTitle: Boolean
+        hasTitle: Boolean,
+        pageInfo: {
+            type: String,
+            default: null
+        }
     },
-    data() {
+    data(props) {
         return {
             image: null,
             scale: 1, // current scale
@@ -50,7 +54,8 @@ export default {
             isShowText: this.setShowText,
             isTitle: true,
             oldAttrs: null,
-            tableHeight: '375'
+            tableHeight: '375',
+            TypeInfo: props.pageInfo
         };
     },
     watch: {
@@ -453,12 +458,22 @@ export default {
         <div :id="containerId" :class="containerClass" :style="{ width: width, height: height }">
             <div class="pa-canvas" :ref="'main'">
                 <div class="pa-controls">
-                    <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')"><icon type="zoom-in" /></a>
-                    <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')"><icon type="zoom-out" /></a>
+                    <a href="#" @click.prevent="changeScale(0.1)" title="('zoom_in')">
+                        <icon type="zoom-in" />
+                    </a>
+                    <a href="#" @click.prevent="changeScale(-0.1)" title="('zoom_out')">
+                        <icon type="zoom-out" />
+                    </a>
                     <hr />
-                    <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode"><icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" /></a>
-                    <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode"><icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" /></a>
-                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'"><icon :type="isShowText ? 'texts-on' : 'texts-off'" /></a>
+                    <a href="#" @click.prevent="toggleShowShapes" :title="isShapesVisible ? 'hide_shapes' : 'show_shapes'" v-if="!editMode">
+                        <icon :type="isShapesVisible ? 'shapes-off' : 'shapes-on'" />
+                    </a>
+                    <a href="#" @click.prevent="addRectangle(rectangleType)" title="add_rectangle" v-if="editMode">
+                        <icon type="add-rectangle" :fill="isAddingPolygon ? 'gray' : 'currentColor'" />
+                    </a>
+                    <a href="#" v-if="this.isTitle" @click.prevent="toggleShowTexts" :title="isShowText ? 'show_texts' : 'hide_texts'">
+                        <icon :type="isShowText ? 'texts-on' : 'texts-off'" />
+                    </a>
                 </div>
                 <!-- TODO: Fix buttons above - unselect triggers before button can get selectedShapeName -->
                 <v-stage :config="stageConfig" @mousedown="handleStageMouseDown" @contextmenu="cancelEvent" @mouseenter="handleGlobalMouseEnter" @mouseleave="handleGlobalMouseLeave" @wheel="handleScroll" :ref="'stage'">
@@ -495,7 +510,21 @@ export default {
                 <div class="pa-polygon-hint" v-show="isAddingPolygon">polygon_help</div>
             </div>
             <div :class="infoBarClass" style="overflow-y: auto">
-                <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)" v-if="editMode"> 新增標註</button>
+                <div v-if="editMode" style="display: flex">
+                    <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)">新增標註</button>
+                    <el-popover v-if="TypeInfo" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                        <template #reference>
+                            <div class="m-2">
+                                <icon type="info" fill="#3c4c5e" />
+                            </div>
+                        </template>
+
+                        <template #default>
+                            <p v-html="TypeInfo[rectangleType].pageDesc"></p>
+                            <img :src="TypeInfo[rectangleType].image" height="200" />
+                        </template>
+                    </el-popover>
+                </div>
                 <side-bar-entry
                     :key="ee"
                     :shapes="shapes"
