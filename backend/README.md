@@ -47,8 +47,8 @@ docker ps - a
 
 # 連進 DB 查看方式
 ```
-1. docker exec - it postgres / bin/sh
-2. psql - U postgres
+1. docker exec -it postgres / bin/sh
+2. psql -U postgres
 ```
 
 # 單元測試
@@ -60,12 +60,18 @@ python3 - m pytest - -cov = . / --cov-report = html
 
 # kafka
 ```sh
-kafka-topics - -bootstrap-server broker: 9092 \
-             - -create \
-             - -topic if_gp_ocr.gp_callback
+kafka-topics --bootstrap-server broker:9092 \
+             --create \
+             --topic if_gp_ocr.gp_controller_callback
+```
+```sh
+kafka-topics --bootstrap-server broker:9092 \
+             --create \
+             --topic if_gp_ocr.cv_controller_callback
 ```
 
-# reid
+
+# redis
 ```sh
 redis-cli - -scan | head - 10
 ```

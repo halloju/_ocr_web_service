@@ -41,7 +41,7 @@ def create_template(template, db: Session):
             BytesIO(image_binary),
             len(image_binary)
         )
-        print(f"service template create <template>: {template}")
+        # print(f"service template create <template>: {template}")
         # Step 2. 將 template 其餘資訊寫入 DB
         expiration_time = (today + timedelta(days=90)
                            ).strftime("%Y-%m-%d %H:%M:%S")

@@ -22,7 +22,6 @@ logging.basicConfig(format='%(asctime)s %(message)s',
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-
 p = Producer({
     'bootstrap.servers': 'localhost:9092',
     'sasl.username': 'admin',

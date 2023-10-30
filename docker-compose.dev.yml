@@ -105,10 +105,21 @@ services:
       ports:
         - 5672:5672
         - 15672:15672
-    consumer:
-      container_name: consumer
+    cv_consumer:
+      container_name: cv_consumer
       build: ./backend
       command: python project_consume.py cv_controller
+      volumes:
+        - ./backend:/code
+      env_file:
+        - 'variable.env'
+      depends_on:
+        - zookeeper
+        - broker
+    gp_consumer:
+      container_name: gp_consumer
+      build: ./backend
+      command: python project_consume.py gp_controller
       volumes:
         - ./backend:/code
       env_file:
