@@ -28,25 +28,44 @@ class ResultConsumer(BaseConsumer):
         try:
             task_id = msg['image_cv_id'].replace('/', '-')
             full_key = get_redis_taskname(task_id)
-            old_data = self.redis_server.get(full_key)
+            old_data = self.redis_server.hget(full_key)
             if (not old_data):
                 self.logger_tool.error({'predict_image': {'task_id': task_id, 'process_time': '', 'action': '',
                                        'status': 'FAIL', 'status_msg': '5002', 'error_msg': 'not exist in redis'}})
                 return False
+
             if msg['recognition_status'] == 'FAIL':
-                old_data['status'] = 'FAIL'
+                self.redis_server.hset(full_key, 'status', 'FAIL')
             else:
-                old_data = json.loads(old_data)
-                old_data['result'] = {'data_results': self.msg_func(msg['ocr_results']),
-                                      'image_id': msg['image_cv_id']}
-                old_data['status'] = 'SUCCESS'
+                result_data = {
+                    'data_results': self.msg_func(msg['ocr_results']),
+                    'image_id': msg['image_cv_id']
+                }
+                updates = {
+                    'result': json.dumps(result_data),
+                    'status': 'SUCCESS'
+                }
+                self.redis_server.hmset(full_key, updates)
+
                 start_time = datetime.strptime(
                     old_data['start_time'], "%Y-%m-%d %H:%M:%S")
-            self.redis_server.set(full_key, json.dumps(old_data))  # replace
-            # self.logger_tool.info({'request_id': full_key, 'msg': 'upload to redis'})
-            self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
-            ) - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
+                self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
+                ) - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
+            # if msg['recognition_status'] == 'FAIL':
+            #     old_data['status'] = 'FAIL'
+            # else:
+            #     old_data = json.loads(old_data)
+            #     old_data['result'] = {'data_results': self.msg_func(msg['ocr_results']),
+            #                           'image_id': msg['image_cv_id']}
+            #     old_data['status'] = 'SUCCESS'
+            #     start_time = datetime.strptime(
+            #         old_data['start_time'], "%Y-%m-%d %H:%M:%S")
+            # self.redis_server.set(full_key, json.dumps(old_data))  # replace
+            self.logger_tool.info(
+                {'request_id': full_key, 'msg': 'upload to redis'})
+            # self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
+            # ) - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
             return True
-        except Exception as e:
+        except Exception as exc:
             self.logger_tool.error(
-                {'request_id': msg['request_id'], 'error_msg': str(e)})
+                {'request_id': msg['request_id'], 'error_msg': str(exc)})

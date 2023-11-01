@@ -36,7 +36,9 @@ class CVOcrPredictionService(IPredictionService):
             self.logger.info(task.to_dict())
 
             # Store task in Redis
-            await self.conn.set(get_redis_taskname(task.task_id), json.dumps(task.to_dict()))
+            task_dict = task.to_dict()
+            for key, value in task_dict.items():
+                await self.conn.hset(get_redis_taskname(task.task_id), key, value)
 
             return task
         except MlaasRequestError as e:
