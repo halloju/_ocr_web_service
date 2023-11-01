@@ -79,5 +79,6 @@ async def template_ocr(request: Input, db: Session = Depends(get_db)):
         }
         output.update(response_time=end_time,
                       duration_time=duration_time, outputs=result)
+        print(output)
         return Output(**output)
     raise CustomException(status_code=401, message=form.errors)

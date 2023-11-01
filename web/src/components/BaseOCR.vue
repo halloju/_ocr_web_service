@@ -34,7 +34,7 @@ export default {
             this.switchValue = !this.switchValue;
         }
     },
-    data() {
+    data(props) {
         return {
             step: 1,
             imageComplexity: 'medium',
@@ -56,11 +56,11 @@ export default {
                 {
                     value: 'symbol',
                     label: '符號'
-                },
-                {
-                    value: 'space',
-                    label: '空白'
                 }
+                // {
+                //     value: 'space',
+                //     label: '空白'
+                // }
             ],
             selectType: 'basic',
             placeholder: '繁體中文 + 英數字',
@@ -76,7 +76,8 @@ export default {
                 }
             ],
             switchValue: false,
-            breadcrumbItems: [{ path: '/', label: '首頁' }, { label: this.title }, { label: this.subtitle, isCurrent: true }]
+            breadcrumbItems: [{ path: '/', label: '首頁' }, { label: this.title }, { label: this.subtitle, isCurrent: true }],
+            detail_description: props.description
         };
     },
     watch: {
@@ -106,7 +107,7 @@ export default {
             <div style="display: flex; align-items: center">
                 <p v-if="useLanguage" style="margin-right: 2px; color: red">*</p>
                 <div v-if="useLanguage" style="display: flex; align-items: center; margin-right: 20px">
-                    <p style="margin-right: 10px; margin-bottom: 0px">選擇語言：</p>
+                    <p style="margin-right: 10px; margin-bottom: 0px">選擇語言與類型：</p>
                     <div>
                         <el-select multiple v-model="selectedModel" collapse-tags collapse-tags-tooltip>
                             <el-option v-for="item in languages" :key="item.value" :label="item.label" :value="item.value" style="font-size: 16px;"></el-option>
@@ -138,6 +139,7 @@ export default {
             :key="imageUploadKey"
             :imageClass="imageClass"
             :defaultImgURL="defaultImgURL"
+            :description="detail_description"
         />
         <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" :hasTitle="hasTitle" />
     </div>

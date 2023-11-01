@@ -10,13 +10,11 @@ import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
 import { error_table, default_error_msg } from '@/constants.js';
-import Icon from '@/components/Icon.vue';
 
 export default {
     components: {
         Annotation,
-        UploadImage,
-        Icon
+        UploadImage
     },
     name: 'SelfDefine',
     props: {
@@ -35,8 +33,6 @@ export default {
                 mask: true
             },
             isEditing: false,
-            disableInput: false,
-            templateNameEdit: false,
             input: this.$store.state.templateName || '',
             imageSrc: sessionStorage.getItem('imageSource') || '',
             initialData: {
@@ -48,12 +44,37 @@ export default {
             currentStep: this.$store.state.createNew ? 0 : 1,
             template_id: sessionStorage.getItem('template_id') || '',
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
-            pageDesc: [
-                '框選的區域，後續可辨識出當中的文字。請框選要項值可能書寫的區域，並排除要項標題。舉例來說，若要辨識文件序號，請框選如下圖中的藍框。',
-                '框選的區域，後續可辨識是否有被勾選或填滿。舉例來說，若要辨識新申請、變更、取消是否有被勾選，請框選如下圖中的三個綠框。p.s. 若沒有要辨識的方塊，請跳過此步驟！',
-                '請框選模板中會變動的區域。舉例來說，要項值的書寫區域，或是人證上的照片等，如下圖中的橘框。p.s. 此步驟可能提升模板辨識的準確率，但非必要！'
+            pageInfo: {
+                text: {
+                    pageDesc: '選項-請選擇填寫處包含的字符(可多選)，選項包含：</br> • 繁體中文 </br> • 英文 </br> • 數字 </br> • 符號',
+                    image: img2
+                },
+                box: {
+                    pageDesc: '以「信用卡自動扣繳授權書」為例，若要確認使用者/顧客勾選的申請項目為何，需要將所有項目框選起來，包含「新申請」、「變更」、「取消」',
+                    image: img3
+                },
+                mask: {
+                    pageDesc:
+                        '▪ 以玉山名片為例：</br>• 遮罩標註位置為部處、職稱、姓名等資訊，由於個人資訊可能因為同仁而有所不同，不希望作為模板比對的依據。 </br>• 僅留下名片上半部，由於玉山名片的上半部不會因為同仁資訊不同而有所差別，適合用來進行模版的比對。',
+                    image: img4
+                }
+            },
+            stepsInfo: [
+                {
+                    first: '◦ 框選要辨識要項的填寫處，不含欄位名稱。',
+                    second: '◦ 勾選框、印鑑(簽名)留存則在下一步驟的方塊標註進行標註。'
+                },
+                {
+                    first: '◦ 框選勾選框、印鑑(簽名)留存等位置。',
+                    second: '◦ 只框選方塊框，不含標題與選項文字內容。',
+                    details: ['• 勾選框：辨識勾選、塗黑等方塊', '• 原留印鑑框：辨識顧客是否有簽名或留存印鑑']
+                },
+                {
+                    first: '◦ 若文件為非空白的表單，透過遮罩標註功能將會變動的要項內容遮住，避免影響辨識。',
+                    second: '◦ 框選會變動的要項內容區域。'
+                }
+                // ... add the other 3 info pairs here
             ],
-            pageImg: [img2, img3, img4],
             progressSteps: [
                 {
                     title: '圖檔上傳',
@@ -354,9 +375,7 @@ export default {
         update(isEditing) {
             this.isEditing = isEditing;
         },
-        toggleEditSave() {
-            this.templateNameEdit = !this.templateNameEdit;
-            this.disableInput = !this.disableInput;
+        saveInput() {
             sessionStorage.setItem('templateName', this.input);
         },
         Upload(val) {
@@ -396,9 +415,6 @@ export default {
     computed: {
         ...mapState(['templateName']),
         ...mapState(['clickedRows']),
-        buttonText() {
-            return this.templateNameEdit ? '編輯' : '確認';
-        },
         rectangleType() {
             return this.boxNames[this.currentStep - 1];
         },
@@ -413,7 +429,22 @@ export default {
             else return '請框好位置後點我';
         },
         allClickedRowsTrue() {
-            return Object.values(this.clickedRows).every(value => value === true);
+            return Object.values(this.clickedRows).every((value) => value === true);
+        },
+        pageHeadInfo() {
+            if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
+                const info = this.stepsInfo[this.currentStep - 1];
+                let result = '';
+                if (info.details) {
+                    result = `${info.first}`;
+                    result += '<br>&nbsp&nbsp&nbsp&nbsp' + info.details.join('<br>&nbsp&nbsp&nbsp&nbsp');
+                    result += '<br>' + `${info.second}`;
+                } else {
+                    result = `${info.first}<br>${info.second}`;
+                }
+                return result;
+            }
+            return ''; // default value
         }
     },
     watch: {
@@ -446,25 +477,8 @@ export default {
             <div style="display: flex; align-items: center">
                 <div style="display: flex; align-items: center; margin-right: 20px">
                     <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
-                    <input class="uiStyle" type="text" :disabled="disableInput" v-model="this.input" />
-                    <div class="bx-btn-set" style="margin-left: 20px">
-                        <button class="uiStyle sizeS btnGreen" @click="toggleEditSave">
-                            {{ buttonText }}
-                        </button>
-                        <div class="p-fluid" v-if="this.isFinal"></div>
-                    </div>
-                    <el-popover v-if="this.currentStep > 0 && this.currentStep < 4" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                        <template #reference>
-                            <div class="m-2">
-                                <icon type="info" fill="#3c4c5e" />
-                            </div>
-                        </template>
-
-                        <template #default>
-                            <p>{{ this.pageDesc[this.currentStep - 1] }}</p>
-                            <img :src="this.pageImg[this.currentStep - 1]" height="200" />
-                        </template>
-                    </el-popover>
+                    <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
+                    <div class="p-fluid" v-if="this.isFinal"></div>
                     <router-view />
                 </div>
                 <div v-if="useModelComplexity" style="display: flex; align-items: center">
@@ -481,6 +495,9 @@ export default {
         </div>
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
+                <div>
+                    <p v-html="pageHeadInfo"></p>
+                </div>
                 <div class="card">
                     <Annotation
                         :key="currentStep"
@@ -496,6 +513,7 @@ export default {
                         height="45vh"
                         :justShow="true"
                         :hasTitle="false"
+                        :pageInfo="pageInfo"
                     />
                 </div>
             </div>
@@ -511,9 +529,7 @@ export default {
             <button v-if="currentStep !== 0" class="uiStyle sizeM btnGreen minLength" @click="previous" style="margin-right: 20px">上一步</button>
             <button v-if="currentStep !== 0" class="uiStyle sizeM btnDarkBlue minLength" @click="cancel" style="margin-right: 20px">取消新增</button>
             <button v-if="!this.isFinal" class="uiStyle sizeM btnGreen minLength" @click="next" style="margin-right: 20px">下一步</button>
-            <button v-else class="uiStyle sizeM btnGreen minLength" @click="upload" v-bind:class="{ 'p-disabled': !templateNameEdit }" v-bind:disabled="!templateNameEdit" v-bind:title="!templateNameEdit ? '請確認模板名稱' : ''" type="success">
-                提交
-            </button>
+            <button v-else class="uiStyle sizeM btnGreen minLength" @click="upload" type="success">提交</button>
         </div>
     </div>
 </template>

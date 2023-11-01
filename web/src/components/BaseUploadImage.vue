@@ -32,6 +32,9 @@ export default {
         },
         defaultImgURL: {
             type: Object
+        },
+        description: {
+            type: String
         }
     },
     setup(props, { emit }) {
@@ -218,6 +221,7 @@ export default {
         }
 
         return {
+            description: props.description,
             breadcrumbItems,
             buttonText,
             buttonType,
@@ -248,7 +252,7 @@ export default {
     <div>
         <div class="card" style="background-color: white">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px">
-                <p>請上傳一張或多張圖片，圖片選擇完成後請點選開始進行辨識。</p>
+                <p>{{ description }}</p>
                 <div v-if="(fileList.length == 0) & (defaultImgURL != '')" style="display: grid; place-items: center">
                     <div class="formBtnContainer">
                         <button class="uiStyle sizeS subLength btnGreen" @click="takeDefault">
