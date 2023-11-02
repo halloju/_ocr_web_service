@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 
 
 class Task:
@@ -13,7 +14,16 @@ class Task:
         self.err_code = ''
         # Convert 2022/10/11.../uuid to 2022-10-11...-uuid
         self.task_id = str(self.image_cv_id).replace('/', '-')
-
+        
+    @staticmethod
+    async def create_and_store_image(file, image_storage):
+        image_id = str(uuid.uuid4())
+        task = Task(image_id=image_id, file_name=file.filename)
+        _, encoded_data = await image_storage.store_image_data(file, image_id)
+        if encoded_data is None:
+            task.mark_as_failed('', '', '5002', 'Image storage failed')
+        return task, encoded_data
+    
     def to_dict(self):
         """
         Convert the Task object to a dictionary. Useful for returning as a response or storing in databases.
@@ -30,16 +40,16 @@ class Task:
             'url_result': f'/ocr/result/{self.task_id}'
         }
 
-    def mark_as_processing(self, predict_class, image_cv_id):
-        self.predict_class = predict_class
+    def mark_as_processing(self, image_cv_id, predict_class: str = ''):
         self.status = 'PROCESSING'
         self.image_cv_id = image_cv_id
         self.task_id = str(self.image_cv_id).replace('/', '-')
-
-    def mark_as_failed(self, predict_class, image_cv_id, err_code, err_msg):
         self.predict_class = predict_class
+
+    def mark_as_failed(self, image_cv_id, err_code, err_msg, predict_class: str = ''):
         self.status = 'FAIL'
         self.image_cv_id = image_cv_id
         self.err_msg = err_msg  # Further refine error handling if needed
         self.err_code = err_code
         self.task_id = str(self.image_cv_id).replace('/', '-')
+        self.predict_class = predict_class

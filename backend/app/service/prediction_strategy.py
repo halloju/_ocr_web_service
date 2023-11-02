@@ -69,17 +69,19 @@ class CVOcrPredictionStrategy(PredictionStrategy):
 
 
 class GPOcrPredictionStrategy(PredictionStrategy):
-    def __init__(self):
+    def __init__(self, logger):
         self.callback_url = os.environ.get('GP_CALLBACK_MLAAS_URL', '')
         self.x_client_id = os.environ.get('MLAAS_XClient', '')
         self.authorization = os.environ.get('MLAAS_JWT', '')
         self.business_unit = "C170"
-        self.endpoint = "ocr/upload"
+        self.endpoint = "ocr/gp_ocr"
         self.project_name = "CV"
+        self.logger = logger
 
     async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Any:
         payload = self.construct_payload(
             encoded_data, input_params, request_id)
+        
         response = await async_call_mlaas_function(payload, action=self.endpoint, project=self.project_name, logger=self.logger)
         return response
 
@@ -100,11 +102,11 @@ class GPOcrPredictionStrategy(PredictionStrategy):
         })
 
         payload = {
-            "system_id": "CH0052_OLIU",
             "business_unit": self.business_unit,
             "request_id": request_id,
             "inputs": {
-                "system_id": "CH0052_OLIU",
+                "system_id": "GPOCR_WEB",
+                'user_id': '22304',
                 "image": encoded_data,
                 "source": "INTERNAL",
                 "callback": [{
@@ -112,10 +114,7 @@ class GPOcrPredictionStrategy(PredictionStrategy):
                     "callback_body": callback_body,
                     "callback_headers": callback_headers
                 }],
-                "business_category": ["OPEN_ACCOUNT_BANK", "UNSECURED_LOAN"],
-                "action": "RECOGNITION",
-                "clearness_type": "MANUAL",
-                "clearness_threshold": 2,
+                "business_category": [],
                 **input_params
             }
         }

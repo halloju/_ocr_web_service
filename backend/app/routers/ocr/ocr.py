@@ -43,29 +43,29 @@ async def process_image(request: Request, file: UploadFile, action: str, input_p
     }
 
 
-@router.post("/gp_ocr", summary="全文辨識")
-async def process(request: Request, image_complexity: str = Form(...), filters: List[str] = Form(...), files: List[UploadFile] = File(...)):
-    tasks = []
-    action = 'gp_ocr'
-    logger = request.state.logger
-    logger.info({action: {'upload_file_num': len(
-        files), 'image_complexity': image_complexity, 'filters': filters}})
-    try:
-        for file in files:
-            try:
-                task = await process_image(request, file, action=action, input_params={'image_complexity': image_complexity, 'filters': filters})
-                tasks.append(task)
-            except Exception as ex:
-                task_id = task.get('task_id', '')
-                image_id = task.get('image_id', '')
-                logger.error(
-                    {'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
-                tasks.append({'task_id': task_id, 'status': 'FAIL',
-                             'url_result': f'/ocr/result/{task_id}'})
-        return JSONResponse(status_code=202, content=tasks)
-    except Exception as ex:
-        logger.error({'error_msg': str(ex)})
-        return JSONResponse(status_code=400, content=[])
+# @router.post("/gp_ocr", summary="全文辨識")
+# async def process(request: Request, image_complexity: str = Form(...), filters: List[str] = Form(...), files: List[UploadFile] = File(...)):
+#     tasks = []
+#     action = 'gp_ocr'
+#     logger = request.state.logger
+#     logger.info({action: {'upload_file_num': len(
+#         files), 'image_complexity': image_complexity, 'filters': filters}})
+#     try:
+#         for file in files:
+#             try:
+#                 task = await process_image(request, file, action=action, input_params={'image_complexity': image_complexity, 'filters': filters})
+#                 tasks.append(task)
+#             except Exception as ex:
+#                 task_id = task.get('task_id', '')
+#                 image_id = task.get('image_id', '')
+#                 logger.error(
+#                     {'task_id': task_id, 'image_id': image_id, 'error_msg': str(ex)})
+#                 tasks.append({'task_id': task_id, 'status': 'FAIL',
+#                              'url_result': f'/ocr/result/{task_id}'})
+#         return JSONResponse(status_code=202, content=tasks)
+#     except Exception as ex:
+#         logger.error({'error_msg': str(ex)})
+#         return JSONResponse(status_code=400, content=[])
 
 
 @router.post("/template_ocr", summary="模板辨識")

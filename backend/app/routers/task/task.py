@@ -22,25 +22,24 @@ async def get_images(image_id: str, request: Request):
 @router.get('/result/{task_id}')
 async def result(task_id: str, request: Request):
     logger = request.state.logger
-    redis = request.app.state.redis
-    result = await redis.get(get_redis_taskname(task_id))
-    if (result):
-        result = json.loads(result)
-        if ('file_name' in result and 'result' in result):
-            return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': result['result'], 'file_name': result['file_name']})
+    redis_client = request.app.state.redis
+    result = await redis_client.hgetall(get_redis_taskname(task_id))
+    if ('file_name' in result and 'result' in result):
+        return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': json.loads(result['result']), 'file_name': result['file_name']})
+    else:
+        return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status']})
+    # task = AsyncResult(task_id)
+    # # Task Not Ready
+    # if not task.ready():
+    #     return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'status_msg': ''})
 
-    task = AsyncResult(task_id)
-    # Task Not Ready
-    if not task.ready():
-        return JSONResponse(status_code=202, content={'task_id': str(task_id), 'status': task.status, 'result': '', 'status_msg': ''})
-
-    task_result = task.get()
-    if task_result is None:
-        return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': 'FAIL', 'status_msg': '', 'result': 'Task result is None'})
-    # Task done: return the value
-    result = task_result.get('result')
-    logger.debug(f"result: {result}")
-    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result, 'file_name': task_result.get('file_name'), 'status_msg': task_result.get('status_msg')})
+    # task_result = task.get()
+    # if task_result is None:
+    #     return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': 'FAIL', 'status_msg': '', 'result': 'Task result is None'})
+    # # Task done: return the value
+    # result = task_result.get('result')
+    # logger.debug(f"result: {result}")
+    # return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': task_result.get('status'), 'result': result, 'file_name': task_result.get('file_name'), 'status_msg': task_result.get('status_msg')})
 
 
 @router.get('/status/{task_id}')
@@ -63,7 +62,7 @@ async def status(task_id: str, request: Request):
             if status in ['SUCCESS', 'FAILURE']:
                 return JSONResponse(status_code=200, content={'task_id': task_id, 'status': status, 'result': '', 'status_msg': status_msg, 'file_name': file_name})
             
-            logger.error(f"Task {task_id} is still in progress. Retry {retry + 1}/{max_retries}")
+            logger.info(f"Task {task_id} is still in progress. Retry {retry + 1}/{max_retries}")
         
         # Wait for a short period before retrying
         time.sleep(backoff_factor * (2 ** retry))

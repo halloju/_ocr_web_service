@@ -2,14 +2,14 @@ import base64
 import uuid
 from typing import Tuple
 from route_utils import  get_redis_filename
-
+from utils.logger import Logger
 
 class ImageStorage:
     def __init__(self, conn):
         self.conn = conn
+        self.logger = Logger('image_storage')
 
-    async def store_image_data(self, file) -> Tuple[str, str]:
-        image_id = str(uuid.uuid4())
+    async def store_image_data(self, file, image_id) -> Tuple[str, str]:
         image_data = await file.read()
         encoded_data = base64.b64encode(image_data).decode("utf-8")
 
