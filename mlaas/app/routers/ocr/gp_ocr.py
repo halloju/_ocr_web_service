@@ -29,7 +29,7 @@ router = APIRouter()
 
 # responses={},
 @router.post("/gp_ocr", response_model=Output, responses=http_responses)
-async def gp_ocr(request: Input, db: Session = Depends(get_db)):
+async def gp_ocr(request: Input):
     '''
     將 image 影像上傳至 MinIO, 並進行全文辨識，將辨識結果存入 db
     '''
@@ -60,24 +60,13 @@ async def gp_ocr(request: Input, db: Session = Depends(get_db)):
                       duration_time=duration_time, outputs=result)
         return Output(**output)
 
-    data = GpocrRequest(**req_data['inputs'])
-    form = GpocrForm(data)
-    await form.load_data()
-    if await form.is_valid():
-        ocr_image_info = GpocrRequest(
-            image=form.image)
-        image_cv_id, ocr_results = service_gp_ocr(
-            ocr_image_info=ocr_image_info, db=db)
-
-        end_time = time.time()
-        duration_time = round((end_time - start_time), 4)
-        result = {
-            'image_cv_id': image_cv_id,
-            'data_results': ocr_results,
-            'status_code': '0000',
-            'status_msg': 'OK'
-        }
-        output.update(response_time=end_time,
-                      duration_time=duration_time, outputs=result)
-        return Output(**output)
-    raise CustomException(status_code=401, message=form.errors)
+    end_time = time.time()
+    duration_time = round((end_time - start_time), 4)
+    result = {
+        'image_cv_id': '0129979143656',
+        'status_code': '0000',
+        'status_msg': 'OK'
+    }
+    output.update(response_time=end_time,
+                  duration_time=duration_time, outputs=result)
+    return Output(**output)

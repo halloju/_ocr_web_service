@@ -2,14 +2,36 @@ import os
 from typing import Optional, List
 from pydantic import BaseModel, Field, StrictStr, validator, Extra, conlist
 from app.schema.common import img_base64_string
+from app.schema.ocr.cv_upload import CallBackInputs
 
 
 class GpocrRequest(BaseModel):
+    user_id: StrictStr = Field(
+        title='使用者 ID',
+        example='user_id'
+    )
     image: StrictStr = Field(
         title='base64 字串的影像',
         description='''
         ''',
         example=img_base64_string
+    )
+    source: StrictStr = Field(
+        title='影像來源',
+        example='INTERNAL'
+    )
+    callback: Optional[List[CallBackInputs]] = Field(
+        title='請求callback時的相關參數',
+        description='''
+        當執行動作為RECOGNITION時，才需設定其相關參數，可設定多個 callback 伺服器
+        ''',
+        nullable=True,
+        example=[{'callback_url': 'www.google.com',
+                  'callback_body': "{\"business_unit\": \"C170\", \"inputs\": {\"id\": \"${image_cv_id}\", \"status\": \"${recognition_status}\", \"results\": \"${ocr_results}\"}}",
+                  'callback_headers': "{\"x-client-id\": \"abcde\"}"},
+                 {'callback_url': 'tw.yahoo.com',
+                  'callback_body': "{\"system_id\": \"OULU\", \"inputs\": {\"image_id\": \"${image_cv_id}\", \"status\": \"${recognition_status}\", \"results\": \"${ocr_results}\"}}",
+                  'callback_headers': "{\"client-id\": \"abcde\"}"}]
     )
     image_complexity: Optional[StrictStr] = Field(
         default='medium',
@@ -90,4 +112,3 @@ class GpocrResponse(BaseModel):
         ''',
         example='2022/09/20/19/30/438ffd10-1090-4687-be84-8f6c36be463a'
     )
-    data_results: Optional[List[OcrPredict]]
