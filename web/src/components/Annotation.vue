@@ -591,7 +591,7 @@ export default {
   font-size: 90%
 .pa-infobar
   margin-left: 5px
-  width: 600px
+  width: 400px
 .pa-infobarVert
   margin-top: 10px
 // Loader component
