@@ -14,7 +14,6 @@ const store = new Vuex.Store({
         template_id: '',
         createNew: false,
         templateName: '',
-        clickedRows: {}
     },
 
     mutations: {
@@ -48,15 +47,15 @@ const store = new Vuex.Store({
         createNewUpdate: function (state, payload) {
             state.createNew = payload;
         },
-        setClickedRow(state, { index, value }) {
-            state.clickedRows[index] = value;
-        },
-        clearClickedRows(state) {
-            state.clickedRows = {};
-        },
-        deleteClickedRow(state, index) {
-            delete state.clickedRows[index];
-        }
+        // setClickedRow(state, { index, value }) {
+        //     state.clickedRows[index] = value;
+        // },
+        // clearClickedRows(state) {
+        //     state.clickedRows = {};
+        // },
+        // deleteClickedRow(state, index) {
+        //     delete state.clickedRows[index];
+        // }
     },
     actions: {
         updateGeneralImageOcrResults({ commit, state }, { data, image_cv_id }) {

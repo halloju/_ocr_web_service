@@ -31,25 +31,15 @@ export default defineComponent({
         }
     },
     emits: ['save', 'delete', 'click'],
-    computed: {
-        ...mapState(['clickedRows'])
-    },
     methods: {
-        ...mapMutations(['setClickedRow']),
-        ...mapMutations(['deleteClickedRow']),
-        handleSave(index) {
-            this.$emit('save', index);
-            this.clickedRows[index] = true;
-        },
         handleDelete(scope) {
             this.$emit('delete', scope.row);
-            this.deleteClickedRow(scope.$index);
         },
         handleClick(index) {
             this.$emit('click', index);
         },
         handleChange(index) {
-            this.setClickedRow({ index, value: false });
+            this.$emit('save', index);
         }
     }
 });
@@ -70,11 +60,11 @@ export default defineComponent({
             </el-select>
         </template>
     </el-table-column>
-    <el-table-column v-if="checkColumnName" :label="checkColumnName" :min-width="15">
+    <!-- <el-table-column v-if="checkColumnName" :label="checkColumnName" :min-width="15">
         <template v-slot="scope">
             <el-button type="default" @click="handleSave(scope.$index)" :class="{ 'clicked-color': clickedRows.hasOwnProperty(scope.$index) && clickedRows[scope.$index]}"> V </el-button>
         </template>
-    </el-table-column>
+    </el-table-column> -->
     <el-table-column v-if="deleteColumnName" :label="deleteColumnName" :min-width="15">
         <template v-slot="scope">
             <a href="#" @click.prevent="handleDelete(scope)" title="Delete">

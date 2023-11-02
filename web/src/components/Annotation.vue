@@ -13,7 +13,7 @@ export default {
     props: {
         containerId: String,
         imageSrc: String,
-        dataCallback: String,
+        dataCallback: Function,
         localStorageKey: String,
         width: String,
         height: String,
