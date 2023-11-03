@@ -61,4 +61,4 @@ class ResultConsumer(BaseConsumer):
             return True
         except Exception as exc:
             self.logger_tool.error(
-                {'request_id': msg['request_id'], 'error_msg': str(exc)})
+                {'request_id': full_key, 'error_msg': str(exc)})
