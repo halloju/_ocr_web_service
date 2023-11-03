@@ -1,8 +1,9 @@
 import base64
 import uuid
 from typing import Tuple
-from route_utils import  get_redis_filename
+from route_utils import get_redis_filename
 from utils.logger import Logger
+
 
 class ImageStorage:
     def __init__(self, conn):

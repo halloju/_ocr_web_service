@@ -5,7 +5,7 @@ from route_utils import async_call_mlaas_function, get_redis_filename, get_redis
 
 
 class PredictionStrategy:
-    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Any:
+    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
         raise NotImplementedError(
             "This method should be implemented by subclasses")
 
@@ -20,14 +20,13 @@ class CVOcrPredictionStrategy(PredictionStrategy):
         self.x_client_id = os.environ.get('MLAAS_XClient', '')
         self.authorization = os.environ.get('MLAAS_JWT', '')
         self.business_unit = "C170"
-        self.endpoint = "ocr/upload"
         self.project_name = "CV"
         self.logger = logger
 
-    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Any:
+    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
         payload = self.construct_payload(
             encoded_data, input_params, request_id)
-        response = await async_call_mlaas_function(payload, action=self.endpoint, project=self.project_name, logger=self.logger)
+        response = await async_call_mlaas_function(payload, action=action, project=self.project_name, logger=self.logger)
         return response
 
     def construct_payload(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Dict[str, Any]:
@@ -74,15 +73,14 @@ class GPOcrPredictionStrategy(PredictionStrategy):
         self.x_client_id = os.environ.get('MLAAS_XClient', '')
         self.authorization = os.environ.get('MLAAS_JWT', '')
         self.business_unit = "C170"
-        self.endpoint = "ocr/gp_ocr"
         self.project_name = "CV"
         self.logger = logger
 
-    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Any:
+    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
         payload = self.construct_payload(
             encoded_data, input_params, request_id)
-        
-        response = await async_call_mlaas_function(payload, action=self.endpoint, project=self.project_name, logger=self.logger)
+
+        response = await async_call_mlaas_function(payload, action=action, project=self.project_name, logger=self.logger)
         return response
 
     def construct_payload(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Dict[str, Any]:
@@ -121,10 +119,37 @@ class GPOcrPredictionStrategy(PredictionStrategy):
         return payload
 
 
+class NonControllerOcrPredictionStrategy(PredictionStrategy):
+    def __init__(self, logger):
+        self.x_client_id = os.environ.get('MLAAS_XClient', '')
+        self.authorization = os.environ.get('MLAAS_JWT', '')
+        self.business_unit = "C170"
+        self.project_name = "CV"
+        self.logger = logger
+
+    async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
+        payload = self.construct_payload(
+            encoded_data, input_params, request_id)
+
+        response = await async_call_mlaas_function(payload, action=action, project=self.project_name, logger=self.logger)
+        return response
+
+    def construct_payload(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Dict[str, Any]:
+        payload = {
+            "business_unit": self.business_unit,
+            "request_id": request_id,
+            "inputs": {
+                "image": encoded_data,
+                **input_params
+            }
+        }
+        return payload
+
+
 class PredictionAPI:
     def __init__(self, strategy: PredictionStrategy, logger):
         self.strategy = strategy
         self.logger = logger
 
-    async def call_prediction_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str) -> Any:
-        return await self.strategy.call_api(encoded_data, input_params, request_id)
+    async def call_prediction_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
+        return await self.strategy.call_api(encoded_data, input_params, request_id, action)

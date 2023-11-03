@@ -28,8 +28,6 @@ def get_mode_conn_info(project, mode, action):
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
     headers = {}
     version = 'v1'
-    if project == 'GP':
-        version = 'v2'
     if mode == 'dev':
         connection_url = f'{mlaas_url}/{action}'
     else:
@@ -41,44 +39,6 @@ def get_mode_conn_info(project, mode, action):
             'Content-Type': 'application/json'
         }
     return action, connection_url, headers
-
-
-def call_mlaas_function(request, action: str, project, logger, timeout=5):
-    log_act = 'call_mlaas_function'
-    logger.info(
-        {log_act: {'action': action, 'request_id': request['request_id'], 'request_input_keys': list(request['inputs'].keys())}})
-
-    with httpx.Client(verify=False) as client:
-        action, connection_url, headers = get_mode_conn_info(
-            project, os.environ.get('MODE'), action)
-
-        try:
-            inp_post_response = client.post(
-                connection_url,
-                json=request,
-                headers=headers if os.environ.get('MODE') != 'dev' else None,
-                timeout=timeout
-            )
-            inp_post_response.raise_for_status()
-        except httpx.HTTPStatusError as exc:
-            logger.error({log_act: {
-                'error_msg': str(exc),
-                'status_code': exc.response.status_code
-            }})
-            raise CustomException(exc.response.status_code, str(exc)) from exc
-        except httpx.RequestError as exc:
-            logger.error({log_act: {
-                'error_msg': str(exc)
-            }})
-            raise CustomException(None, str(exc)) from exc
-
-        logger.info({log_act: {
-            'status_code': inp_post_response.status_code,
-            'connection_url': connection_url,
-            'request_input_keys': list(request['inputs'].keys())
-        }})
-
-        return get_mlaas_result(logger, inp_post_response.json())
 
 
 async def async_call_mlaas_function(request, action: str, project, logger, timeout=5):
@@ -108,12 +68,6 @@ async def async_call_mlaas_function(request, action: str, project, logger, timeo
                 'error_msg': str(exc)
             }})
             raise CustomException(None, str(exc)) from exc
-
-        # logger.info({log_act: {
-        #     'status_code': inp_post_response.status_code,
-        #     'connection_url': connection_url,
-        #     'request_input_keys': list(request['inputs'].keys())
-        # }})
 
         return get_mlaas_result(logger, inp_post_response.json())
 
