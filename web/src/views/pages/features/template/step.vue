@@ -460,8 +460,18 @@ export default {
 </script>
 <template>
     <div class="layoutZoneContainer">
-        <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
+        <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 0px">
+            <div style="margin-bottom: 20px; margin-top: 0px">
             <p class="title">新增辨識模板</p>
+            <div style="display: flex; align-items: center">
+                <div style="display: flex; align-items: center; margin-right: 20px">
+                    <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
+                        <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
+                        <div class="p-fluid" v-if="this.isFinal"></div>
+                        <router-view />
+                    </div>
+                </div>
+            </div>
             <div style="flex: 1; text-align: center">
                 <div class="progressbarContainer">
                     <ul>
@@ -474,26 +484,7 @@ export default {
             </div>
         </div>
 
-        <div style="margin-bottom: 20px; margin-top: 20px">
-            <div style="display: flex; align-items: center">
-                <div style="display: flex; align-items: center; margin-right: 20px">
-                    <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
-                    <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
-                    <div class="p-fluid" v-if="this.isFinal"></div>
-                    <router-view />
-                </div>
-                <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <p style="margin-right: 10px">使用高精準度模型：</p>
-                    <div class="switchField">
-                        <label class="switch">
-                            <input type="checkbox" id="switch" v-model="switchValue" />
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                <p v-if="useModelComplexity" style="margin-left: 10px; color: red">*注意，當您使用高精準度模型時會耗時較久</p>
-            </div>
-        </div>
+        
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
                 <div>
