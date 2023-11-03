@@ -4,6 +4,7 @@ import { onBeforeRouteLeave } from 'vue-router';
 import { mapState, mapMutations } from 'vuex';
 import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
+import Carousel from '@/components/Carousel.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 import img2 from '@/assets/img/create_template_step2.jpg';
@@ -16,7 +17,8 @@ export default {
     components: {
         Icon,
         Annotation,
-        UploadImage
+        UploadImage,
+        Carousel
     },
     name: 'SelfDefine',
     props: {
@@ -462,10 +464,10 @@ export default {
     <div class="layoutZoneContainer">
         <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 0px">
             <div style="margin-bottom: 20px; margin-top: 0px">
-            <p class="title">新增辨識模板</p>
-            <div style="display: flex; align-items: center">
-                <div style="display: flex; align-items: center; margin-right: 20px">
-                    <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
+                <p class="title">新增辨識模板</p>
+                <div style="display: flex; align-items: center">
+                    <div style="display: flex; align-items: center; margin-right: 20px">
+                        <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
                         <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
                         <div class="p-fluid" v-if="this.isFinal"></div>
                         <router-view />
@@ -484,19 +486,18 @@ export default {
             </div>
         </div>
 
-        
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
                 <div>
                     <p v-html="pageHeadInfo"></p>
-                    <el-popover v-if="popInfo" placement="left" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                    <el-popover v-if="popInfo" placement="left" :width="1000"
+                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                         <template #reference>
                             <div class="m-2 align-items-center" style="display: inline-block;">
-                                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px"/>
+                                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
                                 <p style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</p>
                             </div>
                         </template>
-
                         <template #default>
                             <p v-html="popInfo.pageDesc"></p>
                             <img :src="popInfo.image" height="200" />
@@ -504,24 +505,15 @@ export default {
                     </el-popover>
                 </div>
                 <div class="card">
-                    <Annotation
-                        :key="currentStep"
-                        containerId="my-pic-annotation-output"
-                        :imageSrc="imageSrc"
-                        :editMode="editMode"
-                        initialDataId=""
-                        image_cv_id=""
-                        :rectangleType="rectangleType"
-                        :localStorageKey="localStorageKey"
-                        :setShowText="true"
-                        height="45vh"
-                        :justShow="true"
-                        :hasTitle="false"
-                    />
+                    <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc"
+                        :editMode="editMode" initialDataId="" image_cv_id="" :rectangleType="rectangleType"
+                        :localStorageKey="localStorageKey" :setShowText="true" height="45vh" :justShow="true"
+                        :hasTitle="false" />
                 </div>
             </div>
         </div>
         <div v-else class="grid p-fluid">
+            <Carousel/>
             <div class="col-12">
                 <div class="card">
                     <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
