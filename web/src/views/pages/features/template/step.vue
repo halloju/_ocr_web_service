@@ -9,10 +9,12 @@ import { apiClient } from '@/service/auth.js';
 import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
+import Icon from '@/components/Icon.vue';
 import { error_table, default_error_msg } from '@/constants.js';
 
 export default {
     components: {
+        Icon,
         Annotation,
         UploadImage
     },
@@ -437,6 +439,13 @@ export default {
                 return result;
             }
             return ''; // default value
+        },
+        popInfo() {
+            if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
+                const info = this.pageInfo[this.rectangleType];
+                return info;
+            }
+            return null; // default value
         }
     },
     watch: {
@@ -489,6 +498,19 @@ export default {
             <div class="col-12">
                 <div>
                     <p v-html="pageHeadInfo"></p>
+                    <el-popover v-if="popInfo" placement="left" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                        <template #reference>
+                            <div class="m-2 align-items-center" style="display: inline-block;">
+                                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px"/>
+                                <p style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</p>
+                            </div>
+                        </template>
+
+                        <template #default>
+                            <p v-html="popInfo.pageDesc"></p>
+                            <img :src="popInfo.image" height="200" />
+                        </template>
+                    </el-popover>
                 </div>
                 <div class="card">
                     <Annotation
@@ -504,7 +526,6 @@ export default {
                         height="45vh"
                         :justShow="true"
                         :hasTitle="false"
-                        :pageInfo="pageInfo"
                     />
                 </div>
             </div>
