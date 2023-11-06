@@ -1,4 +1,4 @@
-import base64
+import logging
 import uuid
 
 from app.service.image_storage import ImageStorage
@@ -6,44 +6,45 @@ from app.service.image_storage import ImageStorage
 from app.service.prediction_strategy import NonControllerOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import NonControllerOcrPredictionService
 from route_utils import get_redis
-from logging import Logger
-from route_utils import get_redis_filename
+from utils.logger import Logger
+from route_utils import get_current_user
+from app.models.user import User
 
-from fastapi import APIRouter, File, Request, UploadFile, Depends
+from fastapi import APIRouter, File, UploadFile, Depends
 from fastapi.responses import JSONResponse
 from pydantic.typing import List
-from worker import predict_image
-from datetime import datetime
 from aioredis import Redis
 
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
+logger = Logger('sync_ocr')
 
-
-def get_logger() -> Logger:
-    return Logger('sync_ocr')
 
 async def get_ocr_prediction_service(
-    redis: Redis = Depends(get_redis),
-    logger=Depends(get_logger)
+    logger: Logger,
+    request_id: str,
+    redis: Redis
 ) -> NonControllerOcrPredictionService:
     image_storage = ImageStorage(conn=redis)
     gp_ocr_strategy = NonControllerOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=gp_ocr_strategy, logger=logger)
-    request_id = str(uuid.uuid4())
     return NonControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
 
 
 @router.post("/remittance", summary="匯款單辨識")
 async def remittance(
     files: List[UploadFile] = File(...),
-    prediction_service: NonControllerOcrPredictionService = Depends(
-        get_ocr_prediction_service),
-    logger=Depends(get_logger)
+    redis: Redis = Depends(get_redis),
+    current_user: User = Depends(get_current_user),
 ):
     '''
     Call remittance api
     '''
+    rid = str(uuid.uuid4())
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    prediction_service = await get_ocr_prediction_service(logger, rid, redis)
+
     tasks = []
     action = 'ocr/predict'
     input_params = {}
@@ -64,10 +65,14 @@ async def remittance(
 @router.post("/check_front", summary="支票正面辨識")
 async def check_front(
     files: List[UploadFile] = File(...),
-    prediction_service: NonControllerOcrPredictionService = Depends(
-        get_ocr_prediction_service),
-    logger=Depends(get_logger)
+    redis: Redis = Depends(get_redis),
+    current_user: User = Depends(get_current_user)
 ):
+    rid = str(uuid.uuid4())
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    prediction_service = await get_ocr_prediction_service(logger, rid, redis)
+    
     tasks = []
     action = 'ocr/front_out_predict'
     input_params = {}
@@ -88,10 +93,14 @@ async def check_front(
 @router.post("/check_back", summary="支票背面辨識")
 async def check_back(
     files: List[UploadFile] = File(...),
-    prediction_service: NonControllerOcrPredictionService = Depends(
-        get_ocr_prediction_service),
-    logger=Depends(get_logger)
+    redis: Redis = Depends(get_redis),
+    current_user: User = Depends(get_current_user)
 ):
+    rid = str(uuid.uuid4())
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    prediction_service = await get_ocr_prediction_service(logger, rid, redis)
+    
     tasks = []
     action = 'ocr/back_predict'
     input_params = {}

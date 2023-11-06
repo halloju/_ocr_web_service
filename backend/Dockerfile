@@ -43,13 +43,13 @@ WORKDIR /code
 RUN apt-get update && apt-get upgrade -y
 
 # Upgrade libc related packages
-RUN apt-get install --only-upgrade libc-bin=2.36-9+deb12u3 libc6=2.36-9+deb12u3 libc-dev-bin=2.36-9+deb12u3
+RUN apt-get install --only-upgrade libc-bin=2.36-9+deb12u3 libc6=2.36-9+deb12u3 libc-dev-bin=2.36-9+deb12u3 -y
 
 # Upgrade SSL related packages
-RUN apt-get install --only-upgrade libssl3=3.0.11-1~deb12u1 openssl=3.0.11-1~deb12u1
+RUN apt-get update && apt-get upgrade -y && apt-get install --only-upgrade --allow-downgrades libssl3=3.0.11-1~deb12u1 openssl=3.0.11-1~deb12u1 -y
 
 # Upgrade Kerberos related packages
-RUN apt-get install --only-upgrade -y libk5crypto3=1.20.1-2+deb12u1 libkrb5-3=1.20.1-2+deb12u1 libkrb5support0=1.20.1-2+deb12u1
+RUN apt-get update && apt-get upgrade -y && apt-get install --only-upgrade --allow-downgrades libk5crypto3=1.20.1-2+deb12u1 libkrb5-3=1.20.1-2+deb12u1 libkrb5support0=1.20.1-2+deb12u1 -y
 
 
 # Copy the built application from the build stage

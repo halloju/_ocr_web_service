@@ -3,29 +3,32 @@ from app.exceptions import CustomException, MlaasRequestError
 from app.forms.template_crud.create import CreateTemplateForm
 from app.schema.template_crud.create import (CreateTemplateRequest,
                                              CreateTemplateResponse)
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from route_utils import async_call_mlaas_function
-from starlette.requests import Request
+from route_utils import get_current_user, get_request_id
+from utils.logger import Logger
+from app.models.user import User
 
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
+logger = Logger('create_template')
 
 
-# responses={},
 @router.post("/create_template", response_model=CreateTemplateResponse)
-async def create_template(data: CreateTemplateRequest, request: Request):
+async def create_template(data: CreateTemplateRequest, current_user: User = Depends(get_current_user)):
     '''
     將前端標注的點位和上傳的圖片傳至 mlaas 對應的 api
     '''
+    rid = get_request_id()
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    
     form = CreateTemplateForm(data)
-    user_id = request.state.user_id
-    rid = request.state.request_id
-    logger = request.state.logger
     await form.load_data()
     if await form.is_valid():
         inputs = {
-            'user_id': user_id,
+            'user_id': current_user.user_id,
             'image': form.image,
             'points_list': form.points_list,
             'template_name': form.template_name

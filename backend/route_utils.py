@@ -2,10 +2,22 @@ import os
 
 import httpx
 from aioredis import Redis
+import uuid
 from app.exceptions import MlaasRequestError, CustomException
 from starlette.requests import Request
 from typing import Optional
 from app.response_table import response_table
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+import jwt
+from pydantic import BaseModel
+from typing import Optional
+from app.models.user import User
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def get_mlaas_result(logger, res: dict) -> Optional[dict]:
@@ -82,3 +94,24 @@ def get_redis_taskname(task_id: str) -> str:
 
 def get_redis(request: Request) -> Redis:
     return request.app.state.redis
+
+
+# Dependency
+def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub") 
+        if user_id is None:
+            raise credentials_exception
+        return User(user_id=user_id)
+    except jwt.PyJWTError:
+        raise credentials_exception
+    
+
+def get_request_id():
+    return str(uuid.uuid4())

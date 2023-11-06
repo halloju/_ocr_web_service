@@ -16,7 +16,7 @@ class Task:
         self.err_code = ''
         # Convert 2022/10/11.../uuid to 2022-10-11...-uuid
         self.task_id = str(self.image_cv_id).replace('/', '-')
-        self.ocr_results = {}
+        self.ocr_results = ''
 
     @staticmethod
     async def create_and_store_image(file, image_storage):

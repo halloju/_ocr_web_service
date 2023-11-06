@@ -1,43 +1,43 @@
 from typing import Type
-from logging import Logger
+
 from fastapi import APIRouter, File, Form, UploadFile, Depends
 from pydantic.typing import List
 from fastapi.responses import JSONResponse
-from route_utils import get_redis
 from aioredis import Redis
 import uuid
 
 from app.service.prediction_strategy import CVOcrPredictionStrategy, GPOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import ControllerOcrPredictionService
 from app.service.image_storage import ImageStorage
+from route_utils import get_current_user
+from app.models.user import User
+from utils.logger import Logger
+from route_utils import get_redis
 
 
-router = APIRouter()
-
-
-def get_logger() -> Logger:
-    return Logger('async_ocr')
+router = APIRouter(dependencies=[Depends(get_current_user)])
+logger = Logger('async_ocr')
 
 
 async def get_cv_ocr_prediction_service(
-    redis: Redis = Depends(get_redis),
-    logger=Depends(get_logger)
+    logger: Logger,
+    request_id: str,
+    redis: Redis
 ) -> ControllerOcrPredictionService:
     image_storage = ImageStorage(conn=redis)
     cv_ocr_strategy = CVOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=cv_ocr_strategy, logger=logger)
-    request_id = str(uuid.uuid4())
     return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
 
 
 async def get_gp_ocr_prediction_service(
-    redis: Redis = Depends(get_redis),
-    logger=Depends(get_logger)
+    logger: Logger,
+    request_id: str,
+    redis: Redis
 ) -> ControllerOcrPredictionService:
     image_storage = ImageStorage(conn=redis)
     gp_ocr_strategy = GPOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=gp_ocr_strategy, logger=logger)
-    request_id = str(uuid.uuid4())
     return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
 
 
@@ -45,13 +45,17 @@ async def get_gp_ocr_prediction_service(
 async def cv_upload(
     image_class: str = Form(...),
     files: List[UploadFile] = File(...),
-    prediction_service: ControllerOcrPredictionService = Depends(
-        get_cv_ocr_prediction_service),
-    logger=Depends(get_logger)
+    redis: Redis = Depends(get_redis),
+    current_user: User = Depends(get_current_user),
 ):
     '''
     Call cv_controller api
     '''
+    rid = str(uuid.uuid4())
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    prediction_service = await get_cv_ocr_prediction_service(logger, rid, redis)
+    
     tasks = []
     action = 'ocr/upload'
     input_params = {'image_class': image_class}
@@ -75,13 +79,17 @@ async def gp_upload(
     image_complexity: str = Form(...),
     filters: List[str] = Form(...),
     files: List[UploadFile] = File(...),
-    prediction_service: ControllerOcrPredictionService = Depends(
-        get_gp_ocr_prediction_service),
-    logger=Depends(get_logger)
+    redis: Redis = Depends(get_redis),
+    current_user: User = Depends(get_current_user),
 ):
     '''
     call gpocr
     '''
+    rid = str(uuid.uuid4())
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    prediction_service = await get_gp_ocr_prediction_service(logger, rid, redis)
+
     tasks = []
     action = 'ocr/gp_ocr'
     input_params = {'image_complexity': image_complexity, 'filters': filters}
@@ -104,13 +112,17 @@ async def gp_upload(
 async def template_upload(
     template_id: str = Form(...),
     files: List[UploadFile] = File(...),
-    prediction_service: ControllerOcrPredictionService = Depends(
-        get_gp_ocr_prediction_service),
-    logger=Depends(get_logger)
+    redis: Redis = Depends(get_redis),
+    current_user: User = Depends(get_current_user),
 ):
     '''
     Call template_ocr api
     '''
+    rid = str(uuid.uuid4())
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+    prediction_service = await get_gp_ocr_prediction_service(logger, rid, redis)
+
     tasks = []
     action = 'ocr/template_ocr'
     input_params = {'template_id': template_id}
