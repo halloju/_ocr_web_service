@@ -7,39 +7,36 @@ from fastapi.responses import JSONResponse
 from route_utils import get_redis_taskname
 from route_utils import get_current_user
 from utils.logger import Logger
-from starlette.requests import Request
+from route_utils import get_redis
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 logger = Logger('task')
 
 
 @router.get("/get_image/{image_id}", summary="拉圖片")
-async def get_images(image_id: str, request: Request):
+async def get_images(image_id: str, redis: Redis = Depends(get_redis),):
     # Get the Redis connection from the app state
-    redis = request.app.state.redis
     image_string = await redis.get(image_id)
     return JSONResponse(status_code=200, content=image_string)
 
 
 @router.get('/result/{task_id}')
-async def result(task_id: str, request: Request):
+async def result(task_id: str, redis: Redis = Depends(get_redis),):
     # logger = request.state.logger
-    redis_client = request.app.state.redis
-    result = await redis_client.hgetall(get_redis_taskname(task_id))
+    result = await redis.hgetall(get_redis_taskname(task_id))
         
     return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': json.loads(result['result']), 'file_name': result['file_name']})
     
 
 @router.get('/status/{task_id}')
-async def status(task_id: str, request: Request):
-    redis_client = request.app.state.redis
+async def status(task_id: str, redis: Redis = Depends(get_redis),):
     # Define maximum retries and backoff factor
     max_retries = 5
     backoff_factor = 0.1  # 100ms
 
     for retry in range(max_retries):
         # Fetch task status from Redis Hash
-        result = await redis_client.hgetall(get_redis_taskname(task_id))
+        result = await redis.hgetall(get_redis_taskname(task_id))
         if result:
             status = result.get('status')
             status_msg = result.get('status_msg', '')

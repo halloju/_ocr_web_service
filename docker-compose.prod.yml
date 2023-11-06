@@ -100,26 +100,6 @@ services:
           - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
         command:
           redis-server /usr/local/etc/redis/redis.conf
-    rabbitmq:
-      container_name: rabbitmq
-      image: rabbitmq:3.9.11-alpine
-      ports:
-        - 5672:5672
-        - 15672:15672
-    worker:
-      container_name: worker
-      image: halloju/if_gp_ocr_system_backend:v1.0.23-test
-      command: celery --app=worker.celery worker --concurrency=8 -P gevent -l info
-      volumes:
-        - ./log:/code/app/log
-      environment:
-        - MODE=dev
-      env_file:
-        - 'variable.env'
-      depends_on:
-        - backend
-        - redis
-        - rabbitmq
     consumer:
       container_name: consumer
       # image: halloju/if_gp_ocr_system_backend:v1.0.23-test

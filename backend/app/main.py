@@ -68,8 +68,7 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    # app.add_middleware(LogMiddleware)
-    app.add_middleware(AuthMiddleware)
+
     app.add_exception_handler(CustomException, exception_handler)
     app.add_exception_handler(MlaasRequestError, mlaas_request_handler)
 
