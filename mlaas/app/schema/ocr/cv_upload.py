@@ -199,12 +199,14 @@ class CVInputs(DefaultInputs):
         if 'clearness_type' in values:
             if values['clearness_type'] == 'MANUAL':
                 if field_value is None:
-                    raise ValueError('當清晰度種類為 MANUAL 時，clearness_threshold 必須存在')
+                    raise ValueError(
+                        '當清晰度種類為 MANUAL 時，clearness_threshold 必須存在')
                 if field_value <= 0:
                     raise ValueError('清晰度的門檻值必大於0')
             else:
                 if field_value is not None:
-                    raise ValueError('當清晰度種類為 DEFAULT 和 DISABLE 時，clearness_threshold 不需設定')
+                    raise ValueError(
+                        '當清晰度種類為 DEFAULT 和 DISABLE 時，clearness_threshold 不需設定')
         return field_value
 
     # @validator('image_class', allow_reuse=True)
