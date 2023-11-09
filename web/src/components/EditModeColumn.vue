@@ -65,7 +65,7 @@ export default defineComponent({
             <el-button type="default" @click="handleSave(scope.$index)" :class="{ 'clicked-color': clickedRows.hasOwnProperty(scope.$index) && clickedRows[scope.$index]}"> V </el-button>
         </template>
     </el-table-column> -->
-    <el-table-column v-if="deleteColumnName" :label="deleteColumnName" :min-width="15">
+    <el-table-column v-if="deleteColumnName" :label="deleteColumnName" :min-width="16">
         <template v-slot="scope">
             <a href="#" @click.prevent="handleDelete(scope)" title="Delete">
                 <icon type="delete-shape" fill="red" />

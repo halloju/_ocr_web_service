@@ -221,6 +221,12 @@ export default {
         }
 
         function downloadFile() {
+            if (selectedRows.value.length <= 0) {
+                ElMessage({
+                    message: '請先選擇要下載的檔案',
+                    type: 'warning'
+                });
+            }
             const excelData = getExcelData(selectedRows.value);
             const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {
@@ -302,7 +308,7 @@ export default {
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
             <p style="margin: 0; flex: 1;" class="subtitle">辨識結果</p>
             <div style="display: grid; place-items: center">
-                <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="selectedRows.length <= 0">
+                <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile">
                     {{ downloadButtonText }}
                 </button>
             </div>

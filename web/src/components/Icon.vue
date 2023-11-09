@@ -102,7 +102,7 @@ export default {
 </script>
 
 <template>
-    <span class="pa-icon">
+    <span style="display:inline-block; margin: 0.1rem" :width="width" :height="height">
         <svg :fill="fill" :width="width" :height="height" :viewBox="viewBox" :xmlns="xmlns">
             <title v-if="title">{{ title }}</title>
             <path :d="shape" />
