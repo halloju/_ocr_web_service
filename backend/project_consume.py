@@ -22,7 +22,7 @@ def run_consumer(project_name: str, redis_server, kafka_config):
             return new_results
         try:
             consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.cv_controller_callback'], redis_server, msg_func)
+                kafka_config, ['if_gp_ocr.cv_controller_callback'], redis_server, msg_func, 'ocr_results', 'cv_consumer')
             consumer.dequeue()
         except Exception as e:
             print(f'consumer failed to start, error: {e}')
@@ -34,7 +34,7 @@ def run_consumer(project_name: str, redis_server, kafka_config):
             return ocr_results
         try:
             consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func)
+                kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func, 'data_results', 'gp_consumer')
             consumer.dequeue()
         except Exception as e:
             print(f'consumer failed to start, error: {e}')

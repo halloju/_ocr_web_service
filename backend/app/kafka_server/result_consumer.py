@@ -13,18 +13,20 @@ class ResultConsumer(BaseConsumer):
     Base Class of Consumer
     """
 
-    def __init__(self, kafka_configs: dict, topics: list, redis_server, msg_func):
+    def __init__(self, kafka_configs: dict, topics: list, redis_server, msg_func, result_title, project):
         # redis_server = redis.Redis(host="redis", port=6379, decode_responses=True)
         self.redis_server = redis_server
         self.msg_func = msg_func
-        super().__init__(kafka_configs, topics, 'cv_consumer')
+        self.result_title = result_title
+        self.project = project
+        super().__init__(kafka_configs, topics, project)
 
     def consumer_process(self, msg):
         self.logger_tool.error(msg)
         # check id exist
-        if ('data_results' not in msg):
+        if (self.result_title not in msg):
             self.logger_tool.warning(
-                {'error_msg': 'ocr_results not exist in msg'})
+                {'error_msg': f'{self.result_title} not exist in msg'})
             return False
         try:
             task_id = msg['image_cv_id'].replace('/', '-')
@@ -40,7 +42,7 @@ class ResultConsumer(BaseConsumer):
                 self.redis_server.hset(full_key, 'status', 'FAIL')
             else:
                 result_data = {
-                    'data_results': self.msg_func(msg['data_results']),
+                    'data_results': self.msg_func(msg[self.result_title]),
                     'image_id': msg['image_cv_id']
                 }
                 updates = {
@@ -52,12 +54,12 @@ class ResultConsumer(BaseConsumer):
                 start_time = datetime.strptime(
                     start_time, "%Y-%m-%d %H:%M:%S")
                 self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
-                ) - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
+                ) - start_time).microseconds, 'action': self.project, 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
 
             self.logger_tool.info(
                 {'request_id': full_key, 'msg': 'upload to redis'})
             self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
-            ) - start_time).microseconds, 'action': 'cv-ocr', 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
+            ) - start_time).microseconds, 'action': self.project, 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
             return True
         except Exception as exc:
             self.logger_tool.error(
