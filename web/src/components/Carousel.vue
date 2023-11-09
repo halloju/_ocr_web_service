@@ -1,5 +1,5 @@
 <script >
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 export default {
   name: 'Carousel',
   props: {
@@ -8,10 +8,16 @@ export default {
     },
     title: {
       type: String,
+    },
+    show :{
+      type: Boolean
     }
   },
   setup(props) {
-    const dialogVisible = ref(true);
+    const dialogVisible = ref(props.show);
+    watch(() => props.show, (newShowValue) => {
+      dialogVisible.value = newShowValue;
+    });
     return {
       dialogVisible,
       fullContent: props.contents,
@@ -25,14 +31,18 @@ export default {
   <div class="Dialog">
     <el-dialog v-model="dialogVisible" center :fullscreen="false" width="50%" :close-on-click-modal="true" top="30vh"
       :close-on-press-escape="true" :show-close="true" class="agreement-dialog">
-      <el-carousel :interval="5000" arrow="always">
+      <el-carousel  arrow="always" :autoplay="false">
         <el-carousel-item v-for="item in 4" :key="item">
-          <h3 text="2xl" justify="center">{{ item }}</h3>
+          <p class="pop-header">標題 </p>
+          <div class="MessageContainer">
+            
+            <p  justify="center">{{ item }}</p>
+          </div>
         </el-carousel-item>
       </el-carousel>
       <div class="dialog-footer">
-      <button  class="uiStyle btnGreen sizeS relative" @click="dialogVisible = false">
-          取消
+        <button  class="uiStyle btnDarkBlue sizeM relative" @click="dialogVisible = false">
+          略過
         </button>
       </div>
     </el-dialog>
@@ -43,6 +53,20 @@ export default {
 
 <style scoped>
 
+.Dialog ::v-deep .el-dialog {
+  border-radius: 10px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+	-ms-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+	-o-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+	margin: 100px auto;
+	width: 60%;
+	max-width: 960px;
+	min-width: 860px;
+}
+
+
 .dialog-center {
   display: flex;
   justify-content: center;
@@ -51,6 +75,10 @@ export default {
   font-size: 16px;
 }
 
+.MessageContainer {
+	padding: 10px 60px 60px;
+	text-align: center;
+}
 .box-card {
   width: 80%;
 
@@ -83,7 +111,10 @@ export default {
   text-align: center;
 }
 
-.el-dialog {
-  background-color: rgba(0, 0, 0) !important;
+.pop-header {
+	font-size: 22px;
+	font-weight: bold;
+	color: #3c4c5e;
+	text-align: center;
 }
 </style>
