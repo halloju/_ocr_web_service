@@ -24,7 +24,11 @@ async def delete_template(template_id: str, current_user: User = Depends(get_cur
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
-        "inputs": {'template_id': template_id}
+        "inputs": {
+            'system_id': 'GPOCR_WEB',
+            'business_category': [],
+            'template_id': template_id
+        }
     }
     try:
         await async_call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)

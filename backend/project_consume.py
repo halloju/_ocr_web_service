@@ -40,9 +40,6 @@ def run_consumer(project_name: str, redis_server, kafka_config):
             print(f'consumer failed to start, error: {e}')
 
 
-
-
-
 if __name__ == "__main__":
     from urllib import parse
     project_name = sys.argv[1]
@@ -57,7 +54,7 @@ if __name__ == "__main__":
         'bootstrap.servers': os.environ.get('KAFKA_HOST'),
         'auto.offset.reset': 'earliest',
         'max.poll.interval.ms': 3600000,
-        'security.protocol': 'SASL_PLAINTEXT',
-        'sasl.mechanism': 'SCRAM-SHA-512'
+        # 'security.protocol': 'SASL_PLAINTEXT',
+        # 'sasl.mechanism': 'SCRAM-SHA-512'
     }
     run_consumer(project_name, redis_server, kafka_config)

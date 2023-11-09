@@ -30,6 +30,8 @@ async def update_template(data: UpdateTemplateRequest, current_user: User = Depe
     if await form.is_valid():
 
         inputs = {
+            'system_id': 'GPOCR_WEB',
+            'business_category': [],
             'user_id': current_user.user_id,
             'template_id': form.template_id,
             'points_list': form.points_list,

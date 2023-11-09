@@ -85,9 +85,9 @@ class NonControllerOcrPredictionService(IPredictionService):
     def _get_predict_data(self, data_pred, action):
         # Mapping action to their respective processing functions
         action_processing = {
-            'ocr/front_out_predict': self._process_front_out_predict,
-            'ocr/back_predict': self._process_back_predict,
-            'ocr/predict': self._process_ocr_predict,  # remittance
+            'CHECK/front_out_predict': self._process_front_out_predict,
+            'CHECK/back_predict': self._process_back_predict,
+            'REMIT/predict': self._process_ocr_predict,  # remittance
         }
 
         process_function = action_processing.get(action)

@@ -22,7 +22,7 @@ class ResultConsumer(BaseConsumer):
     def consumer_process(self, msg):
         self.logger_tool.error(msg)
         # check id exist
-        if ('ocr_results' not in msg):
+        if ('data_results' not in msg):
             self.logger_tool.warning(
                 {'error_msg': 'ocr_results not exist in msg'})
             return False
@@ -40,7 +40,7 @@ class ResultConsumer(BaseConsumer):
                 self.redis_server.hset(full_key, 'status', 'FAIL')
             else:
                 result_data = {
-                    'data_results': self.msg_func(msg['ocr_results']),
+                    'data_results': self.msg_func(msg['data_results']),
                     'image_id': msg['image_cv_id']
                 }
                 updates = {

@@ -28,6 +28,8 @@ async def create_template(data: CreateTemplateRequest, current_user: User = Depe
     await form.load_data()
     if await form.is_valid():
         inputs = {
+            'system_id': 'GPOCR_WEB',
+            'business_category': [],
             'user_id': current_user.user_id,
             'image': form.image,
             'points_list': form.points_list,

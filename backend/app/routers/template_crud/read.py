@@ -22,7 +22,11 @@ async def get_available_templates(current_user: User = Depends(get_current_user)
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
-        "inputs": {'user_id': current_user.user_id}
+        "inputs": {
+            'system_id': 'GPOCR_WEB',
+            'business_category': [],
+            'user_id': current_user.user_id
+        }
     }
     try:
         outputs = await async_call_mlaas_function(input_data, 'template_crud/get_available_templates', project='GP', logger=logger)
@@ -48,7 +52,11 @@ async def get_template_detail(template_id: str, current_user: User = Depends(get
     input_data = {
         "business_unit": "C170",
         "request_id": rid,
-        "inputs": {'template_id': template_id}
+        "inputs": {
+            'system_id': 'GPOCR_WEB',
+            'business_category': [],
+            'template_id': template_id
+        }
     }
     try:
         outputs = await async_call_mlaas_function(input_data, 'template_crud/get_template_detail', project='GP', logger=logger)

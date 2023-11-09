@@ -13,8 +13,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from utils.logger import Logger
-from app.middleware.auth_middleware import AuthMiddleware
-from app.middleware.log_middleware import LogMiddleware
 
 
 # 設定 logger

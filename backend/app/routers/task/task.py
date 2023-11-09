@@ -3,6 +3,7 @@ import time
 
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
+from aioredis import Redis
 
 from route_utils import get_redis_taskname
 from route_utils import get_current_user
@@ -21,7 +22,7 @@ async def get_images(image_id: str, redis: Redis = Depends(get_redis),):
 
 
 @router.get('/result/{task_id}')
-async def result(task_id: str, redis: Redis = Depends(get_redis),):
+async def result(task_id: str, redis: Redis = Depends(get_redis)):
     # logger = request.state.logger
     result = await redis.hgetall(get_redis_taskname(task_id))
         
@@ -29,7 +30,7 @@ async def result(task_id: str, redis: Redis = Depends(get_redis),):
     
 
 @router.get('/status/{task_id}')
-async def status(task_id: str, redis: Redis = Depends(get_redis),):
+async def status(task_id: str, redis: Redis = Depends(get_redis)):
     # Define maximum retries and backoff factor
     max_retries = 5
     backoff_factor = 0.1  # 100ms
@@ -50,4 +51,4 @@ async def status(task_id: str, redis: Redis = Depends(get_redis),):
         time.sleep(backoff_factor * (2 ** retry))
 
     # If maximum retries reached, return PENDING status
-    return JSONResponse(status_code=200, content={'task_id': task_id, 'status': status, 'result': '', 'status_msg': '', 'file_name': ''})
+    return JSONResponse(status_code=200, content={'task_id': task_id, 'status': 'PENDING', 'result': '', 'status_msg': '', 'file_name': ''})

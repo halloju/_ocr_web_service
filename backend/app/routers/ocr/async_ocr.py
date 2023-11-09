@@ -93,7 +93,6 @@ async def gp_upload(
     tasks = []
     action = 'ocr/gp_ocr'
     input_params = {'image_complexity': image_complexity, 'filters': filters}
-
     try:
         for file in files:
             try:

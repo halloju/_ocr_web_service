@@ -46,7 +46,7 @@ async def remittance(
     prediction_service = await get_ocr_prediction_service(logger, rid, redis)
 
     tasks = []
-    action = 'ocr/predict'
+    action = 'REMIT/predict'
     input_params = {}
     try:
         for file in files:
@@ -74,7 +74,7 @@ async def check_front(
     prediction_service = await get_ocr_prediction_service(logger, rid, redis)
     
     tasks = []
-    action = 'ocr/front_out_predict'
+    action = 'CHECK/front_out_predict'
     input_params = {}
     try:
         for file in files:
@@ -102,7 +102,7 @@ async def check_back(
     prediction_service = await get_ocr_prediction_service(logger, rid, redis)
     
     tasks = []
-    action = 'ocr/back_predict'
+    action = 'CHECK/back_predict'
     input_params = {}
     try:
         for file in files:

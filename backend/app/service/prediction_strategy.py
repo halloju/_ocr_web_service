@@ -72,9 +72,10 @@ class GPOcrPredictionStrategy(PredictionStrategy):
         self.callback_url = os.environ.get('GP_CALLBACK_MLAAS_URL', '')
         self.x_client_id = os.environ.get('MLAAS_XClient', '')
         self.authorization = os.environ.get('MLAAS_JWT', '')
-        self.business_unit = "C170"
-        self.project_name = "CV"
+        self.business_unit = "B31"
+        self.project_name = "GP"
         self.logger = logger
+        self.user_id = logger.logger.extra['user_id']
 
     async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
         payload = self.construct_payload(
@@ -90,7 +91,9 @@ class GPOcrPredictionStrategy(PredictionStrategy):
             "inputs": {
                 "image_cv_id": "${image_cv_id}",
                 "recognition_status": "${recognition_status}",
-                "ocr_results": "${ocr_results}"
+                "gp_ocr_results_by_image": "${gp_ocr_results_by_image}",
+                "gp_ocr_results_by_bbox": "${gp_ocr_results_by_bbox}",
+                "datetime": "${datetime}"
             }
         })
 
@@ -104,11 +107,11 @@ class GPOcrPredictionStrategy(PredictionStrategy):
             "request_id": request_id,
             "inputs": {
                 "system_id": "GPOCR_WEB",
-                'user_id': '22304',
+                'user_id': self.user_id,
                 "image": encoded_data,
                 "source": "INTERNAL",
                 "callback": [{
-                    "callback_url": f"{self.callback_url}/callback/controller_callback/v1",
+                    "callback_url": f"{self.callback_url}/callback/gp_callback/v1",
                     "callback_body": callback_body,
                     "callback_headers": callback_headers
                 }],
@@ -124,12 +127,13 @@ class NonControllerOcrPredictionStrategy(PredictionStrategy):
         self.x_client_id = os.environ.get('MLAAS_XClient', '')
         self.authorization = os.environ.get('MLAAS_JWT', '')
         self.business_unit = "C170"
-        self.project_name = "CV"
+        self.project_name = ""
         self.logger = logger
 
     async def call_api(self, encoded_data: str, input_params: Dict[str, Any], request_id: str, action: str) -> Any:
         payload = self.construct_payload(
             encoded_data, input_params, request_id)
+        self.project_name = action.split('/')[0]
 
         response = await async_call_mlaas_function(payload, action=action, project=self.project_name, logger=self.logger)
         return response
