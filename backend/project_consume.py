@@ -27,14 +27,14 @@ def run_consumer(project_name: str, redis_server, kafka_config):
         except Exception as e:
             print(f'consumer failed to start, error: {e}')
     elif project_name == 'gp_controller':
-        kafka_config['group.id'] = "if_gp_ocr_gp_controller_callback_02"
+        kafka_config['group.id'] = "if_gp_ocr_gp_callback_02"
 
         def msg_func(ocr_results) -> list:
             """ format is the same """
             return ocr_results
         try:
             consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.gp_controller_callback'], redis_server, msg_func)
+                kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func)
             consumer.dequeue()
         except Exception as e:
             print(f'consumer failed to start, error: {e}')
