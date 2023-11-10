@@ -37,7 +37,6 @@ export default {
       :close-on-press-escape="true" :show-close="true" class="agreement-dialog">
       <el-carousel arrow="always" :autoplay="false" height="480px">
         <el-carousel-item v-for="item in items" :key="item.key">
-          <p class="pop-header">{{ item.title }}</p>
           <div class="MessageContainer" v-html="item.content" ></div>
         </el-carousel-item>
       </el-carousel>
@@ -78,7 +77,7 @@ export default {
 
 .MessageContainer {
 	padding: 10px 60px 60px;
-	text-align: left;
+	text-align: center;
 }
 .box-card {
   width: 80%;
