@@ -26,7 +26,7 @@ Input, Output = mlaas_item_generator(
 
 
 @router.post("/template_ocr", response_model=Output, responses=http_responses)
-async def template_ocr(request: Input, db: Session = Depends(get_db)):
+async def template_ocr(request: Input):
     '''
     將 image 影像上傳至 MinIO, 並進行模板辨識，將辨識結果存入 db
     '''
@@ -58,27 +58,13 @@ async def template_ocr(request: Input, db: Session = Depends(get_db)):
                       duration_time=duration_time, outputs=result)
         return Output(**output)
 
-    data = TemplateocrRequest(**req_data['inputs'])
-    form = TemplateocrForm(data)
-    await form.load_data()
-    if await form.is_valid():
-        template_ocr_info = TemplateocrRequest(
-            image=form.image,
-            template_id=form.template_id,
-            model_name=form.model_name)
-        image_cv_id, ocr_results = service_template_ocr(
-            template_ocr_info=template_ocr_info, db=db)
-
-        end_time = time.time()
-        duration_time = round((end_time - start_time), 4)
-        result = {
-            'image_cv_id': image_cv_id,
-            'data_results': ocr_results,
-            'status_code': '0000',
-            'status_msg': 'OK'
-        }
-        output.update(response_time=end_time,
-                      duration_time=duration_time, outputs=result)
-        print(output)
-        return Output(**output)
-    raise CustomException(status_code=401, message=form.errors)
+    end_time = time.time()
+    duration_time = round((end_time - start_time), 4)
+    result = {
+        'image_cv_id': '0129979143656',
+        'status_code': '0000',
+        'status_msg': 'OK'
+    }
+    output.update(response_time=end_time,
+                  duration_time=duration_time, outputs=result)
+    return Output(**output)

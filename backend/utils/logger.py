@@ -5,6 +5,18 @@ import yaml
 import os
 
 
+
+class RequestLoggerAdapter(logging.LoggerAdapter):
+    def process(self, msg, kwargs):
+        # If the extra dictionary is not passed in kwargs, it's added.
+        if 'extra' not in kwargs:
+            kwargs['extra'] = {}
+        # Include request_id in the 'extra' dictionary
+        kwargs['extra']['request_id'] = self.extra.get('request_id', 'unknown')
+        kwargs['extra']['user_id'] = self.extra.get('user_id', 'unknown')
+        return msg, kwargs
+
+
 class CustomLogger(logging.Logger):
     def find_caller(self, stack_info=False, stacklevel=1):
         """
@@ -40,14 +52,11 @@ class Logger(object):
     def __init__(self, section_name, uid=None, rid=None, project_name='gp_web') -> None:
         config_logging()
         logging.setLoggerClass(CustomLogger)
-        self.logger = logging.getLogger(project_name)
+        self.raw_logger = logging.getLogger(project_name)
         self.section_name = section_name
-        self.manual_log = {}
-        if uid:
-            self.manual_log['uid'] = uid
-        if rid:
-            self.manual_log['rid'] = rid
-
+        self.manual_log = {'uid': uid} if uid else {}
+        # We create the adapter here
+        self.logger = RequestLoggerAdapter(self.raw_logger, self.manual_log)
 
     def check_msg(self, log_msg):
         if isinstance(log_msg, dict):
@@ -56,11 +65,7 @@ class Logger(object):
             return {f'msg_{type(log_msg).__name__}': log_msg}
 
     def log(self, level, log_msg):
-        caller_info = self.logger.find_caller()
         log_entry = {
-            "file": caller_info[0],
-            "line": caller_info[1],
-            "function": caller_info[2],
             **self.manual_log,
             self.section_name: self.check_msg(log_msg)
         }

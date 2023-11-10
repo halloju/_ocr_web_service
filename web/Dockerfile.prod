@@ -10,8 +10,9 @@ RUN cat additional_package.json | jq -r '.dependencies | keys | .[]' | xargs npm
 # RUN npm install --force
 
 # Set environment variables using the ARG values
-ENV VITE_API_URL=http://localhost/backend/
-ENV TITLE='智能OCR服務'
+ARG VITE_APP_VERSION
+ENV TITLE='智能OCR服務' \
+    VITE_APP_VERSION=$VITE_APP_VERSION
 
 # Copy the rest of the application
 COPY . /app

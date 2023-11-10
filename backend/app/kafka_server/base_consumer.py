@@ -42,9 +42,14 @@ class BaseConsumer(object):
                     continue
                 else:
                     msg_decode = json.loads(msg.value().decode("utf-8"))
+                    self.logger_tool.info({
+                        'consumer': {
+                            'msg': msg_decode
+                        }
+                    })
                     consume_status = self.consumer_process(msg_decode)
-        except Exception as e:
-            self.logger_tool.error({"consumer": {"error_info": str(e)}})
+        except Exception as exc:
+            self.logger_tool.error({"consumer": {"error_info": str(exc)}})
             # raise KafkaToolsException
         finally:
             self.consumer.close()

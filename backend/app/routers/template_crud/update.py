@@ -6,25 +6,33 @@ from app.schema.template_crud.update import UpdateTemplateRequest, UpdateTemplat
 from app.forms.template_crud.update import UpdateTemplateForm
 from route_utils import async_call_mlaas_function
 from app.exceptions import MlaasRequestError
-from starlette.requests import Request
+from fastapi import APIRouter, Depends
+from fastapi.encoders import jsonable_encoder
+from route_utils import get_current_user, get_request_id
+from utils.logger import Logger
+from app.models.user import User
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
+logger = Logger('update_template')
 
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)
-async def update_template(data: UpdateTemplateRequest, request: Request):
+async def update_template(data: UpdateTemplateRequest, current_user: User = Depends(get_current_user)):
     '''
     將 Feature DB 中的 template 資訊更新
     '''
-    user_id = request.state.user_id
-    rid = request.state.request_id
-    logger = request.state.logger
+    rid = get_request_id()
+    logger.logger.extra['request_id'] = rid
+    logger.logger.extra['user_id'] = current_user.user_id
+
     form = UpdateTemplateForm(data)
     await form.load_data()
     if await form.is_valid():
 
         inputs = {
-            'user_id': user_id,
+            'system_id': 'GPOCR_WEB',
+            'business_category': [],
+            'user_id': current_user.user_id,
             'template_id': form.template_id,
             'points_list': form.points_list,
             'template_name': form.template_name,

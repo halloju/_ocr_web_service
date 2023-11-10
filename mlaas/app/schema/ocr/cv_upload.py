@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, Extra, Field, validator
 
 
 class DefaultInputs(BaseModel, extra=Extra.forbid):
@@ -174,38 +174,40 @@ class CVInputs(DefaultInputs):
         example='PASSBOOK_COVER'
     )
 
-    # @validator('action', allow_reuse=True)
-    # def confirm_action(cls, field_value):
-    #     if field_value not in ['RECOGNITION', 'ONLY_CLASSIFY_CLEARNESS']:
-    #         raise ValueError('不支援此執行動作')
-    #     else:
-    #         return field_value
+    @validator('action', allow_reuse=True)
+    def confirm_action(cls, field_value):
+        if field_value not in ['RECOGNITION', 'ONLY_CLASSIFY_CLEARNESS']:
+            raise ValueError('不支援此執行動作')
+        else:
+            return field_value
 
-    # @validator('source', allow_reuse=True)
-    # def confirm_source(cls, field_value, values, field, config):
-    #     if field_value not in ['EXTERNAL', 'INTERNAL']:
-    #         raise ValueError('不支援此來源')
-    #     return field_value.lower()
+    @validator('source', allow_reuse=True)
+    def confirm_source(cls, field_value, values, field, config):
+        if field_value not in ['EXTERNAL', 'INTERNAL']:
+            raise ValueError('不支援此來源')
+        return field_value.lower()
 
-    # @validator('clearness_type', allow_reuse=True)
-    # def confirm_clearness_type(cls, field_value, values, field, config):
-    #     if field_value not in ['DISABLE', 'MANUAL', 'DEFAULT']:
-    #         raise ValueError('不支援此清晰度種類')
-    #     else:
-    #         return field_value
+    @validator('clearness_type', allow_reuse=True)
+    def confirm_clearness_type(cls, field_value, values, field, config):
+        if field_value not in ['DISABLE', 'MANUAL', 'DEFAULT']:
+            raise ValueError('不支援此清晰度種類')
+        else:
+            return field_value
 
-    # @validator('clearness_threshold', allow_reuse=True)
-    # def confirm_clearness_threshold(cls, field_value, values, field, config):
-    #     if 'clearness_type' in values:
-    #         if values['clearness_type'] == 'MANUAL':
-    #             if field_value is None:
-    #                 raise ValueError('當清晰度種類為 MANUAL 時，clearness_threshold 必須存在')
-    #             if field_value <= 0:
-    #                 raise ValueError('清晰度的門檻值必大於0')
-    #         else:
-    #             if field_value is not None:
-    #                 raise ValueError('當清晰度種類為 DEFAULT 和 DISABLE 時，clearness_threshold 不需設定')
-    #     return field_value
+    @validator('clearness_threshold', allow_reuse=True)
+    def confirm_clearness_threshold(cls, field_value, values, field, config):
+        if 'clearness_type' in values:
+            if values['clearness_type'] == 'MANUAL':
+                if field_value is None:
+                    raise ValueError(
+                        '當清晰度種類為 MANUAL 時，clearness_threshold 必須存在')
+                if field_value <= 0:
+                    raise ValueError('清晰度的門檻值必大於0')
+            else:
+                if field_value is not None:
+                    raise ValueError(
+                        '當清晰度種類為 DEFAULT 和 DISABLE 時，clearness_threshold 不需設定')
+        return field_value
 
     # @validator('image_class', allow_reuse=True)
     # def image_class_check(cls, field_value):

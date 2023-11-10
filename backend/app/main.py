@@ -13,8 +13,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from utils.logger import Logger
-from app.middleware.auth_middleware import AuthMiddleware
-from app.middleware.log_middleware import LogMiddleware
 
 
 # 設定 logger
@@ -68,8 +66,7 @@ def get_application():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_middleware(LogMiddleware)
-    app.add_middleware(AuthMiddleware)
+
     app.add_exception_handler(CustomException, exception_handler)
     app.add_exception_handler(MlaasRequestError, mlaas_request_handler)
 

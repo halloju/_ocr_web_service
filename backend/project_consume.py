@@ -22,25 +22,22 @@ def run_consumer(project_name: str, redis_server, kafka_config):
             return new_results
         try:
             consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.cv_controller_callback'], redis_server, msg_func)
+                kafka_config, ['if_gp_ocr.cv_controller_callback'], redis_server, msg_func, 'ocr_results', 'cv_consumer')
             consumer.dequeue()
         except Exception as e:
             print(f'consumer failed to start, error: {e}')
     elif project_name == 'gp_controller':
-        kafka_config['group.id'] = "if_gp_ocr_gp_controller_callback_02"
+        kafka_config['group.id'] = "if_gp_ocr_gp_callback_02"
 
         def msg_func(ocr_results) -> list:
             """ format is the same """
             return ocr_results
         try:
             consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.gp_controller_callback'], redis_server, msg_func)
+                kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func, 'data_results', 'gp_consumer')
             consumer.dequeue()
         except Exception as e:
             print(f'consumer failed to start, error: {e}')
-
-
-
 
 
 if __name__ == "__main__":
@@ -57,7 +54,7 @@ if __name__ == "__main__":
         'bootstrap.servers': os.environ.get('KAFKA_HOST'),
         'auto.offset.reset': 'earliest',
         'max.poll.interval.ms': 3600000,
-        'security.protocol': 'SASL_PLAINTEXT',
-        'sasl.mechanism': 'SCRAM-SHA-512'
+        # 'security.protocol': 'SASL_PLAINTEXT',
+        # 'sasl.mechanism': 'SCRAM-SHA-512'
     }
     run_consumer(project_name, redis_server, kafka_config)

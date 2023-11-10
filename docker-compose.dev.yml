@@ -53,8 +53,8 @@ services:
           - ./backend:/code
           - ./log:/code/app/log
         ports:
-          - "5001:5001"
-        command: uvicorn app.main:app --host 0.0.0.0 --port 5001 --reload
+          - "5000:5000"
+        command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
         # command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
         environment:
           - MODE=dev
@@ -99,12 +99,6 @@ services:
         mem_limit: 1024m
         volumes:
           - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    rabbitmq:
-      container_name: rabbitmq
-      image: rabbitmq:3.9.11-alpine
-      ports:
-        - 5672:5672
-        - 15672:15672
     cv_consumer:
       container_name: cv_consumer
       build: ./backend
@@ -127,24 +121,6 @@ services:
       depends_on:
         - zookeeper
         - broker
-    worker:
-      container_name: worker
-      build: ./backend
-      command: celery --app=worker.celery worker --concurrency=8 -P gevent -l info
-      volumes:
-        - ./backend:/code
-        - ./log:/code/app/logger
-      environment:
-        - MODE=dev
-        - CELERY_BROKER_URL=amqp://rabbitmq
-        - CELERY_RESULT_BACKEND=redis://redis:6379/0
-        - TZ=Asia/Taipei
-      env_file:
-        - 'variable.env'
-      depends_on:
-        - backend
-        - redis
-        - rabbitmq
     zookeeper:
       image: confluentinc/cp-zookeeper:7.0.1
       container_name: zookeeper

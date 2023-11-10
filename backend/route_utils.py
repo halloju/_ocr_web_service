@@ -2,10 +2,22 @@ import os
 
 import httpx
 from aioredis import Redis
+import uuid
 from app.exceptions import MlaasRequestError, CustomException
 from starlette.requests import Request
 from typing import Optional
 from app.response_table import response_table
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+import jwt
+from pydantic import BaseModel
+from typing import Optional
+from app.models.user import User
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def get_mlaas_result(logger, res: dict) -> Optional[dict]:
@@ -28,8 +40,6 @@ def get_mode_conn_info(project, mode, action):
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
     headers = {}
     version = 'v1'
-    if project == 'GP':
-        version = 'v2'
     if mode == 'dev':
         connection_url = f'{mlaas_url}/{action}'
     else:
@@ -41,44 +51,6 @@ def get_mode_conn_info(project, mode, action):
             'Content-Type': 'application/json'
         }
     return action, connection_url, headers
-
-
-def call_mlaas_function(request, action: str, project, logger, timeout=5):
-    log_act = 'call_mlaas_function'
-    logger.info(
-        {log_act: {'action': action, 'request_id': request['request_id'], 'request_input_keys': list(request['inputs'].keys())}})
-
-    with httpx.Client(verify=False) as client:
-        action, connection_url, headers = get_mode_conn_info(
-            project, os.environ.get('MODE'), action)
-
-        try:
-            inp_post_response = client.post(
-                connection_url,
-                json=request,
-                headers=headers if os.environ.get('MODE') != 'dev' else None,
-                timeout=timeout
-            )
-            inp_post_response.raise_for_status()
-        except httpx.HTTPStatusError as exc:
-            logger.error({log_act: {
-                'error_msg': str(exc),
-                'status_code': exc.response.status_code
-            }})
-            raise CustomException(exc.response.status_code, str(exc)) from exc
-        except httpx.RequestError as exc:
-            logger.error({log_act: {
-                'error_msg': str(exc)
-            }})
-            raise CustomException(None, str(exc)) from exc
-
-        logger.info({log_act: {
-            'status_code': inp_post_response.status_code,
-            'connection_url': connection_url,
-            'request_input_keys': list(request['inputs'].keys())
-        }})
-
-        return get_mlaas_result(logger, inp_post_response.json())
 
 
 async def async_call_mlaas_function(request, action: str, project, logger, timeout=5):
@@ -109,12 +81,6 @@ async def async_call_mlaas_function(request, action: str, project, logger, timeo
             }})
             raise CustomException(None, str(exc)) from exc
 
-        # logger.info({log_act: {
-        #     'status_code': inp_post_response.status_code,
-        #     'connection_url': connection_url,
-        #     'request_input_keys': list(request['inputs'].keys())
-        # }})
-
         return get_mlaas_result(logger, inp_post_response.json())
 
 
@@ -128,3 +94,24 @@ def get_redis_taskname(task_id: str) -> str:
 
 def get_redis(request: Request) -> Redis:
     return request.app.state.redis
+
+
+# Dependency
+def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub") 
+        if user_id is None:
+            raise credentials_exception
+        return User(user_id=user_id)
+    except jwt.PyJWTError:
+        raise credentials_exception
+    
+
+def get_request_id():
+    return str(uuid.uuid4())
