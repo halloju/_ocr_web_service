@@ -4,7 +4,7 @@ import { onBeforeRouteLeave } from 'vue-router';
 import { mapState, mapMutations } from 'vuex';
 import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
-import Carousel from '@/components/Carousel.vue';
+import TemplateCarousel from '@/views/pages/features/template/TemplateCarousel.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 import img2 from '@/assets/img/create_template_step2.jpg';
@@ -18,7 +18,7 @@ export default {
         Icon,
         Annotation,
         UploadImage,
-        Carousel
+        TemplateCarousel
     },
     name: 'SelfDefine',
     props: {
@@ -139,6 +139,7 @@ export default {
     },
     methods: {
         toggleCarousel() {
+            console.log(this.showCarousel)
             this.showCarousel = !this.showCarousel; // 改变 Carousel 显示状态的方法
         },
         next() {
@@ -536,7 +537,7 @@ export default {
             </div>
         </div>
         <div v-else class="grid p-fluid">
-            <Carousel :show="showCarousel"/>
+            <TemplateCarousel :show="showCarousel"/>
             <div class="m-2 align-items-center" style="display: inline-flex; padding-left: 14px" @click="toggleCarousel">
                 <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
                 <p style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</p>
