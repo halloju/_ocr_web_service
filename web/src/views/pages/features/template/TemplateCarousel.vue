@@ -23,8 +23,6 @@ export default {
 
     watch(() => props.show, (newShowValue) => {
       dialogVisible.value = newShowValue;
-      // If you need to emit an event on show change, you can do so:
-      // emit('update:show', newShowValue);
     });
     const contentList = reactive([
         { key: 1, title: 'Step1. 圖檔上傳', content: 
