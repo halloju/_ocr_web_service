@@ -7,10 +7,14 @@ import os
 import json
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
+from route_utils import async_call_mlaas_function
+from fastapi.encoders import jsonable_encoder
+from app.exceptions import CustomException, MlaasRequestError
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
+
 
 
 async def prepare_from_fastapi_request(request, debug=False):
@@ -51,6 +55,27 @@ def init_saml_auth(req):
     auth = OneLogin_Saml2_Auth(req, settings_data)  # saml
     return auth
 
+async def is_user_auth(user_id, rid, logger):
+    input_data = {
+            "business_unit": "C170",
+            "request_id": rid,
+            "inputs": jsonable_encoder({'user_id': user_id})
+    }
+    try:
+        outputs = await async_call_mlaas_function(
+            input_data,
+            '/user-access-control/authenticate_user',
+            project='GP',
+            logger=logger
+        )
+        return outputs['is_authenticated']
+    except MlaasRequestError as e:
+        logger.info({'error_msg': e.message})
+        raise e
+    except Exception as e:
+        logger.error({'error_msg': str(e)})
+        raise CustomException(status_code=500, message=str(e))
+    return False
 
 router = APIRouter()
 
@@ -85,6 +110,8 @@ async def acs(request: Request):
 
     # Get user attributes from the SAML response
     user_attributes = saml_auth.get_attributes()
+    if (not is_user_auth(user_attributes['EmployeeID'][0], request.state.request_id, request.state.logger)):
+        return Response(headers={"Location": f"/auth/access"}, status_code=303)
 
     # Create a JWT with the user attributes as the payload
     refresh_token_payload = {
