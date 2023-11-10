@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app.exceptions import CustomException, exception_handler
 from app.routers import docs
 from app.routers.ocr import gp_ocr, template_ocr, check_back_ocr, check_front_ocr, remittance_ocr, callback, cv_upload
+from app.routers.user import auth
 from app.routers.template_crud import create, read, update, delete
 
 
@@ -81,6 +82,11 @@ def get_application():
         cv_upload.router,
         prefix="/ocr",
         tags=["ocr"],
+    )
+    app.include_router(
+        auth.router,
+        prefix="/user-access-control",
+        tags=["user-access-control"],
     )
 
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
