@@ -4,17 +4,21 @@ import { onBeforeRouteLeave } from 'vue-router';
 import { mapState, mapMutations } from 'vuex';
 import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
+import TemplateCarousel from '@/views/pages/features/template/TemplateCarousel.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 import img2 from '@/assets/img/create_template_step2.jpg';
 import img3 from '@/assets/img/create_template_step3.jpg';
 import img4 from '@/assets/img/create_template_step4.jpg';
+import Icon from '@/components/Icon.vue';
 import { error_table, default_error_msg } from '@/constants.js';
 
 export default {
     components: {
+        Icon,
         Annotation,
-        UploadImage
+        UploadImage,
+        TemplateCarousel
     },
     name: 'SelfDefine',
     props: {
@@ -24,6 +28,7 @@ export default {
     },
     data() {
         return {
+            showCarousel: true,
             isFinal: false,
             boxes: [],
             boxNames: ['text', 'box', 'mask', 'all'],
@@ -103,7 +108,6 @@ export default {
     created() {
         // 直接跳到非上傳頁，原本圖檔資料均需要留著
         this.$store.commit('createNewUpdate', false);
-        this.clearClickedRows();
     },
     mounted() {
         this.isFinalStep();
@@ -134,24 +138,45 @@ export default {
         };
     },
     methods: {
-        ...mapMutations(['clearClickedRows']),
+        toggleCarousel() {
+            console.log(this.showCarousel)
+            this.showCarousel = !this.showCarousel; // 改变 Carousel 显示状态的方法
+        },
         next() {
             this.isEditing = false;
             var warning_message;
             if (this.currentStep != 0) {
+                let issueDescriptions = [];
                 if (this.rectangleType != 'mask' && this.rectangleType != undefined) {
-                    this.getRecsFromLocalStorage().every((box) => {
+                    this.getRecsFromLocalStorage().every((box, index) => {
                         if (box.rectangleType != 'mask') {
-                            if (box.annotation.title == undefined || box.annotation.title == '' || box.annotation.filters == null || box.annotation.filters.length == 0 || !this.allClickedRowsTrue) {
+                            let issue = { index: index, box: box, problems: [] };
+                            console.log(box.annotation.title)
+                            if (box.annotation.title === undefined || box.annotation.title === '' || box.annotation.title === null) {
                                 this.isEditing = true;
-                                return false;
+                                issue.problems.push("名稱為空");
+                            }
+                            if (box.annotation.filters === null || box.annotation.filters.length === 0) {
+                                this.isEditing = true;
+                                issue.problems.push("區域字符未選擇");
+                            }
+
+                            // If there are problems, push the issue object to the issues array
+                            if (issue.problems.length > 0) {
+                                const problemsString = issue.problems.join(', ');
+                                console.log(issue.problems)
+                                issueDescriptions.push(`${this.rectangleType}.${issue.index+1}: ${problemsString}。`);
+                                return false; // Stop the every loop because there is an issue
                             }
                         }
-                        this.clearClickedRows();
-                        return true;
+                        return true; // Continue the every loop if no issues
                     });
                 }
-                warning_message = '請先完成編輯';
+
+                // Join all issue descriptions into one string, separated by semicolons
+                let allIssuesString = issueDescriptions.join('; ');
+                console.log(allIssuesString);
+                warning_message = '請先完成編輯:'+allIssuesString;
             } else {
                 if (sessionStorage.getItem('imageSource')) {
                     this.imageSrc = sessionStorage.getItem('imageSource');
@@ -213,7 +238,6 @@ export default {
                 if (this.currentStep < this.progressSteps.length) {
                     this.progressSteps[this.currentStep].status = 'next';
                 }
-                this.clearClickedRows();
                 this.currentStep--;
 
                 // Set the status of the new current step to 'now'
@@ -414,7 +438,6 @@ export default {
 
     computed: {
         ...mapState(['templateName']),
-        ...mapState(['clickedRows']),
         rectangleType() {
             return this.boxNames[this.currentStep - 1];
         },
@@ -427,9 +450,6 @@ export default {
         tooltip_text() {
             if (this.currentStep == 0) return '請上傳圖片後點我';
             else return '請框好位置後點我';
-        },
-        allClickedRowsTrue() {
-            return Object.values(this.clickedRows).every((value) => value === true);
         },
         pageHeadInfo() {
             if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
@@ -445,6 +465,13 @@ export default {
                 return result;
             }
             return ''; // default value
+        },
+        popInfo() {
+            if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
+                const info = this.pageInfo[this.rectangleType];
+                return info;
+            }
+            return null; // default value
         }
     },
     watch: {
@@ -459,8 +486,20 @@ export default {
 </script>
 <template>
     <div class="layoutZoneContainer">
-        <div style="display: flex; align-items: center; margin-bottom: 20px; margin-top: 20px">
-            <p class="title">新增辨識模板</p>
+        <div style="display: flex; align-items: center; margin-bottom: 10px; margin-top: 0px">
+            <div style="margin-bottom: 20px; margin-top: 0px">
+                
+                <p class="title">新增辨識模板</p>
+                <div style="display: flex; align-items: center">
+                    <div style="display: flex; align-items: center; margin-right: 10px">
+                        <p style="margin-right: 2px; color: red">*</p>
+                        <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
+                        <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
+                        <div class="p-fluid" v-if="this.isFinal"></div>
+                        <router-view />
+                    </div>
+                </div>
+            </div>
             <div style="flex: 1; text-align: center">
                 <div class="progressbarContainer">
                     <ul>
@@ -473,56 +512,38 @@ export default {
             </div>
         </div>
 
-        <div style="margin-bottom: 20px; margin-top: 20px">
-            <div style="display: flex; align-items: center">
-                <div style="display: flex; align-items: center; margin-right: 20px">
-                    <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
-                    <input class="uiStyle" type="text" v-model="input" @input="saveInput" @keyup.enter="saveInput" />
-                    <div class="p-fluid" v-if="this.isFinal"></div>
-                    <router-view />
-                </div>
-                <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <p style="margin-right: 10px">使用高精準度模型：</p>
-                    <div class="switchField">
-                        <label class="switch">
-                            <input type="checkbox" id="switch" v-model="switchValue" />
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                <p v-if="useModelComplexity" style="margin-left: 10px; color: red">*注意，當您使用高精準度模型時會耗時較久</p>
-            </div>
-        </div>
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
                 <div>
                     <p v-html="pageHeadInfo"></p>
+                    <el-popover v-if="popInfo" placement="right" :width="1000"
+                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                        <template #reference>
+                            <div class="m-2 align-items-center" style="display: inline-flex;">
+                                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
+                                <span style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</span>
+                            </div>
+                        </template>
+                        <template #default>
+                            <p v-html="popInfo.pageDesc"></p>
+                            <img :src="popInfo.image" height="200" />
+                        </template>
+                    </el-popover>
                 </div>
-                <div class="card">
-                    <Annotation
-                        :key="currentStep"
-                        containerId="my-pic-annotation-output"
-                        :imageSrc="imageSrc"
-                        :editMode="editMode"
-                        dataCallback=""
-                        initialDataId=""
-                        image_cv_id=""
-                        :rectangleType="rectangleType"
-                        :localStorageKey="localStorageKey"
-                        :setShowText="true"
-                        height="45vh"
-                        :justShow="true"
-                        :hasTitle="false"
-                        :pageInfo="pageInfo"
-                    />
-                </div>
+                <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc"
+                    :editMode="editMode" initialDataId="" image_cv_id="" :rectangleType="rectangleType"
+                    :localStorageKey="localStorageKey" :setShowText="true" height="45vh" :justShow="true"
+                    :hasTitle="false" />
             </div>
         </div>
         <div v-else class="grid p-fluid">
+            <TemplateCarousel :show="showCarousel"/>
+            <div class="m-2 align-items-center" style="display: inline-flex; padding-left: 14px" @click="toggleCarousel">
+                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
+                <p style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</p>
+            </div>
             <div class="col-12">
-                <div class="card">
-                    <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
-                </div>
+                <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
             </div>
         </div>
         <div style="display: flex; justify-content: center; align-items: space-between; margin-bottom: 20px; margin-top: 0rem">

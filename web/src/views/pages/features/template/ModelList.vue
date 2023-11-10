@@ -412,7 +412,6 @@ export default {
                             :imageSrc="imageSrc"
                             width="1000px"
                             :height="height"
-                            dataCallback=""
                             :initialData="initialData"
                             :justShow="true"
                             :isVertical="true"

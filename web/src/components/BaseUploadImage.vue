@@ -1,7 +1,7 @@
 <script>
 import { ref, computed, watch, onMounted } from 'vue';
 import { apiClient } from '@/service/auth.js';
-import { ElLoading, ElMessageBox } from 'element-plus';
+import { ElLoading, ElMessageBox, ElMessage } from 'element-plus';
 import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
 import { useStore } from 'vuex';
 import { handleErrorMsg } from '@/mixins/useCommon.js';
@@ -56,14 +56,23 @@ export default {
         const dialogImageUrl = ref('');
         const imageSource = ref('');
 
-        const isUploadDisabled = computed(() => {
-            if (fileList.value.length === 0) {
-                return true;
-            } else {
-                return false;
-            }
-        });
         async function submit() {
+            // check
+            var error_str = '';
+            if (fileList.value.length === 0) {
+                error_str += `還未選擇檔案，請選擇後再繼續。\n`;
+            }
+            if (props.selectedModel.length == 0) {
+                error_str += `語言與類型不可為空，請選擇後再繼續。\n`;
+            }
+            if (error_str != '') {
+                ElMessage({
+                    message: error_str,
+                    type: 'warning'
+                });
+                return;
+            }
+
             const generalImageResponseList = [];
             const responseData = {};
             const base64Image = fileList.value[0].reader.split(',')[1];
@@ -232,7 +241,6 @@ export default {
             dialogWidth,
             dialogImageUrl,
             defaultImgURL: props.defaultImgURL,
-            isUploadDisabled,
             category: props.category,
             useModelComplexity: props.useModelComplexity,
             useLanguage: props.useLanguage,
@@ -282,7 +290,7 @@ export default {
 
         <div style="display: grid; place-items: center">
             <div class="formBtnContainer">
-                <button class="uiStyle sizeL subLength btnGreen" @click="submit" :disabled="isUploadDisabled">
+                <button class="uiStyle sizeL subLength btnGreen" @click="submit">
                     {{ buttonText }}
                 </button>
             </div>

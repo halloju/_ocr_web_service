@@ -13,7 +13,7 @@ export default {
     props: {
         containerId: String,
         imageSrc: String,
-        dataCallback: String,
+        dataCallback: Function,
         localStorageKey: String,
         width: String,
         height: String,
@@ -54,8 +54,7 @@ export default {
             isShowText: this.setShowText,
             isTitle: true,
             oldAttrs: null,
-            tableHeight: '375',
-            TypeInfo: props.pageInfo
+            tableHeight: '375'
         };
     },
     watch: {
@@ -512,18 +511,6 @@ export default {
             <div :class="infoBarClass" style="overflow-y: auto">
                 <div v-if="editMode" style="display: flex">
                     <button class="uiStyle sizeS minLength btnGreen m-2" @click="addRectangle(rectangleType)">新增標註</button>
-                    <el-popover v-if="TypeInfo" placement="top" :width="1000" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                        <template #reference>
-                            <div class="m-2">
-                                <icon type="info" fill="#3c4c5e" />
-                            </div>
-                        </template>
-
-                        <template #default>
-                            <p v-html="TypeInfo[rectangleType].pageDesc"></p>
-                            <img :src="TypeInfo[rectangleType].image" height="200" />
-                        </template>
-                    </el-popover>
                 </div>
                 <side-bar-entry
                     :key="ee"
@@ -591,7 +578,7 @@ export default {
   font-size: 90%
 .pa-infobar
   margin-left: 5px
-  width: 600px
+  width: 400px
 .pa-infobarVert
   margin-top: 10px
 // Loader component
