@@ -27,6 +27,7 @@ async def delete_template(template_id: str, current_user: User = Depends(get_cur
         "inputs": {
             'system_id': 'GPOCR_WEB',
             'business_category': [],
+            'user_id': current_user.user_id,
             'template_id': template_id
         }
     }
