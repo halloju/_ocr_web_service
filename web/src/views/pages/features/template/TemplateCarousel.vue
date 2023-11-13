@@ -5,7 +5,7 @@ import img1 from '@/assets/img/template_step/step1.png';
 import img2 from '@/assets/img/template_step/step2.png';
 import img3_1 from '@/assets/img/template_step/step3-1.png';
 import img3_2 from '@/assets/img/template_step/step3-2.png';
-import img4 from '@/assets/img/template_step/step4-1.png';
+import img4 from '@/assets/img/template_step/step4.png';
 import img5 from '@/assets/img/template_step/step5.png';
 export default {
   name: 'TemplateCarousel',
@@ -158,7 +158,8 @@ export default {
   margin-bottom: 0.5rem;
 }
 .text-detail {
-  margin-bottom: 0.3rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0rem;
   font-size: 14px;
 }
 
