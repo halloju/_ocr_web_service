@@ -7,11 +7,15 @@ import UploadImage from '@/components/UploadImage.vue';
 import TemplateCarousel from '@/views/pages/features/template/TemplateCarousel.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
-import img2 from '@/assets/img/create_template_step2.jpg';
-import img3 from '@/assets/img/create_template_step3.jpg';
-import img4 from '@/assets/img/create_template_step4.jpg';
+
 import Icon from '@/components/Icon.vue';
 import { error_table, default_error_msg } from '@/constants.js';
+import img1 from '@/assets/img/template_step/step1.png';
+import img2 from '@/assets/img/template_step/step2.png';
+import img3_1 from '@/assets/img/template_step/step3-1.png';
+import img3_2 from '@/assets/img/template_step/step3-2.png';
+import img4 from '@/assets/img/template_step/step4-1.png';
+import img5 from '@/assets/img/template_step/step5.png';
 
 export default {
     components: {
@@ -49,34 +53,62 @@ export default {
             currentStep: this.$store.state.createNew ? 0 : 1,
             template_id: sessionStorage.getItem('template_id') || '',
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
-            pageInfo: {
-                text: {
-                    pageDesc: '選項-請選擇填寫處包含的字符(可多選)，選項包含：</br> • 繁體中文 </br> • 英文 </br> • 數字 </br> • 符號',
+            pageInfo: [
+                {
+                    pageDesc: `<ul class="instructions">
+                        <li>請上傳<span class="red-text">空白的</span>表格或申請書圖檔 (例:未填寫的電子函證授權書、未填寫的XXX)</li>
+                        <li>若<span class="red-text">無空白的</span>表格或申請書圖檔善用<strong class="bold-text">Step4.遮罩標註</strong></li>
+                        <li>用來建立模板的圖片請勿包含個人機敏資訊及本行營業秘密，請參閱「IC-030_玉山銀行員工資訊安全作業要點」第六條（十）之即時通訊軟體使用規範</li>
+                    </ul>`,
+                    image: img1
+                },
+                {
+                    pageDesc: `<ul class="instructions">
+                        <li>框選文字填寫範圍<span class="red-text">不含欄位名稱、表格框線或底線</span></li>
+                        <li>框選<span class="red-text">純文字</span>辨識範圍<span class="red-text">不含勾選框、原留印鑑框</span></li>
+                    </ul>`,
                     image: img2
                 },
-                box: {
-                    pageDesc: '以「信用卡自動扣繳授權書」為例，若要確認使用者/顧客勾選的申請項目為何，需要將所有項目框選起來，包含「新申請」、「變更」、「取消」',
-                    image: img3
+                {
+                    pageDesc: `<ul class="instructions">
+                        <li>只框選方框處，<span class="red-text">不含欄位名稱、選項文字</span>\n例：確認顧客勾選項目為何，只需框選方框處，<span class="red-text">不含</span>選項文字「新申請」、「變更」、「取消」。</li>
+                    </ul>
+                    <img src="${img3_2}" height="30" margin="10px 0px 0px 20px" />`,
+                    image: img3_1
                 },
-                mask: {
-                    pageDesc:
-                        '▪ 以玉山名片為例：</br>• 遮罩標註位置為部處、職稱、姓名等資訊，由於個人資訊可能因為同仁而有所不同，不希望作為模板比對的依據。 </br>• 僅留下名片上半部，由於玉山名片的上半部不會因為同仁資訊不同而有所差別，適合用來進行模版的比對。',
+                {
+                    pageDesc:`<ul class="instructions">
+                        <li>例1: 以玉山名片為例, 遮罩標註會變動的內容與區域(部處、職稱、姓名等資訊)，僅留上半部進行模版比對。</li>
+                        <li>例2: 以香港傳真交易申請書為例，若缺乏空白模板，須將表單欄位的填寫內容遮罩，使表單像未填寫過的空白表單 (類似立可帶的功用！)</li>
+                    </ul>`,
                     image: img4
+                },
+                {
+                    pageDesc: ``,
+                    image: img5
                 }
-            },
+            ],
             stepsInfo: [
                 {
-                    first: '◦ 框選要辨識要項的填寫處，不含欄位名稱。',
-                    second: '◦ 勾選框、印鑑(簽名)留存則在下一步驟的方塊標註進行標註。'
+                    first: '① 命名「模板名稱」',
+                    second: '② 點選「新增圖片」或「+」按鈕，選取您欲建立的模版圖片。'
                 },
                 {
-                    first: '◦ 框選勾選框、印鑑(簽名)留存等位置。',
-                    second: '◦ 只框選方塊框，不含標題與選項文字內容。',
-                    details: ['• 勾選框：辨識勾選、塗黑等方塊', '• 原留印鑑框：辨識顧客是否有簽名或留存印鑑']
+                    first: '① 點選「新增標註」',
+                    second: '② 框選欲辨識的文字填寫範圍->輸入「欄位名稱」->選擇「區塊包含的字符」。(若有勾選框或簽名/印鑑欄位，請於下一步方塊標註時新增)'
                 },
                 {
-                    first: '◦ 若文件為非空白的表單，透過遮罩標註功能將會變動的要項內容遮住，避免影響辨識。',
-                    second: '◦ 框選會變動的要項內容區域。'
+                    first: '① 點選「新增標註」',
+                    second: '② 框選欲辨識的勾選框、原留印鑑(簽名) -> 輸入「欄位名稱」-> 選擇「區塊包含的項目」。',
+                    details: ['※勾選框：辨識勾選、塗黑等方塊', '※原留印鑑框：辨識顧客是否有簽名或留存印鑑']
+                },
+                {
+                    first: '① 點選「新增標註」',
+                    second: '② 框選表格、申請書或文件圖檔上的填寫區域與所有會變動的內容/你希望變成空白的內容。'
+                },
+                {
+                    first: '確認文字標註、方塊標註、遮罩標註皆無誤即可送出新增模板',
+                    second: ' '
                 }
                 // ... add the other 3 info pairs here
             ],
@@ -452,8 +484,8 @@ export default {
             else return '請框好位置後點我';
         },
         pageHeadInfo() {
-            if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
-                const info = this.stepsInfo[this.currentStep - 1];
+            if (this.currentStep >= 0 && this.currentStep <= this.stepsInfo.length) {
+                const info = this.stepsInfo[this.currentStep];
                 let result = '';
                 if (info.details) {
                     result = `${info.first}`;
@@ -467,8 +499,8 @@ export default {
             return ''; // default value
         },
         popInfo() {
-            if (this.currentStep >= 1 && this.currentStep <= this.stepsInfo.length) {
-                const info = this.pageInfo[this.rectangleType];
+            if (this.currentStep >= 0 && this.currentStep <= this.stepsInfo.length) {
+                const info = this.pageInfo[this.currentStep];
                 return info;
             }
             return null; // default value
@@ -488,8 +520,13 @@ export default {
     <div class="layoutZoneContainer">
         <div style="display: flex; align-items: center; margin-bottom: 10px; margin-top: 0px">
             <div style="margin-bottom: 20px; margin-top: 0px">
-                
-                <p class="title">新增辨識模板</p>
+                <div style="display: flex; align-items: center;">
+                    <p class="title">新增辨識模板</p>
+                    <TemplateCarousel :show="showCarousel"/>
+                    <div class="align-items-center" style="display: inline-flex; padding-left: 3px; margin-bottom: 1rem" @click="toggleCarousel">
+                        <icon type="info" fill="#3c4c5e" title="完整操作說明" width="20px" height="20px" />
+                    </div>
+                </div>
                 <div style="display: flex; align-items: center">
                     <div style="display: flex; align-items: center; margin-right: 10px">
                         <p style="margin-right: 2px; color: red">*</p>
@@ -511,25 +548,24 @@ export default {
                 </div>
             </div>
         </div>
-
+        <div>
+            <p v-html="pageHeadInfo" class="m-0"></p>
+            <el-popover v-if="popInfo" placement="right" :width="1000"
+                popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                <template #reference>
+                    <div class="m-2 align-items-center" style="display: inline-flex;">
+                        <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
+                        <span style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</span>
+                    </div>
+                </template>
+                <template #default>
+                    <img :src="popInfo.image" height="200" />
+                    <p v-html="popInfo.pageDesc"></p>
+                </template>
+            </el-popover>
+        </div>
         <div v-if="currentStep > 0" class="grid p-fluid">
             <div class="col-12">
-                <div>
-                    <p v-html="pageHeadInfo"></p>
-                    <el-popover v-if="popInfo" placement="right" :width="1000"
-                        popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                        <template #reference>
-                            <div class="m-2 align-items-center" style="display: inline-flex;">
-                                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
-                                <span style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</span>
-                            </div>
-                        </template>
-                        <template #default>
-                            <p v-html="popInfo.pageDesc"></p>
-                            <img :src="popInfo.image" height="200" />
-                        </template>
-                    </el-popover>
-                </div>
                 <Annotation :key="currentStep" containerId="my-pic-annotation-output" :imageSrc="imageSrc"
                     :editMode="editMode" initialDataId="" image_cv_id="" :rectangleType="rectangleType"
                     :localStorageKey="localStorageKey" :setShowText="true" height="45vh" :justShow="true"
@@ -537,11 +573,6 @@ export default {
             </div>
         </div>
         <div v-else class="grid p-fluid">
-            <TemplateCarousel :show="showCarousel"/>
-            <div class="m-2 align-items-center" style="display: inline-flex; padding-left: 14px" @click="toggleCarousel">
-                <icon type="info" fill="#45b29d" title="操作說明" width="28px" height="28px" />
-                <p style="display: inline-block; color: #45b29d; font-weight: 900">操作說明</p>
-            </div>
             <div class="col-12">
                 <UploadImage :isUploaded="true" :createNew="createNew" @updateStatus="Upload" />
             </div>
@@ -590,5 +621,14 @@ export default {
 
 .el-button[disabled]:before {
     content: attr(title);
+}
+
+.instructions > li {
+    margin-left: 20px;
+    display:list-item;
+    list-style-type: disc;
+}
+.red-text {
+  color: red; /* This will make the text red */
 }
 </style>

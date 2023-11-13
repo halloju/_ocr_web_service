@@ -91,13 +91,7 @@ export default {
   text-align: center;
 }
 
-.el-carousel__item h3 {
-  color: #475669;
-  opacity: 0.75;
-  line-height: 300px;
-  margin: 0;
-  text-align: center;
-}
+
 .dialog-footer {
   display: flex;
   justify-content: center;
@@ -105,11 +99,5 @@ export default {
   text-align: center;
 }
 
-.pop-header {
-	font-size: 22px;
-	font-weight: bold;
-	color: #3c4c5e;
-	text-align: center;
-}
 
 </style>
