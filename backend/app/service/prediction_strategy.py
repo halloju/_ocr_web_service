@@ -166,7 +166,7 @@ class TemplateOcrPredictionStrategy(PredictionStrategy):
                 "image": encoded_data,
                 "source": "INTERNAL",
                 "callback": [{
-                    "callback_url": f"{self.callback_url}/callback/template_callback/v1",
+                    "callback_url": f"{self.callback_url}/callback/gp_callback/v1",
                     "callback_body": callback_body,
                     "callback_headers": callback_headers
                 }],
