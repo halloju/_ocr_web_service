@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from aioredis import Redis
 import uuid
 
-from app.service.prediction_strategy import CVOcrPredictionStrategy, GPOcrPredictionStrategy, PredictionAPI
+from app.service.prediction_strategy import CVOcrPredictionStrategy, GPOcrPredictionStrategy, TemplateOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import ControllerOcrPredictionService
 from app.service.image_storage import ImageStorage
 from route_utils import get_current_user
@@ -37,6 +37,17 @@ async def get_gp_ocr_prediction_service(
 ) -> ControllerOcrPredictionService:
     image_storage = ImageStorage(conn=redis)
     gp_ocr_strategy = GPOcrPredictionStrategy(logger=logger)
+    prediction_api = PredictionAPI(strategy=gp_ocr_strategy, logger=logger)
+    return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
+
+
+async def get_template_ocr_prediction_service(
+    logger: Logger,
+    request_id: str,
+    redis: Redis
+) -> ControllerOcrPredictionService:
+    image_storage = ImageStorage(conn=redis)
+    gp_ocr_strategy = TemplateOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=gp_ocr_strategy, logger=logger)
     return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
 
@@ -120,7 +131,7 @@ async def template_upload(
     rid = str(uuid.uuid4())
     logger.logger.extra['request_id'] = rid
     logger.logger.extra['user_id'] = current_user.user_id
-    prediction_service = await get_gp_ocr_prediction_service(logger, rid, redis)
+    prediction_service = await get_template_ocr_prediction_service(logger, rid, redis)
 
     tasks = []
     action = 'ocr/template_ocr'
