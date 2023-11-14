@@ -22,7 +22,6 @@ class ResultConsumer(BaseConsumer):
         super().__init__(kafka_configs, topics, project)
 
     def consumer_process(self, msg):
-        self.logger_tool.error(msg)
         # check id exist
         if (self.result_title not in msg):
             self.logger_tool.warning(
