@@ -155,7 +155,7 @@ export default {
   margin-bottom: 1rem;
 }
 .text-title {
-  margin-bottom: 0.5rem;
+  margin: 0.5rem auto 0rem;
 }
 .text-detail {
   margin-top: 0.3rem;
