@@ -10,11 +10,14 @@ from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 from route_utils import async_call_mlaas_function
 from fastapi.encoders import jsonable_encoder
 from app.exceptions import CustomException, MlaasRequestError
+from app.models.user import User
+from utils.logger import Logger
+from route_utils import get_request_id
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
-
+logger = Logger('login')
 
 
 async def prepare_from_fastapi_request(request, debug=False):
@@ -64,8 +67,8 @@ async def is_user_auth(user_id, rid, logger):
     try:
         outputs = await async_call_mlaas_function(
             input_data,
-            '/user-access-control/authenticate_user',
-            project='GP',
+            'authenticate_user',
+            project='GPUser',
             logger=logger
         )
         return outputs['is_authenticated']
@@ -87,7 +90,7 @@ async def sso(request: Request):
         saml_auth = init_saml_auth(req)
         callback_url = saml_auth.login()
     except Exception as e:
-        request.state.logger.error(e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail="Internal server error")
 
     response = Response(callback_url)
@@ -100,17 +103,18 @@ async def acs(request: Request):
         req = await prepare_from_fastapi_request(request)
         saml_auth = init_saml_auth(req)
     except Exception as e:
-        request.state.logger.error(e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail="Internal server error")
 
     saml_auth.process_response()
     if not saml_auth.is_authenticated():
-        request.state.logger.error(saml_auth.get_last_error_reason())
+        logger.error(saml_auth.get_last_error_reason())
         return Response(headers={"Location": f"/"}, status_code=400)
 
     # Get user attributes from the SAML response
     user_attributes = saml_auth.get_attributes()
-    if (not is_user_auth(user_attributes['EmployeeID'][0], request.state.request_id, request.state.logger)):
+    rid = get_request_id()
+    if (not await is_user_auth(user_attributes['EmployeeID'][0], rid, logger)):
         return Response(headers={"Location": f"/auth/access"}, status_code=303)
 
     # Create a JWT with the user attributes as the payload
