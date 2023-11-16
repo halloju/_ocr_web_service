@@ -32,7 +32,6 @@ export default {
     },
     data() {
         return {
-            showCarousel: true,
             isFinal: false,
             boxes: [],
             boxNames: ['text', 'box', 'mask', 'all'],
@@ -51,6 +50,7 @@ export default {
             },
             createNew: this.$store.state.createNew,
             currentStep: this.$store.state.createNew ? 0 : 1,
+            showCarousel: this.currentStep === 0 ? true : false,
             template_id: sessionStorage.getItem('template_id') || '',
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
             pageInfo: [
@@ -91,7 +91,7 @@ export default {
             stepsInfo: [
                 {
                     first: '① 命名「模板名稱」',
-                    second: '② 點選「新增圖片」或「+」按鈕，選取您欲建立的模版圖片。'
+                    second: '② 點選「+」按鈕，選取您欲建立的模版圖片。'
                 },
                 {
                     first: '① 點選「新增標註」',
@@ -136,10 +136,6 @@ export default {
             ],
             processType: 'basic'
         };
-    },
-    created() {
-        // 直接跳到非上傳頁，原本圖檔資料均需要留著
-        this.$store.commit('createNewUpdate', false);
     },
     mounted() {
         this.isFinalStep();
@@ -225,6 +221,10 @@ export default {
                 });
                 return;
             }
+            if (this.currentStep == 0) {
+                this.$store.commit('createNewUpdate', false);
+                this.showCarousel = false;
+            }
 
             // Set the status of the current step to 'done'
             if (this.currentStep <= this.progressSteps.length) {
@@ -246,25 +246,29 @@ export default {
 
         previous() {
             if (this.currentStep == 1) {
-                const answer = window.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?');
-                if (answer) {
-                    sessionStorage.clear();
+                ElMessageBox.confirm('回到上一步會清空所有編輯紀錄，是否確定刪除?', '警告', {
+                    confirmButtonText: '確定',
+                    cancelButtonText: 'Cancel',
+                    type: 'error',
+                    center: true
+                })
+                    .then(() => {
+                        sessionStorage.clear();
+                        // Set the status of the current step to 'next'
+                        if (this.currentStep < this.progressSteps.length) {
+                            this.progressSteps[this.currentStep].status = 'next';
+                        }
+                        this.$store.commit('createNewUpdate', true);
+                        this.currentStep--;
 
-                    // Set the status of the current step to 'next'
-                    if (this.currentStep < this.progressSteps.length) {
-                        this.progressSteps[this.currentStep].status = 'next';
-                    }
-
-                    this.currentStep--;
-
-                    // Set the status of the new current step to 'now'
-                    if (this.currentStep >= 0 && this.currentStep < this.progressSteps.length) {
-                        this.progressSteps[this.currentStep].status = 'now';
-                    }
-                } else {
-                    ElMessage.info('已取消');
-                    return;
-                }
+                        // Set the status of the new current step to 'now'
+                        if (this.currentStep >= 0 && this.currentStep < this.progressSteps.length) {
+                            this.progressSteps[this.currentStep].status = 'now';
+                        }
+                    })
+                    .catch(() => {
+                        return;
+                    });
             } else if (this.currentStep > 1) {
                 // Set the status of the current step to 'next'
                 if (this.currentStep < this.progressSteps.length) {

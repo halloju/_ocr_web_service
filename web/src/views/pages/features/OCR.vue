@@ -81,7 +81,7 @@ export default {
                     defaultImgURL: '',
                     category: {
                         name: 'general',
-                        limit: 20
+                        limit: 50
                     },
                     explanation: '',
                     file: null,
@@ -98,7 +98,7 @@ export default {
                     defaultImgURL: '',
                     category: {
                         name: 'general',
-                        limit: 20
+                        limit: 50
                     },
                     explanation: '',
                     file: null,

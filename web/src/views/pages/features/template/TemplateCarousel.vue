@@ -31,7 +31,7 @@ export default {
         <div class="text-container">
           <ol class="num-instructions">
               <li>命名「模板名稱」</li>
-              <li>點選「新增圖片」或「+」按鈕，選取您欲建立的模版圖片</strong></li>
+              <li>點選「+」按鈕，選取您欲建立的模版圖片</strong></li>
           </ol>
           <p class="text-title">注意事項:</p>
           <ul class="instructions">
@@ -155,7 +155,7 @@ export default {
   margin-bottom: 1rem;
 }
 .text-title {
-  margin-bottom: 0.5rem;
+  margin: 0.5rem auto 0rem;
 }
 .text-detail {
   margin-top: 0.3rem;
