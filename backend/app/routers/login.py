@@ -12,6 +12,7 @@ from fastapi.encoders import jsonable_encoder
 from app.exceptions import CustomException, MlaasRequestError
 from app.models.user import User
 from utils.logger import Logger
+from route_utils import get_request_id
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
@@ -112,7 +113,8 @@ async def acs(request: Request):
 
     # Get user attributes from the SAML response
     user_attributes = saml_auth.get_attributes()
-    if (not is_user_auth(user_attributes['EmployeeID'][0], request.state.request_id, request.state.logger)):
+    rid = get_request_id()
+    if (not await is_user_auth(user_attributes['EmployeeID'][0], rid, logger)):
         return Response(headers={"Location": f"/auth/access"}, status_code=303)
 
     # Create a JWT with the user attributes as the payload
