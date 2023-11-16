@@ -67,8 +67,8 @@ async def is_user_auth(user_id, rid, logger):
     try:
         outputs = await async_call_mlaas_function(
             input_data,
-            '/user-access-control/authenticate_user',
-            project='GP',
+            'authenticate_user',
+            project='GPUser',
             logger=logger
         )
         return outputs['is_authenticated']
