@@ -52,7 +52,7 @@ async def remittance(
         for file in files:
             try:
                 updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict())
+                tasks.append(updated_task.to_dict_no_dumps())
             except Exception as ex:
                 logger.error({'error_msg': str(ex), 'action': action})
                 tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
@@ -80,7 +80,7 @@ async def check_front(
         for file in files:
             try:
                 updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict())
+                tasks.append(updated_task.to_dict_no_dumps())
             except Exception as ex:
                 logger.error({'error_msg': str(ex), 'action': action})
                 tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
@@ -108,7 +108,7 @@ async def check_back(
         for file in files:
             try:
                 updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict())
+                tasks.append(updated_task.to_dict_no_dumps())
             except Exception as ex:
                 logger.error({'error_msg': str(ex), 'action': action})
                 tasks.append({'status': 'ERROR', 'error_msg': str(ex)})

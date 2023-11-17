@@ -16,7 +16,7 @@ class Task:
         self.err_code = ''
         # Convert 2022/10/11.../uuid to 2022-10-11...-uuid
         self.task_id = str(self.image_cv_id).replace('/', '-')
-        self.ocr_results = ''
+        self.ocr_results = {}
 
     @staticmethod
     async def create_and_store_image(file, image_storage):
@@ -28,6 +28,23 @@ class Task:
         return task, encoded_data
 
     def to_dict(self):
+        """
+        Convert the Task object to a dictionary. Useful for returning as a response or storing in databases.
+        """
+        return {
+            'image_id': self.image_id,
+            'file_name': self.file_name,
+            'predict_class': self.predict_class,
+            'status': self.status,
+            'image_cv_id': self.image_cv_id,
+            'start_time': self.start_time,
+            'err_msg': self.err_msg,
+            'task_id': self.task_id,
+            'url_result': f'/ocr/result/{self.task_id}',
+            'ocr_results': json.dumps(self.ocr_results)
+        }
+    
+    def to_dict_no_dumps(self):
         """
         Convert the Task object to a dictionary. Useful for returning as a response or storing in databases.
         """
