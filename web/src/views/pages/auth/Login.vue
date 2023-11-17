@@ -1,6 +1,6 @@
 <script>
 import axios from 'axios';
-
+import { ElMessage } from 'element-plus';
 export default {
     components: {},
     name: 'Login',
@@ -22,6 +22,9 @@ export default {
                 console.log(err);
             });
     },
+    setup() {
+        ElMessage('頁面跳轉中');
+    },
     methods: {
         login() {
             axios
@@ -36,7 +39,8 @@ export default {
     }
 };
 </script>
-<template>
+
+<!-- <template>
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
@@ -67,7 +71,7 @@ export default {
             </div>
         </div>
     </div>
-</template>
+</template> -->
 
 <style scoped>
 .pi-eye {
