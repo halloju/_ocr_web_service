@@ -33,6 +33,7 @@ async def gp_ocr(request: Input):
     '''
     將 image 影像上傳至 MinIO, 並進行全文辨識，將辨識結果存入 db
     '''
+    time.sleep(1)
     start_time = time.time()
     req_data = jsonable_encoder(request)
     trace_id = str(uuid.uuid4())

@@ -54,7 +54,7 @@ services:
           - ./log:/code/app/log
         ports:
           - "5000:5000"
-        command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
+        command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5000 --reload
         # command: gunicorn -c gunicorn.conf.py --logger-class=app.log_config.UniformLogger app.main:app
         environment:
           - MODE=dev

@@ -5,6 +5,7 @@ from pydantic.typing import List
 from fastapi.responses import JSONResponse
 from aioredis import Redis
 import uuid
+import asyncio
 
 from app.service.prediction_strategy import CVOcrPredictionStrategy, GPOcrPredictionStrategy, TemplateOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import ControllerOcrPredictionService
@@ -71,14 +72,22 @@ async def cv_upload(
     action = 'ocr/upload'
     input_params = {'image_class': image_class}
 
+    batch_size = 5  # Set the batch size
     try:
-        for file in files:
-            try:
-                updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict())
-            except Exception as ex:
-                logger.error({'error_msg': str(ex), 'action': action})
-                tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
+        for i in range(0, len(files), batch_size):
+            batch = files[i:i + batch_size]
+            batch_tasks = [prediction_service.predict_for_task(file, action, input_params) for file in batch]
+            results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+            response_content = []
+            for result in results:
+                if isinstance(result, Exception):
+                    logger.error({'error_msg': str(result), 'action': action})
+                    response_content.append({'status': 'ERROR', 'error_msg': str(result)})
+                else:
+                    response_content.append(result.to_dict())
+                    
+            tasks.extend(response_content)
+
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
         logger.error({'error_msg': str(ex), 'action': action})
@@ -104,14 +113,23 @@ async def gp_upload(
     tasks = []
     action = 'ocr/gp_ocr'
     input_params = {'image_complexity': image_complexity, 'filters': filters}
+    
+    batch_size = 5  # Set the batch size
     try:
-        for file in files:
-            try:
-                updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict())
-            except Exception as ex:
-                logger.error({'error_msg': str(ex), 'action': action})
-                tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
+        for i in range(0, len(files), batch_size):
+            batch = files[i:i + batch_size]
+            batch_tasks = [prediction_service.predict_for_task(file, action, input_params) for file in batch]
+            results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+            response_content = []
+            for result in results:
+                if isinstance(result, Exception):
+                    logger.error({'error_msg': str(result), 'action': action})
+                    response_content.append({'status': 'ERROR', 'error_msg': str(result)})
+                else:
+                    response_content.append(result.to_dict())
+                    
+            tasks.extend(response_content)
+
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
         logger.error({'error_msg': str(ex), 'action': action})
@@ -136,14 +154,23 @@ async def template_upload(
     tasks = []
     action = 'ocr/template_ocr'
     input_params = {'template_id': template_id}
+    
+    batch_size = 5  # Set the batch size
     try:
-        for file in files:
-            try:
-                updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict())
-            except Exception as ex:
-                logger.error({'error_msg': str(ex), 'action': action})
-                tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
+        for i in range(0, len(files), batch_size):
+            batch = files[i:i + batch_size]
+            batch_tasks = [prediction_service.predict_for_task(file, action, input_params) for file in batch]
+            results = await asyncio.gather(*batch_tasks, return_exceptions=True)
+            response_content = []
+            for result in results:
+                if isinstance(result, Exception):
+                    logger.error({'error_msg': str(result), 'action': action})
+                    response_content.append({'status': 'ERROR', 'error_msg': str(result)})
+                else:
+                    response_content.append(result.to_dict())
+                    
+            tasks.extend(response_content)
+
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
         logger.error({'error_msg': str(ex), 'action': action})
