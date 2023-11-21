@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from aioredis import Redis
 import uuid
 import asyncio
+import os
 
 from app.service.prediction_strategy import CVOcrPredictionStrategy, GPOcrPredictionStrategy, TemplateOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import ControllerOcrPredictionService
