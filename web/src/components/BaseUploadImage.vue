@@ -72,6 +72,12 @@ export default {
                 });
                 return;
             }
+            
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'Loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
 
             const generalImageResponseList = [];
             const responseData = {};
@@ -125,11 +131,7 @@ export default {
                     return;
                 });
             }
-            const loading = ElLoading.service({
-                lock: true,
-                text: 'Loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
+            
 
             // 顯示結果
             setTimeout(() => {
