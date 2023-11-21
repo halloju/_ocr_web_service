@@ -18,7 +18,7 @@ from route_utils import get_redis
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 logger = Logger('async_ocr')
-
+batch_size = os.environ.get("batch_size", 5)
 
 async def get_cv_ocr_prediction_service(
     logger: Logger,
@@ -72,7 +72,6 @@ async def cv_upload(
     action = 'ocr/upload'
     input_params = {'image_class': image_class}
 
-    batch_size = 5  # Set the batch size
     try:
         for i in range(0, len(files), batch_size):
             batch = files[i:i + batch_size]
@@ -114,7 +113,6 @@ async def gp_upload(
     action = 'ocr/gp_ocr'
     input_params = {'image_complexity': image_complexity, 'filters': filters}
     
-    batch_size = 5  # Set the batch size
     try:
         for i in range(0, len(files), batch_size):
             batch = files[i:i + batch_size]
@@ -155,7 +153,6 @@ async def template_upload(
     action = 'ocr/template_ocr'
     input_params = {'template_id': template_id}
     
-    batch_size = 5  # Set the batch size
     try:
         for i in range(0, len(files), batch_size):
             batch = files[i:i + batch_size]
