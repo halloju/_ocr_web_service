@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -257,6 +257,9 @@ export default {
             // const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
             // width.value = col12Width - parseInt('4rem');
         });
+        onBeforeUnmount(() => {
+            abortController.abort();
+        });
 
         return {
             selectedRows,
@@ -327,20 +330,25 @@ export default {
             </div>
         </div>
         <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" height="250" border>
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange"
+                height="250" border>
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
                     <template v-slot="scope">
-                        <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark" :content="getErrorMsg(scope.row, this.tableData)" placement="top">
+                        <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark"
+                            :content="getErrorMsg(scope.row, this.tableData)" placement="top">
                             <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
                         </el-tooltip>
                     </template>
                 </el-table-column>
                 <el-table-column label="檢視" :min-width="30">
                     <template v-slot="scope">
-                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" class="preview"><Icon type="eye" /></button>
+                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)"
+                            class="preview">
+                            <Icon type="eye" />
+                        </button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -348,18 +356,9 @@ export default {
         <div v-if="imageSrc !== null">
             <p class="subtitle">號碼：{{ num }}</p>
             <p>{{ file_name }}</p>
-            <Annotation
-                containerId="my-pic-annotation-output"
-                :imageSrc="imageSrc"
-                :editMode="false"
-                :width="width"
-                :height="height"
-                :dataCallback="callback"
-                :initialData="initialData"
-                initialDataId=""
-                :image_cv_id="image_cv_id"
-                :hasTitle="hasTitle"
-            ></Annotation>
+            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width"
+                :height="height" :dataCallback="callback" :initialData="initialData" initialDataId=""
+                :image_cv_id="image_cv_id" :hasTitle="hasTitle"></Annotation>
         </div>
     </div>
 </template>
