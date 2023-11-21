@@ -103,8 +103,8 @@ export default {
                 }
                 reloadAnnotator.value = !reloadAnnotator.value;
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log('Request was aborted');
+                if (error instanceof TypeError) {
+                   console.log('cancel')
                 } else {
                     ElMessage({
                         message: '辨識失敗',
@@ -125,8 +125,9 @@ export default {
                     store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
                 }
             } catch (error) {
-                if (error.name === 'AbortError') {
-                    console.log('Request was aborted');
+                // Check specifically for TypeError and handle it
+                if (error instanceof TypeError) {
+                    console.log('cancel')
                 } else {
                     ElMessage({
                         message: '辨識失敗',
