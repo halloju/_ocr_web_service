@@ -52,4 +52,4 @@ async def status(task_id: str, redis: Redis = Depends(get_redis)):
         time.sleep(backoff_factor * (2 ** retry))
 
     # If maximum retries reached, return PENDING status
-    return JSONResponse(status_code=200, content={'task_id': task_id, 'status': 'PENDING', 'result': '', 'status_msg': '', 'file_name': file_name})
+    return JSONResponse(status_code=200, content={'task_id': task_id, 'status': 'PROCESSING', 'result': '', 'status_msg': '', 'file_name': file_name})

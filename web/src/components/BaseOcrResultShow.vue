@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import Annotation from '@/components/Annotation.vue';
 import { Download, Back } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -43,6 +43,8 @@ export default {
         const buttonType = ref('btnDarkBlue');
         const downloadButtonText = ref('下載 Excel');
         const selectedRows = ref([]);
+        const abortController = new AbortController();
+
 
         const getExcelData = (selectedItems) => {
             let excelData = [];
@@ -90,82 +92,93 @@ export default {
             }
         }
 
-        async function getOcrStatus(item) {
-            let err_code = '';
-            apiClient
-                .get(`/task/status/${general_upload_res.value[item].task_id}`)
-                .then(async (res) => {
-                    if (res.data.status === 'SUCCESS') {
-                        await getOcrResults(item);
-                    } else if (res.data.status === 'FAIL') {
-                        err_code = res.data.status_msg;
-                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
-                    } else {
-                        store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
-                    }
-                })
-                .catch((res) => {
-                    console.log('getOcrStatus', res);
+        async function getOcrResults(item) {
+            try {
+                let response = await apiClient.get(`/task/result/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
+                if (response.data.status === 'SUCCESS') {
+                    store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name });
+                } else {
+                    let err_code = response.data.status_msg || '';
+                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
+                }
+                reloadAnnotator.value = !reloadAnnotator.value;
+            } catch (error) {
+                if (error instanceof TypeError) {
+                   console.log('cancel')
+                } else {
                     ElMessage({
                         message: '辨識失敗',
                         type: 'warning'
                     });
-                });
+                }
+            }
         }
 
-        async function getOcrResults(item) {
-            let err_code = '';
-            apiClient
-                .get(`/task/result/${general_upload_res.value[item].task_id}`)
-                .then((res) => {
-                    if (res.data.status === 'SUCCESS') {
-                        store.commit('generalImageOcrResults', { item: item, ocr_results: res.data.result, file_name: res.data.file_name });
-                    } else {
-                        ElMessage({
-                            message: '辨識失敗',
-                            type: 'warning'
-                        });
-                    }
-                    if (res.data.status === 'FAIL') err_code = res.data.status_msg;
-                    store.commit('generalImageOcrStatus', { item: item, status: res.data.status, status_msg: err_code, file_name: res.data.file_name });
-                    reloadAnnotator.value = !reloadAnnotator.value;
-                })
-                .catch((res) => {
+
+        async function getOcrStatus(item) {
+            try {
+                let response = await apiClient.get(`/task/status/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
+                if (response.data.status === 'SUCCESS') {
+                    await getOcrResults(item);
+                } else {
+                    let err_code = response.data.status_msg || '';
+                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
+                }
+            } catch (error) {
+                // Check specifically for TypeError and handle it
+                if (error instanceof TypeError) {
+                    console.log('cancel');
+                } else {
                     ElMessage({
                         message: '辨識失敗',
                         type: 'warning'
                     });
-                });
+                }
+            }
         }
+
 
         async function waitUntilOcrComplete() {
             isRunning.value = true;
             let count = 0;
-            while (isRunning) {
+            const BATCH_SIZE = 5; // Define your batch size
+
+            while (isRunning.value) {
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-                if (unfinishedItems.length === 0 || !isRunning.value) {
+
+                if (unfinishedItems.length === 0) {
                     isRunning.value = false;
                     break;
                 }
-                for (let i = 0; i < unfinishedItems.length; i++) {
-                    const item = unfinishedItems[i];
-                    await getOcrStatus(general_upload_res.value.indexOf(item));
+
+                for (let i = 0; i < unfinishedItems.length; i += BATCH_SIZE) {
+                    // Create a batch
+                    const batch = unfinishedItems.slice(i, i + BATCH_SIZE);
+
+                    // Process all items in the batch concurrently
+                    await Promise.all(batch.map(item => getOcrStatus(general_upload_res.value.indexOf(item))));
+
+                    // Optional: check if the process should still continue after each batch
+                    if (!isRunning.value) break;
                 }
-                if (!isRunning.value) break; // Check before the timeout
-                await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL)); // wait 2 seconds before polling again
-                if (!isRunning.value) break; // Check after the timeout
+
+                if (!isRunning.value) break;
+
+                // Wait for a while before processing the next batch
+                await new Promise((resolve) => setTimeout(resolve, PULL_INTERVAL));
                 count++;
-                // 這個數字太小可能也跑不完？感覺要衡量一下
+
+                // Check for retry limit
                 if (count === MAX_RETRIES) {
-                    const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-                    for (let i = 0; i < unfinishedItems.length; i++) {
-                        const item = unfinishedItems[i];
+                    // Process any remaining items as failed
+                    unfinishedItems.forEach(item => {
                         store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name });
-                    }
+                    });
                     break;
                 }
             }
         }
+
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
@@ -206,6 +219,7 @@ export default {
                         message: '回到圖檔上傳'
                     });
                     isRunning.value = false;
+                    abortController.abort(); // Cancel all ongoing requests
                     emit('nextStepEmit', 1);
                 })
                 .catch(() => {
@@ -243,6 +257,10 @@ export default {
             waitUntilOcrComplete();
             // const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
             // width.value = col12Width - parseInt('4rem');
+        });
+        onBeforeUnmount(() => {
+            isRunning.value = false;
+            abortController.abort();
         });
 
         return {
@@ -314,20 +332,25 @@ export default {
             </div>
         </div>
         <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" height="250" border>
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange"
+                height="250" border>
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
                     <template v-slot="scope">
-                        <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark" :content="getErrorMsg(scope.row, this.tableData)" placement="top">
+                        <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark"
+                            :content="getErrorMsg(scope.row, this.tableData)" placement="top">
                             <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
                         </el-tooltip>
                     </template>
                 </el-table-column>
                 <el-table-column label="檢視" :min-width="30">
                     <template v-slot="scope">
-                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" class="preview"><Icon type="eye" /></button>
+                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)"
+                            class="preview">
+                            <Icon type="eye" />
+                        </button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -335,18 +358,9 @@ export default {
         <div v-if="imageSrc !== null">
             <p class="subtitle">號碼：{{ num }}</p>
             <p>{{ file_name }}</p>
-            <Annotation
-                containerId="my-pic-annotation-output"
-                :imageSrc="imageSrc"
-                :editMode="false"
-                :width="width"
-                :height="height"
-                :dataCallback="callback"
-                :initialData="initialData"
-                initialDataId=""
-                :image_cv_id="image_cv_id"
-                :hasTitle="hasTitle"
-            ></Annotation>
+            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width"
+                :height="height" :dataCallback="callback" :initialData="initialData" initialDataId=""
+                :image_cv_id="image_cv_id" :hasTitle="hasTitle"></Annotation>
         </div>
     </div>
 </template>
