@@ -50,7 +50,7 @@ export default {
             },
             createNew: this.$store.state.createNew,
             currentStep: this.$store.state.createNew ? 0 : 1,
-            showCarousel: this.currentStep === 0 ? true : false,
+            showCarousel: true,
             template_id: sessionStorage.getItem('template_id') || '',
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
             pageInfo: [
@@ -258,6 +258,7 @@ export default {
                         if (this.currentStep < this.progressSteps.length) {
                             this.progressSteps[this.currentStep].status = 'next';
                         }
+                        this.showCarousel = false;
                         this.$store.commit('createNewUpdate', true);
                         this.currentStep--;
 
