@@ -127,7 +127,7 @@ export default {
             } catch (error) {
                 // Check specifically for TypeError and handle it
                 if (error instanceof TypeError) {
-                    console.log('cancel')
+                    console.log('cancel');
                 } else {
                     ElMessage({
                         message: '辨識失敗',
@@ -259,6 +259,7 @@ export default {
             // width.value = col12Width - parseInt('4rem');
         });
         onBeforeUnmount(() => {
+            isRunning.value = false;
             abortController.abort();
         });
 
