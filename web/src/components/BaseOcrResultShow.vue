@@ -95,12 +95,13 @@ export default {
         async function getOcrResults(item) {
             try {
                 let response = await apiClient.get(`/task/result/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
+                let err_code = '';
                 if (response.data.status === 'SUCCESS') {
                     store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name });
                 } else {
-                    let err_code = response.data.status_msg || '';
-                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
+                    err_code = response.data.status_msg || '';
                 }
+                store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
                 reloadAnnotator.value = !reloadAnnotator.value;
             } catch (error) {
                 if (error instanceof TypeError) {
@@ -137,7 +138,6 @@ export default {
             }
         }
 
-
         async function waitUntilOcrComplete() {
             isRunning.value = true;
             let count = 0;
@@ -145,7 +145,6 @@ export default {
 
             while (isRunning.value) {
                 const unfinishedItems = general_upload_res.value.filter((item) => !finishedStatus.value.includes(item.status));
-
                 if (unfinishedItems.length === 0) {
                     isRunning.value = false;
                     break;
