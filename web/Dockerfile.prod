@@ -39,5 +39,6 @@ EXPOSE 80
 
 RUN echo http://mirrors.aliyun.com/alpine/v3.7/main/ >> /etc/apk/repositories
 RUN apk add --no-cache bash
+RUN apk add --no-cache libcrypto3=3.0.12-r0 libssl3=3.0.12-r0
 
 CMD ["/bin/bash", "-c", "sed -i \"s@<html@<html data-promise-base-url=\"$VITE_API_URL\"@\" /usr/share/nginx/html/index.html; envsubst '$$SERVER_NAME' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
