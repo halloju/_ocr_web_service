@@ -55,7 +55,8 @@ async def get_template_detail(template_id: str, current_user: User = Depends(get
         "inputs": {
             'system_id': 'GPOCR_WEB',
             'business_category': [],
-            'template_id': template_id
+            'template_id': template_id,
+            'user_id': current_user.user_id
         }
     }
     try:
