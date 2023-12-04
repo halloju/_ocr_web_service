@@ -18,8 +18,7 @@ class BaseConsumer(object):
 
         self.kafka_config = kafka_configs
         self.consumer = Consumer(self.kafka_config)
-        self.logger_tool.info({'msg': str(self.consumer.list_topics().topics)})
-        # self.logger_tool.info({'Available topics to consume: ', self.consumer.list_topics().topics})
+        self.logger_tool.info({'Available topics to consume': str(self.consumer.list_topics().topics)})
         self.consumer.subscribe(topics)
         self.logger_tool.info({'msg': 'Kafka Consumer has been initiated...'})
 
@@ -34,22 +33,21 @@ class BaseConsumer(object):
                     continue
                 if msg.error():
                     self.logger_tool.error({
-                        'consumer': {
+                        'dequeue': {
                             'error_code': msg.error().code(),
-                            'error_info': str(msg.error().str())
+                            'error_msg': str(msg.error().str())
                         }
                     })
                     continue
                 else:
                     msg_decode = json.loads(msg.value().decode("utf-8"))
+                    consume_status = self.consumer_process(msg_decode)
                     self.logger_tool.info({
-                        'consumer': {
-                            'msg': msg_decode
+                        'dequeue': {
+                            'consume_status': consume_status
                         }
                     })
-                    consume_status = self.consumer_process(msg_decode)
         except Exception as exc:
-            self.logger_tool.error({"consumer": {"error_info": str(exc)}})
-            # raise KafkaToolsException
+            self.logger_tool.error({"dequeue": {"error_msg": str(exc)}})
         finally:
             self.consumer.close()

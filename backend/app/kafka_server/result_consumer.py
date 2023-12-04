@@ -14,7 +14,6 @@ class ResultConsumer(BaseConsumer):
     """
 
     def __init__(self, kafka_configs: dict, topics: list, redis_server, msg_func, result_title, project):
-        # redis_server = redis.Redis(host="redis", port=6379, decode_responses=True)
         self.redis_server = redis_server
         self.msg_func = msg_func
         self.result_title = result_title
@@ -52,13 +51,11 @@ class ResultConsumer(BaseConsumer):
 
                 start_time = datetime.strptime(
                     start_time, "%Y-%m-%d %H:%M:%S")
-                self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
-                ) - start_time).microseconds, 'action': self.project, 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
-
-            self.logger_tool.info(
-                {'request_id': full_key, 'msg': 'upload to redis'})
-            self.logger_tool.info({'predict_image': {'task_id': task_id, 'process_time': (datetime.now(
-            ) - start_time).microseconds, 'action': self.project, 'status': 'SUCCESS', 'status_msg': '', 'error_msg': ''}})
+            self.logger_tool.info({
+                'request_id': full_key,
+                'process_time': (datetime.now() - start_time).microseconds,
+                'action': self.project}
+            )
             return True
         except Exception as exc:
             self.logger_tool.error(
