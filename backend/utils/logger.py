@@ -49,10 +49,10 @@ def config_logging(filename='utils/log_config.yml'):
 
 
 class Logger(object):
-    def __init__(self, section_name, uid=None, rid=None, project_name='gp_web') -> None:
+    def __init__(self, section_name, uid=None, rid=None) -> None:
         config_logging()
         logging.setLoggerClass(CustomLogger)
-        self.raw_logger = logging.getLogger(project_name)
+        self.raw_logger = logging.getLogger(section_name)
         self.section_name = section_name
         self.manual_log = {'uid': uid} if uid else {}
         # We create the adapter here

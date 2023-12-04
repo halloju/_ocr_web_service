@@ -2,6 +2,9 @@ import redis
 from app.kafka_server.result_consumer import ResultConsumer
 import os
 import sys
+from utils.logger import Logger
+
+logger_tool = Logger('consumer_main')
 
 
 def run_consumer(project_name: str, redis_server, kafka_config):
@@ -20,12 +23,8 @@ def run_consumer(project_name: str, redis_server, kafka_config):
                     x_max, y_min], [x_max, y_max], [x_min, y_max]]  # 順時針
                 new_results.append(new_result)
             return new_results
-        try:
-            consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.cv_controller_callback'], redis_server, msg_func, 'ocr_results', 'cv_consumer')
-            consumer.dequeue()
-        except Exception as e:
-            print(f'consumer failed to start, error: {e}')
+        topics = ['if_gp_ocr.cv_controller_callback']
+        key_name = 'ocr_results'
     elif project_name == 'gp_controller':
         kafka_config['group.id'] = "if_gp_ocr_gp_callback_02"
 
@@ -34,12 +33,21 @@ def run_consumer(project_name: str, redis_server, kafka_config):
             for ocr_result in ocr_results:
                 ocr_result['points'] = ocr_result['points_list']
             return ocr_results
-        try:
-            consumer = ResultConsumer(
-                kafka_config, ['if_gp_ocr.gp_callback'], redis_server, msg_func, 'data_results', 'gp_consumer')
-            consumer.dequeue()
-        except Exception as e:
-            print(f'consumer failed to start, error: {e}')
+        topics = ['if_gp_ocr.gp_callback']
+        key_name = 'data_results'
+    try:
+        consumer = ResultConsumer(
+            kafka_config,
+            topics,
+            redis_server,
+            msg_func,
+            key_name,
+            project_name
+        )
+        consumer.dequeue()
+    except Exception as e:
+        logger_tool.error(
+            {'error_msg': f'consumer failed to start, error: {e}', 'project': project_name})
 
 
 if __name__ == "__main__":

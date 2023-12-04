@@ -13,7 +13,7 @@ from utils.logger import Logger
 from app.models.user import User
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
-logger = Logger('update_template')
+logger = Logger('template_crud')
 
 
 @router.post("/update_template", response_model=UpdateTemplateResponse)

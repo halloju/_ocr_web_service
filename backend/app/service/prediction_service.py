@@ -1,8 +1,5 @@
-import base64
-import json
-import os
 import uuid
-from typing import Tuple, Dict, Any
+from typing import Any
 
 from route_utils import get_redis_taskname
 from app.models.task import Task
@@ -50,9 +47,10 @@ class ControllerOcrPredictionService(IPredictionService):
         except MlaasRequestError as exc:
             self.logger.error({
                 'predict_service': {
-                    'error_msg': str(exc),
+                    'error_msg': str(exc.message),
                     'action': action,
-                    'input_params': input_params
+                    'input_params': input_params,
+                    'status_code': exc.mlaas_code
                 }
             })
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
@@ -63,7 +61,8 @@ class ControllerOcrPredictionService(IPredictionService):
                 'controller_predict_service': {
                     'error_msg': str(exc),
                     'action': action,
-                    'input_params': input_params
+                    'input_params': input_params,
+                    'status_code': '5001'
                 }
             })
             task.mark_as_failed('', '', '5001', 'unknown error')
@@ -94,7 +93,12 @@ class NonControllerOcrPredictionService(IPredictionService):
         if process_function:
             return process_function(data_pred)
         else:
-            self.logger.error(f"Unknown action: {action}")
+            self.logger.error({
+                'non_controller_predict_service': {
+                    'error_msg': 'Unknown action',
+                    'action': action}
+                }
+            )
             # Handle unknown action
             return data_pred
 
@@ -126,13 +130,6 @@ class NonControllerOcrPredictionService(IPredictionService):
             task.mark_as_success(image_cv_id=str(
                 uuid.uuid4()), result=data_pred)
 
-            # # Store task in Redis
-            # task_dict = task.to_dict()
-            # for key, value in task_dict.items():
-            #     if isinstance(value, list):
-            #         value = json.dumps(value)
-            #     await self.conn.hset(get_redis_taskname(task.task_id), key, str(value))
-
             return task
 
         except MlaasRequestError as exc:
@@ -144,6 +141,14 @@ class NonControllerOcrPredictionService(IPredictionService):
                 }
             })
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
+            self.logger.error({
+                'non_controller_predict_service': {
+                    'error_msg': str(exc.message),
+                    'action': action,
+                    'input_params': input_params,
+                    'status_code': exc.mlaas_code
+                }
+            })
 
         except Exception as exc:
             traceback.print_exc()
@@ -151,12 +156,9 @@ class NonControllerOcrPredictionService(IPredictionService):
                 'non_controller_predict_service': {
                     'error_msg': str(exc),
                     'action': action,
-                    'input_params': input_params
+                    'input_params': input_params,
+                    'status_code': '5001'
                 }
             })
             task.mark_as_failed('', '', '5001', 'unknown error')
-            # Store task in Redis
-            # task_dict = task.to_dict()
-            # for key, value in task_dict.items():
-            #     await self.conn.hset(get_redis_taskname(task.task_id), key, value)
             return task
