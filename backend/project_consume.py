@@ -33,6 +33,7 @@ def run_consumer(project_name: str, redis_server, kafka_config):
             """ format is the same """
             for ocr_result in ocr_results:
                 ocr_result['points'] = ocr_result['points_list']
+                del ocr_result['points_list']
             return ocr_results
         try:
             consumer = ResultConsumer(
