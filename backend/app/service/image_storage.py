@@ -1,5 +1,4 @@
 import base64
-import uuid
 from typing import Tuple
 from route_utils import get_redis_filename
 from utils.logger import Logger
@@ -17,5 +16,5 @@ class ImageStorage:
         # Store the encoded image data and filename in Redis
         await self.conn.set(image_id, encoded_data)
         await self.conn.set(get_redis_filename(image_id), file.filename)
-
+        self.logger.info({'image_id': image_id, 'msg': 'Store the encoded image data and filename in Redis finished'})
         return image_id, encoded_data

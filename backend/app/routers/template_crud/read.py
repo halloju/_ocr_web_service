@@ -10,7 +10,7 @@ from starlette.requests import Request
 
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
-logger = Logger('read_template')
+logger = Logger('template_crud')
 
 
 @router.get("/get_available_templates", response_model=GetAvailableTemplatesResponse)

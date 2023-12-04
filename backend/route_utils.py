@@ -71,12 +71,14 @@ async def async_call_mlaas_function(request, action: str, project, logger, timeo
             inp_post_response.raise_for_status()
         except httpx.HTTPStatusError as exc:
             logger.error({log_act: {
+                'request_id': request['request_id'],
                 'error_msg': str(exc),
                 'status_code': exc.response.status_code
             }})
             raise CustomException(exc.response.status_code, str(exc)) from exc
         except httpx.RequestError as exc:
             logger.error({log_act: {
+                'request_id': request['request_id'],
                 'error_msg': str(exc)
             }})
             raise CustomException(None, str(exc)) from exc
@@ -111,7 +113,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         return User(user_id=user_id)
     except jwt.PyJWTError:
         raise credentials_exception
-    
+
 
 def get_request_id():
     return str(uuid.uuid4())

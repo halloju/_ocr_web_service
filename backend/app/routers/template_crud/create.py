@@ -12,7 +12,7 @@ from app.models.user import User
 
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
-logger = Logger('create_template')
+logger = Logger('template_crud')
 
 
 @router.post("/create_template", response_model=CreateTemplateResponse)

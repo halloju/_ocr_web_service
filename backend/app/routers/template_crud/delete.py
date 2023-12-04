@@ -9,7 +9,7 @@ from app.models.user import User
 
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
-logger = Logger('delete_template')
+logger = Logger('template_crud')
 
 
 @router.delete("/delete_template/{template_id}")

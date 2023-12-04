@@ -54,7 +54,7 @@ async def get_template_ocr_prediction_service(
     return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
 
 
-@router.post("/cv-ocr", summary="controller 辨識")
+@router.post("/cv-ocr", summary="cv controller 辨識")
 async def cv_upload(
     image_class: str = Form(...),
     files: List[UploadFile] = File(...),
@@ -68,7 +68,7 @@ async def cv_upload(
     logger.logger.extra['request_id'] = rid
     logger.logger.extra['user_id'] = current_user.user_id
     prediction_service = await get_cv_ocr_prediction_service(logger, rid, redis)
-    
+
     tasks = []
     action = 'ocr/upload'
     input_params = {'image_class': image_class}
@@ -85,16 +85,14 @@ async def cv_upload(
                     response_content.append({'status': 'ERROR', 'error_msg': str(result)})
                 else:
                     response_content.append(result.to_dict())
-                    
             tasks.extend(response_content)
-
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
         logger.error({'error_msg': str(ex), 'action': action})
         return JSONResponse(status_code=400, content=[])
 
 
-@router.post("/gp_ocr", summary="controller 辨識")
+@router.post("/gp_ocr", summary="gp controller 辨識")
 async def gp_upload(
     image_complexity: str = Form(...),
     filters: List[str] = Form(...),
@@ -113,7 +111,7 @@ async def gp_upload(
     tasks = []
     action = 'ocr/gp_ocr'
     input_params = {'image_complexity': image_complexity, 'filters': filters}
-    
+
     try:
         for i in range(0, len(files), batch_size):
             batch = files[i:i + batch_size]
@@ -122,16 +120,15 @@ async def gp_upload(
             response_content = []
             for result in results:
                 if isinstance(result, Exception):
-                    logger.error({'error_msg': str(result), 'action': action})
+                    logger.error({'error_msg': str(result), 'action': action, 'request_id': rid})
                     response_content.append({'status': 'ERROR', 'error_msg': str(result)})
                 else:
                     response_content.append(result.to_dict())
-                    
             tasks.extend(response_content)
 
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
-        logger.error({'error_msg': str(ex), 'action': action})
+        logger.error({'error_msg': str(ex), 'action': action, 'request_id': rid})
         return JSONResponse(status_code=400, content=[])
 
 

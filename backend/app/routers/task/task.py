@@ -23,11 +23,9 @@ async def get_images(image_id: str, redis: Redis = Depends(get_redis),):
 
 @router.get('/result/{task_id}')
 async def result(task_id: str, redis: Redis = Depends(get_redis)):
-    # logger = request.state.logger
     result = await redis.hgetall(get_redis_taskname(task_id))
-        
     return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': json.loads(result['result']), 'file_name': result['file_name']})
-    
+
 
 @router.get('/status/{task_id}')
 async def status(task_id: str, redis: Redis = Depends(get_redis)):
@@ -40,7 +38,7 @@ async def status(task_id: str, redis: Redis = Depends(get_redis)):
         result = await redis.hgetall(get_redis_taskname(task_id))
         if not result:
             return JSONResponse(status_code=200, content={'task_id': task_id, 'status': 'ERROR', 'result': '', 'status_msg': 'No such Task', 'file_name': ''})
-        
+
         status = result.get('status')
         status_msg = result.get('status_msg', '')
         file_name = result.get('file_name', '')
