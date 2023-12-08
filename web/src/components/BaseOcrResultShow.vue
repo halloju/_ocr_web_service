@@ -233,13 +233,40 @@ export default {
             selectedRows.value = selected;
         }
 
-        function downloadFile() {
+        async function downloadFile() {
             if (selectedRows.value.length <= 0) {
                 ElMessage({
                     message: '請先選擇要下載的檔案',
                     type: 'warning'
                 });
+                return
             }
+
+            // Transform each general_upload_res object to match FeedbackRequest format
+            const feedbackDataList = general_upload_res.value.map(upload => ({
+                user_id: '22304',
+                image_cv_id: upload.image_cv_id,
+                // points_list: upload.ocr_results.data_results.map(data_result => ({
+                //     type: 'text',
+                //     tag: data_result.tag, 
+                //     points: data_result.points 
+                // }))
+            }));
+
+            console.log(general_upload_res.value)
+            console.log(feedbackDataList)
+            try {
+                const res = await apiClient.post(`/feedback/batch-feedback`, feedbackDataList, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 10
+                });
+
+            } catch (error) {
+                console.log(error)
+            }
+
             const excelData = getExcelData(selectedRows.value);
             const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {

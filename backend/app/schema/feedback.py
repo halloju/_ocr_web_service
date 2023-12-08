@@ -6,7 +6,7 @@ from app.schema.template_crud.create import PointDict
 
 class FeedbackRequest(BaseModel):
     user_id: str = Field(..., title="員編", example="13520")
-    image_cv_id: Optional[StrictStr] = Field(
+    image_cv_id: str = Field(
       title='影像註冊的 key 值',
       description='''
       ''',
@@ -15,6 +15,8 @@ class FeedbackRequest(BaseModel):
     points_list: conlist(PointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]]}, {
         'type': 'box', 'tag': '是否為範本', 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}, {'type': 'mask', 'tag': None, 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}])
 
+class BatchFeedbackRequest(BaseModel):
+    feedbacks: List[FeedbackRequest]
 
 class FeedbackResponse(BaseModel):
     status_code: StrictStr = Field(
