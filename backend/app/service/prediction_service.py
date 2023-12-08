@@ -4,6 +4,9 @@ from typing import Any
 from route_utils import get_redis_taskname
 from app.models.task import Task
 from app.exceptions import MlaasRequestError
+from app.exceptions import TaskProcessingException
+from app.exceptions import PredictionAPIException
+from app.exceptions import GeneralException
 from app.constants import remittance_points
 
 import traceback
@@ -27,50 +30,34 @@ class ControllerOcrPredictionService(IPredictionService):
         # Store image data
         task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
         if task.status == 'FAIL':
-            return task
+            raise TaskProcessingException(task)
         try:
             # Call prediction API
             data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, self.request_id, action)
 
             predict_class = data_pred.get('predict_class', '')
             # Process the prediction result
-            task.mark_as_processing(
-                data_pred['image_cv_id'], predict_class=predict_class)
+            task.mark_as_processing(data_pred['image_cv_id'], predict_class=predict_class)
 
             # Store task in Redis
-            task_dict = task.to_dict()
-            for key, value in task_dict.items():
-                await self.conn.hset(get_redis_taskname(task.task_id), key, value)
+            await self._store_task_in_redis(task)
 
             return task
 
         except MlaasRequestError as exc:
-            self.logger.error({
-                'predict_service': {
-                    'error_msg': str(exc.message),
-                    'action': action,
-                    'input_params': input_params,
-                    'status_code': exc.mlaas_code
-                }
-            })
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
+            await self._store_task_in_redis(task)
+            raise PredictionAPIException(task, exc)
 
         except Exception as exc:
-            traceback.print_exc()
-            self.logger.error({
-                'controller_predict_service': {
-                    'error_msg': str(exc),
-                    'action': action,
-                    'input_params': input_params,
-                    'status_code': '5001'
-                }
-            })
-            task.mark_as_failed('', '', '5001', 'unknown error')
-            # Store task in Redis
-            task_dict = task.to_dict()
-            for key, value in task_dict.items():
-                await self.conn.hset(get_redis_taskname(task.task_id), key, value)
-            return task
+            task.mark_as_failed('', '', '5001', str(exc))
+            await self._store_task_in_redis(task)
+            raise GeneralException(task, exc)
+    
+    async def _store_task_in_redis(self, task: Task):
+        task_dict = task.to_dict()
+        for key, value in task_dict.items():
+            await self.conn.hset(get_redis_taskname(task.task_id), key, value)
 
 
 class NonControllerOcrPredictionService(IPredictionService):
@@ -120,7 +107,7 @@ class NonControllerOcrPredictionService(IPredictionService):
         # Store image data
         task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
         if task.status == 'FAIL':
-            return task
+            raise TaskProcessingException(task)
         try:
             # Call prediction API
             response = await self.prediction_api.call_prediction_api(encoded_data, input_params, self.request_id, action)
@@ -133,32 +120,17 @@ class NonControllerOcrPredictionService(IPredictionService):
             return task
 
         except MlaasRequestError as exc:
-            self.logger.error({
-                'non_controller_predict_service': {
-                    'error_msg': str(exc),
-                    'action': action,
-                    'input_params': input_params
-                }
-            })
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
-            self.logger.error({
-                'non_controller_predict_service': {
-                    'error_msg': str(exc.message),
-                    'action': action,
-                    'input_params': input_params,
-                    'status_code': exc.mlaas_code
-                }
-            })
+            raise PredictionAPIException(task, exc)
+            # self.logger.error({
+            #     'non_controller_predict_service': {
+            #         'error_msg': str(exc.message),
+            #         'action': action,
+            #         'input_params': input_params,
+            #         'status_code': exc.mlaas_code
+            #     }
+            # })
 
         except Exception as exc:
-            traceback.print_exc()
-            self.logger.error({
-                'non_controller_predict_service': {
-                    'error_msg': str(exc),
-                    'action': action,
-                    'input_params': input_params,
-                    'status_code': '5001'
-                }
-            })
-            task.mark_as_failed('', '', '5001', 'unknown error')
-            return task
+            task.mark_as_failed('', '', '5001', str(exc))
+            raise GeneralException(task, exc)

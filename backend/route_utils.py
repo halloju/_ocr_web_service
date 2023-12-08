@@ -20,7 +20,7 @@ ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def get_mlaas_result(logger, res: dict) -> Optional[dict]:
+def get_mlaas_result(res: dict, logger) -> Optional[dict]:
     outputs = res['outputs']
     status_code = outputs['status_code']
     image_cv_id = outputs['image_cv_id'] if 'image_cv_id' in outputs else ''
@@ -55,8 +55,6 @@ def get_mode_conn_info(project, mode, action):
 
 async def async_call_mlaas_function(request, action: str, project, logger, timeout=5):
     log_act = 'async_call_mlaas_function'
-    logger.info(
-        {log_act: {'action': action, 'request_id': request['request_id']}})
     async with httpx.AsyncClient(verify=False) as client:
         action, connection_url, headers = get_mode_conn_info(
             project, os.environ.get('MODE'), action)
@@ -83,7 +81,7 @@ async def async_call_mlaas_function(request, action: str, project, logger, timeo
             }})
             raise CustomException(None, str(exc)) from exc
 
-        return get_mlaas_result(logger, inp_post_response.json())
+        return get_mlaas_result(inp_post_response.json(), logger)
 
 
 def get_redis_filename(image_id: str) -> str:
