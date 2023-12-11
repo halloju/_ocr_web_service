@@ -61,8 +61,8 @@ const logout = () => {
     axios
         .get('/auth/slo')
         .then((res) => {
-            const url = res.data;
-            window.location.href = url;
+            const encodedUrl = encodeURI(res.data);
+            window.location.replace(encodedUrl);
             this.$router.push('/');
         })
         .catch((err) => {
