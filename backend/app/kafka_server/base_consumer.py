@@ -18,7 +18,6 @@ class BaseConsumer(object):
 
         self.kafka_config = kafka_configs
         self.consumer = Consumer(self.kafka_config)
-        self.logger_tool.info({'Available topics to consume': str(self.consumer.list_topics().topics)})
         self.consumer.subscribe(topics)
         self.logger_tool.info({'msg': 'Kafka Consumer has been initiated...'})
 
