@@ -84,7 +84,21 @@ class Logger(object):
             **self.manual_log,
             self.section_name: self.check_msg(log_msg)
         }
-        getattr(self.logger, level)(log_entry)
+        log_methods = {
+            'debug': self.logger.debug,
+            'info': self.logger.info,
+            'warning': self.logger.warning,
+            'error': self.logger.error,
+            'critical': self.logger.critical
+        }
+
+        if level in log_methods:
+            log_methods[level](log_entry)
+        else:
+            # Handle the case where the level is not recognized
+            # For example, you might want to log this as an error or raise an exception
+            self.logger.error(f"Unknown log level: {level}")
+
 
     def info(self, log_msg):
         self.log('info', log_msg)
