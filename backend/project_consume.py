@@ -54,6 +54,10 @@ def run_consumer(project_name: str, redis_server, kafka_config):
 if __name__ == "__main__":
     from urllib import parse
     project_name = sys.argv[1]
+    allowed_project_names = ['cv_controller', 'gp_controller']
+    if project_name not in allowed_project_names:
+        logger_tool.error("Not allowed consumer type")
+        exit()
     redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
     parse.uses_netloc.append('redis')
     url = parse.urlparse(redis_url)
@@ -65,7 +69,7 @@ if __name__ == "__main__":
         'bootstrap.servers': os.environ.get('KAFKA_HOST'),
         'auto.offset.reset': 'earliest',
         'max.poll.interval.ms': 3600000,
-        'security.protocol': 'SASL_PLAINTEXT',
-        'sasl.mechanism': 'SCRAM-SHA-512'
+        # 'security.protocol': 'SASL_PLAINTEXT',
+        # 'sasl.mechanism': 'SCRAM-SHA-512'
     }
     run_consumer(project_name, redis_server, kafka_config)
