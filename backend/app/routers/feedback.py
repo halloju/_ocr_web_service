@@ -1,4 +1,4 @@
-from app.schema.feedback import BatchFeedbackRequest, FeedbackResponse
+from app.schema.feedback import FeedbackRequest, FeedbackResponse
 from utils.logger import Logger
 from route_utils import get_current_user, async_call_mlaas_function
 from app.models.user import User
@@ -9,6 +9,9 @@ from fastapi.responses import JSONResponse
 from pydantic.typing import List
 from aioredis import Redis
 import asyncio
+from typing import List
+from fastapi import Request
+import json
 
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
@@ -16,9 +19,9 @@ logger = Logger('feedback')
 
 
 # Modify your endpoint to accept a list of FeedbackRequest
-@router.post("/batch-feedback", summary="批次回饋")
+@router.post("/feedback", summary="批次回饋")
 async def batch_feedback(
-    feedback_requests: BatchFeedbackRequest,
+    feedback_requests: List[FeedbackRequest],
     current_user: User = Depends(get_current_user),
 ):
     '''
@@ -30,22 +33,31 @@ async def batch_feedback(
     logger.logger.extra['user_id'] = current_user.user_id
 
     try:
-        tasks = []
         batch_size = 10  # Set your batch size
 
         for i in range(0, len(feedback_requests), batch_size):
             batch = feedback_requests[i:i + batch_size]
-            batch_tasks = [async_call_mlaas_function(feedback, action, project='service') for feedback in batch]
+            
+            batch_tasks = []
+            for feedback in batch:
+                # Convert feedback to dict and update the user_id
+                feedback_data = feedback.dict()
+                feedback_data['user_id'] = current_user.user_id
+
+                # Add the task to the batch
+                task = async_call_mlaas_function(feedback_data, action, project='service', logger=logger)
+                batch_tasks.append(task)
+                
             results = await asyncio.gather(*batch_tasks, return_exceptions=True)
             # Process results and handle any exceptions
             for result in results:
                 if isinstance(result, Exception):
                     logger.error({'error_msg': str(result), 'action': action})
                 else:
-                    tasks.append(result.json())
+                    logger.info(str(result))
 
-        return JSONResponse(status_code=200, content=tasks)
+        return FeedbackResponse(status_code='0000', status_msg='Feedback Success')
 
     except Exception as ex:
         logger.error({'error_msg': str(ex), 'action': action})
-        return JSONResponse(status_code=400, content=[])
+        return FeedbackResponse(status_code='4000', status_msg='feedback failed', err_detail=str(ex))
