@@ -6,8 +6,6 @@ export default {
     name: 'Login',
     data() {
         return {
-            account: '',
-            password: '',
             checked: false
         };
     },
