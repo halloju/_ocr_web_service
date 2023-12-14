@@ -9,10 +9,14 @@ from onelogin.saml2.auth import OneLogin_Saml2_Auth
 from onelogin.saml2.idp_metadata_parser import OneLogin_Saml2_IdPMetadataParser
 from route_utils import async_call_mlaas_function
 from fastapi.encoders import jsonable_encoder
+from urllib.parse import urlparse
+import re
+
 from app.exceptions import CustomException, MlaasRequestError
 from app.models.user import User
 from utils.logger import Logger
 from route_utils import get_request_id
+
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
@@ -44,6 +48,15 @@ async def prepare_from_fastapi_request(request, debug=False):
     return rv
 
 
+# Validate URL Format
+def is_valid_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme, result.netloc]) and re.match(r'http[s]?://', url)
+    except:
+        return False
+    
+    
 def init_saml_auth(req):
     try:
         # Define the path to the settings file.
@@ -58,6 +71,13 @@ def init_saml_auth(req):
         saml_idp_metadata_url = os.environ.get('SAML_IDP_METADATA_URL')
         if not saml_idp_metadata_url:
             raise ValueError("SAML_IDP_METADATA_URL is not set in environment variables")
+
+        if not is_valid_url(saml_idp_metadata_url):
+            return ValueError('Not a valid url')
+
+        # Check if URL ends with 'xml'
+        if not saml_idp_metadata_url.endswith('xml'):
+            return ValueError('URL does not point to an XML file')
 
         # Parse remote IdP data with certificate validation.
         idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(
