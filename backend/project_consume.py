@@ -2,6 +2,7 @@ import redis
 from app.kafka_server.result_consumer import ResultConsumer
 import os
 import sys
+from urllib import parse
 from utils.logger import Logger
 
 logger_tool = Logger('consumer_main')
@@ -55,6 +56,16 @@ def run_consumer(project_name: str, redis_server, kafka_config):
         )
 
 
+def validate_redis_url(redis_url):
+    parse.uses_netloc.append('redis')
+    parsed_url = parse.urlparse(redis_url)
+    if parsed_url.scheme != 'redis':
+        raise ValueError("Invalid URL scheme for Redis URL")
+    if not parsed_url.hostname or not parsed_url.port:
+        raise ValueError("Invalid Redis URL")
+    return parsed_url
+
+
 if __name__ == "__main__":
     from urllib import parse
     if len(sys.argv) < 2:
@@ -82,7 +93,7 @@ if __name__ == "__main__":
         'bootstrap.servers': os.environ.get('KAFKA_HOST'),
         'auto.offset.reset': 'earliest',
         'max.poll.interval.ms': 3600000,
-        'security.protocol': 'SASL_PLAINTEXT',
-        'sasl.mechanism': 'SCRAM-SHA-512'
+        # 'security.protocol': 'SASL_PLAINTEXT',
+        # 'sasl.mechanism': 'SCRAM-SHA-512'
     }
     run_consumer(project_name, redis_server, kafka_config)

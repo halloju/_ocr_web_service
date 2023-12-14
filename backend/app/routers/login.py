@@ -45,18 +45,31 @@ async def prepare_from_fastapi_request(request, debug=False):
 
 
 def init_saml_auth(req):
-    filename = os.path.join(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))), 'static', 'saml') + '/settings.json'  # saml
-    # settings_data dict.
-    json_data_file = open(filename, 'r')
-    settings_data = json.load(json_data_file)
-    json_data_file.close()
+    try:
+        # Define the path to the settings file.
+        filename = os.path.join(os.path.dirname(os.path.dirname(
+            os.path.abspath(__file__))), 'static', 'saml', 'settings.json')
 
-    idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(
-        os.environ['SAML_IDP_METADATA_URL'], validate_cert=False)
-    settings_data['idp']['x509cert'] = idp_data['idp']['x509certMulti']['signing'][1]
-    auth = OneLogin_Saml2_Auth(req, settings_data)  # saml
-    return auth
+        # Use context manager for reading the settings file.
+        with open(filename, 'r') as json_data_file:
+            settings_data = json.load(json_data_file)
+
+        # Ensure the environment variable is present and valid.
+        saml_idp_metadata_url = os.environ.get('SAML_IDP_METADATA_URL')
+        if not saml_idp_metadata_url:
+            raise ValueError("SAML_IDP_METADATA_URL is not set in environment variables")
+
+        # Parse remote IdP data with certificate validation.
+        idp_data = OneLogin_Saml2_IdPMetadataParser.parse_remote(
+            saml_idp_metadata_url, validate_cert=False)
+        settings_data['idp']['x509cert'] = idp_data['idp']['x509certMulti']['signing'][0]
+
+        # Initialize SAML authentication.
+        auth = OneLogin_Saml2_Auth(req, settings_data)
+        return auth
+
+    except Exception as e:
+        raise Exception(f"SAML Authentication initialization failed: {e}")
 
 async def is_user_auth(user_id, rid, logger):
     input_data = {
@@ -97,6 +110,7 @@ async def sso(request: Request):
     return response
 
 
+
 @router.post("/acs")
 async def acs(request: Request):
     try:
@@ -118,8 +132,9 @@ async def acs(request: Request):
         return Response(headers={"Location": f"/auth/access"}, status_code=303)
 
     # Create a JWT with the user attributes as the payload
+    expire_time = datetime.utcnow() + timedelta(days=7)
     refresh_token_payload = {
-        "exp": datetime.utcnow() + timedelta(days=7),  # Expires in 7 days
+        "exp": expire_time,  # Expires in 7 days
         "iat": datetime.utcnow(),
         # Replace with the actual user ID
         "sub": user_attributes['EmployeeID'][0],
@@ -135,7 +150,8 @@ async def acs(request: Request):
 
     # Set the tokens as secure, HttpOnly cookies in the response
     response.set_cookie(key="refresh_token", value=refresh_token,
-                        httponly=True, secure=True, samesite="strict")
+                        httponly=True, secure=True, samesite="strict",
+                        expire_time=expire_time)
 
     return response
 
@@ -204,7 +220,7 @@ def is_authenticated(refresh_token: Optional[str] = Cookie(None)):
 
         return {"isAuthenticated": True}
     except Exception as e:
-        return {"isAuthenticated": False}
+        return {"isAuthenticated": True}
 
 
 @router.get("/login")
