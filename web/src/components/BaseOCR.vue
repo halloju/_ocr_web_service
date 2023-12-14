@@ -10,7 +10,7 @@ export default {
     name: 'BaseOCR',
     props: {
         title: String,
-        subtitle: String,
+        subName: String,
         description: String,
         apiUrl: String,
         category: Object,
@@ -76,7 +76,7 @@ export default {
                 }
             ],
             switchValue: false,
-            breadcrumbItems: [{ path: '/', label: '首頁' }, { label: this.title }, { label: this.subtitle, isCurrent: true }],
+            breadcrumbItems: [{ path: '/', label: '首頁' }, { label: this.title }, { label: this.subName, isCurrent: true }],
             detail_description: props.description
         };
     },
@@ -103,7 +103,7 @@ export default {
 
         <!-- Title -->
         <div v-if="step == 1" style="margin-bottom: 20px;">
-            <p class="title">{{ subtitle }}</p>
+            <p class="title">{{ subName }}</p>
             <div style="display: flex; align-items: center">
                 <p v-if="useLanguage" style="margin-right: 2px; color: red">*</p>
                 <div v-if="useLanguage" style="display: flex; align-items: center; margin-right: 20px">

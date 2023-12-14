@@ -25,7 +25,7 @@ export default {
     data() {
         return {
             title: '',
-            subtitle: '',
+            subName: '',
             description: '',
             apiUrl: '',
             template_id: this.$store.state.template_id
@@ -37,7 +37,7 @@ export default {
         this.key = ocrConfig.key;
         this.title = ocrConfig.title;
         this.apiUrl = ocrConfig.apiUrl;
-        this.subtitle = ocrConfig.subtitle;
+        this.subName = ocrConfig.subName;
         this.description = ocrConfig.description;
         this.useModelComplexity = ocrConfig.useModelComplexity;
         this.useLanguage = ocrConfig.useLanguage;
@@ -55,7 +55,7 @@ export default {
             this.key = ocrConfig.key;
             this.title = ocrConfig.title;
             this.apiUrl = ocrConfig.apiUrl;
-            this.subtitle = ocrConfig.subtitle;
+            this.subName = ocrConfig.subName;
             this.description = ocrConfig.description;
             this.useModelComplexity = ocrConfig.useModelComplexity;
             this.useLanguage = ocrConfig.useLanguage;
@@ -73,7 +73,7 @@ export default {
                 general: {
                     key: 0,
                     title: '全文辨識',
-                    subtitle: '全文辨識',
+                    subName: '全文辨識',
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/gp_ocr',
                     useModelComplexity: true,
@@ -90,7 +90,7 @@ export default {
                 template: {
                     key: 1,
                     title: '模板辨識',
-                    subtitle: `模板編號：${this.template_id}`,
+                    subName: `模板編號：${this.template_id}`,
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/template_ocr',
                     useModelComplexity: false,
@@ -107,7 +107,7 @@ export default {
                 remittance: {
                     key: 2,
                     title: '票據辨識',
-                    subtitle: '匯款單辨識',
+                    subName: '匯款單辨識',
                     description: '請上傳一張，下一步會進行辨識並可以進行檢視。',
                     apiUrl: '/ocr/remittance',
                     useModelComplexity: false,
@@ -124,7 +124,7 @@ export default {
                 check_front: {
                     key: 3,
                     title: '票據辨識',
-                    subtitle: '支票正面辨識',
+                    subName: '支票正面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/check_front',
                     useModelComplexity: false,
@@ -141,7 +141,7 @@ export default {
                 check_back: {
                     key: 4,
                     title: '票據辨識',
-                    subtitle: '支票背面辨識',
+                    subName: '支票背面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/check_back',
                     useModelComplexity: false,
@@ -158,7 +158,7 @@ export default {
                 id: {
                     key: 5,
                     title: '人證辨識',
-                    subtitle: '身分證辨識',
+                    subName: '身分證辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'ID',
@@ -176,7 +176,7 @@ export default {
                 driver_license: {
                     key: 6,
                     title: '人證辨識',
-                    subtitle: '駕照辨識',
+                    subName: '駕照辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'DRIVER_LICENSE',
@@ -194,7 +194,7 @@ export default {
                 health_insurance: {
                     key: 7,
                     title: '人證辨識',
-                    subtitle: '健保卡辨識',
+                    subName: '健保卡辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'HEALTH_INSURANCE',
@@ -212,7 +212,7 @@ export default {
                 withholding: {
                     key: 8,
                     title: '財證辨識',
-                    subtitle: '扣繳憑單辨識',
+                    subName: '扣繳憑單辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'WITHHOLDING_STATEMENT',
@@ -230,7 +230,7 @@ export default {
                 financial_statement: {
                     key: 9,
                     title: '財證辨識',
-                    subtitle: '國稅局個人所得清單辨識',
+                    subName: '國稅局個人所得清單辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
                     apiUrl: '/ocr/cv-ocr',
                     imageClass: 'NTB_FINANCIAL_STATEMENT',
@@ -259,7 +259,7 @@ export default {
             :apiUrl="apiUrl"
             :category="category"
             :title="title"
-            :subtitle="subtitle"
+            :subName="subName"
             :description="description"
             :useModelComplexity="useModelComplexity"
             :useLanguage="useLanguage"
