@@ -49,7 +49,11 @@ def run_consumer(project_name: str, redis_server, kafka_config):
         consumer.dequeue()
     except Exception as e:
         logger_tool.error(
-            {'error_msg': f'consumer failed to start, error: {e}', 'project': project_name})
+            {"consumer":
+                {'error_msg': f'consumer failed to start, error: {e}',
+                    'project': project_name}
+             }
+        )
 
 
 def validate_redis_url(redis_url):
@@ -63,21 +67,26 @@ def validate_redis_url(redis_url):
 
 
 if __name__ == "__main__":
+    from urllib import parse
+    if len(sys.argv) < 2:
+        logger_tool.error({"consumer": {"error_msg": "未提供專案項目"}})
     project_name = sys.argv[1]
-    allowed_project_names = ['cv_controller', 'gp_controller']
-    if project_name not in allowed_project_names:
-        logger_tool.error("Not allowed consumer type")
-        exit()
-    redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
+    if not project_name:
+        logger_tool.error({"consumer": {"error_msg": "專案項目不可為空"}})
+    if project_name not in ['cv_controller', 'gp_controller']:
+        logger_tool.error(
+            {"consumer": {"error_msg": f"專案項目錯誤: {project_name}"}})
     try:
-        validated_url = validate_redis_url(redis_url)
-        # Proceed with using validated_url to establish Redis connection
-    except ValueError as e:
-        # Handle invalid URL appropriately
-        logger_tool.error(f"Error: {e}")
-        exit()
-    redis_server = redis.Redis(
-        host=validated_url.hostname, port=validated_url.port, db=0, password=validated_url.password, decode_responses=True)
+        redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
+        location = parse.urlparse(redis_url)
+        query = location.query
+        url = parse.parse_qs(query)['url']
+        if (url.startswith('redis') and not url.startswith('//')) or url.startswith("https://" + location.netloc + "/"):
+            parse.uses_netloc.append('redis')
+            redis_server = redis.Redis(
+                host=location.hostname, port=location.port, db=0, password=location.password, decode_responses=True)
+    except Exception as e:
+        logger_tool.error({"consumer": {"error_msg": f"redis error: {str(e)}"}})
     kafka_config = {
         'sasl.username': os.environ.get('KAFKA_ID'),
         'sasl.password': os.environ.get('KAFKA_PASSWORD'),

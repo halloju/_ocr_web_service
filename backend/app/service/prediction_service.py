@@ -56,7 +56,6 @@ class ControllerOcrPredictionService(IPredictionService):
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
 
         except Exception as exc:
-            traceback.print_exc()
             self.logger.error({
                 'controller_predict_service': {
                     'error_msg': str(exc),
@@ -151,7 +150,6 @@ class NonControllerOcrPredictionService(IPredictionService):
             })
 
         except Exception as exc:
-            traceback.print_exc()
             self.logger.error({
                 'non_controller_predict_service': {
                     'error_msg': str(exc),
