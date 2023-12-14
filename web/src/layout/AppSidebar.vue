@@ -18,27 +18,6 @@ const model = ref([
         ]
     },
     {
-        label: '票據辨識',
-        icon: 'pi pi-th-large',
-        items: [
-            {
-                label: '匯款單辨識',
-                icon: 'pi pi-th-large',
-                to: '/features/ocr/remittance'
-            },
-            {
-                label: '支票正面辨識',
-                icon: 'pi pi-list',
-                to: '/features/ocr/check_front'
-            },
-            {
-                label: '支票背面辨識',
-                icon: 'pi pi-list',
-                to: '/features/ocr/check_back'
-            }
-        ]
-    },
-    {
         label: '人證辨識',
         icon: 'pi pi-users',
         items: [
@@ -72,6 +51,27 @@ const model = ref([
                 label: '扣繳憑單辨識',
                 icon: 'pi pi-envelope',
                 to: '/features/ocr/withholding'
+            }
+        ]
+    },
+    {
+        label: '票據辨識',
+        icon: 'pi pi-th-large',
+        items: [
+            {
+                label: '匯款單辨識',
+                icon: 'pi pi-th-large',
+                to: '/features/ocr/remittance'
+            },
+            {
+                label: '支票正面辨識',
+                icon: 'pi pi-list',
+                to: '/features/ocr/check_front'
+            },
+            {
+                label: '支票背面辨識',
+                icon: 'pi pi-list',
+                to: '/features/ocr/check_back'
             }
         ]
     },

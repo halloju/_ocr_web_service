@@ -55,7 +55,6 @@ export default {
                     <ul class="list-none p-0 m-0 flex lg:align-items-center select-none flex-column lg:flex-row cursor-pointer"></ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
                         <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-xl text-blue-500" @click="goLogin" v-if="!loggedIn"></Button>
-                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 text-xl bg-blue-500" v-if="!loggedIn"></Button>
                     </div>
                 </div>
             </div>
@@ -80,8 +79,8 @@ export default {
             <div id="features" class="py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8">
                 <div class="grid justify-content-center">
                     <div class="col-12 text-center mt-8 mb-4">
-                        <h2 class="text-900 font-normal mb-2">核心功能</h2>
-                        <span class="text-600 text-2xl">這是一款致力於解決行內通用光學字元辨識的問題。</span>
+                        <h2 class="text-900 font-normal mb-2">通用辨識</h2>
+                        <span class="text-600 text-2xl">提供全文辨識 (辨識影像中所有文字) 及模板辨識 (建立固定式文件模板並辨識特定要項) 服務</span>
                     </div>
 
                     <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0" @mouseover="over('general')" @mouseleave="leave('general')" @click="goToPage('/features/ocr/general')">
@@ -138,7 +137,7 @@ export default {
                 <div class="grid justify-content-center">
                     <div class="col-12 text-center mt-8 mb-4">
                         <h2 class="text-900 font-normal mb-2">人證辨識</h2>
-                        <span class="text-600 text-2xl">已預設常見模板，提供身分證正反面、駕照、健保卡等影像進行OCR辨識以提取要項內容</span>
+                        <span class="text-600 text-2xl">提供身分證正反面、駕照、健保卡等影像進行OCR辨識以提取要項內容</span>
                     </div>
 
                     <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0" @mouseover="over('id')" @mouseleave="leave('id')" @click="goToPage('features/ocr/id')">
@@ -159,8 +158,32 @@ export default {
                                 <div class="flex align-items-center justify-content-center bg-bluegray-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-id-card text-2xl text-bluegray-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">身份證辨識</h5>
+                                <h5 class="mb-2 text-900">身份證辨識 (支援正反面)</h5>
                                 <span class="text-600">ID OCR</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0" @mouseover="over('driver')" @mouseleave="leave('driver')" @click="goToPage('features/ocr/driver_license')">
+                        <div
+                            style="
+                                height: 160px;
+                                width: 100%;
+                                padding: 2px;
+                                border-radius: 10px;
+                                background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
+                            "
+                        >
+                            <div v-if="isHovered['driver']" class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <h5 class="mb-2 text-900">駕照辨識</h5>
+                                <span class="text-600"></span>
+                            </div>
+                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
+                                <div class="flex align-items-center justify-content-center bg-cyan-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
+                                    <i class="pi pi-fw pi-id-card text-2xl text-cyan-700"></i>
+                                </div>
+                                <h5 class="mb-2 text-900">駕照辨識</h5>
+                                <span class="text-600">Driver's License OCR</span>
                             </div>
                         </div>
                     </div>
@@ -189,29 +212,6 @@ export default {
                         </div>
                     </div>
 
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0" @mouseover="over('driver')" @mouseleave="leave('driver')" @click="goToPage('features/ocr/driver_license')">
-                        <div
-                            style="
-                                height: 160px;
-                                width: 100%;
-                                padding: 2px;
-                                border-radius: 10px;
-                                background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2));
-                            "
-                        >
-                            <div v-if="isHovered['driver']" class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <h5 class="mb-2 text-900">駕照辨識</h5>
-                                <span class="text-600"></span>
-                            </div>
-                            <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-cyan-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-id-card text-2xl text-cyan-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">駕照辨識</h5>
-                                <span class="text-600">Driver's License OCR</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -219,7 +219,7 @@ export default {
                 <div class="grid justify-content-center">
                     <div class="col-12 text-center mt-8 mb-4">
                         <h2 class="text-900 font-normal mb-2">財證辨識</h2>
-                        <span class="text-600 text-2xl">已預設常見模板，提供所得清單、扣繳憑單、存摺等影像進行OCR辨識以提取要項內容</span>
+                        <span class="text-600 text-2xl">提供所得清單、扣繳憑單影像進行OCR辨識以提取要項內容</span>
                     </div>
 
                     <div class="col-12 md:col-12 lg:col-6 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0" @mouseover="over('fs')" @mouseleave="leave('fs')" @click="goToPage('features/ocr/financial_statement')">
@@ -276,7 +276,7 @@ export default {
                 <div class="grid justify-content-center">
                     <div class="col-12 text-center mt-8 mb-4">
                         <h2 class="text-900 font-normal mb-2">票據辨識</h2>
-                        <span class="text-600 text-2xl">已預設常見模板，提供提回支票正面、提回支票背面、匯款單影像進行OCR辨識以提取要項內容</span>
+                        <span class="text-600 text-2xl">提供匯款單、提回支票正面、提回支票背面影像進行OCR辨識以提取要項內容</span>
                     </div>
 
                     <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0" @mouseover="over('remittance')" @mouseleave="leave('remittance')" @click="goToPage('features/ocr/remittance')">
@@ -314,14 +314,14 @@ export default {
                             "
                         >
                             <div v-if="isHovered['check_front']" class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <h5 class="mb-2 text-900">支票正面辨識</h5>
+                                <h5 class="mb-2 text-900">提回支票正面辨識</h5>
                                 <span class="text-600"></span>
                             </div>
                             <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
                                 <div class="flex align-items-center justify-content-center bg-orange-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-id-card text-2xl text-orange-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">支票正面辨識</h5>
+                                <h5 class="mb-2 text-900">提回支票正面辨識</h5>
                                 <span class="text-600">Check Front OCR</span>
                             </div>
                         </div>
@@ -338,14 +338,14 @@ export default {
                             "
                         >
                             <div v-if="isHovered['check_back']" class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <h5 class="mb-2 text-900">支票背面辨識</h5>
+                                <h5 class="mb-2 text-900">提回支票背面辨識</h5>
                                 <span class="text-600"></span>
                             </div>
                             <div v-else class="p-3 surface-card h-full" style="border-radius: 8px">
                                 <div class="flex align-items-center justify-content-center bg-cyan-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
                                     <i class="pi pi-fw pi-id-card text-2xl text-cyan-700"></i>
                                 </div>
-                                <h5 class="mb-2 text-900">支票背面辨識</h5>
+                                <h5 class="mb-2 text-900">提回支票背面辨識</h5>
                                 <span class="text-600">Check Back OCR</span>
                             </div>
                         </div>
