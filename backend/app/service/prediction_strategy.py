@@ -1,7 +1,7 @@
 from typing import Any, Dict
 import os
 import json
-from route_utils import async_call_mlaas_function, get_redis_filename, get_redis_taskname
+from route_utils import async_call_mlaas_function
 
 
 class PredictionStrategy:

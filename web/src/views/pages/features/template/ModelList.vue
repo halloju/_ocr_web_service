@@ -113,6 +113,7 @@ export default {
         const template = ref('');
         const initialData = ref('');
         const creation_time = ref('');
+        const expiration_time = ref('');
         const buttonText = ref('新增模板');
 
         // Methods
@@ -151,6 +152,7 @@ export default {
                 template.value = response['data'];
                 initialData.value = parseTemplateDetail(response['data'], userType);
                 creation_time.value = template.value.creation_time;
+                expiration_time.value = template.value.expiration_time;
                 imageSrc.value = 'data:image/png;base64,' + response['data'].image;
                 dialogVisible.value = true;
                 dialogWidth.value = '1200px';
@@ -340,6 +342,7 @@ export default {
             template_id,
             initialData,
             creation_time,
+            expiration_time,
             formatDate,
             getAvailableTemplate,
             handleConfirm,
@@ -399,6 +402,7 @@ export default {
             <div class="card" style="height: 80vh; overflow-y: scroll">
                 <p>template id: {{ template_id }}</p>
                 <p>創建日期: {{ creation_time }}</p>
+                <p>到期日期: {{ expiration_time }}</p>
                 <div class="flex flex-column">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->

@@ -11,6 +11,9 @@ import os
 from app.service.prediction_strategy import CVOcrPredictionStrategy, GPOcrPredictionStrategy, TemplateOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import ControllerOcrPredictionService
 from app.service.image_storage import ImageStorage
+from app.exceptions import TaskProcessingException
+from app.exceptions import PredictionAPIException
+from app.exceptions import GeneralException
 from route_utils import get_current_user
 from app.models.user import User
 from utils.logger import Logger
@@ -54,6 +57,17 @@ async def get_template_ocr_prediction_service(
     return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
 
 
+def process_results(results, endpoint):
+    response_content = []
+    for result in results:
+        if isinstance(result, Exception):
+            logger.error({endpoint: str(result)})
+            response_content.append(result.task.to_dict())
+        else:
+            response_content.append(result.to_dict())
+    return response_content
+
+
 @router.post("/cv-ocr", summary="cv controller 辨識")
 async def cv_upload(
     image_class: str = Form(...),
@@ -78,17 +92,11 @@ async def cv_upload(
             batch = files[i:i + batch_size]
             batch_tasks = [prediction_service.predict_for_task(file, action, input_params) for file in batch]
             results = await asyncio.gather(*batch_tasks, return_exceptions=True)
-            response_content = []
-            for result in results:
-                if isinstance(result, Exception):
-                    logger.error({'error_msg': str(result), 'action': action})
-                    response_content.append({'status': 'ERROR', 'error_msg': str(result)})
-                else:
-                    response_content.append(result.to_dict())
-            tasks.extend(response_content)
+            tasks.extend(process_results(results,  image_class))
+
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
-        logger.error({'error_msg': str(ex), 'action': action})
+        logger.error({'error_msg': str(ex), 'action': action, 'request_id': rid})
         return JSONResponse(status_code=400, content=[])
 
 
@@ -117,14 +125,7 @@ async def gp_upload(
             batch = files[i:i + batch_size]
             batch_tasks = [prediction_service.predict_for_task(file, action, input_params) for file in batch]
             results = await asyncio.gather(*batch_tasks, return_exceptions=True)
-            response_content = []
-            for result in results:
-                if isinstance(result, Exception):
-                    logger.error({'error_msg': str(result), 'action': action, 'request_id': rid})
-                    response_content.append({'status': 'ERROR', 'error_msg': str(result)})
-                else:
-                    response_content.append(result.to_dict())
-            tasks.extend(response_content)
+            tasks.extend(process_results(results, 'gp_ocr'))
 
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:
@@ -156,15 +157,7 @@ async def template_upload(
             batch = files[i:i + batch_size]
             batch_tasks = [prediction_service.predict_for_task(file, action, input_params) for file in batch]
             results = await asyncio.gather(*batch_tasks, return_exceptions=True)
-            response_content = []
-            for result in results:
-                if isinstance(result, Exception):
-                    logger.error({'error_msg': str(result), 'action': action})
-                    response_content.append({'status': 'ERROR', 'error_msg': str(result)})
-                else:
-                    response_content.append(result.to_dict())
-                    
-            tasks.extend(response_content)
+            tasks.extend(process_results(results, 'template_ocr'))
 
         return JSONResponse(status_code=200, content=tasks)
     except Exception as ex:

@@ -1,10 +1,12 @@
-import logging
 import uuid
 
 from app.service.image_storage import ImageStorage
 
 from app.service.prediction_strategy import NonControllerOcrPredictionStrategy, PredictionAPI
 from app.service.prediction_service import NonControllerOcrPredictionService
+from app.exceptions import TaskProcessingException
+from app.exceptions import PredictionAPIException
+from app.exceptions import GeneralException
 from route_utils import get_redis
 from utils.logger import Logger
 from route_utils import get_current_user
@@ -48,18 +50,33 @@ async def remittance(
     tasks = []
     action = 'REMIT/predict'
     input_params = {}
-    try:
-        for file in files:
-            try:
-                updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict_no_dumps())
-            except Exception as ex:
-                logger.error({'error_msg': str(ex), 'action': action})
-                tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
-        return JSONResponse(status_code=200, content=tasks)
-    except Exception as ex:
-        logger.error({'error_msg': str(ex), 'action': action})
-        return JSONResponse(status_code=400, content=[])
+    for file in files:
+        try:
+            updated_task = await prediction_service.predict_for_task(file, action, input_params)
+            tasks.append(updated_task.to_dict_no_dumps())
+        except PredictionAPIException as ex:
+            # Log and append specific error details
+            logger.error({
+                action: ex.message,
+                'task_id': ex.task.task_id if ex.task else 'N/A'
+            })
+            tasks.append(ex.task.to_dict())
+        except GeneralException as ex:
+            # Log and append general error details
+            logger.error({
+                action: ex.message,
+                'task_id': ex.task.task_id if ex.task else 'N/A'
+            })
+            tasks.append(ex.task.to_dict())
+        except Exception as ex:
+            # Log and append unexpected error details
+            logger.error({
+                action: str(ex),
+                'task_id': getattr(ex, 'task_id', 'N/A')
+            })
+            tasks.append(ex.task.to_dict())
+
+    return JSONResponse(status_code=200, content=tasks)
 
 
 @router.post("/check_front", summary="支票正面辨識")
@@ -76,18 +93,33 @@ async def check_front(
     tasks = []
     action = 'CHECK/front_out_predict'
     input_params = {}
-    try:
-        for file in files:
-            try:
-                updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict_no_dumps())
-            except Exception as ex:
-                logger.error({'error_msg': str(ex), 'action': action})
-                tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
-        return JSONResponse(status_code=200, content=tasks)
-    except Exception as ex:
-        logger.error({'error_msg': str(ex), 'action': action})
-        return JSONResponse(status_code=400, content=[])
+    for file in files:
+        try:
+            updated_task = await prediction_service.predict_for_task(file, action, input_params)
+            tasks.append(updated_task.to_dict_no_dumps())
+        except PredictionAPIException as ex:
+            # Log and append specific error details
+            logger.error({
+                action: ex.message,
+                'task_id': ex.task.task_id if ex.task else 'N/A'
+            })
+            tasks.append(ex.task.to_dict())
+        except GeneralException as ex:
+            # Log and append general error details
+            logger.error({
+                action: ex.message,
+                'task_id': ex.task.task_id if ex.task else 'N/A'
+            })
+            tasks.append(ex.task.to_dict())
+        except Exception as ex:
+            # Log and append unexpected error details
+            logger.error({
+                action: str(ex),
+                'task_id': getattr(ex, 'task_id', 'N/A')
+            })
+            tasks.append(ex.task.to_dict())
+
+    return JSONResponse(status_code=200, content=tasks)
 
 
 @router.post("/check_back", summary="支票背面辨識")
@@ -104,15 +136,30 @@ async def check_back(
     tasks = []
     action = 'CHECK/back_predict'
     input_params = {}
-    try:
-        for file in files:
-            try:
-                updated_task = await prediction_service.predict_for_task(file, action, input_params)
-                tasks.append(updated_task.to_dict_no_dumps())
-            except Exception as ex:
-                logger.error({'error_msg': str(ex), 'action': action})
-                tasks.append({'status': 'ERROR', 'error_msg': str(ex)})
-        return JSONResponse(status_code=200, content=tasks)
-    except Exception as ex:
-        logger.error({'error_msg': str(ex), 'action': action})
-        return JSONResponse(status_code=400, content=[])
+    for file in files:
+        try:
+            updated_task = await prediction_service.predict_for_task(file, action, input_params)
+            tasks.append(updated_task.to_dict_no_dumps())
+        except PredictionAPIException as ex:
+            # Log and append specific error details
+            logger.error({
+                action: ex.message,
+                'task_id': ex.task.task_id if ex.task else 'N/A'
+            })
+            tasks.append(ex.task.to_dict())
+        except GeneralException as ex:
+            # Log and append general error details
+            logger.error({
+                action: ex.message,
+                'task_id': ex.task.task_id if ex.task else 'N/A'
+            })
+            tasks.append(ex.task.to_dict())
+        except Exception as ex:
+            # Log and append unexpected error details
+            logger.error({
+                action: str(ex),
+                'task_id': getattr(ex, 'task_id', 'N/A')
+            })
+            tasks.append(ex.task.to_dict())
+
+    return JSONResponse(status_code=200, content=tasks)
