@@ -76,6 +76,8 @@ if __name__ == "__main__":
     if project_name not in ['cv_controller', 'gp_controller']:
         logger_tool.error(
             {"consumer": {"error_msg": f"專案項目錯誤: {project_name}"}})
+        
+    redis_server = None
     try:
         redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
         location = parse.urlparse(redis_url)
@@ -84,7 +86,11 @@ if __name__ == "__main__":
         if ('url' not in parse.parse_qs(query)):
             redis_server = redis.Redis(
                 host=location.hostname, port=location.port, db=0, password=location.password, decode_responses=True)
-            kafka_config = {
+    except Exception as e:
+        logger_tool.error({"consumer": {"error_msg": f"redis error: {str(e)}"}})
+
+    if redis_url:
+        kafka_config = {
                 'sasl.username': os.environ.get('KAFKA_ID'),
                 'sasl.password': os.environ.get('KAFKA_PASSWORD'),
                 'bootstrap.servers': os.environ.get('KAFKA_HOST'),
@@ -92,8 +98,6 @@ if __name__ == "__main__":
                 'max.poll.interval.ms': 3600000,
                 'security.protocol': 'SASL_PLAINTEXT',
                 'sasl.mechanism': 'SCRAM-SHA-512'
-            }
-            run_consumer(project_name, redis_server, kafka_config)
-    except Exception as e:
-        logger_tool.error({"consumer": {"error_msg": f"redis error: {str(e)}"}})
-    
+        }
+        run_consumer(project_name, redis_server, kafka_config)
+
