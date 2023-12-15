@@ -76,24 +76,28 @@ if __name__ == "__main__":
     if project_name not in ['cv_controller', 'gp_controller']:
         logger_tool.error(
             {"consumer": {"error_msg": f"專案項目錯誤: {project_name}"}})
+        
+    redis_server = None
     try:
         redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
         location = parse.urlparse(redis_url)
+        parse.uses_netloc.append('redis')
         query = location.query
-        url = parse.parse_qs(query)['url']
-        if (url.startswith('redis') and not url.startswith('//')) or url.startswith("https://" + location.netloc + "/"):
-            parse.uses_netloc.append('redis')
+        if ('url' not in parse.parse_qs(query)):
             redis_server = redis.Redis(
                 host=location.hostname, port=location.port, db=0, password=location.password, decode_responses=True)
     except Exception as e:
         logger_tool.error({"consumer": {"error_msg": f"redis error: {str(e)}"}})
-    kafka_config = {
-        'sasl.username': os.environ.get('KAFKA_ID'),
-        'sasl.password': os.environ.get('KAFKA_PASSWORD'),
-        'bootstrap.servers': os.environ.get('KAFKA_HOST'),
-        'auto.offset.reset': 'earliest',
-        'max.poll.interval.ms': 3600000,
-        # 'security.protocol': 'SASL_PLAINTEXT',
-        # 'sasl.mechanism': 'SCRAM-SHA-512'
-    }
-    run_consumer(project_name, redis_server, kafka_config)
+
+    if redis_url:
+        kafka_config = {
+                'sasl.username': os.environ.get('KAFKA_ID'),
+                'sasl.password': os.environ.get('KAFKA_PASSWORD'),
+                'bootstrap.servers': os.environ.get('KAFKA_HOST'),
+                'auto.offset.reset': 'earliest',
+                'max.poll.interval.ms': 3600000,
+                'security.protocol': 'SASL_PLAINTEXT',
+                'sasl.mechanism': 'SCRAM-SHA-512'
+        }
+        run_consumer(project_name, redis_server, kafka_config)
+
