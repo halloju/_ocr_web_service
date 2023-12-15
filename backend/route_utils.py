@@ -1,5 +1,5 @@
 import os
-
+import time
 import httpx
 from aioredis import Redis
 import uuid
@@ -7,10 +7,9 @@ from app.exceptions import MlaasRequestError, CustomException
 from starlette.requests import Request
 from typing import Optional
 from app.response_table import response_table
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
-from pydantic import BaseModel
 from typing import Optional
 from app.models.user import User
 
@@ -54,10 +53,12 @@ def get_mode_conn_info(project, mode, action):
 
 
 async def async_call_mlaas_function(request, action: str, project, logger, timeout=5):
+    start_time = time.time()
     log_act = 'async_call_mlaas_function'
     async with httpx.AsyncClient(verify=False) as client:
         action, connection_url, headers = get_mode_conn_info(
             project, os.environ.get('MODE'), action)
+        logger.info({log_act: {'action': action, 'request_id': request['request_id']}})
 
         try:
             inp_post_response = await client.post(
@@ -80,7 +81,9 @@ async def async_call_mlaas_function(request, action: str, project, logger, timeo
                 'error_msg': str(exc)
             }})
             raise CustomException(None, str(exc)) from exc
-
+        end_time = time.time()
+        duration_time = round((end_time - start_time), 4)
+        logger.info({log_act: {'action': action, 'request_id': request['request_id'], 'duration_time': duration_time}})
         return get_mlaas_result(inp_post_response.json(), logger)
 
 

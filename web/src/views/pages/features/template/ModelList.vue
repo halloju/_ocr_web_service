@@ -443,11 +443,48 @@ export default {
     margin-bottom: 20px;
 }
 .selectButton ::v-deep .p-button {
-    background-color: #c5e0e0 !important;
-    padding:  5px;
-    margin: 1px;
+    background: #ffffff;
+    padding: 4px 3px;
+    border: 1px solid #ced4da;
+    color: #495057;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 
+.selectButton ::v-deep .p-button .p-button-icon-right, .p-button .p-button-icon-left{
+    color: #6c757d;
+}
+
+.selectButton ::v-deep .p-button:not(.p-disabled):not(.p-highlight):hover{
+    background: #e9ecef;
+    border-color: #ced4da;
+    color: #495057;
+}
+.selectButton ::v-deep .p-button:not(.p-disabled):not(.p-highlight):hover .p-button-icon-left,
+.selectButton ::v-deep .p-button:not(.p-disabled):not(.p-highlight):hover .p-button-icon-right {
+  color: #343a40;
+}
+.selectButton ::v-deep .p-button.p-highlight {
+  background: #09747A;
+  border-color: #09747A;
+  color: #ffffff;
+}
+.selectButton ::v-deep .p-button.p-highlight .p-button-icon-left,
+.selectButton ::v-deep .p-button.p-highlight .p-button-icon-right {
+  color: #ffffff;
+}
+.selectButton ::v-deep .p-button.p-highlight:hover {
+  background: #10A0A7;
+  border-color: #10A0A7;
+  color: #ffffff;
+}
+.selectButton ::v-deep .p-button.p-highlight:hover .p-button-icon-left,
+.selectButton ::v-deep .p-button.p-highlight:hover .p-button-icon-right {
+  color: #ffffff;
+}
+
+p-selectbutton.ng-dirty.ng-invalid > .selectButton ::v-deep > .p-button {
+  border-color: #e24c4c;
+}
 .p-buttonset {
     display: flex;
     justify-content: center;

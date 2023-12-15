@@ -35,7 +35,7 @@ export default {
   <div class="Dialog">
     <el-dialog v-model="dialogVisible" center :fullscreen="false" width="50%" :close-on-click-modal="true"  :lock-scroll="false" 
       :close-on-press-escape="true" :show-close="true" class="agreement-dialog">
-      <el-carousel arrow="always" :autoplay="false" height="480px">
+      <el-carousel arrow="always" :autoplay="false" height="480px" :pause-on-hover="false">
         <el-carousel-item v-for="item in items" :key="item.key">
           <div class="MessageContainer" v-html="item.content" ></div>
         </el-carousel-item>

@@ -63,11 +63,20 @@ async def gp_ocr(request: Input):
 
     end_time = time.time()
     duration_time = round((end_time - start_time), 4)
-    result = {
-        'image_cv_id': '0129979143656',
-        'status_code': '0000',
-        'status_msg': 'OK'
-    }
+    print(req_data['request_id'])
+    if req_data['request_id'] == 'special':
+        
+        result = {
+            'image_cv_id': '00000000000000',
+            'status_code': '0000',
+            'status_msg': 'OK'
+            }
+    else:
+        result = {
+            'image_cv_id': '0129979143656',
+            'status_code': '0000',
+            'status_msg': 'OK'
+        }
     output.update(response_time=end_time,
                   duration_time=duration_time, outputs=result)
     return Output(**output)
