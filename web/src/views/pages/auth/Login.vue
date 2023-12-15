@@ -6,8 +6,6 @@ export default {
     name: 'Login',
     data() {
         return {
-            account: '',
-            password: '',
             checked: false
         };
     },
@@ -15,8 +13,8 @@ export default {
         axios
             .get('/auth/sso')
             .then((res) => {
-                const url = res.data;
-                window.location.href = url;
+                const encodedUrl = encodeURI(res.data);
+                window.location.replace(encodedUrl);
             })
             .catch((err) => {
                 console.log(err);

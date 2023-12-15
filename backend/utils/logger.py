@@ -3,8 +3,7 @@ import logging.config as log_config
 from datetime import datetime
 import yaml
 import os
-
-
+from html import escape
 
 class RequestLoggerAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
@@ -59,17 +58,47 @@ class Logger(object):
         self.logger = RequestLoggerAdapter(self.raw_logger, self.manual_log)
 
     def check_msg(self, log_msg):
+        # Validate and sanitize the log message
         if isinstance(log_msg, dict):
-            return log_msg
+            sanitized_msg = {key: self.sanitize_value(value) for key, value in log_msg.items()}
+            return sanitized_msg
         else:
-            return {f'msg_{type(log_msg).__name__}': log_msg}
+            sanitized_value = self.sanitize_value(log_msg)
+            return {f'msg_{type(log_msg).__name__}': sanitized_value}
+
+    def sanitize_value(self, value):
+        # Sanitize value based on its type
+        if isinstance(value, str):
+            # For strings, escape HTML and limit length
+            return escape(value[:1000])  # example length limit
+        elif isinstance(value, (int, float)):
+            # For numbers, return as is
+            return value
+        # Add more cases as necessary
+        else:
+            # For other types, convert to string and sanitize
+            return escape(str(value)[:1000])
 
     def log(self, level, log_msg):
         log_entry = {
             **self.manual_log,
             self.section_name: self.check_msg(log_msg)
         }
-        getattr(self.logger, level)(log_entry)
+        log_methods = {
+            'debug': self.logger.debug,
+            'info': self.logger.info,
+            'warning': self.logger.warning,
+            'error': self.logger.error,
+            'critical': self.logger.critical
+        }
+
+        if level in log_methods:
+            log_methods[level](log_entry)
+        else:
+            # Handle the case where the level is not recognized
+            # For example, you might want to log this as an error or raise an exception
+            self.logger.error(f"Unknown log level: {level}")
+
 
     def info(self, log_msg):
         self.log('info', log_msg)
