@@ -247,26 +247,26 @@ export default {
             const filteredUploads = general_upload_res.value.filter(upload => 
                 selectedRows.value.some(row => row.task_id === upload.task_id));
 
-            const feedbacks = filteredUploads.value.map(upload => ({
-                image_cv_id: upload.image_cv_id,
-                points_list: upload.ocr_results.data_results.map(data_result => ({
-                    type: 'text',
-                    tag: data_result.tag, 
-                    points: data_result.points 
-                }))
-            }));
-
-
-            try {
-                const res = await apiClient.post(`/feedback/feedback`, feedbacks, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    timeout: 10
-                });
-
-            } catch (error) {
-                console.log(error)
+            if (filteredUploads.length > 0) {
+                const feedbacks = filteredUploads.map(upload => ({
+                    image_cv_id: upload.image_cv_id,
+                    points_list: upload.ocr_results.data_results.map(data_result => ({
+                        type: 'text',
+                        tag: data_result.tag, 
+                        text: data_result.text,
+                        points: data_result.points 
+                    }))
+                }));
+                try {
+                    const res = await apiClient.post(`/feedback/feedback`, feedbacks, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        timeout: 10
+                    });
+                } catch (error) {
+                    console.log(error)
+                }
             }
 
             const excelData = getExcelData(selectedRows.value);
@@ -283,8 +283,6 @@ export default {
         // Start to pull the status
         onMounted(async () => {
             waitUntilOcrComplete();
-            // const col12Width = (document.querySelector('.col-12').clientWidth * 4) / 5;
-            // width.value = col12Width - parseInt('4rem');
         });
         onBeforeUnmount(() => {
             isRunning.value = false;

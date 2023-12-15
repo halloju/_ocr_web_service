@@ -66,7 +66,7 @@ class ControllerOcrPredictionService(IPredictionService):
                 'predict_service': {
                     'mlaas_rid': rid,
                     'backend_rid': self.request_id,
-                    'error_msg': str(exc.message),
+                    'error_msg': str(exc),
                     'action': action,
                     'input_params': input_params,
                     'status_code': '5001'
@@ -125,7 +125,7 @@ class NonControllerOcrPredictionService(IPredictionService):
     def _format_prediction_data(self, data_pred, exclude_keys):
         return [{'tag': key, 'text': value} for key, value in data_pred.items() if key not in exclude_keys]
 
-    async def predict_for_task(self, file, action, input_params):
+    async def predict_for_task(self, file, action, input_params, special_rid: str=None):
         # Store image data
         task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
         if task.status == 'FAIL':
@@ -133,7 +133,7 @@ class NonControllerOcrPredictionService(IPredictionService):
         rid = str(uuid.uuid4())
         try:
             # Call prediction API
-            response = await self.prediction_api.call_prediction_api(encoded_data, input_params, self.rid, action)
+            response = await self.prediction_api.call_prediction_api(encoded_data, input_params, rid, action)
 
             data_pred = self._get_predict_data(response, action)
             # Process the prediction result
@@ -160,7 +160,7 @@ class NonControllerOcrPredictionService(IPredictionService):
                 'non_controller_predict_service': {
                     'mlaas_rid': rid,
                     'backend_rid': self.request_id,
-                    'error_msg': str(exc.message),
+                    'error_msg': str(exc),
                     'action': action,
                     'input_params': input_params,
                     'status_code': '5001'
