@@ -23,14 +23,18 @@ class ControllerOcrPredictionService(IPredictionService):
         self.logger = logger
         self.request_id = request_id
 
-    async def predict_for_task(self, file, action, input_params):
+    async def predict_for_task(self, file, action, input_params, special_rid: str=None):
         # Store image data
         task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
         if task.status == 'FAIL':
             return task
+        if special_rid:
+            rid = special_rid
+        else:
+            rid = self.request_id + str(uuid.uuid4())
         try:
             # Call prediction API
-            data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, self.request_id, action)
+            data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, rid, action)
 
             predict_class = data_pred.get('predict_class', '')
             # Process the prediction result
@@ -47,6 +51,7 @@ class ControllerOcrPredictionService(IPredictionService):
         except MlaasRequestError as exc:
             self.logger.error({
                 'predict_service': {
+                    'request_id': rid,
                     'error_msg': str(exc.message),
                     'action': action,
                     'input_params': input_params,
@@ -58,6 +63,7 @@ class ControllerOcrPredictionService(IPredictionService):
         except Exception as exc:
             self.logger.error({
                 'controller_predict_service': {
+                    'request_id': rid,
                     'error_msg': str(exc),
                     'action': action,
                     'input_params': input_params,

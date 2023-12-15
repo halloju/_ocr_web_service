@@ -98,6 +98,7 @@ export default function useAnnotator() {
     const parseOcrDetail = (res) => {
         // Parse the ocr details to get the boxes
         let shapes = [];
+        if (res.data_results.length == 0) return shapes;
         res.data_results.forEach(function (element, index) {
             var { label_x, label_y, label_width, label_height } = generatePointsList(element.points);
             let title = element.hasOwnProperty('tag') ? element['tag'] : '';

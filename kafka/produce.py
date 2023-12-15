@@ -62,3 +62,17 @@ for i in range(1):
               m.encode('utf-8'), callback=receipt)
     p.flush()
     time.sleep(2)
+
+for i in range(1):
+    data = {
+        "image_cv_id": "00000000000000",
+        "recognition_status": "SUCCESS",
+        "ocr_results": [
+        ]
+    }
+    m = json.dumps(data)
+    p.poll(1)
+    p.produce('if_gp_ocr.cv_controller_callback',
+              m.encode('utf-8'), callback=receipt)
+    p.flush()
+    time.sleep(2)
