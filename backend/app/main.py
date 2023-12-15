@@ -9,6 +9,7 @@ from app.routers.task import task
 from app.routers.template_crud import create, delete, read, update
 from app.routers import login
 from app.routers.ocr import async_ocr
+from app.routers import feedback
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -120,7 +121,11 @@ def get_application():
         prefix="/auth",
         tags=["auth"],
     )
-
+    app.include_router(
+        feedback.router,
+        prefix="/feedback",
+        tags=["feedback"],
+    )
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
     register_redis(app)

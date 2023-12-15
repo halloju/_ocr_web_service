@@ -342,6 +342,7 @@ export default {
             template_id,
             initialData,
             creation_time,
+            expiration_time,
             formatDate,
             getAvailableTemplate,
             handleConfirm,
@@ -400,8 +401,8 @@ export default {
         <el-dialog v-model="dialogVisible" :width="dialogWidth">
             <div class="card" style="height: 80vh; overflow-y: scroll">
                 <p>template id: {{ template_id }}</p>
-                <p>創建時間: {{ creation_time }}</p>
-                <p>失效時間: {{ creation_time }}</p>
+                <p>創建日期: {{ creation_time }}</p>
+                <p>到期日期: {{ expiration_time }}</p>
                 <div class="flex flex-column">
                     <div class="flex align-items-center justify-content-center h-4rem font-bold border-round m-2">
                         <!-- Wrap the SelectButton in a container -->
