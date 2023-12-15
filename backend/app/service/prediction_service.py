@@ -9,8 +9,6 @@ from app.exceptions import PredictionAPIException
 from app.exceptions import GeneralException
 from app.constants import remittance_points
 
-import traceback
-
 
 class IPredictionService:
     async def predict_for_task(self, file, action, input_params) -> Any:
@@ -34,7 +32,7 @@ class ControllerOcrPredictionService(IPredictionService):
         if special_rid:
             rid = special_rid
         else:
-            rid = self.request_id + str(uuid.uuid4())
+            rid = str(uuid.uuid4())
         try:
             # Call prediction API
             data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, rid, action)
@@ -49,15 +47,35 @@ class ControllerOcrPredictionService(IPredictionService):
             return task
 
         except MlaasRequestError as exc:
+            self.logger.error({
+                'predict_service': {
+                    'mlaas_rid': rid,
+                    'backend_rid': self.request_id,
+                    'error_msg': str(exc.message),
+                    'action': action,
+                    'input_params': input_params,
+                    'status_code': exc.mlaas_code
+                }
+            })
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
             await self._store_task_in_redis(task)
             raise PredictionAPIException(task, exc)
 
         except Exception as exc:
+            self.logger.error({
+                'predict_service': {
+                    'mlaas_rid': rid,
+                    'backend_rid': self.request_id,
+                    'error_msg': str(exc.message),
+                    'action': action,
+                    'input_params': input_params,
+                    'status_code': '5001'
+                }
+            })
             task.mark_as_failed('', '', '5001', str(exc))
             await self._store_task_in_redis(task)
             raise GeneralException(task, exc)
-    
+
     async def _store_task_in_redis(self, task: Task):
         task_dict = task.to_dict()
         for key, value in task_dict.items():
@@ -112,29 +130,41 @@ class NonControllerOcrPredictionService(IPredictionService):
         task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
         if task.status == 'FAIL':
             raise TaskProcessingException(task)
+        rid = str(uuid.uuid4())
         try:
             # Call prediction API
-            response = await self.prediction_api.call_prediction_api(encoded_data, input_params, self.request_id, action)
+            response = await self.prediction_api.call_prediction_api(encoded_data, input_params, self.rid, action)
 
             data_pred = self._get_predict_data(response, action)
             # Process the prediction result
-            task.mark_as_success(image_cv_id=str(
-                uuid.uuid4()), result=data_pred)
+            task.mark_as_success(image_cv_id=rid, result=data_pred)
 
             return task
 
         except MlaasRequestError as exc:
             task.mark_as_failed('', '', exc.mlaas_code, exc.message)
+            self.logger.error({
+                'non_controller_predict_service': {
+                    'mlaas_rid': rid,
+                    'backend_rid': self.request_id,
+                    'error_msg': str(exc.message),
+                    'action': action,
+                    'input_params': input_params,
+                    'status_code': exc.mlaas_code
+                }
+            })
             raise PredictionAPIException(task, exc)
-            # self.logger.error({
-            #     'non_controller_predict_service': {
-            #         'error_msg': str(exc.message),
-            #         'action': action,
-            #         'input_params': input_params,
-            #         'status_code': exc.mlaas_code
-            #     }
-            # })
 
         except Exception as exc:
+            self.logger.error({
+                'non_controller_predict_service': {
+                    'mlaas_rid': rid,
+                    'backend_rid': self.request_id,
+                    'error_msg': str(exc.message),
+                    'action': action,
+                    'input_params': input_params,
+                    'status_code': '5001'
+                }
+            })
             task.mark_as_failed('', '', '5001', str(exc))
             raise GeneralException(task, exc)
