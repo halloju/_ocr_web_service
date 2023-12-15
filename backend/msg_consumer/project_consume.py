@@ -66,11 +66,8 @@ def validate_redis_url(redis_url):
     return parsed_url
 
 
-if __name__ == "__main__":
+def main_consumer(project_name):
     from urllib import parse
-    if len(sys.argv) < 2:
-        logger_tool.error({"consumer": {"error_msg": "未提供專案項目"}})
-    project_name = sys.argv[1]
     if not project_name:
         logger_tool.error({"consumer": {"error_msg": "專案項目不可為空"}})
     if project_name not in ['cv_controller', 'gp_controller']:

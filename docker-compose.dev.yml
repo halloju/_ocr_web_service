@@ -102,7 +102,7 @@ services:
     cv_consumer:
       container_name: cv_consumer
       build: ./backend
-      command: python project_consume.py cv_controller
+      command: python msg_consumer/gp_consumer.py
       volumes:
         - ./backend:/code
       env_file:
@@ -113,7 +113,7 @@ services:
     gp_consumer:
       container_name: gp_consumer
       build: ./backend
-      command: python project_consume.py gp_controller
+      command: python msg_consumer/gp_consumer.py
       volumes:
         - ./backend:/code
       env_file:
