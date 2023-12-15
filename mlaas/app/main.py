@@ -68,8 +68,8 @@ def get_application():
     )
     app.include_router(
         remittance_ocr.router,
-        prefix="/ocr",
-        tags=["ocr"],
+        prefix="/REMIT",
+        tags=["REMIT"],
     )
 
     app.include_router(

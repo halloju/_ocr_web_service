@@ -3,7 +3,6 @@ import logging.config as log_config
 from datetime import datetime
 import yaml
 import os
-from html import escape
 
 class RequestLoggerAdapter(logging.LoggerAdapter):
     def process(self, msg, kwargs):
@@ -63,11 +62,11 @@ class Logger(object):
             sanitized_msg = {key: self.check_msg(value) for key, value in log_msg.items()}
             return sanitized_msg
         elif isinstance(log_msg, str):
-            return escape(log_msg[:1000])
+            return log_msg[:1000]
         elif isinstance(log_msg, (int, float)):
             return log_msg
         else:
-            return {f'msg_{type(log_msg).__name__}': escape(str(log_msg)[:1000])}
+            return {f'msg_{type(log_msg).__name__}': str(log_msg)[:1000]}
 
     def log(self, level, log_msg):
         log_entry = {
