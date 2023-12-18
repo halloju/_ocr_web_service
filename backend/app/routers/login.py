@@ -68,7 +68,7 @@ def init_saml_auth(req):
             settings_data = json.load(json_data_file)
 
         # Ensure the environment variable is present and valid.
-        saml_idp_metadata_url = os.environ.get('SAML_IDP_METADATA_URL')
+        saml_idp_metadata_url = os.getenv('SAML_IDP_METADATA_URL')
         if not saml_idp_metadata_url:
             raise ValueError("SAML_IDP_METADATA_URL is not set in environment variables")
 
