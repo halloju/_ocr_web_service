@@ -76,7 +76,7 @@ def main_consumer(project_name):
         
     redis_server = None
     try:
-        redis_url = os.environ.get("LOCAL_REDIS_URL", "redis://localhost:6379")
+        redis_url = os.getenv("LOCAL_REDIS_URL", "redis://localhost:6379")
         location = parse.urlparse(redis_url)
         parse.uses_netloc.append('redis')
         query = location.query
