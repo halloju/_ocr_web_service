@@ -13,8 +13,8 @@ export default {
         axios
             .get('/auth/sso')
             .then((res) => {
-                const encodedUrl = encodeURI(res.data);
-                window.location.replace(encodedUrl);
+                const re_url = res.data;
+                window.location.replace(re_url);
             })
             .catch((err) => {
                 console.log(err);
