@@ -99,8 +99,8 @@ export default {
 </script>
 
 <template>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://www.googletagmanager.com; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'">
     <div class="layoutZoneContainer">
-
         <!-- Title -->
         <div v-if="step == 1" style="margin-bottom: 20px;">
             <p class="title">{{ subName }}</p>
