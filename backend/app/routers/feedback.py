@@ -41,11 +41,18 @@ async def batch_feedback(
             batch_tasks = []
             for feedback in batch:
                 # Convert feedback to dict and update the user_id
-                feedback_data = feedback.dict()
+                feedback_data = feedback.dict(exclude_none=True)
                 feedback_data['user_id'] = current_user.user_id
+                feedback_data['system_id'] = 'GPOCR'
+                feedback_data['business_category'] = ['GPOCR_WEB']
+                payload = {
+                    "business_unit": 'C170',
+                    "request_id": rid,
+                    "inputs": feedback_data
+                }
 
                 # Add the task to the batch
-                task = async_call_mlaas_function(feedback_data, action, project='service', logger=logger)
+                task = async_call_mlaas_function(payload, action, project='service', logger=logger)
                 batch_tasks.append(task)
                 
             results = await asyncio.gather(*batch_tasks, return_exceptions=True)

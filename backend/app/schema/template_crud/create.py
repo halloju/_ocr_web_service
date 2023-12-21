@@ -31,10 +31,6 @@ class PointDict(BaseModel, extra=Extra.forbid):
     )
 
 
-class ExtendedPointDict(PointDict):
-    text: Optional[StrictStr] = Field(title='OCR',example='Name')
-
-
 class CreateTemplateRequest(BaseModel):
     image: str = Field(..., title='範本影像', example=img_base64_string)
     points_list: conlist(PointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]], 'filters': ['tchinese', 'english', 'number', 'symbol']}, {
