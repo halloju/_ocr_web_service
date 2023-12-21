@@ -29,10 +29,10 @@ class PointDict(BaseModel, extra=Extra.forbid):
         title='框的過濾器',
         example=['tchinese', 'english', 'number', 'symbol']
     )
-    text: Optional[StrictStr] = Field(
-        title='OCR 文字',
-        example='姓名'
-    )
+
+
+class ExtendedPointDict(PointDict):
+    text: Optional[StrictStr] = Field(title='OCR',example='Name')
 
 
 class CreateTemplateRequest(BaseModel):
