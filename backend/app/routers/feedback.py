@@ -27,7 +27,7 @@ async def batch_feedback(
     '''
     Call feedback api for a batch of feedback requests
     '''
-    action = 'feedback'
+    action = 'feedback/feedback'
     rid = str(uuid.uuid4())
     logger.logger.extra['request_id'] = rid
     logger.logger.extra['user_id'] = current_user.user_id
