@@ -233,20 +233,35 @@ export default {
             selectedRows.value = selected;
         }
 
+        async function sendFeedback(filteredUploads) {
+            try {
+                const res = await apiClient.post(`/feedback/feedback`, filteredUploads, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 5000  // Adjusted timeout to 5 seconds
+                });
+            } catch (error) {
+                console.error(error);
+                ElMessage({
+                    message: 'API 請求失敗：' + error.message,
+                    type: 'error'
+                });
+            }
+        }
+
         async function downloadFile() {
             if (selectedRows.value.length <= 0) {
                 ElMessage({
                     message: '請先選擇要下載的檔案',
                     type: 'warning'
                 });
-                return
+                return;
             }
-
-            // Transform each general_upload_res object to match FeedbackRequest format
-            // Filter the general_upload_res array based on selected rows' task_id
+        
             const filteredUploads = general_upload_res.value.filter(upload => 
                 selectedRows.value.some(row => row.task_id === upload.task_id));
-
+        
             if (filteredUploads.length > 0) {
                 const feedbacks = filteredUploads.map(upload => ({
                     image_cv_id: upload.image_cv_id,
@@ -257,18 +272,12 @@ export default {
                         points: data_result.points 
                     }))
                 }));
-                try {
-                    const res = await apiClient.post(`/feedback/feedback`, feedbacks, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        timeout: 10
-                    });
-                } catch (error) {
-                    console.log(error)
-                }
+        
+                // Send feedback in a separate asynchronous function
+                sendFeedback(feedbacks);
             }
-
+        
+            // Proceed to file download
             const excelData = getExcelData(selectedRows.value);
             const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {
@@ -279,6 +288,7 @@ export default {
             };
             XLSX.writeFile(workBook, '辨識結果.xlsx');
         }
+
 
         // Start to pull the status
         onMounted(async () => {
