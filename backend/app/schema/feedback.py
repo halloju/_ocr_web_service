@@ -4,6 +4,11 @@ from pydantic import BaseModel, Field, StrictStr, conlist
 from app.schema.template_crud.create import PointDict
 
 
+
+class ExtendedPointDict(PointDict):
+    text: Optional[StrictStr] = Field(title='OCR',example='Name')
+
+
 class FeedbackRequest(BaseModel):
     image_cv_id: str = Field(
       title='影像註冊的 key 值',
@@ -11,7 +16,7 @@ class FeedbackRequest(BaseModel):
       ''',
       example='2022/09/20/19/30/438ffd10-1090-4687-be84-8f6c36be463a'
     )
-    points_list: conlist(PointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]]}, {
+    points_list: conlist(ExtendedPointDict, min_items=1) = Field(..., title='使用者拉框留存的範本資訊', example=[{'type': 'text', 'tag': '姓名', 'points': [[0, 0], [100, 0], [100, 100], [0, 100]]}, {
         'type': 'box', 'tag': '是否為範本', 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}, {'type': 'mask', 'tag': None, 'points': [[130, 200], [200, 200], [200, 270], [130, 270]]}])
 
 
