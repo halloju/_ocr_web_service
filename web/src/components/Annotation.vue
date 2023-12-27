@@ -251,7 +251,8 @@ export default {
                     title: null,
                     filters: null
                 },
-                rectangleType: rectangleType
+                rectangleType: rectangleType,
+                isComplete: (rectangleType === 'text' || rectangleType === 'box') ? false : true
             };
         },
         // delete shape
