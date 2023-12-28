@@ -8,3 +8,8 @@ $gutter: 1rem; //for primeflex grid system
 @import 'primeflex/primeflex.scss';
 @import 'primeicons/primeicons.css';
 
+/* element ui table */
+.el-table .warning-row {
+    background: rgb(252, 230, 190);
+}
+

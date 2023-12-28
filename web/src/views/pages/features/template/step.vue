@@ -52,6 +52,7 @@ export default {
             currentStep: this.$store.state.createNew ? 0 : 1,
             showCarousel: true,
             template_id: sessionStorage.getItem('template_id') || '',
+            nameError: false,
             pageTitle: ['Step 2 文字位置標註', 'Step 3 方塊位置標註', 'Step 4 遮罩位置標註'],
             pageInfo: [
                 {
@@ -179,10 +180,9 @@ export default {
                     this.getRecsFromLocalStorage().every((box, index) => {
                         if (box.rectangleType != 'mask') {
                             let issue = { index: index, box: box, problems: [] };
-                            console.log(box.annotation.title)
                             if (box.annotation.title === undefined || box.annotation.title === '' || box.annotation.title === null) {
                                 this.isEditing = true;
-                                issue.problems.push("名稱為空");
+                                issue.problems.push("欄位名稱為空");
                             }
                             if (box.annotation.filters === null || box.annotation.filters.length === 0) {
                                 this.isEditing = true;
@@ -191,9 +191,9 @@ export default {
 
                             // If there are problems, push the issue object to the issues array
                             if (issue.problems.length > 0) {
-                                const problemsString = issue.problems.join(', ');
+                                const problemsString = issue.problems.join('，');
                                 console.log(issue.problems)
-                                issueDescriptions.push(`${this.rectangleType}.${issue.index+1}: ${problemsString}。`);
+                                issueDescriptions.push(`${problemsString}。`);
                                 return false; // Stop the every loop because there is an issue
                             }
                         }
@@ -204,7 +204,7 @@ export default {
                 // Join all issue descriptions into one string, separated by semicolons
                 let allIssuesString = issueDescriptions.join('; ');
                 console.log(allIssuesString);
-                warning_message = '請先完成編輯:'+allIssuesString;
+                warning_message = '請先完成編輯:' + allIssuesString;
             } else {
                 if (sessionStorage.getItem('imageSource')) {
                     this.imageSrc = sessionStorage.getItem('imageSource');
@@ -296,12 +296,14 @@ export default {
         },
         upload() {
             if (this.input === '') {
+                this.nameError = true;
                 this.$message({
                     message: '請輸入模板名稱',
                     type: 'warning'
                 });
                 return;
             }
+            this.nameError = false;
             // clear state
             this.boxes = [];
             this.getRecsFromLocalStorage().forEach((box) => {
@@ -402,7 +404,7 @@ export default {
                     let error_msg = default_error_msg;
                     if (typeof err.response.data === 'object' && 'mlaas_code' in err.response.data) {
                         console.log(err.response.data.mlaas_code);
-                        if (err.response.data.mlaas_code in error_table) error_msg = error_table[err.response.data.mlaas_code] + ' (' + err.response.data.mlaas_code + ')';
+                        if (err.response.data.mlaas_code in error_table) error_msg = error_table[err.response.data.mlaas_code] + ' (錯誤代碼：' + err.response.data.mlaas_code + ')';
                     }
                     ElMessageBox.confirm(error_msg, '失敗', {
                         confirmButtonText: '確定',
@@ -532,7 +534,8 @@ export default {
                         <icon type="info" fill="#3c4c5e" title="完整操作說明" width="20px" height="20px" />
                     </div>
                 </div>
-                <div style="display: flex; align-items: center">
+                <span style="margin-right: 2px; color: red; font-size: 10px" v-if="nameError">必填寫 (Required)</span>
+                <div style="display: flex; align-items: center" :class="{ 'error-border': nameError}">
                     <div style="display: flex; align-items: center; margin-right: 10px">
                         <p style="margin-right: 2px; color: red">*</p>
                         <p style="margin-right: 10px; margin-bottom: 0px">模板名稱：</p>
@@ -636,4 +639,9 @@ export default {
 .red-text {
   color: red; /* This will make the text red */
 }
+.error-border {
+  border: 1px solid red;
+  padding: 3px;
+}
+
 </style>

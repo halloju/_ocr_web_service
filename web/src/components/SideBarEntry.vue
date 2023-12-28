@@ -1,7 +1,7 @@
 <script>
-import ViewEditResultColumn from '@/components/ViewEditResultColumn.vue';
-import EditModeColumn from '@/components/EditModeColumn.vue';
-import ViewRecognitionResultColumn from '@/components/ViewRecognitionResultColumn.vue';
+import ViewEditResultColumn from '@/components/CustomizeColumns/ViewEditResultColumn.vue';
+import EditModeColumn from '@/components/CustomizeColumns/EditModeColumn.vue';
+import ViewRecognitionResultColumn from '@/components/CustomizeColumns/ViewRecognitionResultColumn.vue';
 
 export default {
     components: {
@@ -108,6 +108,14 @@ export default {
         }
     },
     methods: {
+        tableRowClassName({row, rowIndex}) {
+            if (!this.editMode) return;
+            if ('isComplete' in row && !row.isComplete) return 'warning-row';
+            else return null;
+        },
+        handleComplete(rowIndex) {
+            this.formData[rowIndex].isComplete = true;
+        },
         handleMouseEnter(shape) {
             this.$emit('sidebar-entry-enter', shape.name);
         },
@@ -159,7 +167,7 @@ export default {
 
 <template>
     <div class="table-container">
-        <el-table ref="myTable" :data="formData" style="width: 100%" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row :max-height="tableHeight">
+        <el-table ref="myTable" :data="formData" style="width: 100%" :row-class-name="tableRowClassName" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row :max-height="tableHeight">
             <!-- Index Column -->
             <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
                 <template v-slot="scope">
@@ -180,6 +188,7 @@ export default {
                 @save="handleSaveRow"
                 @delete="handleDeleteShape"
                 @click="handleClick"
+                @complete="handleComplete"
                 :buttonText="titleColumnName"
                 :filterButtonText="filterButtonText"
                 :checkColumnName="checkColumnName"
@@ -192,6 +201,7 @@ export default {
                 @save="handleSaveRow"
                 @delete="handleDeleteShape"
                 @click="handleClick"
+                @complete="handleComplete"
                 :buttonText="titleColumnName"
                 :filterButtonText="filterButtonText"
                 :checkColumnName="checkColumnName"

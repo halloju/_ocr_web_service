@@ -45,8 +45,8 @@ def get_mode_conn_info(project, mode, action):
         action = action.split('/')[1]
         connection_url = f'{mlaas_url}/{action}/{version}'
         headers = {
-            'X-Client-Id': os.environ.get('MLAAS_XClient'),
-            'Authorization': os.environ.get('MLAAS_JWT'),
+            'X-Client-Id': os.environ.get(f'{project}_MLAAS_XClient'),
+            'Authorization': os.environ.get(f'{project}_MLAAS_JWT'),
             'Content-Type': 'application/json'
         }
     return action, connection_url, headers

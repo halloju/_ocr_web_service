@@ -68,7 +68,8 @@ export default function useAnnotator() {
             height: label_height,
             scaleX: 1,
             scaleY: 1,
-            rectangleType: element.type || 'text'
+            rectangleType: element.type || 'text',
+            isComplete: true
         };
     };
 
