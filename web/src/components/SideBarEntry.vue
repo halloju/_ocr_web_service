@@ -109,6 +109,7 @@ export default {
     },
     methods: {
         tableRowClassName({row, rowIndex}) {
+            if (!this.editMode) return;
             if ('isComplete' in row && !row.isComplete) return 'warning-row';
             else return null;
         },

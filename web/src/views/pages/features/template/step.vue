@@ -180,7 +180,6 @@ export default {
                     this.getRecsFromLocalStorage().every((box, index) => {
                         if (box.rectangleType != 'mask') {
                             let issue = { index: index, box: box, problems: [] };
-                            console.log(box.annotation.title)
                             if (box.annotation.title === undefined || box.annotation.title === '' || box.annotation.title === null) {
                                 this.isEditing = true;
                                 issue.problems.push("欄位名稱為空");

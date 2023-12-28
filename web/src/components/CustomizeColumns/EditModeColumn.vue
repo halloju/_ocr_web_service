@@ -39,10 +39,10 @@ export default defineComponent({
             this.$emit('click', index);
         },
         handleChange(index, row) {
-            this.$emit('save', index);
             var cond1 = row.annotation.title != undefined && row.annotation.title != '' && row.annotation.title != null;
             var cond2 = row.annotation.filters != null && row.annotation.filters.length > 0;
             if (cond1 && cond2) this.$emit('complete', index);
+            this.$emit('save', index);
         }
     }
 });
