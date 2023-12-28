@@ -240,7 +240,7 @@ def is_authenticated(refresh_token: Optional[str] = Cookie(None)):
 
         return {"isAuthenticated": True}
     except Exception as e:
-        return {"isAuthenticated": True}
+        return {"isAuthenticated": False}
 
 
 @router.get("/login")

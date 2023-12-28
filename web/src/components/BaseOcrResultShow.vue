@@ -239,6 +239,23 @@ export default {
             isSelectionLight.value = false;
         }
 
+        async function sendFeedback(filteredUploads) {
+            try {
+                const res = await apiClient.post(`/feedback/feedback`, filteredUploads, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 5000  // Adjusted timeout to 5 seconds
+                });
+            } catch (error) {
+                console.error(error);
+                ElMessage({
+                    message: 'API 請求失敗：' + error.message,
+                    type: 'error'
+                });
+            }
+        }
+
         async function downloadFile() {
             if (selectedRows.value.length <= 0) {
                 ElMessage({
@@ -256,12 +273,9 @@ export default {
                 });
                 return
             }
-
-            // Transform each general_upload_res object to match FeedbackRequest format
-            // Filter the general_upload_res array based on selected rows' task_id
+        
             const filteredUploads = general_upload_res.value.filter(upload => 
                 successRows.some(row => row.task_id === upload.task_id));
-
             if (filteredUploads.length > 0) {
                 const feedbacks = filteredUploads.map(upload => ({
                     image_cv_id: upload.image_cv_id,
@@ -272,17 +286,16 @@ export default {
                         points: data_result.points 
                     }))
                 }));
-                try {
-                    const res = await apiClient.post(`/feedback/feedback`, feedbacks, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        timeout: 10
-                    });
-                } catch (error) {
-                    console.log(error)
+
+                // Filter out feedbacks with empty points_list
+                const nonEmptyFeedbacks = feedbacks.filter(feedback => feedback.points_list.length > 0);
+
+                if (nonEmptyFeedbacks.length > 0) {
+                    // Send feedback if there are non-empty points_list
+                    sendFeedback(nonEmptyFeedbacks);
                 }
             }
+            // Proceed to file download
             const excelData = getExcelData(successRows);
             const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {
@@ -303,6 +316,7 @@ export default {
                 return warningStyle
             }
         }
+
 
         // Start to pull the status
         onMounted(async () => {

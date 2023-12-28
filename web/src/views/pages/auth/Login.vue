@@ -13,8 +13,12 @@ export default {
         axios
             .get('/auth/sso')
             .then((res) => {
-                const encodedUrl = encodeURI(res.data);
-                window.location.replace(encodedUrl);
+                const re_url = res.data;
+                if(!isValidAdfsRedirectUrl(re_url)) {
+                    this.$router.push({ path: '/home' });
+                    return
+                }
+                window.location.replace(re_url);
             })
             .catch((err) => {
                 console.log(err);
@@ -33,6 +37,26 @@ export default {
                 .catch((err) => {
                     console.log(err);
                 });
+        },
+        isValidAdfsRedirectUrl(url) {
+            try {
+                // Parse the URL
+                const parsedUrl = new URL(url);
+
+                // Check for specific domain
+                const isValidDomain = parsedUrl.hostname === 'adfs.esunbank.com.tw' || parsedUrl.hostname === 'sts.testesunbank.com.tw';
+
+                // Check for specific path 
+                const isValidPath = parsedUrl.pathname.startsWith('/adfs/ls/');
+
+                // Check for necessary query parameters
+                const hasRequiredParams = parsedUrl.searchParams.has('SAMLRequest');
+
+                return isValidDomain && isValidPath && hasRequiredParams;
+            } catch (e) {
+                // If URL parsing fails, the URL is not valid
+                return false;
+            }
         }
     }
 };
