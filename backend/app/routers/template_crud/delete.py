@@ -32,7 +32,7 @@ async def delete_template(template_id: str, current_user: User = Depends(get_cur
         }
     }
     try:
-        await async_call_mlaas_function(input_data, 'template_crud/delete_template', project='GP', logger=logger)
+        await async_call_mlaas_function(input_data, 'template_crud/delete_template', project='TEMPLATE', logger=logger)
     except MlaasRequestError as e:
         raise e
     except Exception as e:

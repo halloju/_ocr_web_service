@@ -33,6 +33,7 @@ export default {
         const initialDataId = ref(null);
         const file_name = ref('');
         const num = ref('');
+        const isSelectionLight = ref(false)
         const reloadAnnotator = ref(false);
         const isRunning = ref(false);
         const finishedStatus = ref(['SUCCESS', 'FAIL']);
@@ -44,6 +45,9 @@ export default {
         const downloadButtonText = ref('下載 Excel');
         const selectedRows = ref([]);
         const abortController = new AbortController();
+        const warningStyle = {
+            'background-color': 'rgb(252, 230, 190)'
+        };
 
 
         const getExcelData = (selectedItems) => {
@@ -176,6 +180,7 @@ export default {
                     break;
                 }
             }
+            isRunning.value = false;
         }
 
 
@@ -231,6 +236,7 @@ export default {
 
         function selectionChange(selected) {
             selectedRows.value = selected;
+            isSelectionLight.value = false;
         }
 
         async function sendFeedback(filteredUploads) {
@@ -256,12 +262,20 @@ export default {
                     message: '請先選擇要下載的檔案',
                     type: 'warning'
                 });
-                return;
+                isSelectionLight.value = true;
+                return
+            }
+            const successRows = selectedRows.value.filter(row => row.status === 'SUCCESS');
+            if(successRows.length == 0) {
+                ElMessage({
+                    message: '請選擇成功辨識的檔案',
+                    type: 'warning'
+                });
+                return
             }
         
             const filteredUploads = general_upload_res.value.filter(upload => 
-                selectedRows.value.some(row => row.task_id === upload.task_id));
-        
+                successRows.some(row => row.task_id === upload.task_id));
             if (filteredUploads.length > 0) {
                 const feedbacks = filteredUploads.map(upload => ({
                     image_cv_id: upload.image_cv_id,
@@ -281,10 +295,8 @@ export default {
                     sendFeedback(nonEmptyFeedbacks);
                 }
             }
-
-        
             // Proceed to file download
-            const excelData = getExcelData(selectedRows.value);
+            const excelData = getExcelData(successRows);
             const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
             const workBook = {
                 SheetNames: ['jsonWorkSheet'],
@@ -293,6 +305,16 @@ export default {
                 }
             };
             XLSX.writeFile(workBook, '辨識結果.xlsx');
+        }
+        function tableHeaderCellStyle({ row, column, rowIndex, columnIndex }) {
+            if(columnIndex === 0 && isSelectionLight.value){
+                return warningStyle
+            }
+        }
+        function cellStyle({ row, column, rowIndex, columnIndex }) {
+            if(columnIndex === 0 && isSelectionLight.value){
+                return warningStyle
+            }
         }
 
 
@@ -337,7 +359,10 @@ export default {
             downloadFile,
             image_cv_id,
             selectionChange,
-            hasTitle
+            hasTitle,
+            cellStyle,
+            tableHeaderCellStyle,
+            isSelectionLight
         };
     },
     computed: {
@@ -368,15 +393,17 @@ export default {
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
             <p style="margin: 0; flex: 1;" class="subtitle">辨識結果</p>
             <div style="display: grid; place-items: center">
-                <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile">
+                <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="isRunning">
                     {{ downloadButtonText }}
                 </button>
             </div>
         </div>
+        <span style="margin-right: 2px; color: red; font-size: 10px" v-if="isSelectionLight">勾選下載檔案</span>
         <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange"
+            
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" :cell-style="cellStyle" :header-cell-style="tableHeaderCellStyle"
                 height="250" border>
-                <el-table-column type="selection" width="55" />
+                <el-table-column type="selection" width="55" color="red"/>
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">

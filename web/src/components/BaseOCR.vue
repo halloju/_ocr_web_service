@@ -100,7 +100,6 @@ export default {
 
 <template>
     <div class="layoutZoneContainer">
-
         <!-- Title -->
         <div v-if="step == 1" style="margin-bottom: 20px;">
             <p class="title">{{ subName }}</p>
