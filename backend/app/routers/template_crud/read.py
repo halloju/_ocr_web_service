@@ -29,7 +29,7 @@ async def get_available_templates(current_user: User = Depends(get_current_user)
         }
     }
     try:
-        outputs = await async_call_mlaas_function(input_data, 'template_crud/get_available_templates', project='Template', logger=logger)
+        outputs = await async_call_mlaas_function(input_data, 'template_crud/get_available_templates', project='TEMPLATE', logger=logger)
     except MlaasRequestError as e:
         raise e
     except Exception as e:
@@ -60,7 +60,7 @@ async def get_template_detail(template_id: str, current_user: User = Depends(get
         }
     }
     try:
-        outputs = await async_call_mlaas_function(input_data, 'template_crud/get_template_detail', project='Template', logger=logger)
+        outputs = await async_call_mlaas_function(input_data, 'template_crud/get_template_detail', project='TEMPLATE', logger=logger)
         template_detail = outputs['template_detail']
     except MlaasRequestError as e:
         raise e

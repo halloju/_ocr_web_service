@@ -41,7 +41,7 @@ async def create_template(data: CreateTemplateRequest, current_user: User = Depe
             "inputs": jsonable_encoder(inputs)
         }
         try:
-            outputs = await async_call_mlaas_function(input_data, 'template_crud/create_template', project='Template', logger=logger, timeout=60)
+            outputs = await async_call_mlaas_function(input_data, 'template_crud/create_template', project='TEMPLATE', logger=logger, timeout=60)
         except MlaasRequestError as e:
             logger.info({'error_msg': e.message})
             raise e
