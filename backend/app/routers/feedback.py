@@ -18,16 +18,7 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 logger = Logger('feedback')
 
 
-# Modify your endpoint to accept a list of FeedbackRequest
-from fastapi import FastAPI, Depends
-from typing import List
-import asyncio
-import uuid
-from your_module import FeedbackRequest, User, get_current_user, async_call_mlaas_function, logger
-
-app = FastAPI()
-
-@app.post("/feedback", summary="Batch Feedback")
+@router.post("/feedback", summary="Batch Feedback")
 async def batch_feedback(
     feedback_requests: List[FeedbackRequest],
     current_user: User = Depends(get_current_user),
