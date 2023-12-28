@@ -69,11 +69,10 @@ async def batch_feedback(
                 if isinstance(result, Exception):
                     failure_count += 1
                     failure_details.append(str(result))
-                    logger.error({'error_msg': str(result), 'action': action})
                 else:
                     success_count += 1
-                    logger.info(str(result))
-
+        if failure_details:
+            logger.error({action: {'failure_details': failure_details, 'success_count': success_count, 'failure_count': failure_count}})
         if failure_count == len(feedback_requests):
             return {"status_code": '4000', "status_msg": 'All feedback requests failed', "err_details": failure_details}
         elif failure_count == 0:
