@@ -113,8 +113,8 @@ export default {
             if ('isComplete' in row && !row.isComplete) return 'warning-row';
             else return null;
         },
-        handleComplete(rowIndex) {
-            this.formData[rowIndex].isComplete = true;
+        updateCompleteStatus(rowIndex, completeStatus) {
+            this.formData[rowIndex].isComplete = completeStatus;
         },
         handleMouseEnter(shape) {
             this.$emit('sidebar-entry-enter', shape.name);
@@ -188,7 +188,7 @@ export default {
                 @save="handleSaveRow"
                 @delete="handleDeleteShape"
                 @click="handleClick"
-                @complete="handleComplete"
+                @complete="updateCompleteStatus"
                 :buttonText="titleColumnName"
                 :filterButtonText="filterButtonText"
                 :checkColumnName="checkColumnName"
@@ -201,7 +201,7 @@ export default {
                 @save="handleSaveRow"
                 @delete="handleDeleteShape"
                 @click="handleClick"
-                @complete="handleComplete"
+                @complete="updateCompleteStatus"
                 :buttonText="titleColumnName"
                 :filterButtonText="filterButtonText"
                 :checkColumnName="checkColumnName"
