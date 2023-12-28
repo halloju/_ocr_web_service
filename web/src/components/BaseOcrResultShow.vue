@@ -272,10 +272,16 @@ export default {
                         points: data_result.points 
                     }))
                 }));
-        
-                // Send feedback in a separate asynchronous function
-                sendFeedback(feedbacks);
+
+                // Filter out feedbacks with empty points_list
+                const nonEmptyFeedbacks = feedbacks.filter(feedback => feedback.points_list.length > 0);
+
+                if (nonEmptyFeedbacks.length > 0) {
+                    // Send feedback if there are non-empty points_list
+                    sendFeedback(nonEmptyFeedbacks);
+                }
             }
+
         
             // Proceed to file download
             const excelData = getExcelData(selectedRows.value);
