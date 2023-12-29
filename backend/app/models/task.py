@@ -38,7 +38,7 @@ class Task:
             'status': self.status,
             'image_cv_id': self.image_cv_id,
             'start_time': self.start_time,
-            'err_msg': self.err_msg,
+            'status_msg': self.err_msg,
             'task_id': self.task_id,
             'url_result': f'/ocr/result/{self.task_id}',
             'ocr_results': json.dumps(self.ocr_results)
@@ -55,7 +55,7 @@ class Task:
             'status': self.status,
             'image_cv_id': self.image_cv_id,
             'start_time': self.start_time,
-            'err_msg': self.err_msg,
+            'status_msg': self.err_msg,
             'task_id': self.task_id,
             'url_result': f'/ocr/result/{self.task_id}',
             'ocr_results': self.ocr_results
