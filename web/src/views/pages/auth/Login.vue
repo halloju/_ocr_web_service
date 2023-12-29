@@ -14,11 +14,7 @@ export default {
             .get('/auth/sso')
             .then((res) => {
                 const re_url = res.data;
-                if(!isValidAdfsRedirectUrl(re_url)) {
-                    this.$router.push({ path: '/home' });
-                    return
-                }
-                window.location.replace(re_url);
+                if (re_url) window.location.replace(re_url);
             })
             .catch((err) => {
                 console.log(err);
