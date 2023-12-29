@@ -15,6 +15,7 @@ export default {
             .then((res) => {
                 const re_url = res.data;
                 if (re_url) window.location.replace(re_url);
+                else this.$router.push({ path: '/home' });
             })
             .catch((err) => {
                 console.log(err);
