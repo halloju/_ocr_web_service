@@ -170,8 +170,7 @@ async def acs(request: Request):
 
     # Set the tokens as secure, HttpOnly cookies in the response
     response.set_cookie(key="refresh_token", value=refresh_token,
-                        httponly=True, secure=True, samesite="strict",
-                        expire_time=expire_time)
+                        httponly=True, secure=True, samesite="strict")
 
     return response
 
