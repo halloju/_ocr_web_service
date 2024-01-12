@@ -43,7 +43,7 @@ async def update_template(data: UpdateTemplateRequest, current_user: User = Depe
             "inputs": jsonable_encoder(inputs)
         }
         try:
-            outputs = await async_call_mlaas_function(input_data, 'template_crud/update_template', project='GP', logger=logger, timeout=60)
+            outputs = await async_call_mlaas_function(input_data, 'template_crud/update_template', project='TEMPLATE', logger=logger, timeout=60)
         except MlaasRequestError as e:
             raise e
         except Exception as e:
