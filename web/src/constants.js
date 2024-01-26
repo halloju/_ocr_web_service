@@ -4,6 +4,7 @@ export const PULL_INTERVAL = 3000; // xx second (in milliseconds)
 export const MAX_RETRIES = 30; // 30 times
 export const MIN_PIXEL = 100; // create template
 export const default_error_msg = '系統非預期錯誤，請聯絡管理員';
+export const templateLimit = 20; // 模板上限
 export const error_table = {
     // '0001': '系統非預期錯誤，請聯絡管理員',
     // '0002':  '系統非預期錯誤，請聯絡管理員',
