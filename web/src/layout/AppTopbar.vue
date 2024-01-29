@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { SLO_URL } from '@/url.js';
 
 const { onMenuToggle } = useLayout();
 
@@ -59,7 +60,7 @@ const isOutsideClicked = (event) => {
 
 const logout = () => {
     axios
-        .get('/auth/slo')
+        .get(SLO_URL)
         .then((res) => {
             const encodedUrl = encodeURI(res.data);
             window.location.replace(encodedUrl);

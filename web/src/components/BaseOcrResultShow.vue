@@ -9,6 +9,7 @@ import { useStore } from 'vuex';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
 import Icon from '@/components/Icon.vue';
+import { GET_TASK_RESULT_URL, GET_TASK_STATUS_URL, GET_TASK_IMAGE_URL, FEEDBACK_URL } from '@/url.js';
 
 export default {
     props: {
@@ -98,7 +99,7 @@ export default {
 
         async function getOcrResults(item) {
             try {
-                let response = await apiClient.get(`/task/result/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
+                let response = await apiClient.get(`${GET_TASK_RESULT_URL}/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
                 let err_code = '';
                 if (response.data.status === 'SUCCESS') {
                     store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name });
@@ -122,7 +123,7 @@ export default {
 
         async function getOcrStatus(item) {
             try {
-                let response = await apiClient.get(`/task/status/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
+                let response = await apiClient.get(`${GET_TASK_STATUS_URL}/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
                 if (response.data.status === 'SUCCESS') {
                     await getOcrResults(item);
                 } else {
@@ -187,7 +188,7 @@ export default {
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
             apiClient
-                .get(`/task/get_image/${row.image_id}`)
+                .get(`${GET_TASK_IMAGE_URL}/${row.image_id}`)
                 .then((res) => {
                     if (res !== null) {
                         imageSrc.value = 'data:image/png;base64,' + res.data;
@@ -241,7 +242,7 @@ export default {
 
         async function sendFeedback(filteredUploads) {
             try {
-                const res = await apiClient.post(`/feedback/feedback`, filteredUploads, {
+                const res = await apiClient.post(FEEDBACK_URL, filteredUploads, {
                     headers: {
                         'Content-Type': 'application/json'
                     },

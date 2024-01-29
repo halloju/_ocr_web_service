@@ -2,6 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import axios from 'axios';
+import { AUTH_URL } from '@/url.js';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -82,7 +83,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Call the backend route to check if the user is authenticated
     try {
-        const response = await axios.get('/auth/is_authenticated')
+        const response = await axios.get(AUTH_URL)
         const isAuthenticated = response.data.isAuthenticated;
 
         if (requiresAuth && !isAuthenticated) {

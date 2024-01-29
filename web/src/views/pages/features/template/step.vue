@@ -7,6 +7,7 @@ import UploadImage from '@/components/UploadImage.vue';
 import TemplateCarousel from '@/views/pages/features/template/TemplateCarousel.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
 import { apiClient } from '@/service/auth.js';
+import { TEMPLATE_ROOT_URL } from '@/url.js';
 
 import Icon from '@/components/Icon.vue';
 import { error_table, default_error_msg } from '@/constants.js';
@@ -370,7 +371,7 @@ export default {
                 background: 'rgba(0, 0, 0, 0.7)'
             });
             apiClient
-                .post(`/template_crud/${action}`, body)
+                .post(`${TEMPLATE_ROOT_URL}/${action}`, body)
                 .then((res) => {
                     if (res.status === 200) {
                         ElMessageBox.confirm('', '成功', {

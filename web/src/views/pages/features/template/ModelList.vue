@@ -11,6 +11,7 @@ import { apiClient } from '@/service/auth.js';
 import { templateLimit } from '@/constants.js';
 import { handleErrorMsg } from '@/mixins/useCommon.js';
 import { Delete, Edit, Download, Pointer, View } from '@element-plus/icons-vue';
+import { GET_TEMPLATE_LIST_URL, DELETE_TEMPLATE_URL, GET_TEMPLATE_DETAIL_URL } from '@/url.js';
 import EditableRow from '@/components/EditableRow.vue';
 import ActionColumn from '@/components/ActionColumn.vue';
 import SelectButton from 'primevue/selectbutton';
@@ -132,7 +133,7 @@ export default {
         async function getAvailableTemplate() {
             let tableData = [];
             try {
-                const response = await apiClient.get('/template_crud/get_available_templates');
+                const response = await apiClient.get(GET_TEMPLATE_LIST_URL);
                 tableData = response['data']['template_infos'];
                 return tableData;
             } catch (error) {
@@ -176,7 +177,7 @@ export default {
                 });
 
                 if (confirmResult) {
-                    const response = await apiClient.delete('/template_crud/delete_template/' + template_id);
+                    const response = await apiClient.delete(DELETE_TEMPLATE_URL + template_id);
                     if (!response.error) {
                         ElMessage({
                             type: 'success',
@@ -243,7 +244,7 @@ export default {
 
         async function getTemplateDetail(template_id) {
             try {
-                const response = await apiClient.get('/template_crud/get_template_detail/' + template_id);
+                const response = await apiClient.get(GET_TEMPLATE_DETAIL_URL + template_id);
                 if (response.status == 200) return response;
             } catch (error) {
                 if (error.code === 'ERR_NETWORK') {
@@ -262,7 +263,7 @@ export default {
             // clear local storage
             sessionStorage.clear();
             // get template detail
-            const response = await apiClient.get('/template_crud/get_template_detail/' + template_id);
+            const response = await apiClient.get(GET_TEMPLATE_DETAIL_URL + template_id);
             //template.value = response['data'];
 
             // set local storage
@@ -303,7 +304,7 @@ export default {
                     type: 'warning'
                 });
 
-                const response = await apiClient.delete('/template_crud/delete_template/' + template_id.value);
+                const response = await apiClient.delete(DELETE_TEMPLATE_URL + template_id.value);
                 if (!response.error) {
                     ElMessage({
                         type: 'success',

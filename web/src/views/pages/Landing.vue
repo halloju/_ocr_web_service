@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
 import logo from '@/assets/img/esun-ocr-logo.svg';
+import { AUTH_URL } from '@/url.js';
 export default {
     name: 'landing',
     data() {
@@ -30,7 +31,7 @@ export default {
             this.$router.push({ path: page });
         },
         async checkLoggedIn() {
-            const response = await axios.get('/auth/is_authenticated');
+            const response = await axios.get(AUTH_URL);
             this.loggedIn = response.data.isAuthenticated;
         }
     },

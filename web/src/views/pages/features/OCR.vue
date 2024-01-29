@@ -8,7 +8,7 @@ import health_insurance from '@/assets/img/example/health_insurance.png';
 import id from '@/assets/img/example/id.jpg';
 import fs from '@/assets/img/example/fs.jpg';
 import ws from '@/assets/img/example/ws.jpg';
-
+import { OCR_ROOT } from '@/url';
 import id_example from '@/assets/img/ocr_example/id_example.png';
 import driver_example from '@/assets/img/ocr_example/driver_example.png';
 import health_example from '@/assets/img/ocr_example/health_example.png';
@@ -75,7 +75,7 @@ export default {
                     title: '全文辨識',
                     subName: '全文辨識',
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/gp_ocr',
+                    apiUrl: `${OCR_ROOT}/gp_ocr`,
                     useModelComplexity: true,
                     useLanguage: true,
                     defaultImgURL: '',
@@ -92,7 +92,7 @@ export default {
                     title: '模板辨識',
                     subName: `模板編號：${this.template_id}`,
                     description: '請上傳一張或多張圖片，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/template_ocr',
+                    apiUrl: `${OCR_ROOT}/template_ocr`,
                     useModelComplexity: false,
                     useLanguage: false,
                     defaultImgURL: '',
@@ -109,7 +109,7 @@ export default {
                     title: '票據辨識',
                     subName: '匯款單辨識',
                     description: '請上傳一張，下一步會進行辨識並可以進行檢視。',
-                    apiUrl: '/ocr/remittance',
+                    apiUrl: `${OCR_ROOT}/remittance`,
                     useModelComplexity: false,
                     useLanguage: false,
                     defaultImgURL: remittance,
@@ -126,7 +126,7 @@ export default {
                     title: '票據辨識',
                     subName: '支票正面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/check_front',
+                    apiUrl: `${OCR_ROOT}/check_front`,
                     useModelComplexity: false,
                     useLanguage: false,
                     defaultImgURL: check_front,
@@ -143,7 +143,7 @@ export default {
                     title: '票據辨識',
                     subName: '支票背面辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/check_back',
+                    apiUrl: `${OCR_ROOT}/check_back`,
                     useModelComplexity: false,
                     useLanguage: false,
                     defaultImgURL: check_back,
@@ -160,7 +160,7 @@ export default {
                     title: '人證辨識',
                     subName: '身分證辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv-ocr',
+                    apiUrl: `${OCR_ROOT}/cv-ocr`,
                     imageClass: 'ID',
                     useModelComplexity: false,
                     useLanguage: false,
@@ -178,7 +178,7 @@ export default {
                     title: '人證辨識',
                     subName: '駕照辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv-ocr',
+                    apiUrl: `${OCR_ROOT}/cv-ocr`,
                     imageClass: 'DRIVER_LICENSE',
                     useModelComplexity: false,
                     useLanguage: false,
@@ -196,7 +196,7 @@ export default {
                     title: '人證辨識',
                     subName: '健保卡辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv-ocr',
+                    apiUrl: `${OCR_ROOT}/cv-ocr`,
                     imageClass: 'HEALTH_INSURANCE',
                     useModelComplexity: false,
                     useLanguage: false,
@@ -214,7 +214,7 @@ export default {
                     title: '財證辨識',
                     subName: '扣繳憑單辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv-ocr',
+                    apiUrl: `${OCR_ROOT}/cv-ocr`,
                     imageClass: 'WITHHOLDING_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false,
@@ -232,7 +232,7 @@ export default {
                     title: '財證辨識',
                     subName: '國稅局個人所得清單辨識',
                     description: '請上傳一張，下一步會進行全部辨識並可以進行檢視。',
-                    apiUrl: '/ocr/cv-ocr',
+                    apiUrl: `${OCR_ROOT}/cv-ocr`,
                     imageClass: 'NTB_FINANCIAL_STATEMENT',
                     useModelComplexity: false,
                     useLanguage: false,

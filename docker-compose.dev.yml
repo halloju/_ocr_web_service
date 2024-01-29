@@ -44,7 +44,7 @@ services:
         environment:
           - VITE_APP_VERSION=v1.0.19
           - MODE=development
-          - VITE_API_URL=http://localhost/backend
+          - VITE_API_URL=http://localhost
           - TZ=Asia/Taipei
     backend:
         container_name: backend

@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { SSO_URL, LOGIN_URL } from '@/url.js';
 export default {
     components: {},
     name: 'Login',
@@ -11,7 +12,7 @@ export default {
     },
     mounted() {
         axios
-            .get('/auth/sso')
+            .get(SSO_URL)
             .then((res) => {
                 const re_url = res.data;
                 if (re_url) window.location.replace(re_url);
@@ -27,7 +28,7 @@ export default {
     methods: {
         login() {
             axios
-                .get('/auth/login')
+                .get(LOGIN_URL)
                 .then((res) => {
                     this.$router.push({ path: '/home' });
                 })

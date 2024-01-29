@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_TIMEOUT } from '@/constants.js';
+import { REFRESH_URL } from '@/url.js'
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -45,7 +46,7 @@ apiClient.interceptors.response.use(
 
             return new Promise(function (resolve, reject) {
                 axios
-                    .get('/auth/refresh_token')
+                    .get(REFRESH_URL)
                     .then(({ data }) => {
                         apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + data.access_token;
                         originalRequest.headers['Authorization'] = 'Bearer ' + data.access_token;
