@@ -1,5 +1,6 @@
 <script>
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { FILE_SIZE_LIMIT } from '@/constants.js';
 
 export default {
     name: 'UploadImage',
@@ -232,23 +233,32 @@ export default {
             // console.log('toggleUpload');
             this.showUpload = !this.showUpload;
         },
-        beforeUpload(file) {
+        beforeUpload(file, uploadFiles) {
             // Check file size && file type
-            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
+            const rawFile = file.raw;
+            const isIMAGE = rawFile.type === 'image/jpeg' || rawFile.type === 'image/png';
+            const isLt2M = rawFile.size < FILE_SIZE_LIMIT;
             if (!isIMAGE) {
                 ElMessageBox.alert('圖片只能是 JPG/PNG 格式!', '錯誤', {
                     confirmButtonText: '確定',
                     type: 'error'
                 });
+                uploadFiles.pop();
+            }
+            if (!isLt2M) {
+                ElMessageBox.alert(`圖片大小不能超過 ${FILE_SIZE_LIMIT}MB!`, '錯誤', {
+                    confirmButtonText: '確定',
+                    type: 'error'
+                });
+                uploadFiles.pop();
             }
             // Push file to fileList
-            if (isIMAGE) {
+            if (isIMAGE && isLt2M) {
                 sessionStorage.clear();
                 var reader = new FileReader();
                 reader.onload = (f) => {
                     this.imageSource = f.target.result;
                     sessionStorage.setItem('imageSource', f.target.result);
-                    // console.log(sessionStorage.getItem('imageSource'));
                     file.reader = f.target.result;
                 };
                 reader.readAsDataURL(file.raw);

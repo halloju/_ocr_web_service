@@ -160,21 +160,24 @@ export default {
 
             beforeUpload(fileDict);
         }
-        function beforeUpload(file) {
+        function beforeUpload(file, uploadFiles) {
             // Check file size && file type
-            const isIMAGE = file.type === 'image/jpeg' || 'image/png';
-            const isLt2M = file.size / 1024 / 1024 < FILE_SIZE_LIMIT;
+            const rawFile = file.raw;
+            const isIMAGE = rawFile.type === 'image/jpeg' || rawFile.type === 'image/png';
+            const isLt2M = rawFile.size < FILE_SIZE_LIMIT;
             if (!isIMAGE) {
                 ElMessageBox.alert('圖片只能是 JPG/PNG 格式!', '錯誤', {
                     confirmButtonText: '確定',
                     type: 'error'
                 });
+                uploadFiles.pop();
             }
             if (!isLt2M) {
                 ElMessageBox.alert(`圖片大小不能超過 ${FILE_SIZE_LIMIT}MB!`, '錯誤', {
                     confirmButtonText: '確定',
                     type: 'error'
                 });
+                uploadFiles.pop();
             }
             // Push file to fileList
             if (isIMAGE && isLt2M) {
@@ -197,7 +200,6 @@ export default {
                 }
             }
         }
-
         function handlePictureCardPreview(file) {
             dialogImageUrl.value = file.url;
             dialogVisible.value = true;
