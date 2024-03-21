@@ -36,15 +36,6 @@ class GpocrPredict(BaseModel):
         ''',
         example=["id1", "id2"]
     )
-    image_complexity: Optional[StrictStr] = Field(
-        default='medium',
-        title='影像複雜度',
-        description='''
-        中等："medium"
-        高："high"
-        ''',
-        example='medium'
-    )
     model_name: Optional[StrictStr] = Field(
         default='dbnet_v0+cht_ppocr_v1',
         title='文字辨識模型名稱',
@@ -66,12 +57,6 @@ class GpocrPredict(BaseModel):
     def image_check(cls, v):
         if v == '':
             raise ValueError("影像不得為空字串")
-        return v
-
-    @validator("image_complexity", allow_reuse=True)
-    def image_complexity_check(cls, v):
-        if v not in ['medium', 'high']:
-            raise ValueError("影像複雜度僅可為 medium 或 high")
         return v
 
     @validator("model_name", allow_reuse=True)

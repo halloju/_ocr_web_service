@@ -78,8 +78,20 @@ class ControllerOcrPredictionService(IPredictionService):
 
     async def _store_task_in_redis(self, task: Task):
         task_dict = task.to_dict()
+        task_key = get_redis_taskname(task.task_id)
+        
+        # Start a pipeline
+        pipe = self.conn.pipeline()
+        
+        # Queue up all the HSET operations in the pipeline
         for key, value in task_dict.items():
-            await self.conn.hset(get_redis_taskname(task.task_id), key, value)
+            pipe.hset(task_key, key, value)
+        
+        # Set the TTL for the entire hash key in the pipeline
+        pipe.expire(task_key, 3600)  # 3600 seconds equals 1 hour
+        
+        # Execute all commands in the pipeline
+        pipe.execute()
 
 
 class NonControllerOcrPredictionService(IPredictionService):

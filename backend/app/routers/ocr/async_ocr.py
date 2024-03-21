@@ -102,7 +102,6 @@ async def cv_upload(
 
 @router.post("/gp_ocr", summary="gp controller 辨識")
 async def gp_upload(
-    image_complexity: str = Form(...),
     filters: List[str] = Form(...),
     files: List[UploadFile] = File(...),
     redis: Redis = Depends(get_redis),
@@ -118,7 +117,7 @@ async def gp_upload(
 
     tasks = []
     action = 'ocr/gp_ocr'
-    input_params = {'image_complexity': image_complexity, 'filters': filters}
+    input_params = {'filters': filters}
 
     try:
         for i in range(0, len(files), batch_size):

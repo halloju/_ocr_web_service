@@ -9,12 +9,9 @@ class GpocrUploadForm:
 
     async def load_data(self):
         self.imageDict = self.request.image
-        self.image_complexity = self.request.image_complexity
         self.model_name = self.request.model_name
 
     async def is_valid(self):
-        if not self.image_complexity:
-            self.errors.append("image_complexity should be medium or high")
         if not self.errors:
             return True
         return False
@@ -27,12 +24,9 @@ class GpocrPredictForm:
 
     async def load_data(self):
         self.imageDict = self.request.image
-        self.image_complexity = self.request.image_complexity
         self.model_name = self.request.model_name
 
     async def is_valid(self):
-        if not self.image_complexity:
-            self.errors.append("image_complexity should be medium or high")
         if not self.errors:
             return True
         return False
