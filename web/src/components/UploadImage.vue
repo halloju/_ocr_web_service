@@ -1,6 +1,6 @@
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { FILE_SIZE_LIMIT } from '@/constants.js';
+import { TEMPLATE_FILE_SIZE_LIMIT } from '@/constants.js';
 
 export default {
     name: 'UploadImage',
@@ -237,7 +237,7 @@ export default {
             // Check file size && file type
             const rawFile = file.raw;
             const isIMAGE = rawFile.type === 'image/jpeg' || rawFile.type === 'image/png';
-            const isLt2M = rawFile.size < FILE_SIZE_LIMIT;
+            const isLt2M = rawFile.size < TEMPLATE_FILE_SIZE_LIMIT;
             if (!isIMAGE) {
                 ElMessageBox.alert('圖片只能是 JPG/PNG 格式!', '錯誤', {
                     confirmButtonText: '確定',
@@ -246,7 +246,7 @@ export default {
                 uploadFiles.pop();
             }
             if (!isLt2M) {
-                ElMessageBox.alert(`圖片大小不能超過 ${FILE_SIZE_LIMIT}MB!`, '錯誤', {
+                ElMessageBox.alert(`圖片大小不能超過 ${(TEMPLATE_FILE_SIZE_LIMIT / (1024 * 1024))} MB!`, '錯誤', {
                     confirmButtonText: '確定',
                     type: 'error'
                 });

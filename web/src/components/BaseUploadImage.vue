@@ -2,7 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { apiClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox, ElMessage } from 'element-plus';
-import { FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
+import { TOTAL_FILE_SIZE_LIMIT, FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
 import { useStore } from 'vuex';
 import { handleErrorMsg } from '@/mixins/useCommon.js';
 
@@ -108,7 +108,7 @@ export default {
                 var msg = '';
                 if (error.message && error.message.includes('413')) {
                     console.log('The file you tried to upload is too large.');
-                    msg = 'The files you tried to upload are too large. \n (total exceed 20 MB)';
+                    msg = `The files you tried to upload are too large. \n (total exceed ${ TOTAL_FILE_SIZE_LIMIT } MB)`;
                 } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
                 } else {
@@ -168,7 +168,7 @@ export default {
                 uploadFiles.pop();
             }
             if (!isLt2M) {
-                ElMessageBox.alert(`圖片大小不能超過 ${FILE_SIZE_LIMIT}MB!`, '錯誤', {
+                ElMessageBox.alert(`圖片大小不能超過 ${(FILE_SIZE_LIMIT / (1024 * 1024))} MB!`, '錯誤', {
                     confirmButtonText: '確定',
                     type: 'error'
                 });
