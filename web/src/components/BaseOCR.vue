@@ -37,7 +37,6 @@ export default {
     data(props) {
         return {
             step: 1,
-            imageComplexity: 'medium',
             selectedModel: ['tchinese', 'english', 'number', 'symbol'],
             imageUploadKey: 0,
             languages: [
@@ -86,13 +85,6 @@ export default {
                 this.reset();
             },
             immediate: true
-        },
-        switchValue(newVal) {
-            if (newVal) {
-                this.imageComplexity = 'high';
-            } else {
-                this.imageComplexity = 'medium';
-            }
         }
     }
 };
@@ -113,16 +105,6 @@ export default {
                         </el-select>
                     </div>
                 </div>
-                <div v-if="useModelComplexity" style="display: flex; align-items: center">
-                    <p style="margin-right: 10px; margin-bottom: 0px">使用高精準度模型：</p>
-                    <div class="switchField">
-                        <label class="switch">
-                            <input type="checkbox" id="switch" v-model="switchValue" />
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                <p v-if="useModelComplexity" style="margin-left: 10px; color: red">*注意，當您使用高精準度模型時會耗時較久</p>
             </div>
         </div>
 
@@ -133,7 +115,6 @@ export default {
             :apiUrl="apiUrl"
             :category="category"
             :selectedModel="selectedModel"
-            :imageComplexity="imageComplexity"
             :useLanguage="useLanguage"
             :key="imageUploadKey"
             :imageClass="imageClass"

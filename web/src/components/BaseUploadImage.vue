@@ -20,9 +20,6 @@ export default {
             type: Boolean,
             default: false
         },
-        imageComplexity: {
-            type: String
-        },
         // The default category is 'general' with limited file number to be 20
         category: {
             type: Object
@@ -87,7 +84,6 @@ export default {
             // 打 API
             const formData = new FormData();
             if (props.useLanguage) {
-                formData.append('image_complexity', props.imageComplexity);
                 props.selectedModel.forEach((filter) => {
                     formData.append('filters', filter);
                 });
@@ -136,7 +132,6 @@ export default {
             // 顯示結果
             setTimeout(() => {
                 store.commit('generalImageResponse', generalImageResponseList);
-                // emit('uploadConfig', imageComplexity, selectedLang.value.code);
                 loading.close();
                 emit('nextStepEmit', 2);
             }, 1000);
