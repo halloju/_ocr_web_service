@@ -46,6 +46,7 @@ export default {
             }
         }
     },
+    emits: ['updateStatus'],
     methods: {
         dragOver() {
             if (this.isUploaded) {
@@ -233,6 +234,54 @@ export default {
             // console.log('toggleUpload');
             this.showUpload = !this.showUpload;
         },
+        // Function to process the file normally
+        processFile(file) {
+            sessionStorage.clear();
+            var reader = new FileReader();
+            reader.onload = (f) => {
+                this.imageSource = f.target.result;
+                sessionStorage.setItem('imageSource', f.target.result);
+                file.reader = f.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+
+        compressImageBasedOnRatio(file, targetMaxSize, attempt = 1) {
+            console.log('Compressing image, attempt:', attempt);
+            return new Promise((resolve, reject) => {
+                const initialSize = file.size;
+                const sizeRatio = initialSize / targetMaxSize;
+
+                var img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.onload = () => {
+                    // Apply a decreasing factor to the dimensions on each attempt
+                    const decreaseFactor = Math.sqrt(sizeRatio) * (1 + 0.1 * attempt);
+                    var targetWidth = img.width / decreaseFactor;
+                    var targetHeight = img.height / decreaseFactor;
+
+                    var canvas = document.createElement('canvas');
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                    canvas.toBlob((blob) => {
+                        if (blob.size > targetMaxSize && attempt < 10) {
+                            // Limit the number of attempts to prevent infinite recursion
+                            // If the size is still too big, try again with an increased attempt count
+                            resolve(this.compressImageBasedOnRatio(blob, targetMaxSize, attempt + 1));
+                        } else {
+                            resolve(blob); // Resolve with the blob if under target size or max attempts reached
+                        }
+                    }, file.type);
+                };
+
+                img.onerror = () => reject(new Error('Image loading error'));
+            });
+        },
+
         beforeUpload(file, uploadFiles) {
             // Check file size && file type
             const rawFile = file.raw;
@@ -244,24 +293,19 @@ export default {
                     type: 'error'
                 });
                 uploadFiles.pop();
-            }
-            if (!isLt2M) {
-                ElMessageBox.alert(`圖片大小不能超過 ${(TEMPLATE_FILE_SIZE_LIMIT / (1024 * 1024))} MB!`, '錯誤', {
-                    confirmButtonText: '確定',
-                    type: 'error'
+            } else if (isLt2M) {
+                // If the file is an image and under the size limit, process normally
+                this.processFile(rawFile);
+            } else {
+                // If the file is an image but over the size limit, compress it
+                this.compressImageBasedOnRatio(rawFile, TEMPLATE_FILE_SIZE_LIMIT).then((compressedBlob) => {
+                    // Replace the original file with the compressed one
+                    const compressedFile = new File([compressedBlob], file.name, {
+                        type: file.type,
+                        lastModified: Date.now()
+                    });
+                    this.processFile(compressedFile);
                 });
-                uploadFiles.pop();
-            }
-            // Push file to fileList
-            if (isIMAGE && isLt2M) {
-                sessionStorage.clear();
-                var reader = new FileReader();
-                reader.onload = (f) => {
-                    this.imageSource = f.target.result;
-                    sessionStorage.setItem('imageSource', f.target.result);
-                    file.reader = f.target.result;
-                };
-                reader.readAsDataURL(file.raw);
             }
 
             this.showUpload = !this.showUpload;

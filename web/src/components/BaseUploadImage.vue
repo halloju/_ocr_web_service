@@ -1,5 +1,5 @@
 <script>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref } from 'vue';
 import { apiClient } from '@/service/auth.js';
 import { ElLoading, ElMessageBox, ElMessage } from 'element-plus';
 import { TOTAL_FILE_SIZE_LIMIT, FILE_SIZE_LIMIT, API_TIMEOUT } from '@/constants.js';
@@ -69,7 +69,7 @@ export default {
                 });
                 return;
             }
-            
+
             const loading = ElLoading.service({
                 lock: true,
                 text: 'Loading',
@@ -108,7 +108,7 @@ export default {
                 var msg = '';
                 if (error.message && error.message.includes('413')) {
                     console.log('The file you tried to upload is too large.');
-                    msg = `The files you tried to upload are too large. \n (total exceed ${ TOTAL_FILE_SIZE_LIMIT } MB)`;
+                    msg = `The files you tried to upload are too large. \n (total exceed ${TOTAL_FILE_SIZE_LIMIT} MB)`;
                 } else if (error.code === 'ERR_NETWORK') {
                     this.status = 'network';
                 } else {
@@ -127,7 +127,6 @@ export default {
                     return;
                 });
             }
-            
 
             // 顯示結果
             setTimeout(() => {
@@ -166,24 +165,68 @@ export default {
                     type: 'error'
                 });
                 uploadFiles.pop();
-            }
-            if (!isLt2M) {
-                ElMessageBox.alert(`圖片大小不能超過 ${(FILE_SIZE_LIMIT / (1024 * 1024))} MB!`, '錯誤', {
-                    confirmButtonText: '確定',
-                    type: 'error'
+            } else if (isLt2M) {
+                processFile(file);
+            } else {
+                // If the file is an image but over the size limit, compress it
+                compressImageBasedOnRatio(rawFile, FILE_SIZE_LIMIT).then((compressedBlob) => {
+                    // Replace the original file with the compressed one
+                    const compressedFile = new File([compressedBlob], file.name, {
+                        type: file.type,
+                        lastModified: Date.now()
+                    });
+                    // Add the compressed file back to uploadFiles
+                    file.raw = compressedFile; // Update the raw file to the compressed one
+                    processFile(file); // Process the file after compression
                 });
-                uploadFiles.pop();
             }
-            // Push file to fileList
-            if (isIMAGE && isLt2M) {
-                var reader = new FileReader();
-                reader.onload = (f) => {
-                    imageSource.value = f.target.result;
-                    file.reader = f.target.result;
+        }
+
+        function processFile(file) {
+            var reader = new FileReader();
+            reader.onload = (f) => {
+                imageSource.value = f.target.result;
+                file.reader = f.target.result;
+            };
+            // Use file.raw if available, otherwise fall back to file itself
+            reader.readAsDataURL(file.raw || file);
+            fileList.value.push(file);
+        }
+
+        function compressImageBasedOnRatio(file, targetMaxSize, attempt = 1) {
+            console.log('Compressing image, attempt:', attempt);
+            return new Promise((resolve, reject) => {
+                const initialSize = file.size;
+                const sizeRatio = initialSize / targetMaxSize;
+
+                var img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.onload = () => {
+                    // Apply a decreasing factor to the dimensions on each attempt
+                    const decreaseFactor = Math.sqrt(sizeRatio) * (1 + 0.1 * attempt);
+                    var targetWidth = img.width / decreaseFactor;
+                    var targetHeight = img.height / decreaseFactor;
+
+                    var canvas = document.createElement('canvas');
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                    canvas.toBlob((blob) => {
+                        if (blob.size > targetMaxSize && attempt < 10) {
+                            // Limit the number of attempts to prevent infinite recursion
+                            // If the size is still too big, try again with an increased attempt count
+                            resolve(compressImageBasedOnRatio(blob, targetMaxSize, attempt + 1));
+                        } else {
+                            resolve(blob); // Resolve with the blob if under target size or max attempts reached
+                        }
+                    }, file.type);
                 };
-                reader.readAsDataURL(file.raw);
-                fileList.value.push(file);
-            }
+
+                img.onerror = () => reject(new Error('Image loading error'));
+            });
         }
 
         function handleRemove(file) {

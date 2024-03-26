@@ -1,8 +1,8 @@
 <script>
 import Annotation from '@/components/Annotation.vue';
 import { onBeforeRouteLeave } from 'vue-router';
-import { mapState, mapMutations } from 'vuex';
-import { ElMessageBox, ElMessage, ElLoading } from 'element-plus';
+import { mapState } from 'vuex';
+import { ElMessageBox, ElLoading } from 'element-plus';
 import UploadImage from '@/components/UploadImage.vue';
 import TemplateCarousel from '@/views/pages/features/template/TemplateCarousel.vue';
 import useAnnotator from '@/mixins/useAnnotator.js';
