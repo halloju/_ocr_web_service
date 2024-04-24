@@ -2,12 +2,14 @@
 import ViewEditResultColumn from '@/components/CustomizeColumns/ViewEditResultColumn.vue';
 import EditModeColumn from '@/components/CustomizeColumns/EditModeColumn.vue';
 import ViewRecognitionResultColumn from '@/components/CustomizeColumns/ViewRecognitionResultColumn.vue';
+import BrowseModeComponent from './CustomizeColumns/BrowseModeComponent.vue';
 
 export default {
     components: {
         ViewEditResultColumn,
         ViewRecognitionResultColumn,
-        EditModeColumn
+        EditModeColumn,
+        BrowseModeComponent
     },
     props: {
         shapes: {
@@ -91,7 +93,8 @@ export default {
                 date: '日期',
                 sealbox: '原留印鑑框',
                 checkbox: '勾選框'
-            }
+            },
+            mode: 'edit' | 'browse'
         };
     },
     created() {
@@ -108,7 +111,7 @@ export default {
         }
     },
     methods: {
-        tableRowClassName({row, rowIndex}) {
+        tableRowClassName({ row, rowIndex }) {
             if (!this.editMode) return;
             if ('isComplete' in row && !row.isComplete) return 'warning-row';
             else return null;
@@ -167,9 +170,21 @@ export default {
 
 <template>
     <div class="table-container">
-        <el-table ref="myTable" :data="formData" style="width: 100%" :row-class-name="tableRowClassName" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row :max-height="tableHeight">
+        <el-switch v-model="mode" active-text="瀏覽" inactive-text="編輯"></el-switch>
+        <el-table
+            ref="myTable"
+            :data="formData"
+            style="width: 100%"
+            :row-class-name="tableRowClassName"
+            :row-key="selectedShapeName"
+            border
+            @cell-mouse-enter="handleMouseEnter"
+            @cell-mouse-leave="handleMouseLeave"
+            highlight-current-row
+            :max-height="tableHeight"
+        >
             <!-- Index Column -->
-            <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
+            <el-table-column v-if="mode === 'edit'" prop="annotation.title" :label="buttonTitle" :min-width="20">
                 <template v-slot="scope">
                     <span v-if="!justShow" class="font-bold">{{ scope.$index + 1 }}</span>
                     <span v-else>{{ scope.row.rectangleType }}.{{ scope.$index + 1 }}</span>
@@ -213,7 +228,12 @@ export default {
             <!-- View Edit Result Components -->
             <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
             <!-- View Recognition Result Components -->
-            <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="resultColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
+            <view-recognition-result-column v-if="!editMode && !justShow && mode === 'edit'" @save="handleSaveRow" @click="handleClick" :buttonText="resultColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
+            <!-- View Recognition Result Components -->
+            <div v-if="mode === 'browse'">
+                <!-- Browse Mode Components -->
+                <browse-mode-component :formData="formData"></browse-mode-component>
+            </div>
         </el-table>
     </div>
 </template>
