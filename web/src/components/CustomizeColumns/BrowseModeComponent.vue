@@ -1,29 +1,66 @@
 <script>
 import { defineComponent } from 'vue';
+import { ElMessage } from 'element-plus';
 
 export default defineComponent({
     name: 'BrowseModeComponent',
     props: {
+        formData: {
+            type: Array
+        }
+    },
+    data() {
+        return {
+            mergedText: ''
+        };
     },
     methods: {
-        copyAllResults(result) {
-            // Copy the individual result to the clipboard
-            navigator.clipboard.writeText(result);
+        copyAllResults() {
+            navigator.clipboard
+                .writeText(this.mergedText)
+                .then(() => {
+                    ElMessage({
+                        message: '複製成功',
+                        type: 'info'
+                    })
+                })
+                .catch((err) => {
+                    console.log(err)
+                    ElMessage({
+                        message: '複製失敗',
+                        type: 'warning'
+                    });
+                });
         }
+    },
+    created() {
+        console.log(this.mergedText);
+        this.mergedText = this.formData.map((item) => item.annotation.text).join(' ');
     }
 });
 </script>
 
 <template>
-    <el-table-column>
-        <template v-slot:header>
-            <span>辨識結果</span>
-            <el-button type="text" @click="copyAllResults">Copy All</el-button>
-        </template>
-        <template v-slot="scope">
-            <div>
-                <span>{{ scope.row.combinedResult }}</span>
-            </div>
-        </template>
-    </el-table-column>
+    <div class="container">
+        <div class="header">
+            <!-- This div will hold the button and ensure it's placed on the right -->
+            <button class="uiStyle sizeS btnGreen" @click="copyAllResults">複製</button>
+        </div>
+        <el-input type="textarea" :rows="10" v-model="mergedText" readonly></el-input>
+    </div>
 </template>
+
+<style>
+.container {
+    /* Flex column will stack children vertically */
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    /* Align the button to the right */
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px; /* Adjust space between button and input as needed */
+}
+</style>
