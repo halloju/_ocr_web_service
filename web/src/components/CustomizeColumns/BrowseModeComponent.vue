@@ -22,10 +22,10 @@ export default defineComponent({
                     ElMessage({
                         message: '複製成功',
                         type: 'info'
-                    })
+                    });
                 })
                 .catch((err) => {
-                    console.log(err)
+                    console.log(err);
                     ElMessage({
                         message: '複製失敗',
                         type: 'warning'
@@ -34,8 +34,18 @@ export default defineComponent({
         }
     },
     created() {
-        console.log(this.mergedText);
         this.mergedText = this.formData.map((item) => item.annotation.text).join(' ');
+        console.log('browse-mode-component mergedText:', this.mergedText);
+    },
+    watch: {
+        formData(newValue) {
+            this.mergedText = newValue.map((item) => item.annotation.text).join(' ');
+            console.log('browse-mode-component received formData:', newValue);
+        }
+    },
+    mounted() {
+        // this.mergedText = this.formData.map((item) => item.annotation.text).join(' ');
+        console.log('browse-mode-component mergedText mounted:', this.mergedText);
     }
 });
 </script>
@@ -46,7 +56,7 @@ export default defineComponent({
             <!-- This div will hold the button and ensure it's placed on the right -->
             <button class="uiStyle sizeS btnGreen" @click="copyAllResults">複製</button>
         </div>
-        <el-input type="textarea" :rows="10" v-model="mergedText" readonly></el-input>
+        <el-input type="textarea" :rows="10" readonly :value="mergedText"></el-input>
     </div>
 </template>
 

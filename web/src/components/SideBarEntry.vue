@@ -101,6 +101,7 @@ export default {
         if (this.shapes) {
             this.formData = this.shapes;
         }
+        console.log('side-bar created:', this.formData);
     },
     computed: {
         showFormColumn() {
@@ -141,16 +142,19 @@ export default {
         selectRow(row) {
             this.$refs.myTable.setCurrentRow(row);
         },
-        handleSaveRow(index) {
-            this.submitted(this.formData[index]);
-            this.formData[index].edited = false;
+        handleSaveRow(rowIndex, updatedText) {
+            console.log('row save:', updatedText);
+            const updatedAnnotation = { ...this.formData[rowIndex].annotation, text: updatedText };
+            const updatedItem = { ...this.formData[rowIndex], annotation: updatedAnnotation };
+            this.formData = [...this.formData.slice(0, rowIndex), updatedItem, ...this.formData.slice(rowIndex + 1)];
+            this.submitted(this.formData[rowIndex]);
         },
         handleClick(index) {
             this.formData[index].edited = true;
         }
     },
     mounted() {
-        console.log(this.formData);
+        console.log('side-bar mounted:', this.formData);
     },
     watch: {
         selectedShapeName: function (newShape, oldShape) {
@@ -166,6 +170,14 @@ export default {
         },
         shapes() {
             this.formData = this.shapes;
+            console.log('shapes updated:', this.shapes);
+        },
+        formData: {
+            handler(newVal, oldVal) {
+                console.log('formData updated', newVal);
+            },
+            deep: true,
+            immediate: true
         }
     }
 };
