@@ -34,7 +34,7 @@ export default {
         const initialDataId = ref(null);
         const file_name = ref('');
         const num = ref('');
-        const isSelectionLight = ref(false)
+        const isSelectionLight = ref(false);
         const reloadAnnotator = ref(false);
         const isRunning = ref(false);
         const finishedStatus = ref(['SUCCESS', 'FAIL']);
@@ -49,7 +49,6 @@ export default {
         const warningStyle = {
             'background-color': 'rgb(252, 230, 190)'
         };
-
 
         const getExcelData = (selectedItems) => {
             let excelData = [];
@@ -71,6 +70,123 @@ export default {
                 }
             });
             return excelData;
+        };
+
+        const getFullTextExcelData = (selectedItems) => {
+            let excelData = [];
+            let selectedTaskIds = selectedItems.map((item) => item.task_id);
+
+            // Filter results to only include selected task IDs and their OCR results
+            const filteredResults = general_upload_res.value.filter((item) => selectedTaskIds.includes(item.task_id) && item.ocr_results);
+
+            // For each selected task_id, sort and concatenate text results
+            let textMap = new Map();
+            selectedTaskIds.forEach((task_id) => {
+                const taskResults = filteredResults.filter((item) => item.task_id === task_id);
+                const sortedResults = this.sortOcrResults(taskResults);
+                const fullText = this.concatTextResults(
+                    sortedResults.map((item) => item.ocr_results.text),
+                    []
+                );
+                textMap.set(task_id, fullText);
+            });
+
+            // Generate Excel data rows
+            filteredResults.forEach((item) => {
+                item.ocr_results.data_results.forEach((result_dic) => {
+                    let cols = {
+                        filename: item.file_name,
+                        full_text: textMap.get(item.task_id) // Use the concatenated full text
+                    };
+                    for (const key in result_dic) {
+                        cols[key] = typeof result_dic[key] === 'object' ? JSON.stringify(result_dic[key]) : result_dic[key];
+                    }
+                    excelData.push(cols);
+                });
+            });
+
+            return excelData;
+        };
+
+        const concatTextResults = (textList, filters) => {
+            if (textList.length < 2) return textList.join('');
+            if (!filters.includes('tchinese')) {
+                return textList.join(' ');
+            } else {
+                let textResults = textList[0];
+                let previousText = textList[0];
+
+                for (let i = 1; i < textList.length; i++) {
+                    const text = textList[i];
+                    if (previousText.charCodeAt(previousText.length - 1) >= 128 && text.charCodeAt(0) >= 128) {
+                        textResults += text;
+                    } else {
+                        textResults += ` ${text}`;
+                    }
+                    previousText = text;
+                }
+
+                return textResults;
+            }
+        };
+
+        const getYCenter = (point) => {
+            console.log('y', point);
+            if (!point) {
+                console.error('Invalid or incomplete point data:', point);
+                return 0; // or handle this case appropriately
+            }
+            return point.y + point.height / 2;
+        };
+
+        const getXCenter = (point) => {
+            return point.x + point.width / 2;
+        };
+
+        const groupLineResults = (results, margin = 0.5) => {
+            if (results.length < 2) return results;
+            const sortedResults = [];
+            let tempResults = [];
+            let previousYCenter = results[0].yCenter;
+
+            results.forEach((result, index) => {
+                console.log('result:', result);
+                console.log('tempResults:', tempResults);
+                console.log('sortedResults:', sortedResults);
+
+                const yCenter = result.yCenter;
+                const charHeight = result.height;
+
+                if (yCenter < previousYCenter - charHeight * margin || yCenter > previousYCenter + charHeight * margin) {
+                    tempResults.sort((a, b) => a.xCenter - b.xCenter);
+                    if (tempResults.length > 0) {
+                        tempResults[tempResults.length - 1].text += '\n';
+                    }
+                    sortedResults.push(...tempResults);
+                    tempResults = [];
+                }
+
+                tempResults.push(result);
+                previousYCenter = yCenter;
+
+                if (index === results.length - 1 && tempResults.length !== 0) {
+                    tempResults.sort((a, b) => a.xCenter - b.xCenter);
+                    sortedResults.push(...tempResults);
+                }
+            });
+
+            return sortedResults;
+        };
+
+        const sortOcrResults = (results) => {
+            console.log('sort:', results);
+            let augmentedResults = results.map((item) => ({
+                ...item,
+                yCenter: getYCenter(item),
+                xCenter: getXCenter(item)
+            }));
+            const ySortedResults = augmentedResults.sort((a, b) => a.yCenter - b.yCenter);
+            return groupLineResults(ySortedResults, 0.5);
         };
 
         function callback(data, image_cv_id) {
@@ -110,7 +226,7 @@ export default {
                 reloadAnnotator.value = !reloadAnnotator.value;
             } catch (error) {
                 if (error instanceof TypeError) {
-                   console.log('cancel')
+                    console.log('cancel');
                 } else {
                     ElMessage({
                         message: '辨識失敗',
@@ -119,7 +235,6 @@ export default {
                 }
             }
         }
-
 
         async function getOcrStatus(item) {
             try {
@@ -160,7 +275,7 @@ export default {
                     const batch = unfinishedItems.slice(i, i + BATCH_SIZE);
 
                     // Process all items in the batch concurrently
-                    await Promise.all(batch.map(item => getOcrStatus(general_upload_res.value.indexOf(item))));
+                    await Promise.all(batch.map((item) => getOcrStatus(general_upload_res.value.indexOf(item))));
 
                     // Optional: check if the process should still continue after each batch
                     if (!isRunning.value) break;
@@ -175,7 +290,7 @@ export default {
                 // Check for retry limit
                 if (count === MAX_RETRIES) {
                     // Process any remaining items as failed
-                    unfinishedItems.forEach(item => {
+                    unfinishedItems.forEach((item) => {
                         store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name });
                     });
                     break;
@@ -183,7 +298,6 @@ export default {
             }
             isRunning.value = false;
         }
-
 
         // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
@@ -246,7 +360,7 @@ export default {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    timeout: 5000  // Adjusted timeout to 5 seconds
+                    timeout: 5000 // Adjusted timeout to 5 seconds
                 });
             } catch (error) {
                 console.error(error);
@@ -264,32 +378,31 @@ export default {
                     type: 'warning'
                 });
                 isSelectionLight.value = true;
-                return
+                return;
             }
-            const successRows = selectedRows.value.filter(row => row.status === 'SUCCESS');
-            if(successRows.length == 0) {
+            const successRows = selectedRows.value.filter((row) => row.status === 'SUCCESS');
+            if (successRows.length == 0) {
                 ElMessage({
                     message: '請選擇成功辨識的檔案',
                     type: 'warning'
                 });
-                return
+                return;
             }
-        
-            const filteredUploads = general_upload_res.value.filter(upload => 
-                successRows.some(row => row.task_id === upload.task_id));
+
+            const filteredUploads = general_upload_res.value.filter((upload) => successRows.some((row) => row.task_id === upload.task_id));
             if (filteredUploads.length > 0) {
-                const feedbacks = filteredUploads.map(upload => ({
+                const feedbacks = filteredUploads.map((upload) => ({
                     image_cv_id: upload.image_cv_id,
-                    points_list: upload.ocr_results.data_results.map(data_result => ({
+                    points_list: upload.ocr_results.data_results.map((data_result) => ({
                         type: 'text',
-                        tag: data_result.tag, 
+                        tag: data_result.tag,
                         text: data_result.text,
-                        points: data_result.points 
+                        points: data_result.points
                     }))
                 }));
 
                 // Filter out feedbacks with empty points_list
-                const nonEmptyFeedbacks = feedbacks.filter(feedback => feedback.points_list.length > 0);
+                const nonEmptyFeedbacks = feedbacks.filter((feedback) => feedback.points_list.length > 0);
 
                 if (nonEmptyFeedbacks.length > 0) {
                     // Send feedback if there are non-empty points_list
@@ -299,25 +412,25 @@ export default {
             // Proceed to file download
             const excelData = getExcelData(successRows);
             const jsonWorkSheet = XLSX.utils.json_to_sheet(excelData);
-            const workBook = {
-                SheetNames: ['jsonWorkSheet'],
-                Sheets: {
-                    jsonWorkSheet: jsonWorkSheet
-                }
-            };
-            XLSX.writeFile(workBook, '辨識結果.xlsx');
+            const fullTextExcelData = getFullTextExcelData(successRows);
+            const fullTextjsonWorkSheet = XLSX.utils.json_to_sheet(fullTextExcelData);
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, jsonWorkSheet, 'jsonWorkSheet');
+            XLSX.utils.book_append_sheet(wb, fullTextjsonWorkSheet, 'fullText');
+
+            XLSX.writeFile(wb, '辨識結果.xlsx');
         }
         function tableHeaderCellStyle({ row, column, rowIndex, columnIndex }) {
-            if(columnIndex === 0 && isSelectionLight.value){
-                return warningStyle
+            if (columnIndex === 0 && isSelectionLight.value) {
+                return warningStyle;
             }
         }
         function cellStyle({ row, column, rowIndex, columnIndex }) {
-            if(columnIndex === 0 && isSelectionLight.value){
-                return warningStyle
+            if (columnIndex === 0 && isSelectionLight.value) {
+                return warningStyle;
             }
         }
-
 
         // Start to pull the status
         onMounted(async () => {
@@ -363,7 +476,13 @@ export default {
             hasTitle,
             cellStyle,
             tableHeaderCellStyle,
-            isSelectionLight
+            isSelectionLight,
+            sortOcrResults,
+            groupLineResults,
+            getYCenter,
+            getXCenter,
+            concatTextResults,
+            getFullTextExcelData
         };
     },
     computed: {
@@ -387,12 +506,12 @@ export default {
 </script>
 
 <template>
-    <button class="uiStyle sizeS minLength btnDarkBlue" @click="back" :disabled="isUploadDisabled">
+    <button class="uiStyle sizeS minLength btnDarkBlue" @click="back">
         {{ buttonText }}
     </button>
     <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
-            <p style="margin: 0; flex: 1;" class="subtitle">辨識結果</p>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px">
+            <p style="margin: 0; flex: 1" class="subtitle">辨識結果</p>
             <div style="display: grid; place-items: center">
                 <button class="uiStyle sizeS subLength btnGreen" @click="downloadFile" :disabled="isRunning">
                     {{ downloadButtonText }}
@@ -401,36 +520,42 @@ export default {
         </div>
         <span style="margin-right: 2px; color: red; font-size: 10px" v-if="isSelectionLight">勾選下載檔案</span>
         <div class="flex align-items-center justify-content-center font-bold m-2 mb-5">
-            
-            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" :cell-style="cellStyle" :header-cell-style="tableHeaderCellStyle"
-                height="250" border>
-                <el-table-column type="selection" width="55" color="red"/>
+            <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" :cell-style="cellStyle" :header-cell-style="tableHeaderCellStyle" height="250" border>
+                <el-table-column type="selection" width="55" color="red" />
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
                     <template v-slot="scope">
-                        <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark"
-                            :content="getErrorMsg(scope.row, this.tableData)" placement="top">
+                        <el-tooltip class="error-tip" effect="dark" :content="getErrorMsg(scope.row, this.tableData)" placement="top">
                             <el-tag :type="getStatusColor(scope.row.status)">{{ scope.row.status }}</el-tag>
                         </el-tooltip>
                     </template>
                 </el-table-column>
                 <el-table-column label="檢視" :min-width="30">
                     <template v-slot="scope">
-                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)"
-                            class="preview">
+                        <button v-if="scope.row.isFinished" @click="handleButtonClick(scope.row, this.tableData)" class="preview">
                             <Icon type="eye" />
                         </button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <div v-if="imageSrc !== null">
+        <!-- <div v-if="imageSrc !== null"> -->
+        <div>
             <p class="subtitle">號碼：{{ num }}</p>
             <p>{{ file_name }}</p>
-            <Annotation containerId="my-pic-annotation-output" :imageSrc="imageSrc" :editMode="false" :width="width"
-                :height="height" :dataCallback="callback" :initialData="initialData" initialDataId=""
-                :image_cv_id="image_cv_id" :hasTitle="hasTitle"></Annotation>
+            <Annotation
+                containerId="my-pic-annotation-output"
+                :imageSrc="imageSrc"
+                :editMode="false"
+                :width="width"
+                :height="height"
+                :dataCallback="callback"
+                :initialData="initialData"
+                initialDataId=""
+                :image_cv_id="image_cv_id"
+                :hasTitle="hasTitle"
+            ></Annotation>
         </div>
     </div>
 </template>
