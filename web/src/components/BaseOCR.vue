@@ -1,11 +1,14 @@
 <script>
 import BaseUploadImage from '@/components/BaseUploadImage.vue';
 import BaseOcrResultShow from '@/components/BaseOcrResultShow.vue';
+import BaseOcrResultShowGeneral from '@/components/BaseOcrResultShowGeneral.vue';
+
 
 export default {
     components: {
         BaseUploadImage,
-        BaseOcrResultShow
+        BaseOcrResultShow,
+        BaseOcrResultShowGeneral
     },
     name: 'BaseOCR',
     props: {
@@ -56,10 +59,6 @@ export default {
                     value: 'symbol',
                     label: '符號'
                 }
-                // {
-                //     value: 'space',
-                //     label: '空白'
-                // }
             ],
             selectType: 'basic',
             placeholder: '繁體中文 + 英數字',
@@ -121,6 +120,7 @@ export default {
             :defaultImgURL="defaultImgURL"
             :description="detail_description"
         />
-        <BaseOcrResultShow v-else-if="step == 2" @nextStepEmit="nextStep" :hasTitle="hasTitle" />
-    </div>
+        <BaseOcrResultShow v-else-if="step == 2 && title !== '全文辨識'" @nextStepEmit="nextStep" :hasTitle="hasTitle" />
+        <BaseOcrResultShowGeneral v-else-if="step == 2 && title === '全文辨識'" @nextStepEmit="nextStep" :hasTitle="hasTitle" />
+        </div>
 </template>

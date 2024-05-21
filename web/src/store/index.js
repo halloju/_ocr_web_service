@@ -62,6 +62,7 @@ const store = new Vuex.Store({
             for (let i = 0; i < state.general_upload_res.length; i++) {
                 if (image_cv_id === state.general_upload_res[i].image_id) {
                     for (let j = 0; j < state.general_upload_res[i].ocr_results.data_results.length; j++) {
+                        console.log(data[j].annotation.text);
                         commit('GENERAL_IMAGE_OCR_RESULTS_UPDATE', {
                             item: i,
                             index: j,
@@ -71,6 +72,20 @@ const store = new Vuex.Store({
                     break;
                 }
             }
+        },
+        updateGeneralImageOcrResultsEdited({ commit, state }, { shape, idx, image_cv_id }) {
+            for (let i = 0; i < state.general_upload_res.length; i++) {
+                if (image_cv_id === state.general_upload_res[i].image_id) {
+                    console.log(shape.name);
+                    console.log(state.general_upload_res[i].ocr_results.data_results[idx]);
+                        commit('GENERAL_IMAGE_OCR_RESULTS_UPDATE', {
+                            item: i,
+                            index: idx,
+                            text: shape.annotation.text
+                        });
+                    }
+                    break;
+                }
         }
     }
 });

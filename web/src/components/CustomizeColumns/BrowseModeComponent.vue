@@ -6,12 +6,14 @@ export default defineComponent({
     name: 'BrowseModeComponent',
     props: {
         formData: {
-            type: Array
+            type: Array,
+            default: () => [] // Default to an empty array if no formData is passed
         }
     },
     data() {
         return {
-            mergedText: ''
+            mergedText: '',
+            localFormData: [],
         };
     },
     methods: {
@@ -54,7 +56,6 @@ export default defineComponent({
             }
         },
         getYCenter(point) {
-            console.log('y', point);
             if (!point) {
                 console.error('Invalid or incomplete point data:', point);
                 return 0; // or handle this case appropriately
@@ -71,10 +72,6 @@ export default defineComponent({
             let previousYCenter = results[0].yCenter;
 
             results.forEach((result, index) => {
-                console.log('result:', result);
-                console.log('tempResults:', tempResults);
-                console.log('sortedResults:', sortedResults);
-
                 const yCenter = result.yCenter;
                 const charHeight = result.height;
 
@@ -99,7 +96,6 @@ export default defineComponent({
             return sortedResults;
         },
         sortOcrResults(results) {
-            console.log('sort:', results);
             let augmentedResults = results.map((item) => ({
                 ...item,
                 yCenter: this.getYCenter(item),
@@ -110,36 +106,22 @@ export default defineComponent({
         }
     },
     created() {
-        console.log('browse-mode-component created formData:', this.formData);
-
-        const sortedOcrResults = this.sortOcrResults(this.formData);
-        console.log('browse-mode-component created sortedOcrResults:', sortedOcrResults);
-
-        const textResults = this.concatTextResults(
-            sortedOcrResults.map((item) => item.text),
-            []
-        );
-        this.mergedText = textResults;
-        console.log('browse-mode-component created:', this.mergedText);
+        this.localFormData = JSON.parse(JSON.stringify(this.formData));
     },
     watch: {
         formData: {
             handler(newValue) {
-                console.log('browse-mode-component received formData:', newValue);
-                const sortedOcrResults = this.sortOcrResults(newValue);
+                this.localFormData = JSON.parse(JSON.stringify(newValue));
+                const sortedOcrResults = this.sortOcrResults(this.localFormData);
                 const textResults = this.concatTextResults(
-                    sortedOcrResults.map((item) => item.text),
+                    sortedOcrResults.map((item) => item.annotation.text),
                     []
                 );
                 this.mergedText = textResults;
             },
-            deep: true, // Set to true if formData is an object and you need deep watching
-            immediate: true // Set to true if you want to run this handler immediately after mount
+            deep: true,
+            immediate: true
         }
-    },
-    mounted() {
-        // this.mergedText = this.formData.map((item) => item.annotation.text).join(' ');
-        console.log('browse-mode-component mergedText mounted:', this.mergedText);
     }
 });
 </script>

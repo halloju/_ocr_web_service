@@ -2,14 +2,12 @@
 import ViewEditResultColumn from '@/components/CustomizeColumns/ViewEditResultColumn.vue';
 import EditModeColumn from '@/components/CustomizeColumns/EditModeColumn.vue';
 import ViewRecognitionResultColumn from '@/components/CustomizeColumns/ViewRecognitionResultColumn.vue';
-import BrowseModeComponent from '@/components/CustomizeColumns/BrowseModeComponent.vue';
 
 export default {
     components: {
         ViewEditResultColumn,
         ViewRecognitionResultColumn,
-        EditModeColumn,
-        BrowseModeComponent
+        EditModeColumn
     },
     props: {
         shapes: {
@@ -93,15 +91,13 @@ export default {
                 date: '日期',
                 sealbox: '原留印鑑框',
                 checkbox: '勾選框'
-            },
-            activeTab: 'first'
+            }
         };
     },
     created() {
         if (this.shapes) {
             this.formData = this.shapes;
         }
-        console.log('side-bar created:', this.formData);
     },
     computed: {
         showFormColumn() {
@@ -112,7 +108,7 @@ export default {
         }
     },
     methods: {
-        tableRowClassName({ row, rowIndex }) {
+        tableRowClassName({row, rowIndex}) {
             if (!this.editMode) return;
             if ('isComplete' in row && !row.isComplete) return 'warning-row';
             else return null;
@@ -137,24 +133,20 @@ export default {
                     }
                 })
                 .filter((item) => item !== undefined);
+            console.log('submitted:', shape);
             this.$emit('sidebar-entry-save', shape.name);
         },
         selectRow(row) {
             this.$refs.myTable.setCurrentRow(row);
         },
-        handleSaveRow(rowIndex, updatedText) {
-            console.log('row save:', updatedText);
-            const updatedAnnotation = { ...this.formData[rowIndex].annotation, text: updatedText };
-            const updatedItem = { ...this.formData[rowIndex], annotation: updatedAnnotation };
-            this.formData = [...this.formData.slice(0, rowIndex), updatedItem, ...this.formData.slice(rowIndex + 1)];
-            this.submitted(this.formData[rowIndex]);
+        handleSaveRow(index) {
+            console.log('handleSaveRow:', this.formData[index]);
+            this.submitted(this.formData[index]);
+            this.formData[index].edited = false;
         },
         handleClick(index) {
             this.formData[index].edited = true;
         }
-    },
-    mounted() {
-        console.log('side-bar mounted:', this.formData);
     },
     watch: {
         selectedShapeName: function (newShape, oldShape) {
@@ -170,14 +162,6 @@ export default {
         },
         shapes() {
             this.formData = this.shapes;
-            console.log('shapes updated:', this.shapes);
-        },
-        formData: {
-            handler(newVal, oldVal) {
-                console.log('formData updated', newVal);
-            },
-            deep: true,
-            immediate: true
         }
     }
 };
@@ -185,73 +169,54 @@ export default {
 
 <template>
     <div class="table-container">
-        <el-tabs type="border-card" class="tabs-container" v-model="activeTab">
-            <el-tab-pane label="編輯" name="first">
-                <el-table
-                    ref="myTable"
-                    :data="formData"
-                    style="width: 100%"
-                    :row-class-name="tableRowClassName"
-                    :row-key="selectedShapeName"
-                    border
-                    @cell-mouse-enter="handleMouseEnter"
-                    @cell-mouse-leave="handleMouseLeave"
-                    highlight-current-row
-                    :max-height="tableHeight"
-                >
-                    <!-- Index Column -->
-                    <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
-                        <template v-slot="scope">
-                            <span v-if="!justShow" class="font-bold">{{ scope.$index + 1 }}</span>
-                            <span v-else>{{ scope.row.rectangleType }}.{{ scope.$index + 1 }}</span>
-                        </template>
-                    </el-table-column>
+        <el-table ref="myTable" :data="formData" style="width: 100%" :row-class-name="tableRowClassName" :row-key="selectedShapeName" border @cell-mouse-enter="handleMouseEnter" @cell-mouse-leave="handleMouseLeave" highlight-current-row :max-height="tableHeight">
+            <!-- Index Column -->
+            <el-table-column prop="annotation.title" :label="buttonTitle" :min-width="20">
+                <template v-slot="scope">
+                    <span v-if="!justShow" class="font-bold">{{ scope.$index + 1 }}</span>
+                    <span v-else>{{ scope.row.rectangleType }}.{{ scope.$index + 1 }}</span>
+                </template>
+            </el-table-column>
 
-                    <!-- Annotation Title Column -->
-                    <el-table-column v-if="hasTitle" prop="annotation.title" :label="titleColumnName" :min-width="20">
-                        <template v-slot="scope">
-                            <span>{{ scope.row.annotation.title }}</span>
-                        </template>
-                    </el-table-column>
-                    <!-- Edit Mode Components -->
-                    <edit-mode-column
-                        v-if="editMode && rectangleType === 'text'"
-                        @save="handleSaveRow"
-                        @delete="handleDeleteShape"
-                        @click="handleClick"
-                        @complete="updateCompleteStatus"
-                        :buttonText="titleColumnName"
-                        :filterButtonText="filterButtonText"
-                        :checkColumnName="checkColumnName"
-                        :deleteColumnName="deleteColumnName"
-                        :option="TextOptions"
-                    >
-                    </edit-mode-column>
-                    <edit-mode-column
-                        v-if="editMode && rectangleType === 'box'"
-                        @save="handleSaveRow"
-                        @delete="handleDeleteShape"
-                        @click="handleClick"
-                        @complete="updateCompleteStatus"
-                        :buttonText="titleColumnName"
-                        :filterButtonText="filterButtonText"
-                        :checkColumnName="checkColumnName"
-                        :deleteColumnName="deleteColumnName"
-                        :option="BoxOptions"
-                    >
-                    </edit-mode-column>
-                    <edit-mode-column v-if="editMode && rectangleType === 'mask'" @save="handleSaveRow" @delete="handleDeleteShape" @click="handleClick" :deleteColumnName="deleteColumnName"> </edit-mode-column>
-                    <!-- View Edit Result Components -->
-                    <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
-                    <!-- View Recognition Result Components -->
-                    <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="resultColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
-                    <!-- View Recognition Result Components -->
-                </el-table>
-            </el-tab-pane>
-            <el-tab-pane v-if="!editMode && !justShow" label="瀏覽" name="second">
-                <browse-mode-component :formData="formData"></browse-mode-component>
-            </el-tab-pane>
-        </el-tabs>
+            <!-- Annotation Title Column -->
+            <el-table-column v-if="hasTitle" prop="annotation.title" :label="titleColumnName" :min-width="20">
+                <template v-slot="scope">
+                    <span>{{ scope.row.annotation.title }}</span>
+                </template>
+            </el-table-column>
+            <!-- Edit Mode Components -->
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'text'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                @complete="updateCompleteStatus"
+                :buttonText="titleColumnName"
+                :filterButtonText="filterButtonText"
+                :checkColumnName="checkColumnName"
+                :deleteColumnName="deleteColumnName"
+                :option="TextOptions"
+            >
+            </edit-mode-column>
+            <edit-mode-column
+                v-if="editMode && rectangleType === 'box'"
+                @save="handleSaveRow"
+                @delete="handleDeleteShape"
+                @click="handleClick"
+                @complete="updateCompleteStatus"
+                :buttonText="titleColumnName"
+                :filterButtonText="filterButtonText"
+                :checkColumnName="checkColumnName"
+                :deleteColumnName="deleteColumnName"
+                :option="BoxOptions"
+            >
+            </edit-mode-column>
+            <edit-mode-column v-if="editMode && rectangleType === 'mask'" @save="handleSaveRow" @delete="handleDeleteShape" @click="handleClick" :deleteColumnName="deleteColumnName"> </edit-mode-column>
+            <!-- View Edit Result Components -->
+            <view-edit-result-column v-if="!editMode && justShow" :buttonText="titleColumnName" :filterButtonText="filterButtonText" :Names="NameDict"> </view-edit-result-column>
+            <!-- View Recognition Result Components -->
+            <view-recognition-result-column v-if="!editMode && !justShow" @save="handleSaveRow" @click="handleClick" :buttonText="resultColumnName" :checkColumnName="checkColumnName"> </view-recognition-result-column>
+        </el-table>
     </div>
 </template>
 <style scoped>
@@ -265,24 +230,5 @@ export default {
     font-weight: bold;
     margin: 2px;
     margin-bottom: 5px;
-}
-/* Add this CSS to make your tabs full width */
-.el-tabs__header {
-    display: flex;
-    justify-content: space-around; /* This will distribute the tabs evenly */
-}
-
-/* If your tabs are wrapped inside another container, you might need to make sure that this container is full width as well */
-.tabs-container {
-    width: 100%; /* Assuming your table is also full width of its container */
-}
-
-.tabs-container .el-tabs__header {
-    display: flex;
-    justify-content: space-around;
-}
-
-.table-container {
-    width: 100%; /* Ensure the table container is also full width */
 }
 </style>
