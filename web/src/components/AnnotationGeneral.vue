@@ -1,3 +1,59 @@
+/**
+ * @file AnnotationGeneral.vue
+ * @description This file contains the implementation of the AnnotationGeneral component. (For General OCR only)
+ * The AnnotationGeneral component is responsible for displaying and manipulating annotations on an image.
+ * It allows users to add, edit, and delete shapes on the image, such as rectangles and polygons.
+ * The component also provides functionality for loading images, handling mouse events, and managing the state of the annotations.
+ *
+ * @property {String} containerId - The ID of the container element.
+ * @property {String} imageSrc - The source URL of the image to be displayed.
+ * @property {Function} dataCallback - The callback function to be called when the data is updated.
+ * @property {String} localStorageKey - The key used to store the data in the local storage.
+ * @property {String} width - The width of the component.
+ * @property {String} height - The height of the component.
+ * @property {Boolean} editMode - A flag indicating whether the component is in edit mode.
+ * @property {Object} initialData - The initial data for the annotations.
+ * @property {String} image_cv_id - The ID of the image in the computer vision system.
+ * @property {Boolean} justShow - A flag indicating whether to only show the annotations without allowing editing.
+ * @property {String} rectangleType - The type of the rectangle shape.
+ * @property {Boolean} isVertical - A flag indicating whether the image is in vertical orientation.
+ * @property {Boolean} setShowText - A flag indicating whether to show the text in the annotations.
+ * @property {Boolean} hasTitle - A flag indicating whether the annotations have a title.
+ * @property {String} pageInfo - The information about the page.
+ *
+ * @data {Object} image - The image object.
+ * @data {Number} scale - The current scale of the image.
+ * @data {Object} stageSize - The size of the stage.
+ * @data {Array} shapes - The array of shapes (annotations).
+ * @data {String} selectedShapeName - The name of the currently selected shape.
+ * @data {String} currentHoverShape - The name of the shape that is currently being hovered over.
+ * @data {Boolean} isLoading - A flag indicating whether the image is being loaded.
+ * @data {Boolean} isShapesVisible - A flag indicating whether the shapes are visible.
+ * @data {Boolean} isAddingPolygon - A flag indicating whether the component is in polygon add mode.
+ * @data {Array} polygonPoints - The array of points for the polygon shape.
+ * @data {Array} polygonAddShapes - The array of shapes (annotations) for the polygon add mode.
+ * @data {Function} callback - The callback function.
+ * @data {Boolean} isShowText - A flag indicating whether to show the text in the annotations.
+ * @data {Boolean} isTitle - A flag indicating whether the annotations have a title.
+ * @data {Object} oldAttrs - The old attributes.
+ * @data {String} tableHeight - The height of the table.
+ *
+ * @watch {String} imageSrc - Watcher for the image source.
+ * @watch {Object} initialData - Watcher for the initial data.
+ *
+ * @computed {Object} stageConfig - The configuration object for the stage.
+ *
+ * @methods
+ * - changeRect: A method to change the size of the rectangle.
+ * - getMiddlePosition: A method to get the middle position of the image.
+ * - loadImage: A method to load the image.
+ * - handleStageMouseDown: A method to handle the mouse down event on the stage.
+ * - updateTransformer: A method to update the transformer.
+ * - cancelEvent: A method to cancel the event.
+ * - addRectangle: A method to add a rectangle shape.
+ * - getBaseShape: A method to get the base shape object.
+ * - deleteShape: A method to delete a shape.
+ */
 <script>
 import Icon from '@/components/Icon.vue';
 import Loader from '@/components/Loader.vue';

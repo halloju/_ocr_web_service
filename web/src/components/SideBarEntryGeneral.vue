@@ -1,3 +1,25 @@
+/**
+ * Component: SideBarEntryGeneral(For general OCR only)
+ * Description: This component represents a sidebar entry in the general tab of the sidebar.
+ * It displays a table with customizable columns for viewing and editing recognition results.
+ * Props:
+ *   - shapes: An array of shapes representing the recognition results.
+ *   - editMode: A boolean indicating whether the table is in edit mode or not.
+ *   - selectedShapeName: The name of the currently selected shape.
+ *   - currentHoverShape: The name of the shape currently being hovered over.
+ *   - justShow: A boolean indicating whether to just show the results or not.
+ *   - rectangleType: The type of rectangle to display.
+ *   - delete_shape: A boolean indicating whether to delete the shape or not.
+ *   - hasTitle: A boolean indicating whether the table has a title or not.
+ *   - tableHeight: The height of the table.
+ * Events:
+ *   - sidebar-entry-enter: Triggered when the mouse enters a table cell.
+ *   - sidebar-entry-leave: Triggered when the mouse leaves a table cell.
+ *   - sidebar-entry-delete: Triggered when a shape is deleted.
+ *   - sidebar-entry-save: Triggered when a shape is saved.
+ * Slots:
+ *   - None
+ */
 <script>
 import ViewEditResultColumn from '@/components/CustomizeColumns/ViewEditResultColumn.vue';
 import EditModeColumn from '@/components/CustomizeColumns/EditModeColumn.vue';

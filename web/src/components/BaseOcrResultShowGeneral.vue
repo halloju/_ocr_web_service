@@ -1,3 +1,21 @@
+/**
+ * @file BaseOcrResultShowGeneral.vue
+ * @description This file contains the implementation of the BaseOcrResultShowGeneral component for General OCR.
+ * The component displays OCR results for general images and provides functionality for downloading and annotating the results.
+ * It also includes methods for retrieving OCR results and status from the server.
+ * @module components/BaseOcrResultShowGeneral
+ * @requires vue
+ * @requires vue/composition-api
+ * @requires @element-plus/icons-vue
+ * @requires element-plus
+ * @requires xlsx/xlsx.mjs
+ * @requires vuex
+ * @requires mixins/useAnnotator.js
+ * @requires service/auth.js
+ * @requires components/Icon.vue
+ * @requires url.js
+ */
+**/
 <script>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import AnnotationGeneral from '@/components/AnnotationGeneral.vue';

@@ -1,3 +1,21 @@
+/**
+ * BrowseModeComponent is a Vue component that displays a container with a button and a textarea input.
+ * The button allows the user to copy the merged text from the textarea to the clipboard.
+ * The textarea displays the merged text from the formData prop. It is for General OCR only.
+ *
+ * @component
+ * @props {Array} formData - The data used to generate the merged text.
+ * @data {String} mergedText - The merged text from the formData prop.
+ * @data {Array} localFormData - A copy of the formData prop.
+ * @method copyAllResults - Copies the merged text to the clipboard.
+ * @method concatTextResults - Concatenates the text results from the sortedOcrResults.
+ * @method getYCenter - Calculates the Y center of a given point.
+ * @method getXCenter - Calculates the X center of a given point.
+ * @method groupLineResults - Groups line results based on their Y center.
+ * @method sortOcrResults - Sorts the OCR results based on their Y center and groups them into lines.
+ * @created - Initializes the localFormData with a deep copy of the formData prop.
+ * @watch formData - Watches for changes in the formData prop and updates the localFormData, sortedOcrResults, and mergedText accordingly.
+ */
 <script>
 import { defineComponent } from 'vue';
 import { ElMessage } from 'element-plus';
