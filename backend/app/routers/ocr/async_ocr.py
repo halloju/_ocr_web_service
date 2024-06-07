@@ -29,10 +29,10 @@ async def get_cv_ocr_prediction_service(
     request_id: str,
     redis: Redis
 ) -> ControllerOcrPredictionService:
-    image_storage = ImageStorage(conn=redis)
+    # image_storage = ImageStorage(conn=redis)
     cv_ocr_strategy = CVOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=cv_ocr_strategy, logger=logger)
-    return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
+    return ControllerOcrPredictionService(prediction_api, redis, logger, request_id)
 
 
 async def get_gp_ocr_prediction_service(
@@ -40,10 +40,10 @@ async def get_gp_ocr_prediction_service(
     request_id: str,
     redis: Redis
 ) -> ControllerOcrPredictionService:
-    image_storage = ImageStorage(conn=redis)
+    # image_storage = ImageStorage(conn=redis)
     gp_ocr_strategy = GPOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=gp_ocr_strategy, logger=logger)
-    return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
+    return ControllerOcrPredictionService(prediction_api, redis, logger, request_id)
 
 
 async def get_template_ocr_prediction_service(
@@ -51,20 +51,20 @@ async def get_template_ocr_prediction_service(
     request_id: str,
     redis: Redis
 ) -> ControllerOcrPredictionService:
-    image_storage = ImageStorage(conn=redis)
+    # image_storage = ImageStorage(conn=redis)
     gp_ocr_strategy = TemplateOcrPredictionStrategy(logger=logger)
     prediction_api = PredictionAPI(strategy=gp_ocr_strategy, logger=logger)
-    return ControllerOcrPredictionService(image_storage, prediction_api, redis, logger, request_id)
+    return ControllerOcrPredictionService(prediction_api, redis, logger, request_id)
 
 
-def process_results(results, endpoint):
+def process_results(results, image_class):
     response_content = []
     for result in results:
         if isinstance(result, Exception):
-            logger.error({endpoint: str(result)})
-            response_content.append(result.task.to_dict())
+            logger.error({image_class: str(result)})
+            response_content.append({"error": str(result)})
         else:
-            response_content.append(result.to_dict())
+            response_content.extend([task.to_dict() for task in result])  # Flatten list of tasks
     return response_content
 
 

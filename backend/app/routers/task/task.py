@@ -14,11 +14,22 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 logger = Logger('task')
 
 
-@router.get("/get_image/{image_id}", summary="拉圖片")
-async def get_images(image_id: str, redis: Redis = Depends(get_redis),):
-    # Get the Redis connection from the app state
-    image_string = await redis.get(image_id)
-    return JSONResponse(status_code=200, content=image_string)
+@router.get("/get_image/{image_cv_id}", summary="拉圖片")
+async def get_images(image_cv_id: str, redis: Redis = Depends(get_redis)):
+    # Check if the image is in Redis cache
+    image_string = await redis.get(image_cv_id)
+    if image_string:
+        return JSONResponse(status_code=200, content=image_string)
+
+    # If image is not in Redis cache, get it from Minio
+    image = await get_image_from_minio(image_cv_id)
+    if image:
+        # Store the image in Redis cache
+        await redis.set(image_cv_id, image)
+        return JSONResponse(status_code=200, content=image)
+    else:
+        return JSONResponse(status_code=404, content={'message': 'Image not found'})
+
 
 
 @router.get('/result/{task_id}')

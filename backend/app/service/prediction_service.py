@@ -1,5 +1,6 @@
 import uuid
 from typing import Any
+import base64
 
 from route_utils import get_redis_taskname
 from app.models.task import Task
@@ -10,6 +11,11 @@ from app.exceptions import GeneralException
 from app.constants import remittance_points
 
 
+async def encode_file(file):
+    binary_data = await file.read()
+    return base64.b64encode(binary_data).decode("utf-8")
+        
+
 class IPredictionService:
     async def predict_for_task(self, file, action, input_params) -> Any:
         raise NotImplementedError(
@@ -17,18 +23,16 @@ class IPredictionService:
 
 
 class ControllerOcrPredictionService(IPredictionService):
-    def __init__(self, image_storage, prediction_api, conn, logger, request_id):
-        self.image_storage = image_storage
+    def __init__(self, prediction_api, conn, logger, request_id):
+        # self.image_storage = image_storage
         self.prediction_api = prediction_api
         self.conn = conn
         self.logger = logger
         self.request_id = request_id
 
     async def predict_for_task(self, file, action, input_params, special_rid: str=None):
-        # Store image data
-        task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
-        if task.status == 'FAIL':
-            raise TaskProcessingException(task)
+        ## Encode file
+        encoded_data = await encode_file(file)
         if special_rid:
             rid = special_rid
         else:
@@ -38,13 +42,19 @@ class ControllerOcrPredictionService(IPredictionService):
             data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, rid, action)
 
             predict_class = data_pred.get('predict_class', '')
-            # Process the prediction result
-            task.mark_as_processing(data_pred['image_cv_id'], predict_class=predict_class)
+            
+            tasks = []
+            # Create task for each image_cv_id from the prediction result
+            for idx, image_cv_id in enumerate(data_pred['image_cv_id']):
+                task = Task(file_name=file.filename, series_num=idx, image_cv_id=image_cv_id, predict_class=predict_class)
+                task.mark_as_processing(image_cv_id, predict_class)
+                tasks.append(task)
 
-            # Store task in Redis
-            await self._store_task_in_redis(task)
+                # Store task in Redis
+                await self._store_task_in_redis(task)
 
-            return task
+
+            return tasks
 
         except MlaasRequestError as exc:
             self.logger.error({
@@ -57,8 +67,6 @@ class ControllerOcrPredictionService(IPredictionService):
                     'status_code': exc.mlaas_code
                 }
             })
-            task.mark_as_failed('', '', exc.mlaas_code, exc.message)
-            await self._store_task_in_redis(task)
             raise PredictionAPIException(task, exc)
 
         except Exception as exc:
@@ -72,8 +80,6 @@ class ControllerOcrPredictionService(IPredictionService):
                     'status_code': '5001'
                 }
             })
-            task.mark_as_failed('', '', '5001', str(exc))
-            await self._store_task_in_redis(task)
             raise GeneralException(task, exc)
 
     async def _store_task_in_redis(self, task: Task):
@@ -91,7 +97,7 @@ class ControllerOcrPredictionService(IPredictionService):
         pipe.expire(task_key, 3600)  # 3600 seconds equals 1 hour
         
         # Execute all commands in the pipeline
-        pipe.execute()
+        await pipe.execute()
 
 
 class NonControllerOcrPredictionService(IPredictionService):

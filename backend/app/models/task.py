@@ -1,16 +1,16 @@
 from datetime import datetime
 import uuid
 import json
-from typing import List
+from typing import List, Tuple
 
 
 class Task:
-    def __init__(self, image_id, file_name, predict_class='', status='INITIAL', image_cv_id='', err_msg=''):
-        self.image_id = image_id
+    def __init__(self, file_name: str, series_num: int, image_cv_id: str, predict_class='', status='INITIAL', err_msg=''):
         self.file_name = file_name
+        self.series_num = series_num
+        self.image_cv_id = image_cv_id
         self.predict_class = predict_class
         self.status = status
-        self.image_cv_id = image_cv_id
         self.start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.err_msg = err_msg
         self.err_code = ''
@@ -18,22 +18,13 @@ class Task:
         self.task_id = str(self.image_cv_id).replace('/', '-')
         self.ocr_results = {}
 
-    @staticmethod
-    async def create_and_store_image(file, image_storage):
-        image_id = str(uuid.uuid4())
-        task = Task(image_id=image_id, file_name=file.filename)
-        _, encoded_data = await image_storage.store_image_data(file, image_id)
-        if encoded_data is None:
-            task.mark_as_failed('', '', '5002', 'Image storage failed')
-        return task, encoded_data
-
     def to_dict(self):
         """
         Convert the Task object to a dictionary. Useful for returning as a response or storing in databases.
         """
         return {
-            'image_id': self.image_id,
             'file_name': self.file_name,
+            'series_num': self.series_num,
             'predict_class': self.predict_class,
             'status': self.status,
             'image_cv_id': self.image_cv_id,
@@ -49,8 +40,8 @@ class Task:
         Convert the Task object to a dictionary. Useful for returning as a response or storing in databases.
         """
         return {
-            'image_id': self.image_id,
             'file_name': self.file_name,
+            'series_num': self.series_num,
             'predict_class': self.predict_class,
             'status': self.status,
             'image_cv_id': self.image_cv_id,
