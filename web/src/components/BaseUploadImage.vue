@@ -154,13 +154,15 @@ export default {
 
             beforeUpload(fileDict);
         }
+
         function beforeUpload(file, uploadFiles) {
             // Check file size && file type
             const rawFile = file.raw;
             const isIMAGE = rawFile.type === 'image/jpeg' || rawFile.type === 'image/png';
+            const isPDF = rawFile.type === 'application/pdf';
             const isLt2M = rawFile.size < FILE_SIZE_LIMIT;
-            if (!isIMAGE) {
-                ElMessageBox.alert('圖片只能是 JPG/PNG 格式!', '錯誤', {
+            if (!isIMAGE && !isPDF) { // Check if file is neither an image nor a PDF
+                ElMessageBox.alert('文件只能是 JPG/PNG/PDF 格式!', '錯誤', {
                     confirmButtonText: '確定',
                     type: 'error'
                 });
@@ -169,16 +171,20 @@ export default {
                 processFile(file);
             } else {
                 // If the file is an image but over the size limit, compress it
-                compressImageBasedOnRatio(rawFile, FILE_SIZE_LIMIT).then((compressedBlob) => {
-                    // Replace the original file with the compressed one
-                    const compressedFile = new File([compressedBlob], file.name, {
-                        type: file.type,
-                        lastModified: Date.now()
+                if (isIMAGE) {
+                    compressImageBasedOnRatio(rawFile, FILE_SIZE_LIMIT).then((compressedBlob) => {
+                        // Replace the original file with the compressed one
+                        const compressedFile = new File([compressedBlob], file.name, {
+                            type: file.type,
+                            lastModified: Date.now()
+                        });
+                        // Add the compressed file back to uploadFiles
+                        file.raw = compressedFile; // Update the raw file to the compressed one
+                        processFile(file); // Process the file after compression
                     });
-                    // Add the compressed file back to uploadFiles
-                    file.raw = compressedFile; // Update the raw file to the compressed one
-                    processFile(file); // Process the file after compression
-                });
+                } else {
+                    processFile(file);
+                }
             }
         }
 
@@ -238,6 +244,7 @@ export default {
                 }
             }
         }
+
         function handlePictureCardPreview(file) {
             dialogImageUrl.value = file.url;
             dialogVisible.value = true;
@@ -321,10 +328,11 @@ export default {
                 :on-exceed="handleExceed"
                 :auto-upload="false"
                 :on-preview="handlePictureCardPreview"
-                accept="image/*"
+                accept="image/*, .pdf"
             >
                 <el-icon><Plus /></el-icon>
             </el-upload>
+            
             <el-dialog v-model="dialogVisible" :width="dialogWidth">
                 <img :src="dialogImageUrl" alt="Uploaded Image Preview" @load="onLoadImg" :width="imgWidth" />
             </el-dialog>
