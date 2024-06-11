@@ -8,21 +8,21 @@ from aioredis import Redis
 from route_utils import get_redis_taskname
 from route_utils import get_current_user
 from utils.logger import Logger
-from route_utils import get_redis
+from route_utils import get_redis, get_minio
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 logger = Logger('task')
 
 
 @router.get("/get_image/{image_cv_id}", summary="拉圖片")
-async def get_images(image_cv_id: str, redis: Redis = Depends(get_redis)):
+async def get_images(image_cv_id: str, redis: Redis = Depends(get_redis), minio_storage=Depends(get_minio)):
     # Check if the image is in Redis cache
     image_string = await redis.get(image_cv_id)
     if image_string:
         return JSONResponse(status_code=200, content=image_string)
 
     # If image is not in Redis cache, get it from Minio
-    image = await get_image_from_minio(image_cv_id)
+    image = minio_storage.load_image(image_cv_id)
     if image:
         # Store the image in Redis cache
         await redis.set(image_cv_id, image)

@@ -98,6 +98,8 @@ def get_redis_taskname(task_id: str) -> str:
 def get_redis(request: Request) -> Redis:
     return request.app.state.redis
 
+def get_minio(request: Request):
+    return request.app.state.minio
 
 # Dependency
 def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
