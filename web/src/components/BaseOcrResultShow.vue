@@ -407,6 +407,11 @@ export default {
                 <el-table-column type="selection" width="55" color="red"/>
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
+                <el-table-column prop="file_name" label="檔名" sortable :min-width="30">
+                    <template v-slot="scope">
+                        {{ scope.row.file_name }} - {{ scope.row.num }}
+                    </template>
+                </el-table-column>
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
                     <template v-slot="scope">
                         <el-tooltip :disabled="scope.row.status != 'FAIL'" class="error-tip" effect="dark"

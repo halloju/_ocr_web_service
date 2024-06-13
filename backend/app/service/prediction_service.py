@@ -42,10 +42,14 @@ class ControllerOcrPredictionService(IPredictionService):
             data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, rid, action)
 
             predict_class = data_pred.get('predict_class', '')
+            image_cv_ids = data_pred.get('image_cv_id')
+            # controller predict API returns a single image_cv_id
+            if isinstance(image_cv_ids, str):
+                image_cv_ids = [image_cv_ids]
             
             tasks = []
             # Create task for each image_cv_id from the prediction result
-            for idx, image_cv_id in enumerate(data_pred['image_cv_id']):
+            for idx, image_cv_id in enumerate(image_cv_ids):
                 task = Task(file_name=file.filename, series_num=idx, image_cv_id=image_cv_id, predict_class=predict_class)
                 task.mark_as_processing(image_cv_id, predict_class)
                 tasks.append(task)
