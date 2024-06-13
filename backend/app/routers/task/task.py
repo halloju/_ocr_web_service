@@ -9,24 +9,29 @@ from route_utils import get_redis_taskname
 from route_utils import get_current_user
 from utils.logger import Logger
 from route_utils import get_redis, get_minio
+import base64
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 logger = Logger('task')
 
 
-@router.get("/get_image/{image_cv_id}", summary="拉圖片")
-async def get_images(image_cv_id: str, redis: Redis = Depends(get_redis), minio_storage=Depends(get_minio)):
+@router.get("/get_image/{task_id}", summary="拉圖片")
+async def get_images(task_id: str, redis: Redis = Depends(get_redis), minio_storage=Depends(get_minio)):
     # Check if the image is in Redis cache
-    image_string = await redis.get(image_cv_id)
+    task = await redis.get(task_id)
+    if not task:
+        return JSONResponse(status_code=404, content={'message': 'Task not found'})
+    image_string = await redis.get(task['image_redis_key'])
     if image_string:
         return JSONResponse(status_code=200, content=image_string)
 
     # If image is not in Redis cache, get it from Minio
-    image = minio_storage.load_image(image_cv_id)
+    image = minio_storage.load_image(task['image_cv_id'])
     if image:
+        image_string = base64.b64encode(image).decode('utf-8')
         # Store the image in Redis cache
-        await redis.set(image_cv_id, image)
-        return JSONResponse(status_code=200, content=image)
+        await redis.set(task['image_redis_key'], image_string)
+        return JSONResponse(status_code=200, content=image_string)
     else:
         return JSONResponse(status_code=404, content={'message': 'Image not found'})
 

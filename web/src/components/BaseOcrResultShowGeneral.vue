@@ -303,10 +303,10 @@ export default {
             isRunning.value = false;
         }
 
-        // ocr 結果轉成 annotation 的格式
+        // ocr 結果轉成 annotation 的格式  
         function handleButtonClick(row, tableData) {
             apiClient
-                .get(`${GET_TASK_IMAGE_URL}/${row.image_id}`)
+                .get(`${GET_TASK_IMAGE_URL}/${row.task_id}`)
                 .then((res) => {
                     if (res !== null) {
                         imageSrc.value = 'data:image/png;base64,' + res.data;

@@ -17,6 +17,7 @@ class Task:
         # Convert 2022/10/11.../uuid to 2022-10-11...-uuid
         self.task_id = str(self.image_cv_id).replace('/', '-')
         self.ocr_results = {}
+        self.image_redis_key = f'{self.task_id}-image'
 
     def to_dict(self):
         """
@@ -32,7 +33,8 @@ class Task:
             'status_msg': self.err_msg,
             'task_id': self.task_id,
             'url_result': f'/ocr/result/{self.task_id}',
-            'ocr_results': json.dumps(self.ocr_results)
+            'ocr_results': json.dumps(self.ocr_results),
+            'image_redis_key': self.image_redis_key
         }
     
     def to_dict_no_dumps(self):
@@ -49,7 +51,8 @@ class Task:
             'status_msg': self.err_msg,
             'task_id': self.task_id,
             'url_result': f'/ocr/result/{self.task_id}',
-            'ocr_results': self.ocr_results
+            'ocr_results': self.ocr_results,
+            'image_redis_key': self.image_redis_key
         }
 
     def mark_as_processing(self, image_cv_id, predict_class: str = ''):
