@@ -105,8 +105,7 @@ class ControllerOcrPredictionService(IPredictionService):
 
 
 class NonControllerOcrPredictionService(IPredictionService):
-    def __init__(self, image_storage, prediction_api, conn, logger, request_id):
-        self.image_storage = image_storage
+    def __init__(self, prediction_api, conn, logger, request_id):
         self.prediction_api = prediction_api
         self.conn = conn
         self.logger = logger

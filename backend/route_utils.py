@@ -12,12 +12,17 @@ from fastapi.security import OAuth2PasswordBearer
 import jwt
 from typing import Optional
 from app.models.user import User
+from utils.minio import MinioStorage
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
+env_names = {
+    'ocr': ['MINIO_ENDPOINT', 'MINIO_ACCESS_KEY', 'MINIO_SECRET_KEY'],
+    'feedback': ['MINIO_ENDPOINT', 'MINIO_ACCESS_KEY', 'MINIO_SECRET_KEY'],
+    'task': ['MINIO_ENDPOINT', 'MINIO_ACCESS_KEY', 'MINIO_SECRET_KEY']
+}
 
 def get_mlaas_result(res: dict, logger) -> Optional[dict]:
     outputs = res['outputs']
@@ -98,8 +103,15 @@ def get_redis_taskname(task_id: str) -> str:
 def get_redis(request: Request) -> Redis:
     return request.app.state.redis
 
-def get_minio(request: Request):
-    return request.app.state.minio
+def get_minio(bucket_name: str):
+    keys = env_names[bucket_name]
+    if not keys:
+        raise ValueError(f"Invalid bucket name: {bucket_name}")
+    return MinioStorage(
+        endpoint=os.getenv(keys[0], "minio"),
+        access_key=os.getenv(keys[1], "minio"),
+        secret_key=os.getenv(keys[2], "minio123")
+    )
 
 # Dependency
 def get_current_user(token: str = Depends(oauth2_scheme)) -> User:

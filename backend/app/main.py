@@ -57,6 +57,8 @@ def register_redis(app: FastAPI) -> None:
             app.state.redis.close()
             await app.state.redis.wait_closed()
             logger.info({'register_redis': 'shutdown'})
+            # minio client should be closed
+            app.state.minio.client.close() # Close Minio client
         except Exception as e:
             logger.error(
                 {'register_redis': 'shutdown failed', 'error': str(e)})

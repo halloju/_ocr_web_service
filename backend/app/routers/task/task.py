@@ -16,18 +16,19 @@ logger = Logger('task')
 
 
 @router.get("/get_image/{task_id}", summary="拉圖片")
-async def get_images(task_id: str, redis: Redis = Depends(get_redis), minio_storage=Depends(get_minio)):
+async def get_images(task_id: str, redis: Redis = Depends(get_redis)):
     # Check if the image is in Redis cache
-    task = await redis.get(task_id)
+    task = await redis.hgetall(get_redis_taskname(task_id))
     if not task:
         return JSONResponse(status_code=404, content={'message': 'Task not found'})
     image_string = await redis.get(task['image_redis_key'])
     if image_string:
         return JSONResponse(status_code=200, content=image_string)
-
+    # construct minio storage according to the bucket name
+    minio_storage = get_minio(task['bucket_name'])
     # If image is not in Redis cache, get it from Minio
     image = minio_storage.load_image(task['image_cv_id'])
-    if image:
+    if image:  
         image_string = base64.b64encode(image).decode('utf-8')
         # Store the image in Redis cache
         await redis.set(task['image_redis_key'], image_string)
