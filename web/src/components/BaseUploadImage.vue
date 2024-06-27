@@ -318,6 +318,15 @@ export default {
                     </div>
                 </div>
             </div>
+            <div v-if="fileList.length > 0" style="margin-bottom: 20px">
+                <el-alert
+                    :title="'已選擇 ' + fileList.length + ' 個檔案，最多可上傳 ' + category.limit + ' 個檔案。'"
+                    type="success"
+                    show-icon
+                    center
+                    :closable="false"
+                ></el-alert>
+            </div>
             <el-upload
                 :file-list="fileList"
                 list-type="text"
@@ -330,12 +339,8 @@ export default {
                 :on-preview="handlePictureCardPreview"
                 accept="image/*, .pdf"
             >
-                <el-icon><Plus /></el-icon>
+                <button class="uiStyle sizeS subLength btnBlue">Click to upload</button>
             </el-upload>
-            
-            <el-dialog v-model="dialogVisible" :width="dialogWidth">
-                <img :src="dialogImageUrl" alt="Uploaded Image Preview" @load="onLoadImg" :width="imgWidth" />
-            </el-dialog>
         </div>
 
         <div style="display: grid; place-items: center">
@@ -347,3 +352,4 @@ export default {
         </div>
     </div>
 </template>
+
