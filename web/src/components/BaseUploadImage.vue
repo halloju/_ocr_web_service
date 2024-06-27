@@ -320,7 +320,7 @@ export default {
             </div>
             <el-upload
                 :file-list="fileList"
-                list-type="picture-card"
+                list-type="text"
                 :on-change="beforeUpload"
                 :on-remove="handleRemove"
                 multiple

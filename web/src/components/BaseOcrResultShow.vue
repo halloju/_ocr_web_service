@@ -405,8 +405,7 @@ export default {
             <el-table :data="tableData" style="width: 100%" :key="isRunning" @selection-change="selectionChange" :cell-style="cellStyle" :header-cell-style="tableHeaderCellStyle"
                 height="250" border>
                 <el-table-column type="selection" width="55" color="red"/>
-                <el-table-column prop="num" label="號碼" sortable :min-width="10" />
-                <el-table-column prop="file_name" label="檔名" sortable :min-width="30" />
+                <el-table-column prop="num" label="號碼" sortable :min-width="10" /> 
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30">
                     <template v-slot="scope">
                         {{ scope.row.file_name }} - {{ scope.row.num }}
