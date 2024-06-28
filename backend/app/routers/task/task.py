@@ -8,7 +8,7 @@ from aioredis import Redis
 from route_utils import get_redis_taskname
 from route_utils import get_current_user
 from utils.logger import Logger
-from route_utils import get_redis, get_minio
+from route_utils import get_redis
 import base64
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
@@ -23,15 +23,6 @@ async def get_images(task_id: str, redis: Redis = Depends(get_redis)):
         return JSONResponse(status_code=404, content={'message': 'Task not found'})
     image_string = await redis.get(task['image_redis_key'])
     if image_string:
-        return JSONResponse(status_code=200, content=image_string)
-    # construct minio storage according to the bucket name
-    minio_storage = get_minio(task['bucket_name'])
-    # If image is not in Redis cache, get it from Minio
-    image = minio_storage.load_image(task['image_cv_id'])
-    if image:  
-        image_string = base64.b64encode(image).decode('utf-8')
-        # Store the image in Redis cache
-        await redis.set(task['image_redis_key'], image_string)
         return JSONResponse(status_code=200, content=image_string)
     else:
         return JSONResponse(status_code=404, content={'message': 'Image not found'})

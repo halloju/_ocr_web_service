@@ -23,16 +23,18 @@ class IPredictionService:
 
 
 class ControllerOcrPredictionService(IPredictionService):
-    def __init__(self, prediction_api, conn, logger, request_id):
-        # self.image_storage = image_storage
+    def __init__(self, image_storage, prediction_api, conn, logger, request_id):
+        self.image_storage = image_storage
         self.prediction_api = prediction_api
         self.conn = conn
         self.logger = logger
         self.request_id = request_id
 
     async def predict_for_task(self, file, action, input_params, special_rid: str=None):
-        ## Encode file
-        encoded_data = await encode_file(file)
+        ## Store image data
+        task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
+        if task.status == 'FAIL':
+            raise TaskProcessingException(task)
         if special_rid:
             rid = special_rid
         else:
@@ -49,9 +51,8 @@ class ControllerOcrPredictionService(IPredictionService):
             
             tasks = []
             # Create task for each image_cv_id from the prediction result
-            for idx, image_cv_id in enumerate(image_cv_ids):
-                task = Task(file_name=file.filename, series_num=idx, image_cv_id=image_cv_id, predict_class=predict_class)
-                task.mark_as_processing(image_cv_id, predict_class)
+            for image_cv_id in image_cv_ids:
+                task.mark_as_processing(image_cv_id, predict_class=predict_class)
                 tasks.append(task)
 
                 # Store task in Redis
@@ -71,6 +72,8 @@ class ControllerOcrPredictionService(IPredictionService):
                     'status_code': exc.mlaas_code
                 }
             })
+            task.mark_as_failed('', '', exc.mlaas_code, exc.message)
+            await self._store_task_in_redis(task)
             raise PredictionAPIException(task, exc)
 
         except Exception as exc:
@@ -84,6 +87,7 @@ class ControllerOcrPredictionService(IPredictionService):
                     'status_code': '5001'
                 }
             })
+            await task.mark_as_failed('', '', '5001', str(exc))
             raise GeneralException(task, exc)
 
     async def _store_task_in_redis(self, task: Task):

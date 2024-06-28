@@ -14,7 +14,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from utils.logger import Logger
-from utils.minio import MinioStorage
 
 
 # 設定 logger
@@ -36,13 +35,6 @@ def register_redis(app: FastAPI) -> None:
         """
         try:
             app.state.redis = await create_redis_pool(os.getenv("LOCAL_REDIS_URL", "redis://localhost:6379"))
-            # Create MinIO client
-            app.state.minio = MinioStorage(
-                endpoint=os.getenv("MINIO_ENDPOINT", "localhost:9000"),
-                access_key=os.getenv("MINIO_ACCESS KEY", "minio"),
-                secret_key=os.getenv("MINIO_SECRET, KEY", "minio123"),
-                bucket_name=os.getenv("MINIO_BUCKET_NAME", "ocr")
-            )
             logger.info({'register_redis': 'startup'})
         except Exception as e:
             logger.error({'register_redis': 'startup failed', 'error': str(e)})
@@ -57,30 +49,9 @@ def register_redis(app: FastAPI) -> None:
             app.state.redis.close()
             await app.state.redis.wait_closed()
             logger.info({'register_redis': 'shutdown'})
-            # minio client should be closed
-            app.state.minio.client.close() # Close Minio client
         except Exception as e:
             logger.error(
                 {'register_redis': 'shutdown failed', 'error': str(e)})
-
-
-def register_minio(app: FastAPI) -> None:
-    """
-    Register Minio with the FastAPI application.
-    :param app:
-    :return:
-    """
-    @app.on_event('startup')
-    async def startup_event():
-        """
-        Get Minio Connection Pool
-        :return:
-        """
-        try:
-            app.state.minio = await create_minio_pool()
-            logger.info({'register_minio': 'startup'})
-        except Exception as e:
-            logger.error({'register_minio': 'startup failed', 'error': str(e)})
 
 
 def get_application():

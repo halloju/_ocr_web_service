@@ -5,10 +5,10 @@ from typing import List, Tuple
 
 
 class Task:
-    def __init__(self, file_name: str, series_num: int, image_cv_id: str, predict_class='', status='INITIAL', err_msg=''):
+    def __init__(self, file_name: str, series_num: int, image_redis_key: str, predict_class='', status='INITIAL', err_msg=''):
         self.file_name = file_name
         self.series_num = series_num
-        self.image_cv_id = image_cv_id
+        self.image_cv_id = ''
         self.predict_class = predict_class
         self.status = status
         self.start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -17,8 +17,17 @@ class Task:
         # Convert 2022/10/11.../uuid to 2022-10-11...-uuid
         self.task_id = str(self.image_cv_id).replace('/', '-')
         self.ocr_results = {}
-        self.image_redis_key = f'{self.task_id}-image'
+        self.image_redis_key = image_redis_key
 
+    @staticmethod
+    async def create_and_store_image(file, image_storage):
+        image_redis_key = str(uuid.uuid4())
+        task = Task(file_name=file.filename, series_num=0, image_redis_key=image_redis_key)
+        _, encoded_data = await image_storage.store_image_data(file, image_redis_key)
+        if encoded_data is None:
+            task.mark_as_failed('', '', '5002', 'Image storage failed')
+        return task, encoded_data
+    
     def to_dict(self):
         """
         Convert the Task object to a dictionary. Useful for returning as a response or storing in databases.
