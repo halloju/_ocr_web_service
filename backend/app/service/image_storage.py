@@ -4,6 +4,7 @@ from datetime import timedelta
 import filetype
 import fitz
 import uuid
+from fastapi import UploadFile
 from route_utils import get_redis_filename
 from utils.logger import Logger
 
@@ -25,7 +26,7 @@ class ImageStorage:
 
             """
             image_dict = {}
-            image_list = self.transform_to_image(file)
+            image_list = await self.transform_to_image(file)
             for image_data in image_list:
                 image_redis_key = str(uuid.uuid4())
                 encoded_data = base64.b64encode(image_data).decode("utf-8")        
@@ -39,7 +40,7 @@ class ImageStorage:
 
             return image_dict
 
-    def transform_to_image(self, file):
+    async def transform_to_image(self, file: UploadFile):
         """
         Transforms the given file into a list of images.
 
@@ -53,17 +54,18 @@ class ImageStorage:
             ValueError: If the file type is invalid.
         """
         img_list = []
-        file_kind = filetype.guess(file)
+        file_raw = await file.read()
+        file_kind = filetype.guess(file_raw)
         if file_kind:
             if file_kind.extension == 'pdf':
-                doc = fitz.open('pdf', file)
+                doc = fitz.open('pdf', file_raw)
                 for img in doc:
                     pix = img.get_pixmap(dpi=300).tobytes('PNG')
                     img_list.append(pix)
                 doc.close()
                 fitz.TOOLS.store_shrink(100)
             elif file_kind.mime.startswith('image'):
-                img_list.append(file)
+                img_list.append(file_raw)
             else:
                 raise ValueError('Invalid file type')
             return img_list

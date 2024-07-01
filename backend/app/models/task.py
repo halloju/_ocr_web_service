@@ -18,15 +18,6 @@ class Task:
         self.task_id = str(self.image_cv_id).replace('/', '-')
         self.ocr_results = {}
         self.image_redis_key = image_redis_key
-
-    @staticmethod
-    async def create_and_store_image(file, image_storage):
-        image_redis_key = str(uuid.uuid4())
-        task = Task(file_name=file.filename, series_num=0, image_redis_key=image_redis_key)
-        _, encoded_data = await image_storage.store_image_data(file, image_redis_key)
-        if encoded_data is None:
-            task.mark_as_failed('', '', '5002', 'Image storage failed')
-        return task, encoded_data
     
     def to_dict(self):
         """

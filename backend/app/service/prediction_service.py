@@ -9,7 +9,6 @@ from app.exceptions import TaskProcessingException
 from app.exceptions import PredictionAPIException
 from app.exceptions import GeneralException
 from app.constants import remittance_points
-from utils.file_to_image import transform_to_binary
 
 
 async def encode_file(file):
@@ -33,7 +32,8 @@ class ControllerOcrPredictionService(IPredictionService):
 
     async def predict_for_task(self, file, action, input_params, special_rid: str=None):
         ## Store image data into redis
-        image_dict = self.image_storage.store_image_data(file)
+        image_dict = await self.image_storage.store_image_data(file)
+        self.logger.info(image_dict)
         tasks = []
 
         ## Create task for each image
