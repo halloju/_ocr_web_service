@@ -9,6 +9,7 @@ from app.exceptions import TaskProcessingException
 from app.exceptions import PredictionAPIException
 from app.exceptions import GeneralException
 from app.constants import remittance_points
+from utils.file_to_image import transform_to_binary
 
 
 async def encode_file(file):
@@ -31,65 +32,62 @@ class ControllerOcrPredictionService(IPredictionService):
         self.request_id = request_id
 
     async def predict_for_task(self, file, action, input_params, special_rid: str=None):
-        ## Store image data
-        task, encoded_data = await Task.create_and_store_image(file, self.image_storage)
-        if task.status == 'FAIL':
-            raise TaskProcessingException(task)
-        if special_rid:
-            rid = special_rid
-        else:
-            rid = str(uuid.uuid4())
-        try:
-            # Call prediction API
-            data_pred = await self.prediction_api.call_prediction_api(encoded_data, input_params, rid, action)
+        ## Store image data into redis
+        image_dict = self.image_storage.store_image_data(file)
+        tasks = []
 
-            predict_class = data_pred.get('predict_class', '')
-            image_cv_ids = data_pred.get('image_cv_id')
-            # controller predict API returns a single image_cv_id
-            if isinstance(image_cv_ids, str):
-                image_cv_ids = [image_cv_ids]
-            
-            tasks = []
-            # Create task for each image_cv_id from the prediction result
-            for image_cv_id in image_cv_ids:
+        ## Create task for each image
+        for i, key in enumerate(image_dict.keys()):
+            task = Task(file_name=file.filename, series_num=i, image_redis_key=key)
+            # Check if image storage failed
+            if task.status == 'FAIL':
+                raise TaskProcessingException(task)
+            if special_rid:
+                rid = special_rid
+            else:
+                rid = str(uuid.uuid4())
+            try:
+                # Call prediction API
+                data_pred = await self.prediction_api.call_prediction_api(image_dict[key], input_params, rid, action)
+                predict_class = data_pred.get('predict_class', '')
+                image_cv_id = data_pred.get('image_cv_id')
+                # Mark task as processing
                 task.mark_as_processing(image_cv_id, predict_class=predict_class)
                 tasks.append(task)
-
                 # Store task in Redis
                 await self._store_task_in_redis(task)
+            
+            except MlaasRequestError as exc:
+                self.logger.error({
+                    'predict_service': {
+                        'mlaas_rid': rid,
+                        'backend_rid': self.request_id,
+                        'error_msg': str(exc.message),
+                        'action': action,
+                        'input_params': input_params,
+                        'status_code': exc.mlaas_code
+                    }
+                })
+                task.mark_as_failed('', '', exc.mlaas_code, exc.message)
+                await self._store_task_in_redis(task)
+                # raise PredictionAPIException(task, exc)
 
+            except Exception as exc:
+                self.logger.error({
+                    'predict_service': {
+                        'mlaas_rid': rid,
+                        'backend_rid': self.request_id,
+                        'error_msg': str(exc),
+                        'action': action,
+                        'input_params': input_params,
+                        'status_code': '5001'
+                    }
+                })
+                await task.mark_as_failed('', '', '5001', str(exc))
+                # raise GeneralException(task, exc)
 
-            return tasks
-
-        except MlaasRequestError as exc:
-            self.logger.error({
-                'predict_service': {
-                    'mlaas_rid': rid,
-                    'backend_rid': self.request_id,
-                    'error_msg': str(exc.message),
-                    'action': action,
-                    'input_params': input_params,
-                    'status_code': exc.mlaas_code
-                }
-            })
-            task.mark_as_failed('', '', exc.mlaas_code, exc.message)
-            await self._store_task_in_redis(task)
-            raise PredictionAPIException(task, exc)
-
-        except Exception as exc:
-            self.logger.error({
-                'predict_service': {
-                    'mlaas_rid': rid,
-                    'backend_rid': self.request_id,
-                    'error_msg': str(exc),
-                    'action': action,
-                    'input_params': input_params,
-                    'status_code': '5001'
-                }
-            })
-            await task.mark_as_failed('', '', '5001', str(exc))
-            raise GeneralException(task, exc)
-
+        return tasks
+    
     async def _store_task_in_redis(self, task: Task):
         task_dict = task.to_dict()
         task_key = get_redis_taskname(task.task_id)
