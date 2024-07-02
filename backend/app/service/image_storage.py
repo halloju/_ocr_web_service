@@ -32,11 +32,15 @@ class ImageStorage:
                 encoded_data = base64.b64encode(image_data).decode("utf-8")        
             
                 # Store the encoded image data and filename in Redis
-                ttl = timedelta(hours=1)
-                await self.conn.setex(image_redis_key, int(ttl.total_seconds()), encoded_data)
-                await self.conn.setex(get_redis_filename(image_redis_key), int(ttl.total_seconds()), file.filename)
-                self.logger.info({'image_redis_key': image_redis_key, 'msg': 'Store the encoded image data and filename in Redis finished'})
-                image_dict[image_redis_key] = encoded_data
+                try:
+                    ttl = timedelta(hours=1)
+                    await self.conn.setex(image_redis_key, int(ttl.total_seconds()), encoded_data)
+                    await self.conn.setex(get_redis_filename(image_redis_key), int(ttl.total_seconds()), file.filename)
+                    self.logger.info({'image_redis_key': image_redis_key, 'msg': 'Store the encoded image data and filename in Redis finished'})
+                    image_dict[image_redis_key] = encoded_data
+                except Exception as e:
+                    self.logger.error({'image_redis_key': image_redis_key, 'error': str(e), 'msg': 'Failed to store the encoded image data and filename in Redis'})
+                    image_dict[image_redis_key] = None
 
             return image_dict
 
