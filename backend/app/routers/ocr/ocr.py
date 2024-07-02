@@ -52,8 +52,9 @@ async def remittance(
     input_params = {}
     for file in files:
         try:
-            updated_task = await prediction_service.predict_for_task(file, action, input_params)
-            tasks.append(updated_task.to_dict_no_dumps())
+            updated_tasks = await prediction_service.predict_for_task(file, action, input_params)
+            for updated_task in updated_tasks:
+                tasks.append(updated_task.to_dict_no_dumps())
         except PredictionAPIException as ex:
             # Log and append specific error details
             logger.error({
@@ -95,8 +96,9 @@ async def check_front(
     input_params = {}
     for file in files:
         try:
-            updated_task = await prediction_service.predict_for_task(file, action, input_params)
-            tasks.append(updated_task.to_dict_no_dumps())
+            updated_tasks = await prediction_service.predict_for_task(file, action, input_params)
+            for updated_task in updated_tasks:
+                tasks.append(updated_task.to_dict_no_dumps())
         except PredictionAPIException as ex:
             # Log and append specific error details
             logger.error({
@@ -138,8 +140,9 @@ async def check_back(
     input_params = {}
     for file in files:
         try:
-            updated_task = await prediction_service.predict_for_task(file, action, input_params)
-            tasks.append(updated_task.to_dict_no_dumps())
+            updated_tasks = await prediction_service.predict_for_task(file, action, input_params)
+            for updated_task in updated_tasks:
+                tasks.append(updated_task.to_dict_no_dumps())
         except PredictionAPIException as ex:
             # Log and append specific error details
             logger.error({
