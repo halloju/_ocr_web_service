@@ -51,6 +51,8 @@ class ControllerOcrPredictionService(IPredictionService):
                 data_pred = await self.prediction_api.call_prediction_api(image_dict[key], input_params, rid, action)
                 predict_class = data_pred.get('predict_class', '')
                 image_cv_id = data_pred.get('image_cv_id')
+                if type(image_cv_id) is list:
+                    image_cv_id = image_cv_id[0]
                 # Mark task as processing
                 task.mark_as_processing(image_cv_id, predict_class=predict_class)
                 # Store task in Redis
@@ -106,7 +108,8 @@ class ControllerOcrPredictionService(IPredictionService):
 
 
 class NonControllerOcrPredictionService(IPredictionService):
-    def __init__(self, prediction_api, conn, logger, request_id):
+    def __init__(self, image_storage, prediction_api, conn, logger, request_id):
+        self.image_storage = image_storage
         self.prediction_api = prediction_api
         self.conn = conn
         self.logger = logger

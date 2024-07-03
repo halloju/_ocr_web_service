@@ -32,7 +32,7 @@ async def get_images(task_id: str, redis: Redis = Depends(get_redis)):
 @router.get('/result/{task_id}')
 async def result(task_id: str, redis: Redis = Depends(get_redis)):
     result = await redis.hgetall(get_redis_taskname(task_id))
-    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': json.loads(result['result']), 'file_name': result['file_name']})
+    return JSONResponse(status_code=200, content={'task_id': str(task_id), 'status': result['status'], 'result': json.loads(result['result']), 'file_name': result['file_name'], 'series_num': result['series_num']})
 
 
 @router.get('/status/{task_id}')
@@ -50,12 +50,13 @@ async def status(task_id: str, redis: Redis = Depends(get_redis)):
         status = result.get('status')
         status_msg = result.get('status_msg', '')
         file_name = result.get('file_name', '')
+        series_num = result.get('series_num', '')
         # If task is complete, return the result
         if status in ['SUCCESS', 'FAIL']:
-            return JSONResponse(status_code=200, content={'task_id': task_id, 'status': status, 'result': '', 'status_msg': status_msg, 'file_name': file_name})
+            return JSONResponse(status_code=200, content={'task_id': task_id, 'status': status, 'result': '', 'status_msg': status_msg, 'file_name': file_name, 'series_num': series_num})
 
         # Wait for a short period before retrying
         time.sleep(backoff_factor * (2 ** retry))
 
     # If maximum retries reached, return PENDING status
-    return JSONResponse(status_code=200, content={'task_id': task_id, 'status': 'PROCESSING', 'result': '', 'status_msg': '', 'file_name': file_name})
+    return JSONResponse(status_code=200, content={'task_id': task_id, 'status': 'PROCESSING', 'result': '', 'status_msg': '', 'file_name': file_name, 'series_num': series_num})
