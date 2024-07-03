@@ -96,27 +96,26 @@ export default {
 
             // Filter results to only include selected task IDs and their OCR results
             const filteredResults = general_upload_res.value.filter((item) => selectedTaskIds.includes(item.task_id) && item.ocr_results);
-
-            // Group results by file_name
             const groupedResults = {};
-            filteredResults.forEach((item) => {
-            if (!groupedResults[item.file_name]) {
-                groupedResults[item.file_name] = [];
-            }
-            groupedResults[item.file_name].push(item);
-            });
-
             // Generate Excel data rows
-            Object.keys(groupedResults).forEach((file_name) => {
-            const taskResults = groupedResults[file_name];
-            const sortedResults = sortOcrResults(taskResults[0].ocr_results.data_results);
-            const fullText = concatTextResults(sortedResults.map((item) => item.text), []);
-            let cols = {
-                filename: file_name,
-                full_text: fullText
-            };
-            excelData.push(cols);
+            selectedTaskIds.forEach((task_id) => {
+                const taskResults = filteredResults.filter((item) => item.task_id === task_id);
+                const sortedResults = sortOcrResults(taskResults[0].ocr_results.data_results);
+                const fullText = concatTextResults(sortedResults.map((item) => item.text), []);
+                // group results by file_name
+                if (groupedResults[taskResults[0].file_name] === undefined) {
+                    groupedResults[taskResults[0].file_name] = [];
+                }
+                groupedResults[taskResults[0].file_name].push(fullText);
             });
+            // Generate Excel data rows
+            for (const file_name in groupedResults) {
+                excelData.push({
+                    filename: file_name,
+                    full_text: groupedResults[file_name].join('\n')
+                });
+            }
+            
 
             return excelData;
         };
