@@ -102,11 +102,11 @@ export default {
                 let response = await apiClient.get(`${GET_TASK_RESULT_URL}/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
                 let err_code = '';
                 if (response.data.status === 'SUCCESS') {
-                    store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name });
+                    store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name, series_num: response.data.series_num});
                 } else {
                     err_code = response.data.status_msg || '';
                 }
-                store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
+                store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name, series_num: response.data.series_num});
                 reloadAnnotator.value = !reloadAnnotator.value;
             } catch (error) {
                 if (error instanceof TypeError) {
@@ -128,7 +128,7 @@ export default {
                     await getOcrResults(item);
                 } else {
                     let err_code = response.data.status_msg || '';
-                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name });
+                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name, series_num: response.data.series_num});
                 }
             } catch (error) {
                 // Check specifically for TypeError and handle it
@@ -176,7 +176,7 @@ export default {
                 if (count === MAX_RETRIES) {
                     // Process any remaining items as failed
                     unfinishedItems.forEach(item => {
-                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name });
+                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name, series_num: item.series_num});
                     });
                     break;
                 }
@@ -376,6 +376,7 @@ export default {
                     status: item.status,
                     image_id: item.image_id,
                     file_name: item.file_name,
+                    series_num: item.series_num,
                     isFinished: item.status === 'SUCCESS' ? true : false,
                     status_msg: item.status === 'FAIL' ? item.status_msg : ''
                 });
@@ -408,7 +409,7 @@ export default {
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" /> 
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30">
                     <template v-slot="scope">
-                        {{ scope.row.file_name }} - {{ scope.row.num }}
+                        {{ scope.row.file_name }} - {{ scope.row.series_num + 1 }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">

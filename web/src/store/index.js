@@ -36,10 +36,12 @@ const store = new Vuex.Store({
             state.general_upload_res[payload.item].status = payload.status;
             state.general_upload_res[payload.item].status_msg = payload.status_msg;
             state.general_upload_res[payload.item].file_name = payload.file_name;
+            state.general_upload_res[payload.item].series_num = payload.series_num;
         },
         generalImageOcrResults: function (state, payload) {
             state.general_upload_res[payload.item].ocr_results = payload.ocr_results;
             state.general_upload_res[payload.item].file_name = payload.file_name;
+            state.general_upload_res[payload.item].series_num = payload.series_num;
         },
         TemplateIdUpdate: function (state, payload) {
             state.template_id = payload;
