@@ -32,23 +32,24 @@ class ControllerOcrPredictionService(IPredictionService):
 
     async def predict_for_task(self, file, action, input_params, special_rid: str=None):
         ## Store image data into redis
-        image_dict = await self.image_storage.store_image_data(file)
-        self.logger.info(image_dict)
         tasks = []
+        rid = special_rid if special_rid else str(uuid.uuid4())
 
-        ## Create task for each image
-        for i, key in enumerate(image_dict.keys()):
-            task = Task(file_name=file.filename, series_num=i, image_redis_key=key)
-            # Check if image storage failed
-            if image_dict[key] is None:
-                raise TaskProcessingException(task)
-            if special_rid:
-                rid = special_rid
-            else:
-                rid = str(uuid.uuid4())
+        async for key, image_data in self.image_storage.store_image_data(file):
+            self.logger.info({'msg': 'making task for image'})
+            task = Task(
+                file_name=file.filename,
+                series_num=len(tasks) + 1,
+                image_redis_key=key
+            )
+            
+            if image_data is None:
+                self.logger.warning(f"Failed to store image data for key: {key}")
+                continue
+                
             try:
                 # Call prediction API
-                data_pred = await self.prediction_api.call_prediction_api(image_dict[key], input_params, rid, action)
+                data_pred = await self.prediction_api.call_prediction_api(image_data, input_params, rid, action)
                 predict_class = data_pred.get('predict_class', '')
                 image_cv_id = data_pred.get('image_cv_id')
                 if type(image_cv_id) is list:
@@ -57,6 +58,7 @@ class ControllerOcrPredictionService(IPredictionService):
                 task.mark_as_processing(image_cv_id, predict_class=predict_class)
                 # Store task in Redis
                 await self._store_task_in_redis(task)
+                tasks.append(task)
             
             except MlaasRequestError as exc:
                 self.logger.error({
@@ -71,6 +73,7 @@ class ControllerOcrPredictionService(IPredictionService):
                 })
                 task.mark_as_failed('', '', exc.mlaas_code, exc.message)
                 await self._store_task_in_redis(task)
+                tasks.append(task)
                 # raise PredictionAPIException(task, exc)
 
             except Exception as exc:
@@ -85,8 +88,9 @@ class ControllerOcrPredictionService(IPredictionService):
                     }
                 })
                 await task.mark_as_failed('', '', '5001', str(exc))
+                tasks.append(task)
                 # raise GeneralException(task, exc)
-            tasks.append(task)
+                
         return tasks
     
     async def _store_task_in_redis(self, task: Task):
@@ -151,24 +155,30 @@ class NonControllerOcrPredictionService(IPredictionService):
         return [{'tag': key, 'text': value} for key, value in data_pred.items() if key not in exclude_keys]
 
     async def predict_for_task(self, file, action, input_params, special_rid: str=None):
-        # Store image data
-        image_dict = await self.image_storage.store_image_data(file)
         # Create task for each image
         tasks = []
-        for i, key in enumerate(image_dict.keys()):
-            task = Task(file_name=file.filename, image_redis_key=key, series_num=i)
+        rid = special_rid if special_rid else str(uuid.uuid4())
+        async for key, image_data in self.image_storage.store_image_data(file):
+            self.logger.info({'msg': 'making task for image'})
+            task = Task(
+                file_name=file.filename,
+                series_num=len(tasks) + 1,
+                image_redis_key=key
+            )
+
             # Check if image storage failed
-            if image_dict[key] is None:
-                raise TaskProcessingException(task)
+            if image_data is None:
+                self.logger.warning(f"Failed to store image data for key: {key}")
+                continue
             
-            rid = str(uuid.uuid4())
             try:
                 # Call prediction API
-                response = await self.prediction_api.call_prediction_api(image_dict[key], input_params, rid, action)
+                response = await self.prediction_api.call_prediction_api(image_data, input_params, rid, action)
 
                 data_pred = self._get_predict_data(response, action)
                 # Process the prediction result
                 task.mark_as_success(image_cv_id=rid, result=data_pred)
+                tasks.append(task)  
 
             except MlaasRequestError as exc:
                 task.mark_as_failed('', '', exc.mlaas_code, exc.message)
@@ -182,7 +192,8 @@ class NonControllerOcrPredictionService(IPredictionService):
                         'status_code': exc.mlaas_code
                     }
                 })
-                raise PredictionAPIException(task, exc)
+                tasks.append(task)
+                # raise PredictionAPIException(task, exc)
 
             except Exception as exc:
                 self.logger.error({
@@ -196,7 +207,8 @@ class NonControllerOcrPredictionService(IPredictionService):
                     }
                 })
                 task.mark_as_failed('', '', '5001', str(exc))
-                raise GeneralException(task, exc)
+                tasks.append(task)  
+                # raise GeneralException(task, exc)
             
-            tasks.append(task)  
+            
         return tasks
