@@ -538,7 +538,7 @@ export default {
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30">
                     <template v-slot="scope">
-                        {{ scope.row.file_name }} - {{ scope.row.series_num + 1 }}
+                        {{ scope.row.file_name }} - {{ scope.row.series_num }}
                     </template>
                 </el-table-column>
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
