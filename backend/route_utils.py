@@ -17,6 +17,7 @@ from app.models.user import User
 SECRET_KEY = os.environ.get("SECRET_KEY", "your-secret-key")
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+general_purpose_actions = ['ocr/gp_ocr', 'ocr/template_ocr']
 
 
 def get_mlaas_result(res: dict, logger) -> Optional[dict]:
@@ -38,7 +39,7 @@ def get_mlaas_result(res: dict, logger) -> Optional[dict]:
 def get_mode_conn_info(project, mode, action):
     mlaas_url = os.environ.get(f'{project}_MLAAS_URL')
     headers = {}
-    version = 'v1'
+    version = 'v2' if action in general_purpose_actions else 'v1'
     if mode == 'dev':
         connection_url = f'{mlaas_url}/{action}'
     else:
@@ -99,20 +100,21 @@ def get_redis(request: Request) -> Redis:
     return request.app.state.redis
 
 # Dependency
-def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub") 
-        if user_id is None:
-            raise credentials_exception
-        return User(user_id=user_id)
-    except jwt.PyJWTError:
-        raise credentials_exception
+def get_current_user() -> User:
+    return User(user_id='test')
+    # credentials_exception = HTTPException(
+    #     status_code=status.HTTP_401_UNAUTHORIZED,
+    #     detail="Could not validate credentials",
+    #     headers={"WWW-Authenticate": "Bearer"},
+    # )
+    # try:
+    #     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    #     user_id: str = payload.get("sub") 
+    #     if user_id is None:
+    #         raise credentials_exception
+    #     return User(user_id=user_id)
+    # except jwt.PyJWTError:
+    #     raise credentials_exception
 
 
 def get_request_id():

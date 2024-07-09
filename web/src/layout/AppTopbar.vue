@@ -75,7 +75,7 @@ const logout = () => {
 <template>
     <nav style="width: calc(100% + 10px)">
         <div id="navPageLogo">
-            <a href="/"><img src="/esun_images/logo_white_esun.svg" title="玉山銀行E.SUN Bank" /></a>
+            <a href="/ocr-platform"><img src="/esun_images/logo_white_esun.svg" title="玉山銀行E.SUN Bank" /></a>
         </div>
         <div id="navPageTitle">｜智能OCR服務</div>
 
