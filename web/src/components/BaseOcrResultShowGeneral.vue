@@ -1,21 +1,6 @@
-/**
- * @file BaseOcrResultShowGeneral.vue
- * @description This file contains the implementation of the BaseOcrResultShowGeneral component for General OCR.
- * The component displays OCR results for general images and provides functionality for downloading and annotating the results.
- * It also includes methods for retrieving OCR results and status from the server.
- * @module components/BaseOcrResultShowGeneral
- * @requires vue
- * @requires vue/composition-api
- * @requires @element-plus/icons-vue
- * @requires element-plus
- * @requires xlsx/xlsx.mjs
- * @requires vuex
- * @requires mixins/useAnnotator.js
- * @requires service/auth.js
- * @requires components/Icon.vue
- * @requires url.js
- */
-**/
+/** * @file BaseOcrResultShowGeneral.vue * @description This file contains the implementation of the BaseOcrResultShowGeneral component for General OCR. * The component displays OCR results for general images and provides functionality for
+downloading and annotating the results. * It also includes methods for retrieving OCR results and status from the server. * @module components/BaseOcrResultShowGeneral * @requires vue * @requires vue/composition-api * @requires
+@element-plus/icons-vue * @requires element-plus * @requires xlsx/xlsx.mjs * @requires vuex * @requires mixins/useAnnotator.js * @requires service/auth.js * @requires components/Icon.vue * @requires url.js */ **/
 <script>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import AnnotationGeneral from '@/components/AnnotationGeneral.vue';
@@ -101,7 +86,10 @@ export default {
             selectedTaskIds.forEach((task_id) => {
                 const taskResults = filteredResults.filter((item) => item.task_id === task_id);
                 const sortedResults = sortOcrResults(taskResults[0].ocr_results.data_results);
-                const fullText = concatTextResults(sortedResults.map((item) => item.text), []);
+                const fullText = concatTextResults(
+                    sortedResults.map((item) => item.text),
+                    []
+                );
                 // group results by file_name
                 if (groupedResults[taskResults[0].file_name] === undefined) {
                     groupedResults[taskResults[0].file_name] = [];
@@ -115,7 +103,6 @@ export default {
                     full_text: groupedResults[file_name].join('\n')
                 });
             }
-            
 
             return excelData;
         };
@@ -202,12 +189,13 @@ export default {
 
         function callback(shape, idx, image_cv_id) {
             console.log('callback', shape, image_cv_id);
-            store.dispatch('updateGeneralImageOcrResultsEdited', { shape , idx, image_cv_id });
+            store.dispatch('updateGeneralImageOcrResultsEdited', { shape, idx, image_cv_id });
         }
 
         // fail to fail msg
         function getErrorMsg(row, tableData) {
             let fileInfo = tableData.filter((item) => item.task_id === row.task_id);
+            if (fileInfo[0].status === 'SUCCESS') return '辨識成功';
             if (fileInfo[0].status_msg in error_table) return error_table[fileInfo[0].status_msg] + '(' + fileInfo[0].status_msg + ')';
             else return default_error_msg + '(' + fileInfo[0].status_msg + ')';
         }
@@ -230,11 +218,11 @@ export default {
                 let response = await apiClient.get(`${GET_TASK_RESULT_URL}/${general_upload_res.value[item].task_id}`, { signal: abortController.signal });
                 let err_code = '';
                 if (response.data.status === 'SUCCESS') {
-                    store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name, series_num: response.data.series_num});
+                    store.commit('generalImageOcrResults', { item: item, ocr_results: response.data.result, file_name: response.data.file_name, series_num: response.data.series_num });
                 } else {
                     err_code = response.data.status_msg || '';
                 }
-                store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name, series_num: response.data.series_num});
+                store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name, series_num: response.data.series_num });
                 reloadAnnotator.value = !reloadAnnotator.value;
             } catch (error) {
                 if (error instanceof TypeError) {
@@ -255,7 +243,7 @@ export default {
                     await getOcrResults(item);
                 } else {
                     let err_code = response.data.status_msg || '';
-                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name, series_num: response.data.series_num});
+                    store.commit('generalImageOcrStatus', { item: item, status: response.data.status, status_msg: err_code, file_name: response.data.file_name, series_num: response.data.series_num });
                 }
             } catch (error) {
                 // Check specifically for TypeError and handle it
@@ -303,7 +291,7 @@ export default {
                 if (count === MAX_RETRIES) {
                     // Process any remaining items as failed
                     unfinishedItems.forEach((item) => {
-                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name, series_num: item.series_num});
+                        store.commit('generalImageOcrStatus', { item: general_upload_res.value.indexOf(item), status: 'FAIL', status_msg: '5004', file_name: item.file_name, series_num: item.series_num });
                     });
                     break;
                 }
@@ -311,7 +299,7 @@ export default {
             isRunning.value = false;
         }
 
-        // ocr 結果轉成 annotation 的格式  
+        // ocr 結果轉成 annotation 的格式
         function handleButtonClick(row, tableData) {
             apiClient
                 .get(`${GET_TASK_IMAGE_URL}/${row.task_id}`)
@@ -537,9 +525,7 @@ export default {
                 <el-table-column type="selection" width="55" color="red" />
                 <el-table-column prop="num" label="號碼" sortable :min-width="10" />
                 <el-table-column prop="file_name" label="檔名" sortable :min-width="30">
-                    <template v-slot="scope">
-                        {{ scope.row.file_name }} - {{ scope.row.series_num }}
-                    </template>
+                    <template v-slot="scope"> {{ scope.row.file_name }} - {{ scope.row.series_num }} </template>
                 </el-table-column>
                 <el-table-column prop="status" label="辨識狀態" :min-width="20">
                     <template v-slot="scope">
